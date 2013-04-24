@@ -15,3 +15,4 @@ exports.Type = types.Type;
 exports.builtInTypes = types.builtInTypes;
 exports.namedTypes = types.namedTypes;
 exports.builders = types.builders;
+exports.finalize = types.finalize;
