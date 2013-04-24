@@ -11,6 +11,7 @@ require("./lib/mozilla");
 require("./lib/e4x");
 require("./lib/xjs");
 
+exports.Type = types.Type;
 exports.builtInTypes = types.builtInTypes;
 exports.namedTypes = types.namedTypes;
 exports.builders = types.builders;
