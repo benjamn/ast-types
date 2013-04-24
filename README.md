@@ -25,6 +25,7 @@ From GitHub:
 Basic Usage
 ---
 
+    var assert = require("assert");
     var n = require("ast-types").namedTypes;
     var b = require("ast-types").builders;
 
@@ -46,3 +47,46 @@ Basic Usage
     assert.ok(n.Expression.check(ifFoo.test));
     assert.ok(n.Identifier.check(ifFoo.test));
     assert.ok(!n.Statement.check(ifFoo.test));
+
+Custom AST Node Types
+---
+
+    var types = require("ast-types");
+    var def = types.Type.def;
+    var string = types.builtInTypes.string;
+    var b = types.builders;
+
+    // Suppose you need a named File type to wrap your Programs.
+    def("File")
+        .bases("Node")
+        .build("name", "program")
+        .field("name", string)
+        .field("program", def("Program"));
+
+    // Prevent further modifications to the File type (and any other
+    // types newly introduced by def(...)).
+    types.finalize();
+
+    // The b.file builder function is now available. It expects two
+    // arguments, as named by .build("name", "program") above.
+    var main = b.file("main.js", b.program([
+        // Pointless program contents included for extra color.
+        b.functionDeclaration(b.identifier("succ"), [
+            b.identifier("x")
+        ], b.blockStatement([
+            b.returnStatement(
+                b.binaryExpression(
+                    "+", b.identifier("x"), b.literal(1)
+                )
+            )
+        ]))
+    ]));
+
+    assert.strictEqual(main.name, "main.js");
+    assert.strictEqual(main.program.body[0].params[0].name, "x");
+    // etc.
+
+    // If you pass the wrong type of arguments, or fail to pass enough
+    // arguments, an AssertionError will be thrown.
+    b.file(b.blockStatement([])); // AssertionError: {"body":[],"type":"BlockStatement","loc":null} does not match type string
+    b.file("lib/types.js", b.thisExpression()); // AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
