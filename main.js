@@ -8,7 +8,6 @@ require("./lib/core");
 // configure the precise type hierarchy that you need.
 require("./lib/es6");
 require("./lib/mozilla");
-require("./lib/recast");
 require("./lib/e4x");
 require("./lib/xjs");
 
