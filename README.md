@@ -51,6 +51,10 @@ Basic Usage
 Custom AST Node Types
 ---
 
+The `ast-types` module was designed to be extended. To that end, it
+provides a readable, declarative syntax for specifying new AST node types,
+based primarily upon the `require("ast-types").Type.def` function:
+
     var types = require("ast-types");
     var def = types.Type.def;
     var string = types.builtInTypes.string;
@@ -90,3 +94,11 @@ Custom AST Node Types
     // arguments, an AssertionError will be thrown.
     b.file(b.blockStatement([])); // AssertionError: {"body":[],"type":"BlockStatement","loc":null} does not match type string
     b.file("lib/types.js", b.thisExpression()); // AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
+
+The `def` syntax is used to define all the default AST node types found in
+https://github.com/benjamn/ast-types/blob/master/lib/core.js,
+https://github.com/benjamn/ast-types/blob/master/lib/es6.js,
+https://github.com/benjamn/ast-types/blob/master/lib/mozilla.js,
+https://github.com/benjamn/ast-types/blob/master/lib/e4x.js, and
+https://github.com/benjamn/ast-types/blob/master/lib/xjs.js, so you have
+no shortage of examples to learn from.
