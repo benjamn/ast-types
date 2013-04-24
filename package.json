@@ -1,7 +1,7 @@
 {
   "author": "Ben Newman <bn@cs.stanford.edu>",
   "name": "ast-types",
-  "description": "Efficient, modular, Esprima-compatible implementation of the abstract syntax tree (AST) type hierarchy pioneered by the Mozilla SpiderMonkey Parser API",
+  "description": "Esprima-compatible implementation of the Mozilla JS Parser API",
   "keywords": [
     "ast",
     "abstract syntax tree",
@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.2.1",
+  "version": "0.2.2",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
