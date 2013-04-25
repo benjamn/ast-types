@@ -54,9 +54,9 @@ exports.testShallowAndDeepChecks = function(t, assert) {
     assert.ok(n.Declaration.check(decl));
     assert.ok(n.VariableDeclaration.check(decl));
 
-    assert.ok(n.Node.check(decl, true));
-    assert.ok(n.Statement.check(decl, true));
-    assert.ok(n.Declaration.check(decl, true));
+    assert.ok(!n.Node.check(decl, true));
+    assert.ok(!n.Statement.check(decl, true));
+    assert.ok(!n.Declaration.check(decl, true));
 
     // As foretold above.
     assert.ok(!n.VariableDeclaration.check(decl, true));
@@ -77,11 +77,10 @@ exports.testShallowAndDeepChecks = function(t, assert) {
     assert.ok(n.Statement.check(fs));
     assert.ok(n.ForStatement.check(fs));
 
-    assert.ok(n.Node.check(fs, true));
-    assert.ok(n.Statement.check(fs, true));
-
     // Not a true ForStatement because fs.init is not a true
     // VariableDeclaration.
+    assert.ok(!n.Node.check(fs, true));
+    assert.ok(!n.Statement.check(fs, true));
     assert.ok(!n.ForStatement.check(fs, true));
 
     t.finish();
