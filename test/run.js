@@ -1,6 +1,9 @@
 var types = require("../lib/types");
 var n = types.namedTypes;
 var b = types.builders;
+var path = require("path");
+var fs = require("fs");
+var parse = require("esprima").parse;
 
 require("../lib/core");
 
@@ -99,3 +102,26 @@ exports.testShallowAndDeepChecks = function(t, assert) {
 
     t.finish();
 };
+
+function validateProgram(file) {
+    file = path.join(__dirname, "..", file);
+
+    exports["test " + file] = function(t, assert) {
+        fs.readFile(file, "utf8", function(err, code) {
+            if (err) throw err;
+
+            assert.ok(n.Program.check(parse(code), true));
+            assert.ok(n.Program.check(parse(code, { loc: true }), true));
+
+            t.finish();
+        });
+    };
+}
+
+validateProgram("main.js");
+validateProgram("lib/shared.js");
+validateProgram("lib/core.js");
+validateProgram("lib/types.js");
+validateProgram("test/run.js");
+validateProgram("test/data/backbone.js");
+validateProgram("test/data/jquery-1.9.1.js");
