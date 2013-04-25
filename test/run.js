@@ -27,6 +27,20 @@ exports.testBasic = function(t, assert) {
     t.finish();
 };
 
+exports.testIsSupertypeOf = function(t, assert) {
+    var def = types.Type.def;
+
+    assert.ok(def("Node").isSupertypeOf(def("Node")));
+    assert.ok(def("Node").isSupertypeOf(def("Expression")));
+    assert.ok(!def("Expression").isSupertypeOf(def("Node")));
+    assert.ok(!def("Expression").isSupertypeOf(
+        def("DebuggerStatement")));
+
+    // TODO Make this test case more exhaustive.
+
+    t.finish();
+};
+
 exports.testShallowAndDeepChecks = function(t, assert) {
     var index = b.identifier("foo");
     var decl = b.variableDeclaration(
