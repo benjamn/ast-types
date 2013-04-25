@@ -64,7 +64,7 @@ exports.testShallowAndDeepChecks = function(t, assert) {
     assert.ok(!n.Expression.check(decl));
 
     // This makes decl cease to conform to n.VariableDeclaration.
-    decl.declarations.push(b.identifier("bar"));
+    decl.declarations.push(b.literal("bar"));
 
     assert.ok(n.Node.check(decl));
     assert.ok(n.Statement.check(decl));
