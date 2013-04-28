@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
   "dependencies": {},
   "devDependencies": {},
   "optionalDependencies": {
+    "esprima": "git://github.com/benjamn/esprima.git#master",
     "whiskey": "0.6.x"
   },
   "engines": {
