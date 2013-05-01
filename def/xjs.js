@@ -4,7 +4,7 @@ var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isString = builtin.string;
 var isBoolean = builtin.boolean;
-var defaults = require("./shared").defaults;
+var defaults = require("../lib/shared").defaults;
 
 def("XJSAttribute")
     .bases("Node")

@@ -3,7 +3,7 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isBoolean = builtin.boolean;
-var defaults = require("./shared").defaults;
+var defaults = require("../lib/shared").defaults;
 
 // TODO The Parser API calls this ArrowExpression, but Esprima uses
 // ArrowFunctionExpression.

@@ -117,7 +117,7 @@ function validateProgram(file) {
 }
 
 validateProgram("main.js");
-validateProgram("def/shared.js");
+validateProgram("lib/shared.js");
 validateProgram("def/core.js");
 validateProgram("lib/types.js");
 validateProgram("test/run.js");

@@ -7,7 +7,7 @@ var isString = builtin.string;
 var isNumber = builtin.number;
 var isBoolean = builtin.boolean;
 var isRegExp = builtin.RegExp;
-var shared = require("./shared");
+var shared = require("../lib/shared");
 var defaults = shared.defaults;
 var geq = shared.geq;
 

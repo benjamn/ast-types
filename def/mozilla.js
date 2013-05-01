@@ -1,7 +1,7 @@
 var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
-var geq = require("./shared").geq;
+var geq = require("../lib/shared").geq;
 
 def("ForOfStatement")
     .bases("Statement")
