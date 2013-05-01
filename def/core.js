@@ -1,4 +1,4 @@
-var types = require("./types");
+var types = require("../lib/types");
 var Type = types.Type;
 var def = Type.def;
 var or = Type.or;

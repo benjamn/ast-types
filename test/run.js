@@ -1,11 +1,9 @@
-var types = require("../lib/types");
+var types = require("ast-types");
 var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
 var fs = require("fs");
 var parse = require("esprima").parse;
-
-require("../lib/core");
 
 exports.testBasic = function(t, assert) {
     var fooId = b.identifier("foo");
@@ -119,8 +117,8 @@ function validateProgram(file) {
 }
 
 validateProgram("main.js");
-validateProgram("lib/shared.js");
-validateProgram("lib/core.js");
+validateProgram("def/shared.js");
+validateProgram("def/core.js");
 validateProgram("lib/types.js");
 validateProgram("test/run.js");
 validateProgram("test/data/backbone.js");
