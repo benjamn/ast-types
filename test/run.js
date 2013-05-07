@@ -3,7 +3,9 @@ var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
 var fs = require("fs");
-var parse = require("esprima").parse;
+var esprima = require("esprima");
+var esprimaSyntax = esprima.Syntax;
+var parse = esprima.parse;
 
 exports.testBasic = function(t, assert) {
     var fooId = b.identifier("foo");
@@ -123,3 +125,36 @@ validateProgram("lib/types.js");
 validateProgram("test/run.js");
 validateProgram("test/data/backbone.js");
 validateProgram("test/data/jquery-1.9.1.js");
+
+exports.testEsprimaSyntaxBuildability = function(t, assert) {
+    var def = types.Type.def;
+    var todo = {
+        ClassBody: true,
+        ClassDeclaration: true,
+        ClassExpression: true,
+        ClassHeritage: true,
+        ComprehensionBlock: true,
+        ComprehensionExpression: true,
+        ExportDeclaration: true,
+        ExportSpecifier: true,
+        ExportSpecifierSet: true,
+        Glob: true,
+        ImportDeclaration: true,
+        ImportSpecifier: true,
+        TaggedTemplateExpression: true,
+        TemplateElement: true,
+        TemplateLiteral: true
+    };
+
+    Object.keys(esprimaSyntax).forEach(function(name) {
+        if (todo[name] === true) return;
+        assert.ok(n.hasOwnProperty(name), name);
+    });
+
+    Object.keys(n).forEach(function(name) {
+        if (name in esprimaSyntax)
+            assert.ok(def(name).buildable, name);
+    });
+
+    t.finish();
+};
