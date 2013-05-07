@@ -199,7 +199,7 @@ def("ObjectExpression")
 // TODO Not in the Mozilla Parser API, but used by Esprima.
 def("Property")
     .bases("Node") // Want to be able to visit Property Nodes.
-    .build("kind", "key", "val")
+    .build("kind", "key", "value")
     .field("kind", or("init", "get", "set"))
     .field("key", or(def("Literal"), def("Identifier")))
     .field("value", def("Expression"));
@@ -247,6 +247,7 @@ def("AssignmentExpression")
     .bases("Expression")
     .build("operator", "left", "right")
     .field("operator", AssignmentOperator)
+    // TODO Shouldn't this be def("Pattern")?
     .field("left", def("Expression"))
     .field("right", def("Expression"));
 
