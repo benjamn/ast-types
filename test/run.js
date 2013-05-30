@@ -1,4 +1,4 @@
-var types = require("ast-types");
+var types = require("../main");
 var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
