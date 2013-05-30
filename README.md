@@ -8,6 +8,8 @@ tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree) type hierarchy
 pioneered by the [Mozilla Parser
 API](https://developer.mozilla.org/en-US/docs/SpiderMonkey/Parser_API).
 
+[![Build Status](https://travis-ci.org/benjamn/ast-types.png?branch=master)](https://travis-ci.org/benjamn/ast-types)
+
 Installation
 ---
 
