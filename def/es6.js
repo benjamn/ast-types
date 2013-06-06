@@ -58,14 +58,34 @@ def("Path")
 
 def("MethodDefinition")
     .bases("Declaration")
-    .build("kind", "key", "value")
-    .field("kind", or("init", "get", "set"))
+    .build("kind", "key", "value", "static")
+    .field("kind", or("init", "get", "set", ""))
     .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Function"));
+    .field("value", def("Function"))
+    .field("static", builtin.boolean, defaults.false);
 
 def("SpreadElement")
     .bases("Pattern")
     .build("argument")
     .field("argument", def("Pattern"));
+
+def("ClassBody")
+    .bases("Declaration")
+    .build("body")
+    .field("body", [def("MethodDefinition")]);
+
+def("ClassDeclaration")
+    .bases("Declaration")
+    .build("id", "body", "superClass")
+    .field("id", def("Identifier"))
+    .field("body", def("ClassBody"))
+    .field("superClass", or(def("Expression"), null), defaults.null);
+
+def("ClassExpression")
+    .bases("Expression")
+    .build("id", "body", "superClass")
+    .field("id", or(def("Identifier"), null), defaults.null)
+    .field("body", def("ClassBody"))
+    .field("superClass", or(def("Expression"), null), defaults.null);
 
 types.finalize();
