@@ -10,7 +10,11 @@ def("XJSAttribute")
     .bases("Node")
     .build("name", "value")
     .field("name", def("XJSIdentifier"))
-    .field("value", or(def("XJSExpression"), null));
+    .field("value", or(
+        def("Literal"), // attr="value"
+        def("XJSExpression"), // attr={value}
+        null // attr= or just attr
+    ), defaults.null);
 
 def("XJSIdentifier")
     .bases("Node")
@@ -27,11 +31,12 @@ def("XJSElement")
     .bases("Expression")
     .build("openingElement", "closingElement", "children")
     .field("openingElement", def("XJSOpeningElement"))
-    .field("closingElement", or(def("XJSClosingElement"), null))
+    .field("closingElement", or(def("XJSClosingElement"), null), defaults.null)
     .field("children", [or(
         def("XJSElement"),
         def("XJSExpression"),
-        def("XJSText")
+        def("XJSText"),
+        def("Literal") // TODO Esprima should return XJSText instead.
     )], defaults.emptyArray)
     .field("name", def("XJSIdentifier"), function() {
         // Little-known fact: the `this` object inside a default function
