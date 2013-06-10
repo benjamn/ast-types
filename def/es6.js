@@ -58,21 +58,32 @@ def("Path")
 
 def("MethodDefinition")
     .bases("Declaration")
-    .build("kind", "key", "value", "static")
+    .build("kind", "key", "value")
     .field("kind", or("init", "get", "set", ""))
     .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Function"))
-    .field("static", builtin.boolean, defaults.false);
+    .field("value", def("Function"));
 
 def("SpreadElement")
     .bases("Pattern")
     .build("argument")
     .field("argument", def("Pattern"));
 
+var ClassBodyElement = or(
+    def("MethodDefinition"),
+    def("VariableDeclarator"),
+    def("ClassPropertyDefinition")
+);
+
+def("ClassPropertyDefinition") // static property
+    .bases("Declaration")
+    .build("definition")
+    // Yes, Virginia, circular definitions are permitted.
+    .field("definition", ClassBodyElement);
+
 def("ClassBody")
     .bases("Declaration")
     .build("body")
-    .field("body", [def("MethodDefinition")]);
+    .field("body", [ClassBodyElement]);
 
 def("ClassDeclaration")
     .bases("Declaration")
