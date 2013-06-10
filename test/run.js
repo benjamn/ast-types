@@ -104,10 +104,10 @@ exports.testShallowAndDeepChecks = function(t, assert) {
 };
 
 function validateProgram(file) {
-    file = path.join(__dirname, "..", file);
+    var fullPath = path.join(__dirname, "..", file);
 
     exports["test " + file] = function(t, assert) {
-        fs.readFile(file, "utf8", function(err, code) {
+        fs.readFile(fullPath, "utf8", function(err, code) {
             if (err) throw err;
 
             assert.ok(n.Program.check(parse(code), true));
