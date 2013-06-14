@@ -158,3 +158,51 @@ exports.testEsprimaSyntaxBuildability = function(t, assert) {
 
     t.finish();
 };
+
+exports.testGetFieldValue = function(t, assert) {
+    assert.strictEqual(
+        types.getFieldValue({
+            type: "CatchClause"
+        }, "guard"),
+        null
+    );
+
+    assert.strictEqual(
+        types.getFieldValue({
+            type: "CatchClause"
+        }, "asdf"),
+        void 0
+    );
+
+    assert.strictEqual(
+        types.getFieldValue({
+            type: "CatchClause"
+        }, "type"),
+        "CatchClause"
+    );
+
+    assert.strictEqual(
+        types.getFieldValue({
+            type: "CatchClause",
+            guard: b.identifier("test")
+        }, "guard").name,
+        "test"
+    );
+
+    assert.deepEqual(
+        types.getFieldValue({
+            type: "TryStatement",
+        }, "guardedHandlers"),
+        []
+    );
+
+    assert.deepEqual(
+        types.getFieldValue({
+            type: "TryStatement",
+            guardedHandlers: void 0
+        }, "guardedHandlers"),
+        []
+    );
+
+    t.finish();
+};

@@ -15,4 +15,5 @@ exports.Type = types.Type;
 exports.builtInTypes = types.builtInTypes;
 exports.namedTypes = types.namedTypes;
 exports.builders = types.builders;
+exports.getFieldValue = types.getFieldValue;
 exports.finalize = types.finalize;
