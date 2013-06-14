@@ -206,3 +206,40 @@ exports.testGetFieldValue = function(t, assert) {
 
     t.finish();
 };
+
+exports.testEachField = function(t, assert) {
+    var context = {};
+
+    function check(node, names) {
+        var seen = [];
+
+        types.eachField(node, function(name, value) {
+            assert.strictEqual(this, context);
+            if (name === "type")
+                assert.strictEqual(node.type, value);
+            seen.push(name);
+        }, context);
+
+        assert.deepEqual(seen.sort(), names.sort());
+    }
+
+    check({ type: "Expression" }, [
+        "type", "loc"
+    ]);
+
+    check({ type: "SourceLocation" }, [
+        "type", "start", "end", "source"
+    ]);
+
+    check({ type: "TryStatement" }, [
+        "type", "block", "handlers", "guardedHandlers", "finalizer", "loc"
+    ]);
+
+    check({ type: "CatchClause" }, [
+        "type", "param", "guard", "body", "loc"
+    ]);
+
+    check({ type: "asdf" }, []);
+
+    t.finish();
+};
