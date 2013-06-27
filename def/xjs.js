@@ -12,7 +12,7 @@ def("XJSAttribute")
     .field("name", def("XJSIdentifier"))
     .field("value", or(
         def("Literal"), // attr="value"
-        def("XJSExpression"), // attr={value}
+        def("XJSExpressionContainer"), // attr={value}
         null // attr= or just attr
     ), defaults.null);
 
@@ -22,10 +22,10 @@ def("XJSIdentifier")
     .field("name", isString)
     .field("namespace", or(isString, null), defaults.null);
 
-def("XJSExpression")
+def("XJSExpressionContainer")
     .bases("Expression")
-    .build("value")
-    .field("value", def("Expression"));
+    .build("expression")
+    .field("expression", def("Expression"));
 
 def("XJSElement")
     .bases("Expression")
@@ -34,7 +34,7 @@ def("XJSElement")
     .field("closingElement", or(def("XJSClosingElement"), null), defaults.null)
     .field("children", [or(
         def("XJSElement"),
-        def("XJSExpression"),
+        def("XJSExpressionContainer"),
         def("XJSText"),
         def("Literal") // TODO Esprima should return XJSText instead.
     )], defaults.emptyArray)
