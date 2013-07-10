@@ -258,3 +258,45 @@ exports.testEachField = function(t, assert) {
 
     t.finish();
 };
+
+exports.testTraverse = function(t, assert) {
+    var traverse = types.traverse;
+
+    var call = b.expressionStatement(
+        b.callExpression(
+            b.memberExpression(
+                b.identifier("foo"),
+                b.identifier("bar"),
+                false
+            ),
+            [b.literal("baz")]
+        )
+    );
+
+    var ts = b.tryStatement(
+        b.blockStatement([call, call]),
+        b.catchClause(
+            b.identifier("err"),
+            null,
+            b.blockStatement([])
+        )
+    );
+
+    var literalCount = 0;
+
+    traverse(ts, function(node) {
+        if (n.Literal.check(node)) {
+            literalCount += 1;
+            assert.strictEqual(node.value, "baz");
+            assert.strictEqual(this.parent.node, call.expression);
+            assert.strictEqual(this.parent.parent.node, call);
+            assert.strictEqual(this.parent.parent.parent.node, ts.block);
+            assert.strictEqual(this.parent.parent.parent.parent.node, ts);
+            assert.strictEqual(this.parent.parent.parent.parent.parent, null);
+        }
+    });
+
+    assert.strictEqual(literalCount, 2);
+
+    t.finish();
+};
