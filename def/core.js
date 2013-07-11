@@ -110,15 +110,23 @@ def("ThrowStatement")
 
 def("TryStatement")
     .bases("Statement")
-    .build("block", "handlers", "finalizer")
+    .build("block", "handler", "finalizer")
     .field("block", def("BlockStatement"))
-    // The Mozilla Parser API calls for the commented-out fields below,
-    // but Esprima behaves the other way. TODO Report this.
-    // .field("handler", or(def("CatchClause"), null))
-    // .field("guardedHandlers", [def("CatchClause")])
-    .field("handlers", [def("CatchClause")])
+    .field("handler", or(def("CatchClause"), null), function() {
+        return this.handlers && this.handlers[0] || null;
+    })
+    .field("handlers", [def("CatchClause")], function() {
+        return this.handler ? [this.handler] : [];
+    }, true) // Indicates this field is hidden from eachField iteration.
     .field("guardedHandlers", [def("CatchClause")], defaults.emptyArray)
     .field("finalizer", or(def("BlockStatement"), null), defaults.null);
+
+def("CatchClause")
+    .bases("Node")
+    .build("param", "guard", "body")
+    .field("param", def("Pattern"))
+    .field("guard", or(def("Expression"), null), defaults.null)
+    .field("body", def("BlockStatement"));
 
 def("WhileStatement")
     .bases("Statement")
@@ -323,13 +331,6 @@ def("SwitchCase")
     .build("test", "consequent")
     .field("test", or(def("Expression"), null))
     .field("consequent", [def("Statement")]);
-
-def("CatchClause")
-    .bases("Node")
-    .build("param", "guard", "body")
-    .field("param", def("Pattern"))
-    .field("guard", or(def("Expression"), null), defaults.null)
-    .field("body", def("BlockStatement"));
 
 def("Identifier")
     // But aren't Expressions and Patterns already Nodes? TODO Report this.

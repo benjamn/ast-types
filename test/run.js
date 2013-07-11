@@ -192,6 +192,20 @@ exports.testGetFieldValue = function(t, assert) {
     assert.deepEqual(
         types.getFieldValue({
             type: "TryStatement",
+        }, "handler"),
+        null
+    );
+
+    assert.deepEqual(
+        types.getFieldValue({
+            type: "TryStatement",
+        }, "handlers"),
+        []
+    );
+
+    assert.deepEqual(
+        types.getFieldValue({
+            type: "TryStatement",
         }, "guardedHandlers"),
         []
     );
@@ -232,7 +246,8 @@ exports.testEachField = function(t, assert) {
     ]);
 
     check({ type: "TryStatement" }, [
-        "type", "block", "handlers", "guardedHandlers", "finalizer", "loc"
+        // Note that the "handlers" field is now hidden from eachField.
+        "type", "block", "handler", "guardedHandlers", "finalizer", "loc"
     ]);
 
     check({ type: "CatchClause" }, [
