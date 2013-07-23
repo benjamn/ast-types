@@ -210,7 +210,10 @@ def("Property")
     .build("kind", "key", "value")
     .field("kind", or("init", "get", "set"))
     .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Expression"));
+    .field("value", def("Expression"))
+    // Esprima extensions not mentioned in the Mozilla Parser API:
+    .field("method", isBoolean, defaults.false)
+    .field("shorthand", isBoolean, defaults.false);
 
 def("SequenceExpression")
     .bases("Expression")
