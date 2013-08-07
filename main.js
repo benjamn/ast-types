@@ -9,7 +9,7 @@ require("./def/core");
 require("./def/es6");
 require("./def/mozilla");
 require("./def/e4x");
-require("./def/xjs");
+require("./def/fb-harmony");
 
 exports.Type = types.Type;
 exports.builtInTypes = types.builtInTypes;
