@@ -71,4 +71,6 @@ def("XJSText")
     .build("value")
     .field("value", isString);
 
+def("XJSEmptyExpression").bases("Expression").build();
+
 types.finalize();
