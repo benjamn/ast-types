@@ -129,18 +129,11 @@ validateProgram("test/data/jquery-1.9.1.js");
 exports.testEsprimaSyntaxBuildability = function(t, assert) {
     var def = types.Type.def;
     var todo = {
-        ClassBody: true,
-        ClassDeclaration: true,
-        ClassExpression: true,
         ClassHeritage: true,
         ComprehensionBlock: true,
         ComprehensionExpression: true,
-        ExportDeclaration: true,
-        ExportSpecifier: true,
         ExportSpecifierSet: true,
         Glob: true,
-        ImportDeclaration: true,
-        ImportSpecifier: true,
         TaggedTemplateExpression: true,
         TemplateElement: true,
         TemplateLiteral: true

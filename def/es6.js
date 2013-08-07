@@ -100,4 +100,42 @@ def("ClassExpression")
     .field("body", def("ClassBody"))
     .field("superClass", or(def("Expression"), null), defaults.null);
 
+// Specifier and NamedSpecifier are non-standard types that I introduced
+// for definitional convenience.
+def("Specifier").bases("Node");
+def("NamedSpecifier")
+    .bases("Specifier")
+    .field("id", def("Identifier"))
+    .field("name", def("Identifier"), defaults.null);
+
+def("ExportSpecifier")
+    .bases("NamedSpecifier")
+    .build("id", "name");
+
+def("ExportBatchSpecifier")
+    .bases("Specifier")
+    .build();
+
+def("ImportSpecifier")
+    .bases("NamedSpecifier")
+    .build("id", "name");
+
+def("ExportDeclaration")
+    .bases("Declaration")
+    .build("default", "declaration", "specifiers", "source")
+    .field("default", isBoolean)
+    .field("declaration", def("Statement"))
+    .field("specifiers", [or(
+        def("ExportSpecifier"),
+        def("ExportBatchSpecifier")
+    )])
+    .field("source", def("Expression"));
+
+def("ImportDeclaration")
+    .bases("Declaration")
+    .build("specifiers", "kind", "source")
+    .field("specifiers", [def("ImportSpecifier")])
+    .field("kind", or("named", "default"))
+    .field("source", def("Expression"));
+
 types.finalize();
