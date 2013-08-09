@@ -4,6 +4,7 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isBoolean = builtin.boolean;
+var isString = builtin.string;
 var defaults = require("../lib/shared").defaults;
 
 // TODO The Parser API calls this ArrowExpression, but Esprima uses
@@ -44,18 +45,22 @@ def("ComprehensionBlock")
     .field("right", def("Expression"))
     .field("each", isBoolean);
 
+// This would be the ideal definition for ModuleSpecifier, but alas we
+// can't expect ASTs parsed by Esprima to use this custom subtype:
+def("ModuleSpecifier")
+    .bases("Specifier", "Literal")
+//  .build("value") // Make it abstract/non-buildable for now.
+    .field("value", isString);
+
+// Instead we must settle for a cheap type alias:
+var ModuleSpecifier = def("Literal");
+
 def("ModuleDeclaration")
     .bases("Declaration")
     .build("id", "from", "body")
     .field("id", or(def("Literal"), def("Identifier")))
-    .field("from", or(def("Path"), null))
+    .field("source", or(ModuleSpecifier, null))
     .field("body", or(def("BlockStatement"), null));
-
-def("Path")
-    .bases("Node")
-    .build("body")
-    // TODO This really ought be a recursive type.
-    .field("body", [def("Identifier")]);
 
 def("MethodDefinition")
     .bases("Declaration")
@@ -124,18 +129,21 @@ def("ExportDeclaration")
     .bases("Declaration")
     .build("default", "declaration", "specifiers", "source")
     .field("default", isBoolean)
-    .field("declaration", def("Statement"))
+    .field("declaration", or(
+        def("Declaration"),
+        def("AssignmentExpression") // Implies default.
+    ))
     .field("specifiers", [or(
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
     )])
-    .field("source", def("Expression"));
+    .field("source", or(ModuleSpecifier, null));
 
 def("ImportDeclaration")
     .bases("Declaration")
     .build("specifiers", "kind", "source")
     .field("specifiers", [def("ImportSpecifier")])
     .field("kind", or("named", "default"))
-    .field("source", def("Expression"));
+    .field("source", ModuleSpecifier);
 
 types.finalize();
