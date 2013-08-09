@@ -73,4 +73,21 @@ def("XJSText")
 
 def("XJSEmptyExpression").bases("Expression").build();
 
+def("TypeAnnotatedIdentifier")
+    .bases("Pattern")
+    .build("annotation", "identifier")
+    .field("annotation", def("TypeAnnotation"))
+    .field("identifier", def("Identifier"));
+
+def("TypeAnnotation")
+    .bases("Pattern")
+    .build("annotatedType", "templateTypes", "paramTypes", "returnType", 
+           "unionType", "nullable")
+    .field("annotatedType", def("Identifier"))
+    .field("templateTypes", or([def("TypeAnnotation")], null))
+    .field("paramTypes", or([def("TypeAnnotation")], null))
+    .field("returnType", or(def("TypeAnnotation"), null))
+    .field("unionType", or(def("TypeAnnotation"), null))
+    .field("nullable", isBoolean);
+
 types.finalize();
