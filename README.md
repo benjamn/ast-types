@@ -72,6 +72,26 @@ If you want to perform a depth-first traversal of the entire AST,
 that's also easy:
 ```js
 var types = require("ast-types");
+var Literal = types.namedTypes.Literal;
+var isString = types.builtInTypes.string;
+var stringCounts = {};
+
+// Count the occurrences of all the string literals in this AST.
+require("ast-types").traverse(ast, function(node) {
+    if (Literal.check(node) && isString.check(node.value)) {
+        if (stringCounts.hasOwnProperty(node.value)) {
+            stringCounts[node.value] += 1;
+        } else {
+            stringCounts[node.value] = 1;
+        }
+    }
+});
+```
+
+Here's an slightly deeper example demonstrating how to ignore certain
+subtrees and inspect the node's ancestors:
+```js
+var types = require("ast-types");
 var namedTypes = types.namedTypes;
 var isString = types.builtInTypes.string;
 var thisProperties = {};
