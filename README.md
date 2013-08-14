@@ -77,8 +77,21 @@ var isString = types.builtInTypes.string;
 var thisProperties = {};
 
 // Populate thisProperties with every property name accessed via
-// this.name or this["name"].
+// this.name or this["name"] in the current scope.
 types.traverse(ast, function(node) {
+    // Don't descend into new function scopes.
+    if (namedTypes.FunctionExpression.check(node) ||
+        namedTypes.FunctionDeclaration.check(node)) {
+        // Return false to stop traversing this subtree without aborting
+        // the entire traversal.
+        return false;
+    }
+
+    // If node is a ThisExpression that happens to be the .object of a
+    // MemberExpression, then we're interested in the .property of the
+    // MemberExpression. We could have inverted this test to find
+    // MemberExpressions whose .object is a ThisExpression, but I wanted
+    // to demonstrate the use of this.parent.
     if (namedTypes.ThisExpression.check(node) &&
         namedTypes.MemberExpression.check(this.parent.node) &&
         this.parent.node.object === node) {
@@ -86,10 +99,12 @@ types.traverse(ast, function(node) {
         var property = this.parent.node.property;
 
         if (namedTypes.Identifier.check(property)) {
+            // The this.name case.
             thisProperties[property.name] = true;
 
         } else if (namedTypes.Literal.check(property) &&
                    isString.check(property.value)) {
+            // The this["name"] case.
             thisProperties[property.value] = true;
         }
     }
