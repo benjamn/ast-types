@@ -291,5 +291,33 @@ exports.testTraverse = function(t, assert) {
 
     assert.strictEqual(literalCount, 2);
 
+    var ids = {};
+
+    traverse(ts, function(node) {
+        if (n.MemberExpression.check(node)) {
+            return false;
+        }
+
+        if (n.Identifier.check(node)) {
+            ids[node.name] = true;
+        }
+    });
+
+    // Make sure all identifers beneath member expressions were skipped.
+    assert.deepEqual(ids, { err: true });
+
+    traverse(ts, function(node) {
+        if (n.Identifier.check(node)) {
+            ids[node.name] = true;
+        }
+    });
+
+    // Now make sure those identifiers (foo and bar) were visited.
+    assert.deepEqual(ids, {
+        err: true,
+        foo: true,
+        bar: true
+    });
+
     t.finish();
 };
