@@ -321,3 +321,30 @@ exports.testTraverse = function(t, assert) {
 
     t.finish();
 };
+
+var scope = [
+    "var foo = 42;",
+    "function bar(baz) {",
+    "  return baz + foo;",
+    "}"
+];
+
+exports.testGlobalScope = function(t, assert) {
+    var traverse = types.traverse;
+    var ast = parse(scope.join("\n"));
+    var globalScope;
+
+    traverse(ast, function(node) {
+        if (n.Program.check(node)) {
+            assert.strictEqual(this.scope.isGlobal, true);
+            globalScope = this.scope;
+        } else if (n.FunctionDeclaration.check(node)) {
+            assert.strictEqual(node.id.name, "bar");
+            assert.notStrictEqual(this.scope, globalScope);
+            assert.strictEqual(this.scope.isGlobal, false);
+            assert.strictEqual(this.scope.parent, globalScope);
+        }
+    });
+
+    t.finish();
+};
