@@ -338,11 +338,26 @@ exports.testGlobalScope = function(t, assert) {
         if (n.Program.check(node)) {
             assert.strictEqual(this.scope.isGlobal, true);
             globalScope = this.scope;
+
         } else if (n.FunctionDeclaration.check(node)) {
+            assert.strictEqual(this.scope.isGlobal, false);
+
             assert.strictEqual(node.id.name, "bar");
             assert.notStrictEqual(this.scope, globalScope);
             assert.strictEqual(this.scope.isGlobal, false);
             assert.strictEqual(this.scope.parent, globalScope);
+
+            assert.strictEqual(this.scope.getGlobalScope(), globalScope);
+            assert.ok(globalScope.declares("foo"));
+            assert.ok(globalScope.declares("bar"));
+            assert.strictEqual(this.scope.lookup("foo"), globalScope);
+            assert.strictEqual(this.scope.lookup("bar"), globalScope);
+
+            assert.ok(this.scope.declares("baz"));
+            assert.strictEqual(this.scope.lookup("baz"), this.scope);
+
+            assert.strictEqual(this.scope.lookup("qux"), null);
+            assert.strictEqual(globalScope.lookup("baz"), null);
         }
     });
 
