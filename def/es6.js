@@ -21,8 +21,9 @@ def("ArrowFunctionExpression")
 
 def("YieldExpression")
     .bases("Expression")
-    .build("argument")
-    .field("argument", or(def("Expression"), null));
+    .build("argument", "delegate")
+    .field("argument", or(def("Expression"), null))
+    .field("delegate", isBoolean, false);
 
 def("GeneratorExpression")
     .bases("Expression")
