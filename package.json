@@ -28,7 +28,9 @@
   "scripts": {
     "test": "whiskey test/run.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ast-path": "~0.1.0"
+  },
   "devDependencies": {},
   "optionalDependencies": {
     "esprima": ">= 1.0.3",
