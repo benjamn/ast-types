@@ -17,6 +17,7 @@ exports.namedTypes = types.namedTypes;
 exports.builders = types.builders;
 exports.getFieldValue = types.getFieldValue;
 exports.eachField = types.eachField;
+exports.someField = types.someField;
 exports.traverse = require("./lib/traverse");
 exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
