@@ -19,3 +19,4 @@ exports.getFieldValue = types.getFieldValue;
 exports.eachField = types.eachField;
 exports.traverse = require("./lib/traverse");
 exports.finalize = types.finalize;
+exports.NodePath = require("./lib/node-path");
