@@ -279,7 +279,7 @@ exports.testTraverse = function(t, assert) {
 
     var literalCount = 0;
 
-    traverse(ts, function(node) {
+    n.TryStatement.assert(traverse(ts, function(node) {
         if (n.Literal.check(node)) {
             literalCount += 1;
             assert.strictEqual(node.value, "baz");
@@ -289,7 +289,7 @@ exports.testTraverse = function(t, assert) {
             assert.strictEqual(this.parent.parent.parent.parent.node, ts);
             assert.strictEqual(this.parent.parent.parent.parent.parent, null);
         }
-    });
+    }), true);
 
     assert.strictEqual(literalCount, 2);
 
@@ -320,6 +320,28 @@ exports.testTraverse = function(t, assert) {
         foo: true,
         bar: true
     });
+
+    t.finish();
+};
+
+exports.testReplaceRoot = function(t, assert) {
+    var ast = b.expressionStatement(
+        b.unaryExpression("!", b.sequenceExpression([
+            b.identifier("a"),
+            b.identifier("b"),
+            b.identifier("c")
+        ]))
+    );
+
+    var callExp = types.traverse(ast, function(node) {
+        if (n.ExpressionStatement.check(node)) {
+            this.replace(b.callExpression(b.identifier("f"), [
+                node.expression
+            ]));
+        }
+    });
+
+    n.CallExpression.assert(callExp, true);
 
     t.finish();
 };
