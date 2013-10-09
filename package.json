@@ -29,7 +29,7 @@
     "test": "whiskey test/run.js"
   },
   "dependencies": {
-    "ast-path": "~0.1.1"
+    "ast-path": "~0.1.2"
   },
   "devDependencies": {},
   "optionalDependencies": {
