@@ -254,7 +254,7 @@ exports.testEachField = function(t, assert) {
     t.finish();
 };
 
-exports.testTraverse = function(t, assert) {
+exports.testTraverseNode = function(t, assert) {
     var traverse = types.traverse;
 
     var call = b.expressionStatement(
@@ -320,6 +320,40 @@ exports.testTraverse = function(t, assert) {
         foo: true,
         bar: true
     });
+
+    t.finish();
+};
+
+exports.testTraversePath = function(t, assert) {
+    var call = b.expressionStatement(
+        b.callExpression(
+            b.memberExpression(
+                b.identifier("foo"),
+                b.identifier("bar"),
+                false
+            ),
+            [b.literal("baz")]
+        )
+    );
+
+    var path = new NodePath(call).get("expression", "callee");
+    var idCount = 0;
+
+    // Note that we're passing a path instead of a node as the first
+    // argument to types.traverse.
+    types.traverse(path, function(node) {
+        if (n.Identifier.check(node)) {
+            ++idCount;
+
+            if (node.name === "bar") {
+                n.MemberExpression.assert(this.parent.node);
+                n.CallExpression.assert(this.parent.parent.node);
+                n.ExpressionStatement.assert(this.parent.parent.parent.node);
+            }
+        }
+    });
+
+    assert.strictEqual(idCount, 2);
 
     t.finish();
 };
