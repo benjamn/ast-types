@@ -18,12 +18,13 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.3.5",
+  "version": "0.3.6",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
     "url": "git://github.com/benjamn/ast-types.git"
   },
+  "license": "MIT",
   "main": "main.js",
   "scripts": {
     "test": "whiskey test/run.js"
