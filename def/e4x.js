@@ -5,7 +5,6 @@ var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isString = builtin.string;
 var isBoolean = builtin.boolean;
-var defaults = require("../lib/shared").defaults;
 
 // Note that none of these types are buildable because the Mozilla Parser
 // API doesn't specify any builder functions, and nobody uses E4X anymore.

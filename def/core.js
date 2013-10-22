@@ -16,13 +16,13 @@ def("Node")
     .field("loc", or(
         def("SourceLocation"),
         null
-    ), defaults.null);
+    ), defaults["null"]);
 
 def("SourceLocation")
     .build("start", "end", "source")
     .field("start", def("Position"))
     .field("end", def("Position"))
-    .field("source", or(isString, null), defaults.null);
+    .field("source", or(isString, null), defaults["null"]);
 
 def("Position")
     .build("line", "column")
@@ -36,13 +36,13 @@ def("Program")
 
 def("Function")
     .bases("Node")
-    .field("id", or(def("Identifier"), null), defaults.null)
+    .field("id", or(def("Identifier"), null), defaults["null"])
     .field("params", [def("Pattern")])
     .field("body", or(def("BlockStatement"), def("Expression")))
-    .field("generator", isBoolean, defaults.false)
-    .field("expression", isBoolean, defaults.false)
+    .field("generator", isBoolean, defaults["false"])
+    .field("expression", isBoolean, defaults["false"])
     .field("defaults", [def("Expression")], defaults.emptyArray)
-    .field("rest", or(def("Identifier"), null), defaults.null);
+    .field("rest", or(def("Identifier"), null), defaults["null"]);
 
 def("Statement").bases("Node");
 
@@ -67,7 +67,7 @@ def("IfStatement")
     .build("test", "consequent", "alternate")
     .field("test", def("Expression"))
     .field("consequent", def("Statement"))
-    .field("alternate", or(def("Statement"), null), defaults.null);
+    .field("alternate", or(def("Statement"), null), defaults["null"]);
 
 def("LabeledStatement")
     .bases("Statement")
@@ -78,12 +78,12 @@ def("LabeledStatement")
 def("BreakStatement")
     .bases("Statement")
     .build("label")
-    .field("label", or(def("Identifier"), null), defaults.null);
+    .field("label", or(def("Identifier"), null), defaults["null"]);
 
 def("ContinueStatement")
     .bases("Statement")
     .build("label")
-    .field("label", or(def("Identifier"), null), defaults.null);
+    .field("label", or(def("Identifier"), null), defaults["null"]);
 
 def("WithStatement")
     .bases("Statement")
@@ -96,7 +96,7 @@ def("SwitchStatement")
     .build("discriminant", "cases", "lexical")
     .field("discriminant", def("Expression"))
     .field("cases", [def("SwitchCase")])
-    .field("lexical", isBoolean, defaults.false);
+    .field("lexical", isBoolean, defaults["false"]);
 
 def("ReturnStatement")
     .bases("Statement")
@@ -119,13 +119,13 @@ def("TryStatement")
         return this.handler ? [this.handler] : [];
     }, true) // Indicates this field is hidden from eachField iteration.
     .field("guardedHandlers", [def("CatchClause")], defaults.emptyArray)
-    .field("finalizer", or(def("BlockStatement"), null), defaults.null);
+    .field("finalizer", or(def("BlockStatement"), null), defaults["null"]);
 
 def("CatchClause")
     .bases("Node")
     .build("param", "guard", "body")
     .field("param", def("Pattern"))
-    .field("guard", or(def("Expression"), null), defaults.null)
+    .field("guard", or(def("Expression"), null), defaults["null"])
     .field("body", def("BlockStatement"));
 
 def("WhileStatement")
@@ -212,8 +212,8 @@ def("Property")
     .field("key", or(def("Literal"), def("Identifier")))
     .field("value", def("Expression"))
     // Esprima extensions not mentioned in the Mozilla Parser API:
-    .field("method", isBoolean, defaults.false)
-    .field("shorthand", isBoolean, defaults.false);
+    .field("method", isBoolean, defaults["false"])
+    .field("shorthand", isBoolean, defaults["false"]);
 
 def("SequenceExpression")
     .bases("Expression")
@@ -231,7 +231,7 @@ def("UnaryExpression")
     .field("argument", def("Expression"))
     // TODO Esprima doesn't bother with this field, presumably because
     // it's always true for unary operators.
-    .field("prefix", isBoolean, defaults.true);
+    .field("prefix", isBoolean, defaults["true"]);
 
 var BinaryOperator = or(
     "==", "!=", "===", "!==",

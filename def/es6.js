@@ -14,10 +14,10 @@ def("ArrowFunctionExpression")
     .build("params", "body", "expression")
     // The forced null value here is compatible with the overridden
     // definition of the "id" field in the Function interface.
-    .field("id", null, defaults.null)
+    .field("id", null, defaults["null"])
     // The current spec forbids arrow generators, so I have taken the
     // liberty of enforcing that. TODO Report this.
-    .field("generator", false, defaults.false);
+    .field("generator", false, defaults["false"]);
 
 def("YieldExpression")
     .bases("Expression")
@@ -97,14 +97,14 @@ def("ClassDeclaration")
     .build("id", "body", "superClass")
     .field("id", def("Identifier"))
     .field("body", def("ClassBody"))
-    .field("superClass", or(def("Expression"), null), defaults.null);
+    .field("superClass", or(def("Expression"), null), defaults["null"]);
 
 def("ClassExpression")
     .bases("Expression")
     .build("id", "body", "superClass")
-    .field("id", or(def("Identifier"), null), defaults.null)
+    .field("id", or(def("Identifier"), null), defaults["null"])
     .field("body", def("ClassBody"))
-    .field("superClass", or(def("Expression"), null), defaults.null);
+    .field("superClass", or(def("Expression"), null), defaults["null"]);
 
 // Specifier and NamedSpecifier are non-standard types that I introduced
 // for definitional convenience.
@@ -112,7 +112,7 @@ def("Specifier").bases("Node");
 def("NamedSpecifier")
     .bases("Specifier")
     .field("id", def("Identifier"))
-    .field("name", def("Identifier"), defaults.null);
+    .field("name", def("Identifier"), defaults["null"]);
 
 def("ExportSpecifier")
     .bases("NamedSpecifier")

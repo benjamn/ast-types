@@ -15,13 +15,13 @@ def("XJSAttribute")
         def("Literal"), // attr="value"
         def("XJSExpressionContainer"), // attr={value}
         null // attr= or just attr
-    ), defaults.null);
+    ), defaults["null"]);
 
 def("XJSIdentifier")
     .bases("Node")
     .build("name", "namespace")
     .field("name", isString)
-    .field("namespace", or(isString, null), defaults.null);
+    .field("namespace", or(isString, null), defaults["null"]);
 
 def("XJSExpressionContainer")
     .bases("Expression")
@@ -32,7 +32,7 @@ def("XJSElement")
     .bases("Expression")
     .build("openingElement", "closingElement", "children")
     .field("openingElement", def("XJSOpeningElement"))
-    .field("closingElement", or(def("XJSClosingElement"), null), defaults.null)
+    .field("closingElement", or(def("XJSClosingElement"), null), defaults["null"])
     .field("children", [or(
         def("XJSElement"),
         def("XJSExpressionContainer"),
@@ -59,7 +59,7 @@ def("XJSOpeningElement")
     .build("name", "attributes", "selfClosing")
     .field("name", def("XJSIdentifier"))
     .field("attributes", [def("XJSAttribute")], defaults.emptyArray)
-    .field("selfClosing", isBoolean, defaults.false);
+    .field("selfClosing", isBoolean, defaults["false"]);
 
 def("XJSClosingElement")
     .bases("Node") // TODO Same concern.
