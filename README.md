@@ -192,9 +192,9 @@ b.file("lib/types.js", b.thisExpression());
 // ==> AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
 ```
 The `def` syntax is used to define all the default AST node types found in
-https://github.com/benjamn/ast-types/blob/master/lib/core.js,
-https://github.com/benjamn/ast-types/blob/master/lib/es6.js,
-https://github.com/benjamn/ast-types/blob/master/lib/mozilla.js,
-https://github.com/benjamn/ast-types/blob/master/lib/e4x.js, and
-https://github.com/benjamn/ast-types/blob/master/lib/xjs.js, so you have
+[core.js](def/core.js),
+[es6.js](def/es6.js),
+[mozilla.js](def/mozilla.js),
+[e4x.js](def/e4x.js), and
+[fb-harmony.js](def/fb-harmony.js), so you have
 no shortage of examples to learn from.
