@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.3.9",
+  "version": "0.3.10",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
