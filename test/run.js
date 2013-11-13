@@ -249,7 +249,14 @@ exports.testEachField = function(t, assert) {
         "type", "param", "guard", "body", "loc"
     ]);
 
-    check({ type: "asdf" }, []);
+    assert.throws(function() {
+        check({ type: "asdf" }, ["type"]);
+    }, "did not recognize object of type " + JSON.stringify("asdf"));
+
+    check({
+        line: 10,
+        column: 37
+    }, ["line", "column"]);
 
     t.finish();
 };
