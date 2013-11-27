@@ -29,15 +29,6 @@ exports.testBasic = function(t, assert) {
     assert.ok(n.Identifier.check(ifFoo.test));
     assert.ok(!n.Statement.check(ifFoo.test));
 
-    var magic = types.proto.magicValue = 0x1234;
-    assert.ok('magicValue' in types.proto);
-
-    // any node type should be inherited from types.proto
-    assert.strictEqual(fooId.magicValue, magic);
-    assert.strictEqual(ifFoo.magicValue, magic);
-
-    delete types.proto.magicValue;
-
     t.finish();
 };
 
@@ -513,6 +504,36 @@ exports.testCatchScope = function(t, assert) {
     assert.strictEqual(closureScope.lookup("g"), closureScope);
     assert.strictEqual(closureScope.lookup("e"), catchScope);
     assert.strictEqual(closureScope.lookup("f"), fooScope);
+
+    t.finish();
+};
+
+exports.testDefineMethod = function(t, assert) {
+    function at(loc) {
+        types.namedTypes.SourceLocation.assert(loc);
+        this.loc = loc;
+    }
+
+    assert.strictEqual(types.defineMethod("at", at), void 0);
+
+    var thisExpr = b.thisExpression();
+
+    assert.strictEqual(thisExpr.loc, null);
+
+    thisExpr.at(b.sourceLocation(
+        b.position(1, 0),
+        b.position(1, 4)
+    ));
+
+    assert.strictEqual(thisExpr.loc.start.line, 1);
+    assert.strictEqual(thisExpr.loc.start.column, 0);
+    assert.strictEqual(thisExpr.loc.end.line, 1);
+    assert.strictEqual(thisExpr.loc.end.column, 4);
+
+    // Now try removing the method.
+    assert.strictEqual(types.defineMethod("at"), at);
+    assert.strictEqual(thisExpr.at, void 0);
+    assert.strictEqual("at" in thisExpr, false);
 
     t.finish();
 };
