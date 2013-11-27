@@ -29,6 +29,15 @@ exports.testBasic = function(t, assert) {
     assert.ok(n.Identifier.check(ifFoo.test));
     assert.ok(!n.Statement.check(ifFoo.test));
 
+    var magic = types.proto.magicValue = 0x1234;
+    assert.ok('magicValue' in types.proto);
+
+    // any node type should be inherited from types.proto
+    assert.strictEqual(fooId.magicValue, magic);
+    assert.strictEqual(ifFoo.magicValue, magic);
+
+    delete types.proto.magicValue;
+
     t.finish();
 };
 

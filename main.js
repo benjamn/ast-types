@@ -11,6 +11,7 @@ require("./def/mozilla");
 require("./def/e4x");
 require("./def/fb-harmony");
 
+exports.proto = types.proto;
 exports.Type = types.Type;
 exports.builtInTypes = types.builtInTypes;
 exports.namedTypes = types.namedTypes;
