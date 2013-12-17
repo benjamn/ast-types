@@ -302,7 +302,7 @@ exports.testTraverseNode = function(t, assert) {
 
     var ids = {};
 
-    traverse(ts, function(node) {
+    function findNamesSkippingMemberExprs(node) {
         if (n.MemberExpression.check(node)) {
             return false;
         }
@@ -310,23 +310,38 @@ exports.testTraverseNode = function(t, assert) {
         if (n.Identifier.check(node)) {
             ids[node.name] = true;
         }
-    });
+    }
+
+    traverse(ts, findNamesSkippingMemberExprs);
 
     // Make sure all identifers beneath member expressions were skipped.
-    assert.deepEqual(ids, { err: true });
+    var expected = { err: true };
+    assert.deepEqual(ids, expected);
 
-    traverse(ts, function(node) {
+    ids = {};
+    // Make sure traverse.fast behaves the same way.
+    traverse.fast(ts, findNamesSkippingMemberExprs);
+    assert.deepEqual(ids, expected);
+
+    function findAllNames(node) {
         if (n.Identifier.check(node)) {
             ids[node.name] = true;
         }
-    });
+    }
+
+    traverse(ts, findAllNames);
 
     // Now make sure those identifiers (foo and bar) were visited.
-    assert.deepEqual(ids, {
+    assert.deepEqual(ids, expected = {
         err: true,
         foo: true,
         bar: true
     });
+
+    ids = {};
+    // Make sure traverse.fast behaves the same way.
+    traverse.fast(ts, findAllNames);
+    assert.deepEqual(ids, expected);
 
     t.finish();
 };
