@@ -433,6 +433,19 @@ exports.testNodePath = function(t, assert) {
     assert.strictEqual(exprsPath.get("length").value, 3);
     assert.ok(!exprsPath.get(1).needsParens());
 
+    var binaryYield = b.expressionStatement(
+        b.logicalExpression(
+            "&&",
+            b.yieldExpression(b.identifier("a"), false),
+            b.yieldExpression(b.identifier("b"), true)
+        )
+    );
+
+    var byPath = new NodePath(binaryYield);
+    assert.ok(!byPath.get("expression").needsParens());
+    assert.ok(byPath.get("expression", "left").needsParens());
+    assert.ok(byPath.get("expression", "right").needsParens());
+
     t.finish();
 };
 
