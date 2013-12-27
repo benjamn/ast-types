@@ -563,7 +563,7 @@ describe("catch block scope", function() {
     var catchPath = fooPath.get("body", "body", 0, "handler");
     var catchScope = catchPath.scope;
 
-    it("should should not affect outer scope declarations", function() {
+    it("should not affect outer scope declarations", function() {
         n.FunctionDeclaration.assert(fooScope.node);
         assert.strictEqual(fooScope.declares("e"), true);
         assert.strictEqual(fooScope.declares("f"), true);
