@@ -32,9 +32,8 @@
   "dependencies": {
     "ast-path": "~0.1.4"
   },
-  "devDependencies": {},
-  "optionalDependencies": {
-    "esprima": ">= 1.0.3",
+  "devDependencies": {
+    "esprima": "~1.0.4",
     "mocha": "~1.16.2"
   },
   "engines": {
