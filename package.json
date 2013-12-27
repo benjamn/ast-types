@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "whiskey test/run.js"
+    "test": "mocha --reporter spec test/run.js"
   },
   "dependencies": {
     "ast-path": "~0.1.4"
@@ -35,7 +35,7 @@
   "devDependencies": {},
   "optionalDependencies": {
     "esprima": ">= 1.0.3",
-    "whiskey": "0.6.x"
+    "mocha": "~1.16.2"
   },
   "engines": {
     "node": ">= 0.6"
