@@ -557,7 +557,7 @@ describe("scope.getBindings", function () {
         traverse(ast, function(node) {
             if (n.Program.check(node)) {
                 var bindings = this.scope.getBindings();
-                assert.deepEqual(["foo", "bar"], Object.keys(bindings));
+                assert.deepEqual(["bar", "foo"], Object.keys(bindings).sort());
                 assert.equal(1, bindings.foo.length);
                 assert.equal(1, bindings.bar.length);
             } else if (n.FunctionDeclaration.check(node)) {
