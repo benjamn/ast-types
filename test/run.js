@@ -542,6 +542,33 @@ describe("global scope", function() {
     });
 });
 
+describe("scope.getBindings", function () {
+    var traverse = types.traverse;
+
+    var scope = [
+        "var foo = 42;",
+        "function bar(baz) {",
+        "  return baz + foo;",
+        "}"
+    ];
+
+    var ast = parse(scope.join("\n"));
+    it("should get local and global scope bindings", function() {
+        traverse(ast, function(node) {
+            if (n.Program.check(node)) {
+                var bindings = this.scope.getBindings();
+                assert.deepEqual(["foo", "bar"], Object.keys(bindings));
+                assert.equal(1, bindings.foo.length);
+                assert.equal(1, bindings.bar.length);
+            } else if (n.FunctionDeclaration.check(node)) {
+                var bindings = this.scope.getBindings();
+                assert.deepEqual(["baz"], Object.keys(bindings));
+                assert.equal(1, bindings.baz.length);
+            }
+        });
+    });
+});
+
 describe("catch block scope", function() {
     var catchWithVarDecl = [
         "function foo(e) {",

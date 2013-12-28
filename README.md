@@ -131,14 +131,14 @@ types.traverse(ast, function(node) {
 });
 ```
 Within the callback function, `this` is always an instance of a simple
-`Path` type that has immutable `.node` and `.parent` properties. In
+`Path` type that has immutable `.node`, `.parent` and `.scope` properties. In
 general, `this.node` refers to the same node as the `node` parameter,
 `this.parent.node` refers to the nearest `Node` ancestor,
-`this.parent.parent.node` to the grandparent, and so on. These `Path`
-objects are created during the traversal without modifying the AST
-nodes themselves, so it's not a problem if the same node appears more
-than once in the AST, because it will be visited with a distict `Path`
-each time it appears.
+`this.parent.parent.node` to the grandparent, and so on. `this.scope` represents
+the scope for which `this.node` is found in. These `Path` objects are created
+during the traversal without modifying the AST nodes themselves, so it's not a
+problem if the same node appears more than once in the AST, because it will be
+visited with a distict `Path` each time it appears.
 
 Custom AST Node Types
 ---
