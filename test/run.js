@@ -7,7 +7,7 @@ var fs = require("fs");
 var esprima = require("esprima");
 var esprimaSyntax = esprima.Syntax;
 var parse = esprima.parse;
-var Path = require("ast-path").Path;
+var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
 
 describe("basic type checking", function() {

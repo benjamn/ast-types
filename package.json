@@ -30,7 +30,7 @@
     "test": "mocha --reporter spec test/run.js"
   },
   "dependencies": {
-    "ast-path": "~0.1.4"
+    "private": "~0.1.2"
   },
   "devDependencies": {
     "esprima": "~1.0.4",
