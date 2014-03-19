@@ -112,7 +112,7 @@ def("Specifier").bases("Node");
 def("NamedSpecifier")
     .bases("Specifier")
     .field("id", def("Identifier"))
-    .field("name", def("Identifier"), defaults["null"]);
+    .field("name", or(def("Identifier"), null), defaults["null"]);
 
 def("ExportSpecifier")
     .bases("NamedSpecifier")
