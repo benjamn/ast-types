@@ -132,13 +132,13 @@ def("ExportDeclaration")
     .field("default", isBoolean)
     .field("declaration", or(
         def("Declaration"),
-        def("AssignmentExpression") // Implies default.
+        def("Expression") // Implies default.
     ))
     .field("specifiers", [or(
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
-    )])
-    .field("source", or(ModuleSpecifier, null));
+    )], defaults.emptyArray)
+    .field("source", or(ModuleSpecifier, null), defaults["null"]);
 
 def("ImportDeclaration")
     .bases("Declaration")
