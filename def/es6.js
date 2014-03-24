@@ -25,6 +25,12 @@ def("YieldExpression")
     .field("argument", or(def("Expression"), null))
     .field("delegate", isBoolean, false);
 
+def("AwaitExpression")
+    .bases("Expression")
+    .build("argument", "all")
+    .field("argument", or(def("Expression"), null))
+    .field("all", isBoolean, false);
+
 def("GeneratorExpression")
     .bases("Expression")
     .build("body", "blocks", "filter")
