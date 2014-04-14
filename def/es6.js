@@ -4,6 +4,7 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isBoolean = builtin.boolean;
+var isObject = builtin.object;
 var isString = builtin.string;
 var defaults = require("../lib/shared").defaults;
 
@@ -152,5 +153,22 @@ def("ImportDeclaration")
     .field("specifiers", [def("ImportSpecifier")])
     .field("kind", or("named", "default"))
     .field("source", ModuleSpecifier);
+
+def("TaggedTemplateExpression")
+    .bases("Expression")
+    .field("tag", def("Expression"))
+    .field("quasi", def("TemplateLiteral"));
+
+def("TemplateLiteral")
+    .bases("Expression")
+    .build("quasis", "expressions")
+    .field("quasis", [def("TemplateElement")])
+    .field("expressions", [def("Expression")]);
+
+def("TemplateElement")
+    .bases("Node")
+    .build("value", "tail")
+    .field("value", {"cooked": isString, "raw": isString})
+    .field("tail", isBoolean);
 
 types.finalize();
