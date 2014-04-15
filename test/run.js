@@ -150,10 +150,7 @@ describe("esprima Syntax types", function() {
             ComprehensionBlock: true,
             ComprehensionExpression: true,
             ExportSpecifierSet: true,
-            Glob: true,
-            TaggedTemplateExpression: true,
-            TemplateElement: true,
-            TemplateLiteral: true
+            Glob: true
         };
 
         Object.keys(esprimaSyntax).forEach(function(name) {
