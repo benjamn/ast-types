@@ -479,6 +479,15 @@ describe("NodePath", function() {
         assert.ok(!byPath.get("expression").needsParens());
         assert.ok(byPath.get("expression", "left").needsParens());
         assert.ok(byPath.get("expression", "right").needsParens());
+
+        var sequenceAssignmentAST = b.assignmentExpression(
+          '=',
+          b.identifier('a'),
+          b.sequenceExpression([b.literal(1), b.literal(2)])
+        );
+
+        var sequenceAssignmentPath = new NodePath(sequenceAssignmentAST);
+        assert.ok(sequenceAssignmentPath.get("right").needsParens());
     });
 });
 
