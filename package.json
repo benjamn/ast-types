@@ -33,7 +33,7 @@
     "private": "~0.1.2"
   },
   "devDependencies": {
-    "esprima": "~1.0.4",
+    "esprima": "~1.1.1",
     "mocha": "~1.16.2"
   },
   "engines": {
