@@ -555,21 +555,30 @@ describe("scope.getBindings", function () {
         "var foo = 42;",
         "function bar(baz) {",
         "  return baz + foo;",
-        "}"
+        "}",
+        "var nom = function rom(pom) {",
+        "  return rom(pom);",
+        "};"
     ];
 
     var ast = parse(scope.join("\n"));
     it("should get local and global scope bindings", function() {
         traverse(ast, function(node) {
+            var bindings;
             if (n.Program.check(node)) {
-                var bindings = this.scope.getBindings();
-                assert.deepEqual(["bar", "foo"], Object.keys(bindings).sort());
+                bindings = this.scope.getBindings();
+                assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
                 assert.equal(1, bindings.foo.length);
                 assert.equal(1, bindings.bar.length);
             } else if (n.FunctionDeclaration.check(node)) {
-                var bindings = this.scope.getBindings();
+                bindings = this.scope.getBindings();
                 assert.deepEqual(["baz"], Object.keys(bindings));
                 assert.equal(1, bindings.baz.length);
+            } else if (n.ReturnStatement.check(node) &&
+                       n.Identifier.check(node.argument) &&
+                       node.argument.name === "rom") {
+                bindings = this.scope.getBindings();
+                assert.deepEqual(["pom", "rom"], Object.keys(bindings).sort());
             }
         });
     });
