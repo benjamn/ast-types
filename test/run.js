@@ -491,6 +491,116 @@ describe("NodePath", function() {
     });
 });
 
+describe("path.replace", function() {
+    var ast;
+
+    beforeEach(function() {
+        ast = b.functionDeclaration(
+            b.identifier("fn"),
+            [],
+            b.blockStatement([
+                b.variableDeclaration(
+                    "var",
+                    [b.variableDeclarator(b.identifier("a"), null)]
+                )
+            ])
+        );
+    });
+
+    it("should support replacement with a single node", function() {
+        types.traverse(ast, function(node) {
+            if (n.Identifier.check(node) && node.name === "a") {
+                this.replace(b.identifier("b"));
+            }
+        });
+
+        assert.equal(ast.body.body[0].declarations[0].id.name, "b");
+    });
+
+    it("should support replacement in an array with a single node", function() {
+        types.traverse(ast, function(node) {
+            if (n.VariableDeclaration.check(node)) {
+                this.replace(b.returnStatement(null));
+            }
+        });
+
+        assert.equal(ast.body.body.length, 1);
+        assert.ok(n.ReturnStatement.check(ast.body.body[0]));
+    });
+
+    it("should support replacement with nothing", function() {
+        types.traverse(ast, function(node) {
+            if (n.VariableDeclaration.check(node)) {
+                this.replace();
+            }
+        });
+
+        assert.equal(ast.body.body.length, 0);
+    });
+
+    it("should support replacement with itself plus more in an array", function() {
+        types.traverse(ast, function(node) {
+            if (n.VariableDeclaration.check(node)) {
+                var scopeBody = this.scope.path.get("body").get("body");
+
+                // This is contrived such that we just happen to be replacing
+                // the same node we're currently processing, perhaps using a
+                // helper function to create variables at the top of the scope.
+                assert.strictEqual(scopeBody.get(0), this);
+
+                // Prepend `var $$;` inside the block. This should update our
+                // `this` NodePath to correct its array index so that a
+                // subsequent replace will still work.
+                scopeBody.get(0).replace(
+                    b.variableDeclaration(
+                        "var",
+                        [b.variableDeclarator(b.identifier("$$"), null)]
+                    ),
+                    scopeBody.get(0).value
+                );
+
+                // Now do it again to make sure all the other indexes are
+                // updated, too.
+                scopeBody.get(0).replace(
+                    b.variableDeclaration(
+                        "var",
+                        [b.variableDeclarator(b.identifier("$2"), null)]
+                    ),
+                    scopeBody.get(0).value
+                );
+
+                // Then replace the node, not the one we just added.
+                this.replace(b.returnStatement(b.identifier("$$")));
+            }
+        });
+
+        var statements = ast.body.body;
+        assert.deepEqual(
+            statements.map(function(node) { return node.type; }),
+            ['VariableDeclaration', 'VariableDeclaration', 'ReturnStatement']
+        );
+        assert.ok(n.VariableDeclaration.check(statements[0]), "not a variable declaration: " + statements[0].type);
+        assert.equal(statements[0].declarations[0].id.name, "$2");
+        assert.ok(n.VariableDeclaration.check(statements[1]), "not a variable declaration: " + statements[1].type);
+        assert.equal(statements[1].declarations[0].id.name, "$$");
+        assert.ok(n.ReturnStatement.check(statements[2]), "not a return statement: " + statements[2].type);
+        assert.equal(statements[2].argument.name, "$$");
+    });
+
+    it("should throw when trying to replace the same node twice", function() {
+        types.traverse(ast, function(node) {
+            if (n.VariableDeclaration.check(node)) {
+                this.replace(b.expressionStatement(b.literal(null)));
+
+                var self = this;
+                assert.throws(function() {
+                    self.replace(b.expressionStatement(b.literal('NOPE')));
+                }, /Cannot replace already replaced node: VariableDeclaration/);
+            }
+        });
+    });
+});
+
 describe("global scope", function() {
     var traverse = types.traverse;
 
