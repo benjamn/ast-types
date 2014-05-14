@@ -489,6 +489,24 @@ describe("NodePath", function() {
         var sequenceAssignmentPath = new NodePath(sequenceAssignmentAST);
         assert.ok(sequenceAssignmentPath.get("right").needsParens());
     });
+
+    it("should support .needsParens(true)", function() {
+        var programPath = new NodePath(parse("(function(){})"));
+        var funExpPath = programPath.get("body", 0, "expression");
+        n.FunctionExpression.assert(funExpPath.value);
+        assert.strictEqual(funExpPath.needsParens(), true);
+        assert.strictEqual(funExpPath.canBeFirstInStatement(), false);
+        assert.strictEqual(funExpPath.firstInStatement(), true);
+        assert.strictEqual(funExpPath.needsParens(true), false);
+
+        programPath = new NodePath(parse("({ foo: 42 })"));
+        var objLitPath = programPath.get("body", 0, "expression");
+        n.ObjectExpression.assert(objLitPath.value);
+        assert.strictEqual(objLitPath.needsParens(), true);
+        assert.strictEqual(objLitPath.canBeFirstInStatement(), false);
+        assert.strictEqual(objLitPath.firstInStatement(), true);
+        assert.strictEqual(objLitPath.needsParens(true), false);
+    });
 });
 
 describe("path.replace", function() {
