@@ -168,12 +168,12 @@ def("Declaration").bases("Statement");
 
 def("FunctionDeclaration")
     .bases("Function", "Declaration")
-    .build("id", "params", "body", "generator", "expression", "async")
+    .build("id", "params", "body", "generator", "expression")
     .field("id", def("Identifier"));
 
 def("FunctionExpression")
     .bases("Function", "Expression")
-    .build("id", "params", "body", "generator", "expression", "async");
+    .build("id", "params", "body", "generator", "expression");
 
 def("VariableDeclaration")
     .bases("Declaration")
