@@ -8,6 +8,18 @@ var isObject = builtin.object;
 var isString = builtin.string;
 var defaults = require("../lib/shared").defaults;
 
+def("Function")
+    .field("generator", isBoolean, defaults["false"])
+    .field("expression", isBoolean, defaults["false"])
+    .field("defaults", [def("Expression")], defaults.emptyArray)
+    .field("rest", or(def("Identifier"), null), defaults["null"]);
+
+def("FunctionDeclaration")
+    .build("id", "params", "body", "generator", "expression");
+
+def("FunctionExpression")
+    .build("id", "params", "body", "generator", "expression");
+
 // TODO The Parser API calls this ArrowExpression, but Esprima uses
 // ArrowFunctionExpression.
 def("ArrowFunctionExpression")
@@ -18,7 +30,7 @@ def("ArrowFunctionExpression")
     .field("id", null, defaults["null"])
     // The current spec forbids arrow generators, so I have taken the
     // liberty of enforcing that. TODO Report this.
-    .field("generator", false, defaults["false"]);
+    .field("generator", false);
 
 def("YieldExpression")
     .bases("Expression")

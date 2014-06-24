@@ -38,12 +38,7 @@ def("Function")
     .bases("Node")
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("params", [def("Pattern")])
-    .field("body", or(def("BlockStatement"), def("Expression")))
-    .field("generator", isBoolean, defaults["false"])
-    .field("expression", isBoolean, defaults["false"])
-    .field("defaults", [def("Expression")], defaults.emptyArray)
-    .field("rest", or(def("Identifier"), null), defaults["null"])
-    .field("async", isBoolean, defaults["false"]);
+    .field("body", or(def("BlockStatement"), def("Expression")));
 
 def("Statement").bases("Node");
 
@@ -168,12 +163,12 @@ def("Declaration").bases("Statement");
 
 def("FunctionDeclaration")
     .bases("Function", "Declaration")
-    .build("id", "params", "body", "generator", "expression")
+    .build("id", "params", "body")
     .field("id", def("Identifier"));
 
 def("FunctionExpression")
     .bases("Function", "Expression")
-    .build("id", "params", "body", "generator", "expression");
+    .build("id", "params", "body");
 
 def("VariableDeclaration")
     .bases("Declaration")

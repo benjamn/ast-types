@@ -4,6 +4,10 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isBoolean = builtin.boolean;
+var defaults = require("../lib/shared").defaults;
+
+def("Function")
+    .field("async", isBoolean, defaults["false"]);
 
 def("SpreadProperty")
     .bases("Node")
