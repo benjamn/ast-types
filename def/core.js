@@ -198,7 +198,7 @@ def("ArrayExpression")
 def("ObjectExpression")
     .bases("Expression")
     .build("properties")
-    .field("properties", [or(def("Property"), def("SpreadProperty"))]);
+    .field("properties", [def("Property")]);
 
 // TODO Not in the Mozilla Parser API, but used by Esprima.
 def("Property")

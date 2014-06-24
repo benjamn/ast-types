@@ -14,6 +14,9 @@ def("SpreadProperty")
     .build("argument")
     .field("argument", def("Expression"));
 
+def("ObjectExpression")
+    .field("properties", [or(def("Property"), def("SpreadProperty"))]);
+
 def("AwaitExpression")
     .bases("Expression")
     .build("argument", "all")
