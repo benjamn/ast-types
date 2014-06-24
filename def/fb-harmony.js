@@ -10,7 +10,7 @@ var defaults = require("../lib/shared").defaults;
 def("XJSAttribute")
     .bases("Node")
     .build("name", "value")
-    .field("name", def("XJSIdentifier"))
+    .field("name", or(def("XJSIdentifier"), def("XJSNamespacedName")))
     .field("value", or(
         def("Literal"), // attr="value"
         def("XJSExpressionContainer"), // attr={value}
@@ -19,27 +19,37 @@ def("XJSAttribute")
 
 def("XJSIdentifier")
     .bases("Node")
-    .build("name", "namespace")
-    .field("name", isString)
-    .field("namespace", or(isString, null), defaults["null"]);
+    .build("name")
+    .field("name", isString);
 
 def("XJSNamespacedName")
     .bases("Node")
     .build("namespace", "name")
-    .field("namespace", def("Identifier"))
-    .field("name", def("Identifier"));
+    .field("namespace", def("XJSIdentifier"))
+    .field("name", def("XJSIdentifier"));
 
 def("XJSMemberExpression")
     .bases("MemberExpression")
     .build("object", "property")
-    .field("object", def("Identifier"))
-    .field("property", def("Identifier"))
+    .field("object", or(def("XJSIdentifier"), def("XJSMemberExpression")))
+    .field("property", def("XJSIdentifier"))
     .field("computed", isBoolean, defaults.false);
+
+var XJSElementName = or(
+    def("XJSIdentifier"),
+    def("XJSNamespacedName"),
+    def("XJSMemberExpression")
+);
 
 def("XJSSpreadAttribute")
     .bases("Node")
     .build("argument")
     .field("argument", def("Expression"));
+
+var XJSAttributes = [or(
+    def("XJSAttribute"),
+    def("XJSSpreadAttribute")
+)];
 
 def("XJSExpressionContainer")
     .bases("Expression")
@@ -57,7 +67,7 @@ def("XJSElement")
         def("XJSText"),
         def("Literal") // TODO Esprima should return XJSText instead.
     )], defaults.emptyArray)
-    .field("name", def("XJSIdentifier"), function() {
+    .field("name", XJSElementName, function() {
         // Little-known fact: the `this` object inside a default function
         // is none other than the partially-built object itself, and any
         // fields initialized directly from builder function arguments
@@ -68,21 +78,21 @@ def("XJSElement")
     .field("selfClosing", isBoolean, function() {
         return this.openingElement.selfClosing;
     })
-    .field("attributes", [def("XJSAttribute")], function() {
+    .field("attributes", XJSAttributes, function() {
         return this.openingElement.attributes;
     });
 
 def("XJSOpeningElement")
     .bases("Node") // TODO Does this make sense? Can't really be an XJSElement.
     .build("name", "attributes", "selfClosing")
-    .field("name", def("XJSIdentifier"))
-    .field("attributes", [def("XJSAttribute")], defaults.emptyArray)
+    .field("name", XJSElementName)
+    .field("attributes", XJSAttributes, defaults.emptyArray)
     .field("selfClosing", isBoolean, defaults["false"]);
 
 def("XJSClosingElement")
     .bases("Node") // TODO Same concern.
     .build("name")
-    .field("name", def("XJSIdentifier"));
+    .field("name", XJSElementName);
 
 def("XJSText")
     .bases("Literal")
