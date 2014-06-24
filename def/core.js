@@ -198,12 +198,12 @@ def("ThisExpression").bases("Expression").build();
 def("ArrayExpression")
     .bases("Expression")
     .build("elements")
-    .field("elements", [or(def("Expression"), null)]);
+    .field("elements", [or(def("Expression"), def("SpreadElement"), null)]);
 
 def("ObjectExpression")
     .bases("Expression")
     .build("properties")
-    .field("properties", [def("Property")]);
+    .field("properties", [or(def("Property"), def("SpreadProperty"))]);
 
 // TODO Not in the Mozilla Parser API, but used by Esprima.
 def("Property")
@@ -295,14 +295,14 @@ def("NewExpression")
     // The Mozilla Parser API gives this type as [or(def("Expression"),
     // null)], but null values don't really make sense at the call site.
     // TODO Report this nonsense.
-    .field("arguments", [def("Expression")]);
+    .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
 
 def("CallExpression")
     .bases("Expression")
     .build("callee", "arguments")
     .field("callee", def("Expression"))
     // See comment for NewExpression above.
-    .field("arguments", [def("Expression")]);
+    .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
 
 def("MemberExpression")
     .bases("Expression")

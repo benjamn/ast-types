@@ -6,7 +6,7 @@ var builtin = types.builtInTypes;
 var isBoolean = builtin.boolean;
 
 def("SpreadProperty")
-    .bases("Property")
+    .bases("Node")
     .build("argument")
     .field("argument", def("Expression"));
 
