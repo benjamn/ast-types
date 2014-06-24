@@ -36,7 +36,7 @@ def("YieldExpression")
     .bases("Expression")
     .build("argument", "delegate")
     .field("argument", or(def("Expression"), null))
-    .field("delegate", isBoolean, false);
+    .field("delegate", isBoolean, defaults["false"]);
 
 def("GeneratorExpression")
     .bases("Expression")
