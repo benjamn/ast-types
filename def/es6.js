@@ -12,6 +12,7 @@ def("Function")
     .field("generator", isBoolean, defaults["false"])
     .field("expression", isBoolean, defaults["false"])
     .field("defaults", [def("Expression")], defaults.emptyArray)
+    // TODO This could be represented as a SpreadElementPattern in .params.
     .field("rest", or(def("Identifier"), null), defaults["null"]);
 
 def("FunctionDeclaration")
@@ -101,6 +102,11 @@ def("NewExpression")
 
 def("CallExpression")
     .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
+
+def("SpreadElementPattern")
+    .bases("Pattern")
+    .build("argument")
+    .field("argument", def("Pattern"));
 
 var ClassBodyElement = or(
     def("MethodDefinition"),
