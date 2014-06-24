@@ -72,7 +72,7 @@ def("MethodDefinition")
     .field("value", def("Function"));
 
 def("SpreadElement")
-    .bases("Node")
+    .bases("Expression")
     .build("argument")
     .field("argument", def("Expression"));
 
