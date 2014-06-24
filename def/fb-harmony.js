@@ -23,6 +23,24 @@ def("XJSIdentifier")
     .field("name", isString)
     .field("namespace", or(isString, null), defaults["null"]);
 
+def("XJSNamespacedName")
+    .bases("Node")
+    .build("namespace", "name")
+    .field("namespace", def("Identifier"))
+    .field("name", def("Identifier"));
+
+def("XJSMemberExpression")
+    .bases("MemberExpression")
+    .build("object", "property")
+    .field("object", def("Identifier"))
+    .field("property", def("Identifier"))
+    .field("computed", isBoolean, defaults.false);
+
+def("XJSSpreadAttribute")
+    .bases("Node")
+    .build("argument")
+    .field("argument", def("Expression"));
+
 def("XJSExpressionContainer")
     .bases("Expression")
     .build("expression")
