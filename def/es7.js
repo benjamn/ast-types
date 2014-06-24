@@ -32,4 +32,4 @@ def("AwaitExpression")
     .bases("Expression")
     .build("argument", "all")
     .field("argument", or(def("Expression"), null))
-    .field("all", isBoolean, false);
+    .field("all", isBoolean, defaults["false"]);
