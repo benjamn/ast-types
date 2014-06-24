@@ -26,12 +26,6 @@ def("YieldExpression")
     .field("argument", or(def("Expression"), null))
     .field("delegate", isBoolean, false);
 
-def("AwaitExpression")
-    .bases("Expression")
-    .build("argument", "all")
-    .field("argument", or(def("Expression"), null))
-    .field("all", isBoolean, false);
-
 def("GeneratorExpression")
     .bases("Expression")
     .build("body", "blocks", "filter")
@@ -78,9 +72,9 @@ def("MethodDefinition")
     .field("value", def("Function"));
 
 def("SpreadElement")
-    .bases("Pattern")
+    .bases("Node")
     .build("argument")
-    .field("argument", def("Pattern"));
+    .field("argument", def("Expression"));
 
 var ClassBodyElement = or(
     def("MethodDefinition"),

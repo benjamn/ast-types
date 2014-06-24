@@ -7,6 +7,7 @@ require("./def/core");
 // Feel free to add to or remove from this list of extension modules to
 // configure the precise type hierarchy that you need.
 require("./def/es6");
+require("./def/es7");
 require("./def/mozilla");
 require("./def/e4x");
 require("./def/fb-harmony");
