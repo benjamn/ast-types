@@ -93,6 +93,15 @@ def("SpreadElement")
     .build("argument")
     .field("argument", def("Expression"));
 
+def("ArrayExpression")
+    .field("elements", [or(def("Expression"), def("SpreadElement"), null)]);
+
+def("NewExpression")
+    .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
+
+def("CallExpression")
+    .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
+
 var ClassBodyElement = or(
     def("MethodDefinition"),
     def("VariableDeclarator"),
