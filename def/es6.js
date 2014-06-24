@@ -164,5 +164,3 @@ def("TemplateElement")
     .build("value", "tail")
     .field("value", {"cooked": isString, "raw": isString})
     .field("tail", isBoolean);
-
-types.finalize();

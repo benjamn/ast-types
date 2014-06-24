@@ -37,5 +37,3 @@ def("GraphIndexExpression")
     .bases("Expression")
     .build("index")
     .field("index", geq(0));
-
-types.finalize();

@@ -85,5 +85,3 @@ def("XMLProcessingInstruction")
     .bases("XML")
     .field("target", isString)
     .field("contents", or(isString, null));
-
-types.finalize();

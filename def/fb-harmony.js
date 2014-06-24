@@ -107,5 +107,3 @@ def("TypeAnnotation")
     .field("returnType", or(def("TypeAnnotation"), null))
     .field("unionType", or(def("TypeAnnotation"), null))
     .field("nullable", isBoolean);
-
-types.finalize();

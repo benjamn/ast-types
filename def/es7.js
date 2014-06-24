@@ -15,5 +15,3 @@ def("AwaitExpression")
     .build("argument", "all")
     .field("argument", or(def("Expression"), null))
     .field("all", isBoolean, false);
-
-types.finalize();

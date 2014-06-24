@@ -353,5 +353,3 @@ def("Literal")
         isNumber,
         isRegExp
     ));
-
-types.finalize();
