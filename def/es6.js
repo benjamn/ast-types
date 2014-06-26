@@ -80,7 +80,8 @@ def("ModuleDeclaration")
 def("Property")
     // Esprima extensions not mentioned in the Mozilla Parser API:
     .field("method", isBoolean, defaults["false"])
-    .field("shorthand", isBoolean, defaults["false"]);
+    .field("shorthand", isBoolean, defaults["false"])
+    .field("computed", isBoolean, defaults["false"]);
 
 def("MethodDefinition")
     .bases("Declaration")
