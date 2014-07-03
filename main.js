@@ -25,3 +25,4 @@ exports.someField = types.someField;
 exports.traverse = require("./lib/traverse");
 exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
+exports.computeSupertypeLookupTable = types.computeSupertypeLookupTable;

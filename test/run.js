@@ -47,6 +47,32 @@ describe("isSupertypeOf", function() {
     });
 });
 
+describe("computeSupertypeLookupTable", function() {
+    it("should resolve the most precise supertypes", function() {
+        var table = types.computeSupertypeLookupTable({
+            Function: true,
+            Declaration: true,
+            ArrowFunctionExpression: true,
+            Expression: true,
+            Identifier: true
+        });
+
+        function check(subtype, expectedSupertype) {
+            assert.strictEqual(table[subtype], expectedSupertype);
+        }
+
+        check("FunctionExpression", "Function");
+        check("FunctionDeclaration", "Function");
+        check("VariableDeclaration", "Declaration");
+        check("Identifier", "Identifier");
+        check("ArrowFunctionExpression", "ArrowFunctionExpression");
+        check("ForInStatement");
+        check("Node");
+        check("ThisExpression", "Expression");
+        check("Property");
+    });
+});
+
 describe("shallow and deep checks", function() {
     var index = b.identifier("foo");
     var decl = b.variableDeclaration("var", [
