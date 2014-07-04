@@ -19,6 +19,7 @@ exports.builtInTypes = types.builtInTypes;
 exports.namedTypes = types.namedTypes;
 exports.builders = types.builders;
 exports.defineMethod = types.defineMethod;
+exports.getFieldNames = types.getFieldNames;
 exports.getFieldValue = types.getFieldValue;
 exports.eachField = types.eachField;
 exports.someField = types.someField;
