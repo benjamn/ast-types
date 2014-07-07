@@ -16,7 +16,7 @@ def("Node")
     .field("loc", or(
         def("SourceLocation"),
         null
-    ), defaults["null"]);
+    ), defaults["null"], true);
 
 def("SourceLocation")
     .build("start", "end", "source")

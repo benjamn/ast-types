@@ -274,9 +274,7 @@ describe("types.eachField", function() {
     }
 
     it("should give correct keys for supertypes", function() {
-        check({ type: "Expression" }, [
-            "type", "loc"
-        ]);
+        check({ type: "Expression" }, ["type"]);
     });
 
     it("should work for non-buildable types", function() {
@@ -292,12 +290,12 @@ describe("types.eachField", function() {
     it("should respect hidden fields", function() {
         check({ type: "TryStatement" }, [
             // Note that the "handlers" field is now hidden from eachField.
-            "type", "block", "handler", "guardedHandlers", "finalizer", "loc"
+            "type", "block", "handler", "guardedHandlers", "finalizer"
         ]);
     });
 
     check({ type: "CatchClause" }, [
-        "type", "param", "guard", "body", "loc"
+        "type", "param", "guard", "body"
     ]);
 
     it("should complain about invalid types", function() {
