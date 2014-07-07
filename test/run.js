@@ -49,7 +49,7 @@ describe("isSupertypeOf", function() {
 
 describe("computeSupertypeLookupTable", function() {
     it("should resolve the most precise supertypes", function() {
-        var table = types.computeSupertypeLookupTable({
+        var table = require("../lib/types").computeSupertypeLookupTable({
             Function: true,
             Declaration: true,
             ArrowFunctionExpression: true,
