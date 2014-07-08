@@ -9,6 +9,7 @@ var esprimaSyntax = esprima.Syntax;
 var parse = esprima.parse;
 var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
+var PathVisitor = require("../lib/path-visitor");
 
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");
@@ -49,7 +50,7 @@ describe("isSupertypeOf", function() {
 
 describe("computeSupertypeLookupTable", function() {
     it("should resolve the most precise supertypes", function() {
-        var table = types.computeSupertypeLookupTable({
+        var table = require("../lib/types").computeSupertypeLookupTable({
             Function: true,
             Declaration: true,
             ArrowFunctionExpression: true,
@@ -825,5 +826,320 @@ describe("types.defineMethod", function() {
         assert.strictEqual(types.defineMethod("at"), at);
         assert.strictEqual(thisExpr.at, void 0);
         assert.strictEqual("at" in thisExpr, false);
+    });
+});
+
+describe("types.visit", function() {
+    var objProp;
+
+    beforeEach(function() {
+        objProp = b.memberExpression(
+            b.identifier("object"),
+            b.identifier("property"),
+            false
+        );
+    });
+
+    it("should be identical to PathVisitor.visit", function() {
+        assert.strictEqual(types.visit, PathVisitor.visit);
+    });
+
+    it("should work with no visitors", function() {
+        var foo = b.identifier("foo");
+        assert.strictEqual(types.visit(foo), foo);
+    });
+
+    it("should allow simple tree modifications", function() {
+        var bar = types.visit(b.identifier("foo"), {
+            visitIdentifier: function(path) {
+                assert.ok(path instanceof NodePath);
+                path.value.name = "bar";
+                return false;
+            }
+        });
+
+        n.Identifier.assert(bar);
+        assert.strictEqual(bar.name, "bar");
+    });
+
+    it("should complain about missing this.traverse", function() {
+        try {
+            types.visit(objProp, {
+                visitIdentifier: function(path) {
+                    // buh?
+                }
+            });
+
+            assert.ok(false, "should have thrown an exception");
+
+        } catch (err) {
+            assert.strictEqual(
+                err.message,
+                "Must either call this.traverse or return false in visitIdentifier"
+            );
+        }
+    });
+
+    it("should support this.traverse", function() {
+        var idNames = [];
+
+        types.visit(objProp, {
+            visitMemberExpression: function(path) {
+                this.traverse(path, {
+                    visitIdentifier: function(path) {
+                        idNames.push("*" + path.value.name + "*");
+                        return false;
+                    }
+                });
+
+                path.get("object", "name").replace("asdfasdf");
+                path.get("property", "name").replace("zxcvzxcv");
+
+                this.visitor.visit(path.get("property"));
+            },
+
+            visitIdentifier: function(path) {
+                idNames.push(path.value.name);
+                return false;
+            }
+        });
+
+        assert.deepEqual(idNames, ["*object*", "*property*", "zxcvzxcv"]);
+
+        idNames.length = 0;
+
+        types.visit(objProp, {
+            visitMemberExpression: function(path) {
+                path.get("object", "name").replace("asdfasdf");
+                path.get("property", "name").replace("zxcvzxcv");
+                this.traverse(path, {
+                    visitIdentifier: function(path) {
+                        idNames.push(path.value.name);
+                        return false;
+                    }
+                });
+            }
+        });
+
+        assert.deepEqual(idNames, ["asdfasdf", "zxcvzxcv"]);
+    });
+
+    it("should support this.replace", function() {
+        var seqExpr = b.sequenceExpression([
+            b.literal("asdf"),
+            b.identifier("zxcv"),
+            b.thisExpression()
+        ]);
+
+        types.visit(seqExpr, {
+            visitIdentifier: function(path) {
+                assert.strictEqual(path.value.name, "zxcv");
+                path.replace(
+                    b.identifier("foo"),
+                    b.identifier("bar")
+                );
+                return false;
+            }
+        });
+
+        assert.strictEqual(seqExpr.expressions.length, 4);
+
+        var foo = seqExpr.expressions[1];
+        n.Identifier.assert(foo);
+        assert.strictEqual(foo.name, "foo");
+
+        var bar = seqExpr.expressions[2];
+        n.Identifier.assert(bar);
+        assert.strictEqual(bar.name, "bar");
+
+        types.visit(seqExpr, {
+            visitIdentifier: function(path) {
+                if (path.value.name === "foo") {
+                    path.replace(path.value, path.value);
+                }
+
+                return false;
+            }
+        });
+
+        assert.strictEqual(seqExpr.expressions.length, 5);
+
+        var foo = seqExpr.expressions[1];
+        n.Identifier.assert(foo);
+        assert.strictEqual(foo.name, "foo");
+
+        var foo = seqExpr.expressions[2];
+        n.Identifier.assert(foo);
+        assert.strictEqual(foo.name, "foo");
+
+        var bar = seqExpr.expressions[3];
+        n.Identifier.assert(bar);
+        assert.strictEqual(bar.name, "bar");
+
+        types.visit(seqExpr, {
+            visitLiteral: function(path) {
+                path.replace();
+                return false;
+            },
+
+            visitIdentifier: function(path) {
+                if (path.value.name === "bar") {
+                    path.replace();
+                }
+
+                return false;
+            }
+        });
+
+        assert.strictEqual(seqExpr.expressions.length, 3);
+
+        var first = seqExpr.expressions[0];
+        n.Identifier.assert(first);
+        assert.strictEqual(first.name, "foo");
+
+        var second = seqExpr.expressions[1];
+        assert.strictEqual(second, first);
+
+        var third = seqExpr.expressions[2];
+        n.ThisExpression.assert(third);
+    });
+
+    it("should reuse old VisitorContext objects", function() {
+        var objectContext;
+        var propertyContext;
+
+        types.visit(objProp, {
+            visitIdentifier: function(path) {
+                assert.strictEqual(this.needToCallTraverse, true);
+                this.traverse(path);
+                assert.strictEqual(path.name, path.value.name);
+                if (path.name === "object") {
+                    objectContext = this;
+                } else if (path.name === "property") {
+                    propertyContext = this;
+                }
+            }
+        });
+
+        assert.ok(objectContext);
+        assert.ok(propertyContext);
+        assert.strictEqual(objectContext, propertyContext);
+    });
+
+    it("should dispatch to closest visitSupertype method", function() {
+        var foo = b.identifier("foo");
+        var bar = b.identifier("bar");
+        var callExpr = b.callExpression(
+            b.memberExpression(
+                b.functionExpression(
+                    b.identifier("add"),
+                    [foo, bar],
+                    b.blockStatement([
+                        b.returnStatement(
+                            b.binaryExpression("+", foo, bar)
+                        )
+                    ])
+                ),
+                b.identifier("bind"),
+                false
+            ),
+            [b.thisExpression()]
+        );
+
+        var nodes = [];
+        var expressions = [];
+        var identifiers = [];
+        var statements = [];
+        var returnStatements = [];
+        var functions = [];
+
+        function makeVisitorMethod(array) {
+            return function(path) {
+                array.push(path.value);
+                this.traverse(path);
+            };
+        }
+
+        types.visit(callExpr, {
+            visitNode:            makeVisitorMethod(nodes),
+            visitExpression:      makeVisitorMethod(expressions),
+            visitIdentifier:      makeVisitorMethod(identifiers),
+            visitStatement:       makeVisitorMethod(statements),
+            visitReturnStatement: makeVisitorMethod(returnStatements),
+            visitFunction:        makeVisitorMethod(functions)
+        });
+
+        function check(array) {
+            var rest = Array.prototype.slice.call(arguments, 1);
+            assert.strictEqual(array.length, rest.length);
+            for (var i = 0; i < rest.length; ++i) {
+                assert.strictEqual(array[i], rest[i]);
+            }
+        }
+
+        check(nodes);
+
+        check(expressions,
+              callExpr,
+              callExpr.callee,
+              callExpr.callee.object.body.body[0].argument,
+              callExpr.arguments[0]);
+
+        check(identifiers,
+              callExpr.callee.object.id,
+              foo,
+              bar,
+              foo,
+              bar,
+              callExpr.callee.property);
+
+        check(statements,
+              callExpr.callee.object.body);
+
+        check(returnStatements,
+              callExpr.callee.object.body.body[0]);
+
+        check(functions,
+              callExpr.callee.object);
+    });
+
+    it("should replace this.currentPath with returned value", function() {
+        assert.strictEqual(objProp.computed, false);
+
+        types.visit(objProp, {
+            visitIdentifier: function(path) {
+                if (path.value.name === "property") {
+                    path.parent.get("computed").replace(true);
+                    return b.callExpression(
+                        b.memberExpression(
+                            b.thisExpression(),
+                            b.identifier("toString"),
+                            false
+                        ),
+                        []
+                    );
+                }
+
+                this.traverse(path);
+            },
+
+            visitThisExpression: function(path) {
+                return b.identifier("self");
+            }
+        });
+
+        assert.strictEqual(objProp.computed, true);
+        n.CallExpression.assert(objProp.property);
+
+        var callee = objProp.property.callee;
+        n.MemberExpression.assert(callee);
+
+        n.Identifier.assert(callee.object);
+        assert.strictEqual(callee.object.name, "self");
+
+        n.Identifier.assert(callee.property);
+        assert.strictEqual(callee.property.name, "toString");
+
+        assert.deepEqual(objProp.property.arguments, []);
     });
 });
