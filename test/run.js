@@ -583,7 +583,7 @@ describe("path.replace", function() {
     it("should support replacement with itself plus more in an array", function() {
         types.traverse(ast, function(node) {
             if (n.VariableDeclaration.check(node)) {
-                var scopeBody = this.scope.path.get("body").get("body");
+                var scopeBody = this.scope.path.get("body", "body");
 
                 // This is contrived such that we just happen to be replacing
                 // the same node we're currently processing, perhaps using a
@@ -611,33 +611,45 @@ describe("path.replace", function() {
                     scopeBody.get(0).value
                 );
 
+                assert.strictEqual(scopeBody.get(0), this);
+
                 // Then replace the node, not the one we just added.
-                this.replace(b.returnStatement(b.identifier("$$")));
+                this.replace(b.returnStatement(b.identifier("$3")));
             }
         });
 
         var statements = ast.body.body;
         assert.deepEqual(
             statements.map(function(node) { return node.type; }),
-            ['VariableDeclaration', 'VariableDeclaration', 'ReturnStatement']
+            ['ReturnStatement', 'VariableDeclaration', 'VariableDeclaration']
         );
-        assert.ok(n.VariableDeclaration.check(statements[0]), "not a variable declaration: " + statements[0].type);
-        assert.equal(statements[0].declarations[0].id.name, "$2");
-        assert.ok(n.VariableDeclaration.check(statements[1]), "not a variable declaration: " + statements[1].type);
+
+        n.ReturnStatement.assert(statements[0]);
+        assert.equal(statements[0].argument.name, "$3");
+
+        n.VariableDeclaration.assert(statements[1]);
         assert.equal(statements[1].declarations[0].id.name, "$$");
-        assert.ok(n.ReturnStatement.check(statements[2]), "not a return statement: " + statements[2].type);
-        assert.equal(statements[2].argument.name, "$$");
+
+        n.VariableDeclaration.assert(statements[2]);
+        assert.equal(statements[2].declarations[0].id.name, "a");
     });
 
-    it("should throw when trying to replace the same node twice", function() {
+    it("should not throw when replacing the same node twice", function() {
         types.traverse(ast, function(node) {
             if (n.VariableDeclaration.check(node)) {
                 this.replace(b.expressionStatement(b.literal(null)));
+                n.ExpressionStatement.assert(this.value);
+                n.Literal.assert(this.value.expression);
+                assert.strictEqual(this.value.expression.value, null);
 
-                var self = this;
-                assert.throws(function() {
-                    self.replace(b.expressionStatement(b.literal('NOPE')));
-                }, /Cannot replace already replaced node: VariableDeclaration/);
+                this.replace(b.expressionStatement(b.literal("OK")));
+                n.ExpressionStatement.assert(this.value);
+                n.Literal.assert(this.value.expression);
+                assert.strictEqual(this.value.expression.value, "OK");
+
+                if (this.parentPath.get(this.name) !== this) {
+                    assert.ok(false, "Should have reused the same path");
+                }
             }
         });
     });
