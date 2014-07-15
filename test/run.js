@@ -48,7 +48,7 @@ describe("isSupertypeOf", function() {
     });
 });
 
-describe("computeSupertypeLookupTable", function() {
+describe("supertype lookup", function() {
     it("should resolve the most precise supertypes", function() {
         var table = require("../lib/types").computeSupertypeLookupTable({
             Function: true,
@@ -71,6 +71,19 @@ describe("computeSupertypeLookupTable", function() {
         check("Node");
         check("ThisExpression", "Expression");
         check("Property");
+    });
+
+    it("should properly linearize the inheritance hierarchy", function() {
+        assert.deepEqual(
+            types.getSupertypeNames("FunctionExpression"),
+            ["Function", "Expression", "Pattern", "Node"]
+        );
+    });
+
+    it("should trigger an AssertionError for unknown types", function() {
+        assert.throws(function() {
+            types.getSupertypeNames("AlienBoomerangDeclaration");
+        });
     });
 });
 

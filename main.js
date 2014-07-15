@@ -23,6 +23,7 @@ exports.getFieldNames = types.getFieldNames;
 exports.getFieldValue = types.getFieldValue;
 exports.eachField = types.eachField;
 exports.someField = types.someField;
+exports.getSupertypeNames = types.getSupertypeNames;
 exports.traverse = require("./lib/traverse");
 exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
