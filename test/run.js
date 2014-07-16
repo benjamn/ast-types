@@ -1403,3 +1403,132 @@ describe("path.insertAfter", function() {
         });
     });
 });
+
+describe("types.astNodesAreEquivalent", function() {
+    it("should work for simple values", function() {
+        types.astNodesAreEquivalent.assert(1, 2 - 1);
+        types.astNodesAreEquivalent.assert("1", 1);
+        types.astNodesAreEquivalent.assert(true, !false);
+
+        var d1 = new Date;
+        var d2 = new Date(+d1);
+        assert.notStrictEqual(d1, d2);
+        types.astNodesAreEquivalent.assert(d1, d2);
+
+        types.astNodesAreEquivalent.assert(/x/, /x/);
+        assert.strictEqual(types.astNodesAreEquivalent(/x/g, /x/), false);
+    });
+
+    it("should work for arrays", function() {
+        types.astNodesAreEquivalent.assert([], [1, 2, 3].slice(10));
+        types.astNodesAreEquivalent.assert([1, 2, 3], [1].concat(2, [3]));
+        types.astNodesAreEquivalent.assert([1,, 3], [1,, 3,]);
+        assert.strictEqual(
+            types.astNodesAreEquivalent([1,, 3], [1, void 0, 3]),
+            false
+        );
+    });
+
+    it("should work for objects", function() {
+        types.astNodesAreEquivalent.assert({
+            foo: 42,
+            bar: "asdf"
+        }, {
+            bar: "asdf",
+            foo: 42
+        });
+
+        assert.strictEqual(types.astNodesAreEquivalent({
+            foo: 42,
+            bar: "asdf",
+            baz: true
+        }, {
+            bar: "asdf",
+            foo: 42
+        }), false);
+
+        assert.strictEqual(types.astNodesAreEquivalent({
+            foo: 42,
+            bar: "asdf"
+        }, {
+            bar: "asdf",
+            foo: 42,
+            baz: true
+        }), false);
+    });
+
+    it("should work for AST nodes", function() {
+        function check(src1, src2) {
+            types.astNodesAreEquivalent.assert(parse(src1), parse(src2));
+        }
+
+        function checkNot(src1, src2) {
+            var ast1 = parse(src1);
+            var ast2 = parse(src2);
+
+            assert.throws(function() {
+                types.astNodesAreEquivalent.assert(ast1, ast2);
+            });
+
+            var problemPath = [];
+            types.astNodesAreEquivalent(parse(src1), parse(src2), problemPath);
+            assert.notStrictEqual(problemPath.length, 0);
+
+            var a = ast1;
+            var b = ast2;
+
+            problemPath.forEach(function(name) {
+                assert.strictEqual(name in a, true);
+                assert.strictEqual(name in b, true);
+                a = a[name];
+                b = b[name];
+            });
+
+            assert.notStrictEqual(a, b);
+        }
+
+        check("1\n;", "1;");
+
+        check("console.log(this.toString(36));", [
+            "// leading comment",
+            "console.log(",
+            "  this.toString(36)",
+            "/* trailing comment */)"
+        ].join("\n"));
+
+        check("foo()", "foo /*anonymous*/ ()");
+
+        check("new (bar(1,2)(3,4)).baz.call(null)",
+              "new(  bar(     1,2)  \n  (3,4)).  baz.call(   null)");
+
+        check([
+            "(function(x) {",
+            "  Foo = /asdf/.test(x);",
+            "}());"
+        ].join("\n"), [
+            "(function(x) {",
+            "  Foo = /asdf/.test(x);",
+            "})();"
+        ].join("\n\n"));
+
+        checkNot([
+            "(function(x) {",
+            "  Foo = /asdf/.test(x);",
+            "}());"
+        ].join("\n"), [
+            "(function(x) {",
+            "  Foo = /asdf/.test(x);",
+            "})('~asdf~');"
+        ].join("\n\n"));
+
+        checkNot([
+            "(function(x) {",
+            "  var Foo = /asdf/.test(x);",
+            "}());"
+        ].join("\n"), [
+            "(function(x) {",
+            "  Foo = /asdf/.test(x);",
+            "})(/*'~asdf~'*/);"
+        ].join("\n\n"));
+    });
+});
