@@ -1463,8 +1463,8 @@ describe("types.astNodesAreEquivalent", function() {
         }
 
         function checkNot(src1, src2) {
-            var ast1 = parse(src1);
-            var ast2 = parse(src2);
+            var ast1 = parse(src1, { loc: true, range: true });
+            var ast2 = parse(src2, { loc: true });
 
             assert.throws(function() {
                 types.astNodesAreEquivalent.assert(ast1, ast2);
