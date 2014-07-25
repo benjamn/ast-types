@@ -726,7 +726,7 @@ describe("global scope", function() {
     });
 });
 
-describe("scope.getBindings", function () {
+describe("scope methods", function () {
     var traverse = types.traverse;
 
     var scope = [
@@ -739,8 +739,9 @@ describe("scope.getBindings", function () {
         "};"
     ];
 
-    var ast = parse(scope.join("\n"));
-    it("should get local and global scope bindings", function() {
+    it("getBindings should get local and global scope bindings", function() {
+        var ast = parse(scope.join("\n"));
+
         traverse(ast, function(node) {
             var bindings;
             if (n.Program.check(node)) {
@@ -759,6 +760,64 @@ describe("scope.getBindings", function () {
                 assert.deepEqual(["pom", "rom"], Object.keys(bindings).sort());
             }
         });
+    });
+
+    it("declareTemporary should use distinct names in nested scopes", function() {
+        var ast = parse(scope.join("\n"));
+        var globalVarDecl;
+        var barVarDecl;
+        var romVarDecl;
+
+        types.visit(ast, {
+            visitProgram: function(path) {
+                path.get("body").unshift(
+                    globalVarDecl = b.variableDeclaration("var", [
+                        b.variableDeclarator(
+                            path.scope.declareTemporary("$"),
+                            b.literal("global")
+                        ),
+                        b.variableDeclarator(
+                            path.scope.declareTemporary("$"),
+                            b.literal("global")
+                        )
+                    ])
+                );
+
+                this.traverse(path);
+            },
+
+            visitFunction: function(path) {
+                var funcId = path.value.id;
+
+                var varDecl = b.variableDeclaration("var", [
+                    b.variableDeclarator(
+                        path.scope.declareTemporary("$"),
+                        b.literal(funcId.name + 1)
+                    ),
+                    b.variableDeclarator(
+                        path.scope.declareTemporary("$"),
+                        b.literal(funcId.name + 2)
+                    )
+                ]);
+
+                path.get("body", "body").unshift(varDecl);
+
+                if (funcId.name === "bar") {
+                    barVarDecl = varDecl;
+                } else if (funcId.name === "rom") {
+                    romVarDecl = varDecl;
+                }
+
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(globalVarDecl.declarations[0].id.name, "$0$0");
+        assert.strictEqual(globalVarDecl.declarations[1].id.name, "$0$1");
+        assert.strictEqual(barVarDecl.declarations[0].id.name, "$1$0");
+        assert.strictEqual(barVarDecl.declarations[1].id.name, "$1$1");
+        assert.strictEqual(romVarDecl.declarations[0].id.name, "$1$0");
+        assert.strictEqual(romVarDecl.declarations[1].id.name, "$1$1");
     });
 });
 
