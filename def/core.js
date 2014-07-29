@@ -251,8 +251,7 @@ def("AssignmentExpression")
     .bases("Expression")
     .build("operator", "left", "right")
     .field("operator", AssignmentOperator)
-    // TODO Shouldn't this be def("Pattern")?
-    .field("left", def("Expression"))
+    .field("left", def("Pattern"))
     .field("right", def("Expression"));
 
 var UpdateOperator = or("++", "--");

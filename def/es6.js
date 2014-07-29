@@ -11,7 +11,7 @@ var defaults = require("../lib/shared").defaults;
 def("Function")
     .field("generator", isBoolean, defaults["false"])
     .field("expression", isBoolean, defaults["false"])
-    .field("defaults", [def("Expression")], defaults.emptyArray)
+    .field("defaults", [or(def("Expression"), null)], defaults.emptyArray)
     // TODO This could be represented as a SpreadElementPattern in .params.
     .field("rest", or(def("Identifier"), null), defaults["null"]);
 
@@ -112,8 +112,14 @@ def("SpreadElementPattern")
 var ClassBodyElement = or(
     def("MethodDefinition"),
     def("VariableDeclarator"),
-    def("ClassPropertyDefinition")
+    def("ClassPropertyDefinition"),
+    def("ClassProperty")
 );
+
+def("ClassProperty")
+  .bases("Declaration")
+  .build("id")
+  .field("id", def("Identifier"));
 
 def("ClassPropertyDefinition") // static property
     .bases("Declaration")
