@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var traverse = require("ast-types").traverse;
+var visit = require("ast-types").visit;
 var parse = require("esprima").parse;
 
 var backbone = fs.readFileSync(
@@ -13,8 +13,11 @@ var ast = parse(backbone);
 var names = [];
 var start = +new Date;
 
-traverse(ast, function(node) {
-  names.push(this.name);
+visit(ast, {
+  visitNode: function(path) {
+    names.push(path.name);
+    this.traverse(path);
+  }
 });
 
 console.log(names.length);
