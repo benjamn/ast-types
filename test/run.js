@@ -762,6 +762,29 @@ describe("scope methods", function () {
         });
     });
 
+    it("should inject temporary into current scope", function() {
+        var ast = parse(scope.join("\n"));
+        var bindings;
+
+        types.visit(ast, {
+            visitProgram: function(path) {
+                path.scope.injectTemporary();
+                bindings = path.scope.getBindings();
+                assert.deepEqual(["bar", "foo", "nom", "t$0$0"], Object.keys(bindings).sort());
+                this.traverse(path);
+            },
+
+            visitFunctionDeclaration: function(path) {
+                path.scope.injectTemporary(
+                    path.scope.declareTemporary("t$")
+                )
+                bindings = path.scope.getBindings();
+                assert.deepEqual(["baz", "t$1$0"], Object.keys(bindings));
+                this.traverse(path);
+            }
+        });
+    });
+
     it("declareTemporary should use distinct names in nested scopes", function() {
         var ast = parse(scope.join("\n"));
         var globalVarDecl;
