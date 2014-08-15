@@ -106,8 +106,8 @@ var ClassBodyElement = or(
 
 def("ClassProperty")
   .bases("Declaration")
-  .build("id")
-  .field("id", def("Identifier"));
+  .build("key")
+  .field("key", def("Identifier"));
 
 def("ClassPropertyDefinition") // static property
     .bases("Declaration")

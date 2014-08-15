@@ -344,3 +344,14 @@ def("Literal")
         isNumber,
         isRegExp
     ));
+
+// comments
+def("Block")
+    .bases("Node")
+    .build("value")
+    .field("value", isString);
+
+def("Line")
+    .bases("Node")
+    .build("value")
+    .field("value", isString);
