@@ -33,7 +33,7 @@ def("Program")
     .bases("Node")
     .build("body", "comments")
     .field("body", [def("Statement")])
-    .field("comments", [or(def("Block"), def("Line"))]);
+    .field("comments", [or(def("Block"), def("Line"))], defaults.emptyArray);
 
 def("Function")
     .bases("Node")
