@@ -31,8 +31,9 @@ def("Position")
 
 def("Program")
     .bases("Node")
-    .build("body")
-    .field("body", [def("Statement")]);
+    .build("body", "comments")
+    .field("body", [def("Statement")])
+    .field("comments", [or(def("Block"), def("Line"))]);
 
 def("Function")
     .bases("Node")
@@ -347,11 +348,17 @@ def("Literal")
 
 // comments
 def("Block")
-    .bases("Node")
-    .build("value")
+    .build("loc", "value")
+    .field("loc", or(
+        def("SourceLocation"),
+        null
+    ), defaults["null"], true)
     .field("value", isString);
 
-def("Line")
-    .bases("Node")
-    .build("value")
+  def("Line")
+    .build("loc", "value")
+    .field("loc", or(
+        def("SourceLocation"),
+        null
+    ), defaults["null"], true)
     .field("value", isString);
