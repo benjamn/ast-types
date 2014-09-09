@@ -1,6 +1,8 @@
 var path = require('path');
 var fs = require('fs');
-var visit = require("ast-types").visit;
+var types = require("ast-types").init(["../def/escore", "../def/e4x","../def/es6","../def/es7",
+                                     "../def/fb-harmony","../def/mozilla"]);
+var visit = types.visit;
 var parse = require("esprima").parse;
 
 var backbone = fs.readFileSync(

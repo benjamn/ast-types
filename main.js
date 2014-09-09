@@ -1,5 +1,8 @@
-var types = require("./lib/types");
+/* global exports, require */
+var astlib = require("./lib/astlib");
 
+/*
+var types = require("./lib/types");
 // This core module of AST types captures ES5 as it is parsed today by
 // git://github.com/ariya/esprima.git#master.
 require("./def/core");
@@ -30,3 +33,9 @@ exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
 exports.PathVisitor = require("./lib/path-visitor");
 exports.visit = exports.PathVisitor.visit;
+
+*/
+
+exports.init = function(defs) {
+    return new astlib.ASTLib(defs);
+};
