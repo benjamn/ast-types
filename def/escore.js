@@ -1,7 +1,7 @@
-/* global exports */
+/* global exports, require */
 
 exports.init = function(types) {
-    types.registerDefs("../def/core");
+    types.registerDefs(require("./core"));
     var Type = types.Type;
     var def = Type.def;
     var or = Type.or;

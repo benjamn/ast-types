@@ -1,7 +1,7 @@
 /* global require, describe, it, __dirname, beforeEach */
 var assert = require("assert");
-var types = require("../main").init(["../def/escore", "../def/e4x","../def/es6","../def/es7",
-                                     "../def/fb-harmony","../def/mozilla"]);
+var astlib = require("../main");
+var types = astlib.init(astlib.ESLang);
 var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
@@ -12,6 +12,31 @@ var parse = esprima.parse;
 var Path = types.Path;
 var NodePath = types.NodePath;
 var PathVisitor = types.PathVisitor;
+
+describe("separate type libraries", function() {
+    var newTypes = {
+        init: function(tps) {
+            var def = tps.Type.def;
+            def("Foo")
+                .bases("Node")
+                .build("bar")
+                .field("bar", def("Foo"));
+        }
+    };
+    var types2 = astlib.init(newTypes);
+    
+    it("should have different builders", function() {
+        assert.ok(Object.keys(b).length > 0);
+        assert.notEqual(Object.keys(b).length, Object.keys(types2.builders).length);
+    });
+    it("should check with the new def", function() {
+        types2.namedTypes.Foo.check({ type : "Foo" });
+    });
+    it("should not leak", function() {
+        assert.ok(!n.Foo);
+        assert.ok(!types2.namedTypes.Expression);
+    });
+});
 
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");

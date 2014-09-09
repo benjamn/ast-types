@@ -1,7 +1,7 @@
-/* global exports */
+/* global exports, require */
 
 exports.init = function(types) {
-    types.registerDefs("../def/escore");
+    types.registerDefs(require("./escore"));
     var def = types.Type.def;
     var or = types.Type.or;
     var builtin = types.builtInTypes;

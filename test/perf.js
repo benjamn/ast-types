@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
-var types = require("ast-types").init(["../def/escore", "../def/e4x","../def/es6","../def/es7",
-                                     "../def/fb-harmony","../def/mozilla"]);
+var astlib = require('../main');// require('ast-types');
+var types = astlib.init(astlib.ESLang);
 var visit = types.visit;
 var parse = require("esprima").parse;
 
