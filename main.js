@@ -39,3 +39,6 @@ exports.visit = exports.PathVisitor.visit;
 exports.init = function(defs) {
     return new astlib.ASTLib(defs);
 };
+
+exports.ESLang = ["../def/escore", "../def/e4x","../def/es6","../def/es7",
+                  "../def/fb-harmony","../def/mozilla"];
