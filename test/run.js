@@ -1,5 +1,7 @@
+/* global require, describe, it, __dirname, beforeEach */
 var assert = require("assert");
-var types = require("../main");
+var astlib = require("../main");
+var types = astlib.init(astlib.ESLang);
 var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
@@ -7,9 +9,34 @@ var fs = require("fs");
 var esprima = require("esprima");
 var esprimaSyntax = esprima.Syntax;
 var parse = esprima.parse;
-var Path = require("../lib/path");
-var NodePath = require("../lib/node-path");
-var PathVisitor = require("../lib/path-visitor");
+var Path = types.Path;
+var NodePath = types.NodePath;
+var PathVisitor = types.PathVisitor;
+
+describe("separate type libraries", function() {
+    var newTypes = {
+        init: function(tps) {
+            var def = tps.Type.def;
+            def("Foo")
+                .bases("Node")
+                .build("bar")
+                .field("bar", def("Foo"));
+        }
+    };
+    var types2 = astlib.init(newTypes);
+    
+    it("should have different builders", function() {
+        assert.ok(Object.keys(b).length > 0);
+        assert.notEqual(Object.keys(b).length, Object.keys(types2.builders).length);
+    });
+    it("should check with the new def", function() {
+        types2.namedTypes.Foo.check({ type : "Foo" });
+    });
+    it("should not leak", function() {
+        assert.ok(!n.Foo);
+        assert.ok(!types2.namedTypes.Expression);
+    });
+});
 
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");
@@ -50,7 +77,7 @@ describe("isSupertypeOf", function() {
 
 describe("supertype lookup", function() {
     it("should resolve the most precise supertypes", function() {
-        var table = require("../lib/types").computeSupertypeLookupTable({
+        var table = types.computeSupertypeLookupTable({
             Function: true,
             Declaration: true,
             ArrowFunctionExpression: true,
@@ -777,7 +804,7 @@ describe("scope methods", function () {
             visitFunctionDeclaration: function(path) {
                 path.scope.injectTemporary(
                     path.scope.declareTemporary("t$")
-                )
+                );
                 bindings = path.scope.getBindings();
                 assert.deepEqual(["baz", "t$1$0"], Object.keys(bindings));
                 this.traverse(path);
@@ -1020,6 +1047,7 @@ describe("types.visit", function() {
     });
 
     it("should support this.replace", function() {
+        var foo, bar;
         var seqExpr = b.sequenceExpression([
             b.literal("asdf"),
             b.identifier("zxcv"),
@@ -1039,11 +1067,11 @@ describe("types.visit", function() {
 
         assert.strictEqual(seqExpr.expressions.length, 4);
 
-        var foo = seqExpr.expressions[1];
+        foo = seqExpr.expressions[1];
         n.Identifier.assert(foo);
         assert.strictEqual(foo.name, "foo");
 
-        var bar = seqExpr.expressions[2];
+        bar = seqExpr.expressions[2];
         n.Identifier.assert(bar);
         assert.strictEqual(bar.name, "bar");
 
@@ -1059,15 +1087,15 @@ describe("types.visit", function() {
 
         assert.strictEqual(seqExpr.expressions.length, 5);
 
-        var foo = seqExpr.expressions[1];
+        foo = seqExpr.expressions[1];
         n.Identifier.assert(foo);
         assert.strictEqual(foo.name, "foo");
 
-        var foo = seqExpr.expressions[2];
+        foo = seqExpr.expressions[2];
         n.Identifier.assert(foo);
         assert.strictEqual(foo.name, "foo");
 
-        var bar = seqExpr.expressions[3];
+        bar = seqExpr.expressions[3];
         n.Identifier.assert(bar);
         assert.strictEqual(bar.name, "bar");
 
@@ -1471,7 +1499,7 @@ describe("path.insertAfter", function() {
         assert.strictEqual(path.get("expressions", 4), truePath);
         assert.strictEqual(truePath.value.value, true);
 
-        var three = b.literal(3)
+        var three = b.literal(3);
         truePath.insertAfter(three);
         assert.deepEqual(
             fooPath.parent.node.expressions,
@@ -1492,7 +1520,7 @@ describe("types.astNodesAreEquivalent", function() {
         types.astNodesAreEquivalent.assert("1", 1);
         types.astNodesAreEquivalent.assert(true, !false);
 
-        var d1 = new Date;
+        var d1 = new Date();
         var d2 = new Date(+d1);
         assert.notStrictEqual(d1, d2);
         types.astNodesAreEquivalent.assert(d1, d2);

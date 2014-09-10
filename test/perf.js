@@ -1,6 +1,8 @@
 var path = require('path');
 var fs = require('fs');
-var visit = require("ast-types").visit;
+var astlib = require('../main');// require('ast-types');
+var types = astlib.init(astlib.ESLang);
+var visit = types.visit;
 var parse = require("esprima").parse;
 
 var backbone = fs.readFileSync(

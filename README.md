@@ -28,8 +28,11 @@ Basic Usage
 ---
 ```js
 var assert = require("assert");
-var n = require("ast-types").namedTypes;
-var b = require("ast-types").builders;
+var asttypes = require("ast-types");
+var types = asttypes.init(asttypes.ESLang);
+
+var n = types.namedTypes;
+var b = types.builders;
 
 var fooId = b.identifier("foo");
 var ifFoo = b.ifStatement(fooId, b.blockStatement([
@@ -62,7 +65,8 @@ of enumerating the known fields of your AST nodes and getting their
 values, you may be interested in the primitives `getFieldNames` and
 `getFieldValue`:
 ```js
-var types = require("ast-types");
+var asttypes = require("ast-types");
+var types = asttypes.init(asttypes.ESLang);
 var partialFunExpr = { type: "FunctionExpression" };
 
 // Even though partialFunExpr doesn't actually contain all the fields that
@@ -104,7 +108,9 @@ exports.someField = function(object, callback, context) {
 So here's how you might make a copy of an AST node:
 ```js
 var copy = {};
-require("ast-types").eachField(node, function(name, value) {
+var asttypes = require("ast-types");
+var types = asttypes.init(asttypes.ESLang);
+types.eachField(node, function(name, value) {
     // Note that undefined fields will be visited too, according to
     // the rules associated with node.type, and default field values
     // will be substituted if appropriate.
@@ -119,7 +125,8 @@ Here's a trivial example of how you might assert that `arguments.callee`
 is never used in `ast`:
 ```js
 var assert = require("assert");
-var types = require("ast-types");
+var asttypes = require("ast-types");
+var types = asttypes.init(asttypes.ESLang);
 var n = types.namedTypes;
 
 types.visit(ast, {
@@ -422,7 +429,7 @@ The `ast-types` module was designed to be extended. To that end, it
 provides a readable, declarative syntax for specifying new AST node types,
 based primarily upon the `require("ast-types").Type.def` function:
 ```js
-var types = require("ast-types");
+var types = require("ast-types").init();
 var def = types.Type.def;
 var string = types.builtInTypes.string;
 var b = types.builders;
@@ -467,7 +474,7 @@ b.file("lib/types.js", b.thisExpression());
 // ==> AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
 ```
 The `def` syntax is used to define all the default AST node types found in
-[core.js](def/core.js),
+[core.js](def/escore.js),
 [es6.js](def/es6.js),
 [mozilla.js](def/mozilla.js),
 [e4x.js](def/e4x.js), and
