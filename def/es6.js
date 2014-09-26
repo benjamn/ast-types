@@ -184,7 +184,7 @@ def("ImportDeclaration")
     .bases("Declaration")
     .build("specifiers", "kind", "source")
     .field("specifiers", [def("ImportSpecifier")])
-    .field("kind", or("named", "default"))
+    .field("kind", or("named", "default", null))
     .field("source", ModuleSpecifier);
 
 def("TaggedTemplateExpression")
