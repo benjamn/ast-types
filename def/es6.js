@@ -166,10 +166,17 @@ def("ImportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
 
+def("ImportDefaultSpecifier")
+    .bases("NamedSpecifier")
+    .build("id");
+
+def("ImportGlobSpecifier")
+    .bases("NamedSpecifier")
+    .build("id");
+
 def("ExportDeclaration")
     .bases("Declaration")
-    .build("default", "declaration", "specifiers", "source")
-    .field("default", isBoolean)
+    .build("declaration", "specifiers", "source")
     .field("declaration", or(
         def("Declaration"),
         def("Expression") // Implies default.
@@ -182,9 +189,12 @@ def("ExportDeclaration")
 
 def("ImportDeclaration")
     .bases("Declaration")
-    .build("specifiers", "kind", "source")
-    .field("specifiers", [def("ImportSpecifier")])
-    .field("kind", or("named", "default"))
+    .build("specifiers", "source")
+    .field("specifiers", [or(
+        def("ImportSpecifier"),
+        def("ImportGlobSpecifier"),
+        def("ImportDefaultSpecifier")
+    )], defaults.emptyArray)
     .field("source", ModuleSpecifier);
 
 def("TaggedTemplateExpression")
