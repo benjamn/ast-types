@@ -146,25 +146,43 @@ def("ClassExpression")
     .field("body", def("ClassBody"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
-// Specifier and NamedSpecifier are non-standard types that I introduced
-// for definitional convenience.
+// Specifier and NamedSpecifier are abstract non-standard types that I
+// introduced for definitional convenience.
 def("Specifier").bases("Node");
 def("NamedSpecifier")
     .bases("Specifier")
+    // Note: this abstract type is intentionally not buildable.
     .field("id", def("Identifier"))
     .field("name", or(def("Identifier"), null), defaults["null"]);
 
+// Like NamedSpecifier, except type:"ExportSpecifier" and buildable.
+// export {<id [as name]>} [from ...];
 def("ExportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
 
+// export <*> from ...;
 def("ExportBatchSpecifier")
     .bases("Specifier")
     .build();
 
+// Like NamedSpecifier, except type:"ImportSpecifier" and buildable.
+// import {<id [as name]>} from ...;
 def("ImportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
+
+// import <* as id> from ...;
+def("ImportNamespaceSpecifier")
+    .bases("Specifier")
+    .build("id")
+    .field("id", def("Identifier"));
+
+// import <id> from ...;
+def("ImportDefaultSpecifier")
+    .bases("Specifier")
+    .build("id")
+    .field("id", def("Identifier"));
 
 def("ExportDeclaration")
     .bases("Declaration")
@@ -172,7 +190,8 @@ def("ExportDeclaration")
     .field("default", isBoolean)
     .field("declaration", or(
         def("Declaration"),
-        def("Expression") // Implies default.
+        def("Expression"), // Implies default.
+        null
     ))
     .field("specifiers", [or(
         def("ExportSpecifier"),
@@ -183,8 +202,11 @@ def("ExportDeclaration")
 def("ImportDeclaration")
     .bases("Declaration")
     .build("specifiers", "kind", "source")
-    .field("specifiers", [def("ImportSpecifier")])
-    .field("kind", or("named", "default", null))
+    .field("specifiers", [or(
+        def("ImportSpecifier"),
+        def("ImportNamespaceSpecifier"),
+        def("ImportDefaultSpecifier")
+    )])
     .field("source", ModuleSpecifier);
 
 def("TaggedTemplateExpression")
