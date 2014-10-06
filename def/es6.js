@@ -60,21 +60,16 @@ def("ComprehensionBlock")
     .field("right", def("Expression"))
     .field("each", isBoolean);
 
-// This would be the ideal definition for ModuleSpecifier, but alas we
-// can't expect ASTs parsed by Esprima to use this custom subtype:
 def("ModuleSpecifier")
-    .bases("Specifier", "Literal")
-//  .build("value") // Make it abstract/non-buildable for now.
+    .bases("Literal")
+    .build("value")
     .field("value", isString);
-
-// Instead we must settle for a cheap type alias:
-var ModuleSpecifier = def("Literal");
 
 def("ModuleDeclaration")
     .bases("Declaration")
     .build("id", "from", "body")
     .field("id", or(def("Literal"), def("Identifier")))
-    .field("source", or(ModuleSpecifier, null))
+    .field("source", or(def("ModuleSpecifier"), null))
     .field("body", or(def("BlockStatement"), null));
 
 def("Property")
@@ -197,7 +192,7 @@ def("ExportDeclaration")
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
     )], defaults.emptyArray)
-    .field("source", or(ModuleSpecifier, null), defaults["null"]);
+    .field("source", or(def("ModuleSpecifier"), null), defaults["null"]);
 
 def("ImportDeclaration")
     .bases("Declaration")
@@ -207,7 +202,7 @@ def("ImportDeclaration")
         def("ImportNamespaceSpecifier"),
         def("ImportDefaultSpecifier")
     )], defaults.emptyArray)
-    .field("source", ModuleSpecifier);
+    .field("source", def("ModuleSpecifier"));
 
 def("TaggedTemplateExpression")
     .bases("Expression")
