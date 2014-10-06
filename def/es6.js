@@ -60,21 +60,16 @@ def("ComprehensionBlock")
     .field("right", def("Expression"))
     .field("each", isBoolean);
 
-// This would be the ideal definition for ModuleSpecifier, but alas we
-// can't expect ASTs parsed by Esprima to use this custom subtype:
 def("ModuleSpecifier")
-    .bases("Specifier", "Literal")
-//  .build("value") // Make it abstract/non-buildable for now.
+    .bases("Literal")
+    .build("value")
     .field("value", isString);
-
-// Instead we must settle for a cheap type alias:
-var ModuleSpecifier = def("Literal");
 
 def("ModuleDeclaration")
     .bases("Declaration")
     .build("id", "from", "body")
     .field("id", or(def("Literal"), def("Identifier")))
-    .field("source", or(ModuleSpecifier, null))
+    .field("source", or(def("ModuleSpecifier"), null))
     .field("body", or(def("BlockStatement"), null));
 
 def("Property")
@@ -146,25 +141,43 @@ def("ClassExpression")
     .field("body", def("ClassBody"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
-// Specifier and NamedSpecifier are non-standard types that I introduced
-// for definitional convenience.
+// Specifier and NamedSpecifier are abstract non-standard types that I
+// introduced for definitional convenience.
 def("Specifier").bases("Node");
 def("NamedSpecifier")
     .bases("Specifier")
+    // Note: this abstract type is intentionally not buildable.
     .field("id", def("Identifier"))
     .field("name", or(def("Identifier"), null), defaults["null"]);
 
+// Like NamedSpecifier, except type:"ExportSpecifier" and buildable.
+// export {<id [as name]>} [from ...];
 def("ExportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
 
+// export <*> from ...;
 def("ExportBatchSpecifier")
     .bases("Specifier")
     .build();
 
+// Like NamedSpecifier, except type:"ImportSpecifier" and buildable.
+// import {<id [as name]>} from ...;
 def("ImportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
+
+// import <* as id> from ...;
+def("ImportNamespaceSpecifier")
+    .bases("Specifier")
+    .build("id")
+    .field("id", def("Identifier"));
+
+// import <id> from ...;
+def("ImportDefaultSpecifier")
+    .bases("Specifier")
+    .build("id")
+    .field("id", def("Identifier"));
 
 def("ExportDeclaration")
     .bases("Declaration")
@@ -172,20 +185,24 @@ def("ExportDeclaration")
     .field("default", isBoolean)
     .field("declaration", or(
         def("Declaration"),
-        def("Expression") // Implies default.
+        def("Expression"), // Implies default.
+        null
     ))
     .field("specifiers", [or(
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
     )], defaults.emptyArray)
-    .field("source", or(ModuleSpecifier, null), defaults["null"]);
+    .field("source", or(def("ModuleSpecifier"), null), defaults["null"]);
 
 def("ImportDeclaration")
     .bases("Declaration")
-    .build("specifiers", "kind", "source")
-    .field("specifiers", [def("ImportSpecifier")])
-    .field("kind", or("named", "default", null))
-    .field("source", ModuleSpecifier);
+    .build("specifiers", "source")
+    .field("specifiers", [or(
+        def("ImportSpecifier"),
+        def("ImportNamespaceSpecifier"),
+        def("ImportDefaultSpecifier")
+    )], defaults.emptyArray)
+    .field("source", def("ModuleSpecifier"));
 
 def("TaggedTemplateExpression")
     .bases("Expression")
