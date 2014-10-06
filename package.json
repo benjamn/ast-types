@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.4.9",
+  "version": "0.4.11",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
@@ -28,6 +28,9 @@
   "main": "main.js",
   "scripts": {
     "test": "mocha --reporter spec test/run.js"
+  },
+  "dependencies": {
+    "depd": "~1.0.0"
   },
   "devDependencies": {
     "esprima": "~1.2.2",
