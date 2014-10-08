@@ -65,13 +65,6 @@ def("ModuleSpecifier")
     .build("value")
     .field("value", isString);
 
-def("ModuleDeclaration")
-    .bases("Declaration")
-    .build("id", "from", "body")
-    .field("id", or(def("Literal"), def("Identifier")))
-    .field("source", or(def("ModuleSpecifier"), null))
-    .field("body", or(def("BlockStatement"), null));
-
 def("Property")
     // Esprima extensions not mentioned in the Mozilla Parser API:
     .field("method", isBoolean, defaults["false"])
