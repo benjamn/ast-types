@@ -735,12 +735,14 @@ describe("scope methods", function () {
         "  return baz + foo;",
         "}",
         "var nom = function rom(pom) {",
+        "  var zom;",
         "  return rom(pom);",
         "};"
     ];
 
     it("getBindings should get local and global scope bindings", function() {
         var ast = parse(scope.join("\n"));
+        var checked = [];
 
         traverse(ast, function(node) {
             var bindings;
@@ -749,17 +751,25 @@ describe("scope methods", function () {
                 assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
                 assert.equal(1, bindings.foo.length);
                 assert.equal(1, bindings.bar.length);
+                checked.push(node);
             } else if (n.FunctionDeclaration.check(node)) {
                 bindings = this.scope.getBindings();
                 assert.deepEqual(["baz"], Object.keys(bindings));
                 assert.equal(1, bindings.baz.length);
+                checked.push(node);
             } else if (n.ReturnStatement.check(node) &&
-                       n.Identifier.check(node.argument) &&
-                       node.argument.name === "rom") {
+                       n.CallExpression.check(node.argument) &&
+                       node.argument.callee.name === "rom") {
                 bindings = this.scope.getBindings();
-                assert.deepEqual(["pom", "rom"], Object.keys(bindings).sort());
+                assert.deepEqual(["pom", "rom", "zom"], Object.keys(bindings).sort());
+                checked.push(node);
             }
         });
+
+        assert.deepEqual(
+            checked.map(function(node) { return node.type; }),
+            ['Program', 'FunctionDeclaration', 'ReturnStatement']
+        );
     });
 
     it("getBindings should work for import statements", function() {
