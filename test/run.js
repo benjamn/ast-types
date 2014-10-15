@@ -757,8 +757,8 @@ describe("scope methods", function () {
                 assert.equal(1, bindings.baz.length);
                 checked.push(node);
             } else if (n.ReturnStatement.check(node) &&
-                       n.Identifier.check(node.argument) &&
-                       node.argument.name === "rom") {
+                       n.CallExpression.check(node.argument) &&
+                       node.argument.callee.name === "rom") {
                 bindings = this.scope.getBindings();
                 assert.deepEqual(["pom", "rom"], Object.keys(bindings).sort());
             }
