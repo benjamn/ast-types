@@ -735,6 +735,7 @@ describe("scope methods", function () {
         "  return baz + foo;",
         "}",
         "var nom = function rom(pom) {",
+        "  var zom;",
         "  return rom(pom);",
         "};"
     ];
@@ -760,7 +761,8 @@ describe("scope methods", function () {
                        n.CallExpression.check(node.argument) &&
                        node.argument.callee.name === "rom") {
                 bindings = this.scope.getBindings();
-                assert.deepEqual(["pom", "rom"], Object.keys(bindings).sort());
+                assert.deepEqual(["pom", "rom", "zom"], Object.keys(bindings).sort());
+                checked.push(node);
             }
         });
 
