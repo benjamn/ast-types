@@ -109,7 +109,7 @@ def("TypeAnnotatedIdentifier")
 
 def("TypeAnnotation")
     .bases("Pattern")
-    .build("annotatedType", "templateTypes", "paramTypes", "returnType", 
+    .build("annotatedType", "templateTypes", "paramTypes", "returnType",
            "unionType", "nullable")
     .field("annotatedType", def("Identifier"))
     .field("templateTypes", or([def("TypeAnnotation")], null))
@@ -117,3 +117,12 @@ def("TypeAnnotation")
     .field("returnType", or(def("TypeAnnotation"), null))
     .field("unionType", or(def("TypeAnnotation"), null))
     .field("nullable", isBoolean);
+
+def("Identifier")
+    .field("annotation", or(def("TypeAnnotation"), null), defaults['null']);
+
+def("Function")
+    .field("returnType", or(def("TypeAnnotation"), null), defaults['null']);
+
+def("ClassProperty")
+    .field("id", or(def("Identifier"), def("TypeAnnotatedIdentifier")));
