@@ -63,22 +63,14 @@ def("GenericTypeAnnotation")
   .field("typeParameters", [def("Type")]);
 
 def("Identifier")
-  .build("name", "typeAnnotation")
   .field("typeAnnotation", or(def("Type"), null), defaults["null"]);
 
 def("Function")
   .field("returnType", or(def("Type"), null), defaults["null"])
   .field("typeParameters", [def("Type")], defaults.emptyArray);
 
-def("FunctionDeclaration")
-    .build("id", "params", "body", "generator", "expression", "returnType", "typeParameters");
-
-def("FunctionExpression")
-    .build("id", "params", "body", "generator", "expression", "returnType", "typeParameters");
-
 def("ClassProperty")
-  .build("key", "typeAnnotation")
-  .field("typeAnnotation", def("Type"));
+  .field("typeAnnotation", or(def("Type"), null), defaults["null"]);
 
 def("InterfaceDeclaration")
   .bases("Statement")

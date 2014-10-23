@@ -49,7 +49,7 @@ def("Line")
 
 def("Program")
     .bases("Node")
-    .build("body", "comments")
+    .build("body")
     .field("body", [def("Statement")])
     .field("comments", or([or(def("Block"), def("Line"))], null), defaults["null"]);
 
