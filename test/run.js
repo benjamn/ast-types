@@ -545,6 +545,39 @@ describe("NodePath", function() {
         assert.strictEqual(objLitPath.firstInStatement(), true);
         assert.strictEqual(objLitPath.needsParens(true), false);
     });
+
+    it("should prune redundant variable declaration nodes", function() {
+        var programPath = new NodePath(parse("(function(){var y = 1,x = 2;})"));
+        var funBlockStatementPath = programPath.get("body", 0, "expression", "body");
+        var variableDeclaration = funBlockStatementPath.get("body", 0);
+        var yVariableDeclaratorPath = variableDeclaration.get("declarations", 0);
+        var xVariableDeclaratorPath = variableDeclaration.get("declarations", 1);
+
+        n.VariableDeclarator.assert(yVariableDeclaratorPath.node);
+        n.VariableDeclarator.assert(xVariableDeclaratorPath.node);
+
+        var remainingNodePath = yVariableDeclaratorPath.prune();
+
+        assert.strictEqual(remainingNodePath, variableDeclaration);
+
+        remainingNodePath = xVariableDeclaratorPath.prune();
+
+        assert.strictEqual(remainingNodePath, funBlockStatementPath);
+        assert.strictEqual(funBlockStatementPath.get("body", 0).value, undefined);
+    });
+
+    it("should prune redundant expression statement nodes", function() {
+        var programPath = new NodePath(parse("(function(){key = 'value';})"));
+        var funBlockStatementPath = programPath.get("body", 0, "expression", "body");
+        var assignmentExpressionPath = funBlockStatementPath.get("body", 0, "expression");
+
+        n.AssignmentExpression.assert(assignmentExpressionPath.node);
+
+        var remainingNodePath = assignmentExpressionPath.prune();
+
+        assert.strictEqual(remainingNodePath, funBlockStatementPath);
+        assert.strictEqual(funBlockStatementPath.value.body.length, 0);
+    });
 });
 
 describe("path.replace", function() {

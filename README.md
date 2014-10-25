@@ -382,6 +382,10 @@ path.get("elements", 2).replace(
     b.thisExpression()
 );
 
+// Remove a node and its parent if it would leave a redundant AST node:
+//e.g. var t = 1, y =2; removing the `t` and `y` declarators results in `var undefined`.
+path.prune(); //returns the closest parent `NodePath`.
+
 // Remove a node from a list of nodes:
 path.get("elements", 3).replace();
 
