@@ -578,6 +578,40 @@ describe("NodePath", function() {
         assert.strictEqual(remainingNodePath, funBlockStatementPath);
         assert.strictEqual(funBlockStatementPath.value.body.length, 0);
     });
+
+    it("should prune redundant if statement node if no consequent and alternate remain after prune", function() {
+        var programPath = new NodePath(parse("if(true){var t = 0;}"));
+        var consequentNodePath = programPath.get("body", 0, "consequent");
+
+        n.BlockStatement.assert(consequentNodePath.node);
+
+        var remainingNodePath = consequentNodePath.prune();
+
+        var testExpressionNodePath = programPath.get("body", 0);
+
+        n.ExpressionStatement.assert(remainingNodePath.node);
+        assert.strictEqual(remainingNodePath, testExpressionNodePath);
+    });
+
+    it("should modify if statement node if consequent is pruned and alternate remains", function() {
+        var programPath = new NodePath(parse("if(x > 10){var t = 0;}else{var f = 2;}"));
+        var testNodePath = programPath.get("body", 0, "test");
+        var alternateNodePath = programPath.get("body", 0, "alternate");
+        var consequentNodePath = programPath.get("body", 0, "consequent");
+
+        n.BlockStatement.assert(consequentNodePath.node);
+
+        var remainingNodePath = consequentNodePath.prune();
+
+        var modifiedIfStatementNodePath = programPath.get("body", 0);
+        var negatedTestExpression = modifiedIfStatementNodePath.get("test");
+
+        n.IfStatement.assert(remainingNodePath.node);
+        n.UnaryExpression.assert(negatedTestExpression.node);
+        assert.strictEqual(remainingNodePath, modifiedIfStatementNodePath);
+        assert.strictEqual(negatedTestExpression.get("argument").node, testNodePath.node);
+        assert.strictEqual(modifiedIfStatementNodePath.get("consequent").node, alternateNodePath.node);
+    });
 });
 
 describe("path.replace", function() {
