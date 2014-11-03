@@ -595,8 +595,6 @@ describe("NodePath", function() {
 
     it("should modify if statement node if consequent is pruned and alternate remains", function() {
         var programPath = new NodePath(parse("if(x > 10){var t = 0;}else{var f = 2;}"));
-        var testNodePath = programPath.get("body", 0, "test");
-        var alternateNodePath = programPath.get("body", 0, "alternate");
         var consequentNodePath = programPath.get("body", 0, "consequent");
 
         n.BlockStatement.assert(consequentNodePath.node);
@@ -609,8 +607,23 @@ describe("NodePath", function() {
         n.IfStatement.assert(remainingNodePath.node);
         n.UnaryExpression.assert(negatedTestExpression.node);
         assert.strictEqual(remainingNodePath, modifiedIfStatementNodePath);
-        assert.strictEqual(negatedTestExpression.get("argument").node, testNodePath.node);
-        assert.strictEqual(modifiedIfStatementNodePath.get("consequent").node, alternateNodePath.node);
+        assert.strictEqual(negatedTestExpression.node.operator, "!");
+    });
+
+    it("should modify if statement node if consequent is pruned, alternate remains with no double negation", function() {
+        var programPath = new NodePath(parse("if(!condition){var t = 0;}else{var f = 2;}"));
+        var consequentNodePath = programPath.get("body", 0, "consequent");
+
+        n.BlockStatement.assert(consequentNodePath.node);
+
+        var remainingNodePath = consequentNodePath.prune();
+
+        var modifiedIfStatementNodePath = programPath.get("body", 0);
+        var testExpression = modifiedIfStatementNodePath.get("test");
+
+        n.IfStatement.assert(remainingNodePath.node);
+        n.Identifier.assert(testExpression.node);
+        assert.strictEqual(remainingNodePath, modifiedIfStatementNodePath);
     });
 });
 
