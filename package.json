@@ -30,7 +30,6 @@
     "test": "mocha --reporter spec test/run.js"
   },
   "dependencies": {
-    "depd": "~1.0.0"
   },
   "devDependencies": {
     "esprima": "~1.2.2",

@@ -326,9 +326,7 @@ describe("types.eachField", function() {
     });
 });
 
-describe("types.traverse", function() {
-    var traverse = types.traverse;
-
+describe("types.visit", function() {
     var call = b.expressionStatement(
         b.callExpression(
             b.memberExpression(
@@ -352,15 +350,17 @@ describe("types.traverse", function() {
     it("should have correct .parent path", function() {
         var literalCount = 0;
 
-        n.TryStatement.assert(traverse(ts, function(node) {
-            if (n.Literal.check(node)) {
+        n.TryStatement.assert(types.visit(ts, {
+            visitLiteral: function(path) {
+                var node = path.node;
                 literalCount += 1;
                 assert.strictEqual(node.value, "baz");
-                assert.strictEqual(this.parent.node, call.expression);
-                assert.strictEqual(this.parent.parent.node, call);
-                assert.strictEqual(this.parent.parent.parent.node, ts.block);
-                assert.strictEqual(this.parent.parent.parent.parent.node, ts);
-                assert.strictEqual(this.parent.parent.parent.parent.parent, null);
+                assert.strictEqual(path.parent.node, call.expression);
+                assert.strictEqual(path.parent.parent.node, call);
+                assert.strictEqual(path.parent.parent.parent.node, ts.block);
+                assert.strictEqual(path.parent.parent.parent.parent.node, ts);
+                assert.strictEqual(path.parent.parent.parent.parent.parent, null);
+                this.traverse(path);
             }
         }), true);
 
@@ -370,46 +370,35 @@ describe("types.traverse", function() {
     it("should abort subtree traversal when false returned", function() {
         var ids = {};
 
-        function findNamesSkippingMemberExprs(node) {
-            if (n.MemberExpression.check(node)) {
+        types.visit(ts, {
+            visitMemberExpression: function(path) {
                 return false;
-            }
+            },
 
-            if (n.Identifier.check(node)) {
-                ids[node.name] = true;
+            visitIdentifier: function(path) {
+                ids[path.node.name] = true;
+                this.traverse(path);
             }
-        }
-
-        traverse(ts, findNamesSkippingMemberExprs);
+        });
 
         // Make sure all identifers beneath member expressions were skipped.
-        var expected = { err: true };
-        assert.deepEqual(ids, expected);
+        assert.deepEqual(ids, { err: true });
 
         ids = {};
-        // Make sure traverse.fast behaves the same way.
-        traverse.fast(ts, findNamesSkippingMemberExprs);
-        assert.deepEqual(ids, expected);
 
-        function findAllNames(node) {
-            if (n.Identifier.check(node)) {
-                ids[node.name] = true;
+        types.visit(ts, {
+            visitIdentifier: function(path) {
+                ids[path.node.name] = true;
+                this.traverse(path);
             }
-        }
-
-        traverse(ts, findAllNames);
+        });
 
         // Now make sure those identifiers (foo and bar) were visited.
-        assert.deepEqual(ids, expected = {
+        assert.deepEqual(ids, {
             err: true,
             foo: true,
             bar: true
         });
-
-        ids = {};
-        // Make sure traverse.fast behaves the same way.
-        traverse.fast(ts, findAllNames);
-        assert.deepEqual(ids, expected);
     });
 });
 
@@ -431,15 +420,18 @@ describe("path traversal", function() {
 
         // Note that we're passing a path instead of a node as the first
         // argument to types.traverse.
-        types.traverse(path, function(node) {
-            if (n.Identifier.check(node)) {
+        types.visit(path, {
+            visitIdentifier: function(path) {
+                var node = path.node;
                 ++idCount;
 
                 if (node.name === "bar") {
-                    n.MemberExpression.assert(this.parent.node);
-                    n.CallExpression.assert(this.parent.parent.node);
-                    n.ExpressionStatement.assert(this.parent.parent.parent.node);
+                    n.MemberExpression.assert(path.parent.node);
+                    n.CallExpression.assert(path.parent.parent.node);
+                    n.ExpressionStatement.assert(path.parent.parent.parent.node);
                 }
+
+                this.traverse(path);
             }
         });
 
@@ -457,11 +449,13 @@ describe("replacing the root", function() {
     );
 
     it("should be possible", function() {
-        var callExp = types.traverse(ast, function(node) {
-            if (n.ExpressionStatement.check(node)) {
-                this.replace(b.callExpression(b.identifier("f"), [
-                    node.expression
+        var callExp = types.visit(ast, {
+            visitExpressionStatement: function(path) {
+                path.replace(b.callExpression(b.identifier("f"), [
+                    path.node.expression
                 ]));
+
+                this.traverse(path);
             }
         });
 
@@ -597,9 +591,12 @@ describe("path.replace", function() {
     });
 
     it("should support replacement with a single node", function() {
-        types.traverse(ast, function(node) {
-            if (n.Identifier.check(node) && node.name === "a") {
-                this.replace(b.identifier("b"));
+        types.visit(ast, {
+            visitIdentifier: function(path) {
+                if (path.node.name === "a") {
+                    path.replace(b.identifier("b"));
+                }
+                this.traverse(path);
             }
         });
 
@@ -607,9 +604,10 @@ describe("path.replace", function() {
     });
 
     it("should support replacement in an array with a single node", function() {
-        types.traverse(ast, function(node) {
-            if (n.VariableDeclaration.check(node)) {
-                this.replace(b.returnStatement(null));
+        types.visit(ast, {
+            visitVariableDeclaration: function(path) {
+                path.replace(b.returnStatement(null));
+                this.traverse(path);
             }
         });
 
@@ -618,9 +616,10 @@ describe("path.replace", function() {
     });
 
     it("should support replacement with nothing", function() {
-        types.traverse(ast, function(node) {
-            if (n.VariableDeclaration.check(node)) {
-                this.replace();
+        types.visit(ast, {
+            visitVariableDeclaration: function(path) {
+                path.replace();
+                this.traverse(path);
             }
         });
 
@@ -628,14 +627,14 @@ describe("path.replace", function() {
     });
 
     it("should support replacement with itself plus more in an array", function() {
-        types.traverse(ast, function(node) {
-            if (n.VariableDeclaration.check(node)) {
-                var scopeBody = this.scope.path.get("body", "body");
+        types.visit(ast, {
+            visitVariableDeclaration: function(path) {
+                var scopeBody = path.scope.path.get("body", "body");
 
                 // This is contrived such that we just happen to be replacing
                 // the same node we're currently processing, perhaps using a
                 // helper function to create variables at the top of the scope.
-                assert.strictEqual(scopeBody.get(0), this);
+                assert.strictEqual(scopeBody.get(0), path);
 
                 // Prepend `var $$;` inside the block. This should update our
                 // `this` NodePath to correct its array index so that a
@@ -658,10 +657,10 @@ describe("path.replace", function() {
                     scopeBody.get(0).value
                 );
 
-                assert.strictEqual(scopeBody.get(0), this);
+                assert.strictEqual(scopeBody.get(0), path);
 
                 // Then replace the node, not the one we just added.
-                this.replace(b.returnStatement(b.identifier("$3")));
+                return b.returnStatement(b.identifier("$3"));
             }
         });
 
@@ -682,29 +681,29 @@ describe("path.replace", function() {
     });
 
     it("should not throw when replacing the same node twice", function() {
-        types.traverse(ast, function(node) {
-            if (n.VariableDeclaration.check(node)) {
-                this.replace(b.expressionStatement(b.literal(null)));
-                n.ExpressionStatement.assert(this.value);
-                n.Literal.assert(this.value.expression);
-                assert.strictEqual(this.value.expression.value, null);
+        types.visit(ast, {
+            visitVariableDeclaration: function(path) {
+                path.replace(b.expressionStatement(b.literal(null)));
+                n.ExpressionStatement.assert(path.value);
+                n.Literal.assert(path.value.expression);
+                assert.strictEqual(path.value.expression.value, null);
 
-                this.replace(b.expressionStatement(b.literal("OK")));
-                n.ExpressionStatement.assert(this.value);
-                n.Literal.assert(this.value.expression);
-                assert.strictEqual(this.value.expression.value, "OK");
+                path.replace(b.expressionStatement(b.literal("OK")));
+                n.ExpressionStatement.assert(path.value);
+                n.Literal.assert(path.value.expression);
+                assert.strictEqual(path.value.expression.value, "OK");
 
-                if (this.parentPath.get(this.name) !== this) {
+                if (path.parentPath.get(path.name) !== path) {
                     assert.ok(false, "Should have reused the same path");
                 }
+
+                this.traverse(path);
             }
         });
     });
 });
 
 describe("global scope", function() {
-    var traverse = types.traverse;
-
     var scope = [
         "var foo = 42;",
         "function bar(baz) {",
@@ -717,20 +716,25 @@ describe("global scope", function() {
     it("should be reachable from nested scopes", function() {
         var globalScope;
 
-        traverse(ast, function(node) {
-            if (n.Program.check(node)) {
-                assert.strictEqual(this.scope.isGlobal, true);
-                globalScope = this.scope;
+        types.visit(ast, {
+            visitProgram: function(path) {
+                assert.strictEqual(path.scope.isGlobal, true);
+                globalScope = path.scope;
+                this.traverse(path);
+            },
 
-            } else if (n.FunctionDeclaration.check(node)) {
-                assert.strictEqual(this.scope.isGlobal, false);
+            visitFunctionDeclaration: function(path) {
+                var node = path.node;
+                assert.strictEqual(path.scope.isGlobal, false);
 
                 assert.strictEqual(node.id.name, "bar");
-                assert.notStrictEqual(this.scope, globalScope);
-                assert.strictEqual(this.scope.isGlobal, false);
-                assert.strictEqual(this.scope.parent, globalScope);
+                assert.notStrictEqual(path.scope, globalScope);
+                assert.strictEqual(path.scope.isGlobal, false);
+                assert.strictEqual(path.scope.parent, globalScope);
 
-                assert.strictEqual(this.scope.getGlobalScope(), globalScope);
+                assert.strictEqual(path.scope.getGlobalScope(), globalScope);
+
+                this.traverse(path);
             }
         });
     });
@@ -738,30 +742,32 @@ describe("global scope", function() {
     it("should be found by .lookup and .declares", function() {
         var globalScope;
 
-        traverse(ast, function(node) {
-            if (n.Program.check(node)) {
-                assert.strictEqual(this.scope.isGlobal, true);
-                globalScope = this.scope;
+        types.visit(ast, {
+            visitProgram: function(path) {
+                assert.strictEqual(path.scope.isGlobal, true);
+                globalScope = path.scope;
+                this.traverse(path);
+            },
 
-            } else if (n.FunctionDeclaration.check(node)) {
+            visitFunctionDeclaration: function(path) {
                 assert.ok(globalScope.declares("foo"));
                 assert.ok(globalScope.declares("bar"));
-                assert.strictEqual(this.scope.lookup("foo"), globalScope);
-                assert.strictEqual(this.scope.lookup("bar"), globalScope);
+                assert.strictEqual(path.scope.lookup("foo"), globalScope);
+                assert.strictEqual(path.scope.lookup("bar"), globalScope);
 
-                assert.ok(this.scope.declares("baz"));
-                assert.strictEqual(this.scope.lookup("baz"), this.scope);
+                assert.ok(path.scope.declares("baz"));
+                assert.strictEqual(path.scope.lookup("baz"), path.scope);
 
-                assert.strictEqual(this.scope.lookup("qux"), null);
+                assert.strictEqual(path.scope.lookup("qux"), null);
                 assert.strictEqual(globalScope.lookup("baz"), null);
+
+                this.traverse(path);
             }
         });
     });
 });
 
 describe("scope methods", function () {
-    var traverse = types.traverse;
-
     var scope = [
         "var foo = 42;",
         "function bar(baz) {",
@@ -777,25 +783,33 @@ describe("scope methods", function () {
         var ast = parse(scope.join("\n"));
         var checked = [];
 
-        traverse(ast, function(node) {
-            var bindings;
-            if (n.Program.check(node)) {
-                bindings = this.scope.getBindings();
+        types.visit(ast, {
+            visitProgram: function(path) {
+                var bindings = path.scope.getBindings();
                 assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
                 assert.equal(1, bindings.foo.length);
                 assert.equal(1, bindings.bar.length);
-                checked.push(node);
-            } else if (n.FunctionDeclaration.check(node)) {
-                bindings = this.scope.getBindings();
+                checked.push(path.node);
+                this.traverse(path);
+            },
+
+            visitFunctionDeclaration: function(path) {
+                var bindings = path.scope.getBindings();
                 assert.deepEqual(["baz"], Object.keys(bindings));
                 assert.equal(1, bindings.baz.length);
-                checked.push(node);
-            } else if (n.ReturnStatement.check(node) &&
-                       n.CallExpression.check(node.argument) &&
-                       node.argument.callee.name === "rom") {
-                bindings = this.scope.getBindings();
-                assert.deepEqual(["pom", "rom", "zom"], Object.keys(bindings).sort());
-                checked.push(node);
+                checked.push(path.node);
+                this.traverse(path);
+            },
+
+            visitReturnStatement: function(path) {
+                var node = path.node;
+                if (n.CallExpression.check(node.argument) &&
+                    node.argument.callee.name === "rom") {
+                    var bindings = path.scope.getBindings();
+                    assert.deepEqual(["pom", "rom", "zom"], Object.keys(bindings).sort());
+                    checked.push(node);
+                }
+                this.traverse(path);
             }
         });
 
