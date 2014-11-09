@@ -190,6 +190,12 @@ def("Expression").bases("Node", "Pattern");
 
 def("ThisExpression").bases("Expression").build();
 
+// Acorn non-standard node
+def("ParenthesizedExpression")
+  .bases("Expression")
+  .build("expression")
+  .field("expression", def("Expression"));
+
 def("ArrayExpression")
     .bases("Expression")
     .build("elements")

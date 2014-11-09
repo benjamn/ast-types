@@ -160,6 +160,12 @@ def("ImportSpecifier")
     .bases("NamedSpecifier")
     .build("id", "name");
 
+// Acorn: import <* as name> from ...;
+def("ImportBatchSpecifier")
+  .bases("Specifier")
+  .build("name")
+  .field("name", def("Identifier"));
+
 // import <* as id> from ...;
 def("ImportNamespaceSpecifier")
     .bases("Specifier")
