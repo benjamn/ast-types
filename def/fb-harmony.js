@@ -118,11 +118,48 @@ def("TypeAnnotation")
     .field("unionType", or(def("TypeAnnotation"), null))
     .field("nullable", isBoolean);
 
+def("ObjectTypeAnnotation")
+    .bases("Pattern")
+    .build("properties", "nullable")
+    .field("properties", [def("Property")])
+    .field("nullable", isBoolean);
+
+def("VoidTypeAnnotation")
+    .bases("Pattern");
+
+def("ParametricTypeAnnotation")
+    .bases("Pattern")
+    .build("params")
+    .field("params", [def("Identifier")]);
+
+def("OptionalParameter")
+    .bases("Pattern")
+    .build("identifier")
+    .field("identifier", def("Identifier"));
+
 def("Identifier")
-    .field("annotation", or(def("TypeAnnotation"), null), defaults['null']);
+    .field("annotation",
+        or(def("TypeAnnotation"),
+            def("VoidTypeAnnotation"),
+            def("ObjectTypeAnnotation"),
+            null),
+        defaults['null']);
 
 def("Function")
-    .field("returnType", or(def("TypeAnnotation"), null), defaults['null']);
+    .field("returnType",
+        or(def("TypeAnnotation"),
+            def("VoidTypeAnnotation"),
+            def("ObjectTypeAnnotation"),
+            null),
+        defaults['null'])
+    .field("parametricType",
+        or(def("ParametricTypeAnnotation"), null),
+        defaults['null']);
 
 def("ClassProperty")
     .field("id", or(def("Identifier"), def("TypeAnnotatedIdentifier")));
+
+def("ClassDeclaration")
+    .field("parametricType",
+        or(def("ParametricTypeAnnotation"), null),
+        defaults['null']);
