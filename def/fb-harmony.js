@@ -101,65 +101,183 @@ def("XJSText")
 
 def("XJSEmptyExpression").bases("Expression").build();
 
-def("TypeAnnotatedIdentifier")
-    .bases("Pattern")
-    .build("annotation", "identifier")
-    .field("annotation", def("TypeAnnotation"))
-    .field("identifier", def("Identifier"));
+// Type Annotations
+def("Type")
+  .bases("Node");
 
-def("TypeAnnotation")
-    .bases("Pattern")
-    .build("annotatedType", "templateTypes", "paramTypes", "returnType",
-           "unionType", "nullable")
-    .field("annotatedType", def("Identifier"))
-    .field("templateTypes", or([def("TypeAnnotation")], null))
-    .field("paramTypes", or([def("TypeAnnotation")], null))
-    .field("returnType", or(def("TypeAnnotation"), null))
-    .field("unionType", or(def("TypeAnnotation"), null))
-    .field("nullable", isBoolean);
-
-def("ObjectTypeAnnotation")
-    .bases("Pattern")
-    .build("properties", "nullable")
-    .field("properties", [def("Property")])
-    .field("nullable", isBoolean);
+def("AnyTypeAnnotation")
+  .bases("Type");
 
 def("VoidTypeAnnotation")
-    .bases("Pattern");
+  .bases("Type");
 
-def("ParametricTypeAnnotation")
-    .bases("Pattern")
-    .build("params")
-    .field("params", [def("Identifier")]);
+def("NumberTypeAnnotation")
+  .bases("Type");
 
-def("OptionalParameter")
-    .bases("Pattern")
-    .build("identifier")
-    .field("identifier", def("Identifier"));
+def("StringTypeAnnotation")
+  .bases("Type");
+
+def("StringLiteralTypeAnnotation")
+  .bases("Type")
+  .build("value", "raw")
+  .field("value", isString)
+  .field("raw", isString);
+
+def("BooleanTypeAnnotation")
+  .bases("Type");
+
+def("TypeAnnotation")
+  .bases("Node")
+  .build("typeAnnotation")
+  .field("typeAnnotation", def("Type"));
+
+def("NullableTypeAnnotation")
+  .bases("Type")
+  .build("typeAnnotation")
+  .field("typeAnnotation", def("Type"));
+
+def("FunctionTypeAnnotation")
+  .bases("Type")
+  .build("params", "returnType", "rest", "typeParameters")
+  .field("params", [def("FunctionTypeParam")])
+  .field("returnType", def("Type"))
+  .field("rest", or(def("FunctionTypeParam"), null))
+  .field("typeParameters", or(def("TypeParameterDeclaration"), null));
+
+def("FunctionTypeParam")
+  .bases("Node")
+  .build("name", "typeAnnotation", "optional")
+  .field("name", def("Identifier"))
+  .field("typeAnnotation", def("Type"))
+  .field("optional", isBoolean);
+
+def("ObjectTypeAnnotation")
+  .bases("Type")
+  .build("properties")
+  .field("properties", [def("ObjectTypeProperty")])
+  .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
+  .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray);
+
+def("ObjectTypeProperty")
+  .bases("Node")
+  .build("key", "value", "optional")
+  .field("key", or(def("Literal"), def("Identifier")))
+  .field("value", def("Type"))
+  .field("optional", isBoolean);
+
+def("ObjectTypeIndexer")
+  .bases("Node")
+  .build("id", "key", "value")
+  .field("id", def("Identifier"))
+  .field("key", def("Type"))
+  .field("value", def("Type"));
+
+def("ObjectTypeCallProperty")
+  .bases("Node")
+  .build("value")
+  .field("value", def("FunctionTypeAnnotation"))
+  .field("static", isBoolean, false);
+
+def("QualifiedTypeIdentifier")
+  .bases("Node")
+  .build("qualification", "id")
+  .field("qualification", or(def("Identifier"), def("QualifiedTypeIdentifier")))
+  .field("id", def("Identifier"));
+
+def("GenericTypeAnnotation")
+  .bases("Type")
+  .build("id", "typeParameters")
+  .field("id", or(def("Identifier"), def("QualifiedTypeIdentifier")))
+  .field("typeParameters", or(def("TypeParameterInstantiation"), null));
+
+def("MemberTypeAnnotation")
+  .bases("Type")
+  .build("object", "property")
+  .field("object", def("Identifier"))
+  .field("property", or(def("MemberTypeAnnotation"), def("GenericTypeAnnotation")));
+
+def("UnionTypeAnnotation")
+  .bases("Type")
+  .build("types")
+  .field("types", [def("Type")]);
+
+def("IntersectionTypeAnnotation")
+  .bases("Type")
+  .build("types")
+  .field("types", [def("Type")]);
+
+def("TypeofTypeAnnotation")
+  .bases("Type")
+  .build("argument")
+  .field("argument", def("Type"));
 
 def("Identifier")
-    .field("annotation",
-        or(def("TypeAnnotation"),
-            def("VoidTypeAnnotation"),
-            def("ObjectTypeAnnotation"),
-            null),
-        defaults['null']);
+  .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
+
+def("TypeParameterDeclaration")
+  .bases("Node")
+  .build("params")
+  .field("params", [def("Identifier")]);
+
+def("TypeParameterInstantiation")
+  .bases("Node")
+  .build("params")
+  .field("params", [def("Type")]);
 
 def("Function")
-    .field("returnType",
-        or(def("TypeAnnotation"),
-            def("VoidTypeAnnotation"),
-            def("ObjectTypeAnnotation"),
-            null),
-        defaults['null'])
-    .field("parametricType",
-        or(def("ParametricTypeAnnotation"), null),
-        defaults['null']);
+  .field("returnType", or(def("TypeAnnotation"), null), defaults["null"])
+  .field("typeParameters", or(def("TypeParameterDeclaration"), null), defaults["null"]);
 
 def("ClassProperty")
-    .field("id", or(def("Identifier"), def("TypeAnnotatedIdentifier")));
+  .build("key", "typeAnnotation")
+  .field("typeAnnotation", def("TypeAnnotation"))
+  .field("static", isBoolean, false);
 
-def("ClassDeclaration")
-    .field("parametricType",
-        or(def("ParametricTypeAnnotation"), null),
-        defaults['null']);
+def("ClassImplements")
+  .field("typeParameters", or(def("TypeParameterInstantiation"), null), defaults["null"]);
+
+def("InterfaceDeclaration")
+  .bases("Statement")
+  .build("id", "body", "extends")
+  .field("id", def("Identifier"))
+  .field("typeParameters", or(def("TypeParameterDeclaration"), null), defaults["null"])
+  .field("body", def("ObjectTypeAnnotation"))
+  .field("extends", [def("InterfaceExtends")]);
+
+def("InterfaceExtends")
+  .bases("Node")
+  .build("id")
+  .field("id", def("Identifier"))
+  .field("typeParameters", or(def("TypeParameterInstantiation"), null));
+
+def("TypeAlias")
+  .bases("Statement")
+  .build("id", "typeParameters", "right")
+  .field("id", def("Identifier"))
+  .field("typeParameters", or(def("TypeParameterDeclaration"), null))
+  .field("right", def("Type"));
+
+def("TupleTypeAnnotation")
+  .bases("Type")
+  .build("types")
+  .field("types", [def("Type")]);
+
+def("DeclareVariable")
+  .bases("Statement")
+  .build("id")
+  .field("id", def("Identifier"));
+
+def("DeclareFunction")
+  .bases("Statement")
+  .build("id")
+  .field("id", def("Identifier"));
+
+def("DeclareClass")
+  .bases("InterfaceDeclaration")
+  .build("id");
+
+def("DeclareModule")
+  .bases("Statement")
+  .build("id", "body")
+  .field("id", or(def("Identifier"), def("Literal")))
+  .field("body", def("BlockStatement"));
