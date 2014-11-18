@@ -29,10 +29,29 @@ def("Position")
     .field("line", geq(1))
     .field("column", geq(0));
 
+// Block comment. Not a Node.
+def("Block")
+    .build("loc", "value")
+    .field("loc", or(
+        def("SourceLocation"),
+        null
+    ), defaults["null"], true)
+    .field("value", isString);
+
+// Single line comment. Not a Node.
+def("Line")
+  .build("loc", "value")
+  .field("loc", or(
+      def("SourceLocation"),
+      null
+  ), defaults["null"], true)
+  .field("value", isString);
+
 def("Program")
     .bases("Node")
     .build("body")
-    .field("body", [def("Statement")]);
+    .field("body", [def("Statement")])
+    .field("comments", or([or(def("Block"), def("Line"))], null), defaults["null"]);
 
 def("Function")
     .bases("Node")
