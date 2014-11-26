@@ -67,16 +67,22 @@ def("ModuleSpecifier")
 
 def("Property")
     // Esprima extensions not mentioned in the Mozilla Parser API:
+    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("method", isBoolean, defaults["false"])
     .field("shorthand", isBoolean, defaults["false"])
+    .field("computed", isBoolean, defaults["false"]);
+
+def("PropertyPattern")
+    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("computed", isBoolean, defaults["false"]);
 
 def("MethodDefinition")
     .bases("Declaration")
     .build("kind", "key", "value")
     .field("kind", or("init", "get", "set", ""))
-    .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Function"));
+    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+    .field("value", def("Function"))
+    .field("computed", isBoolean, defaults["false"]);
 
 def("SpreadElement")
     .bases("Node")
@@ -106,8 +112,9 @@ var ClassBodyElement = or(
 
 def("ClassProperty")
   .bases("Declaration")
-  .build("id")
-  .field("id", def("Identifier"));
+  .build("key")
+  .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+  .field("computed", isBoolean, defaults["false"]);
 
 def("ClassPropertyDefinition") // static property
     .bases("Declaration")
@@ -132,6 +139,13 @@ def("ClassExpression")
     .build("id", "body", "superClass")
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("body", def("ClassBody"))
+    .field("superClass", or(def("Expression"), null), defaults["null"])
+    .field("implements", [def("ClassImplements")], defaults.emptyArray);
+
+def("ClassImplements")
+    .bases("Node")
+    .build("id")
+    .field("id", def("Identifier"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
 // Specifier and NamedSpecifier are abstract non-standard types that I
