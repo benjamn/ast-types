@@ -11,12 +11,17 @@ var shared = require("../lib/shared");
 var defaults = shared.defaults;
 var geq = shared.geq;
 
-def("Node")
-    .field("type", isString)
+// Abstract supertype of all syntactic entities that are allowed to have a
+// .loc field.
+def("Printable")
     .field("loc", or(
         def("SourceLocation"),
         null
     ), defaults["null"], true);
+
+def("Node")
+    .bases("Printable")
+    .field("type", isString);
 
 def("SourceLocation")
     .build("start", "end", "source")
@@ -33,7 +38,10 @@ def("Program")
     .bases("Node")
     .build("body")
     .field("body", [def("Statement")])
-    .field("comments", or([or(def("Block"), def("Line"))], null), defaults["null"]);
+    .field("comments", or(
+        [or(def("Block"), def("Line"))],
+        null
+    ), defaults["null"], true);
 
 def("Function")
     .bases("Node")
@@ -348,18 +356,12 @@ def("Literal")
 
 // Block comment. Not a Node.
 def("Block")
+    .bases("Printable")
     .build("loc", "value")
-    .field("loc", or(
-        def("SourceLocation"),
-        null
-    ), defaults["null"], true)
     .field("value", isString);
 
 // Single line comment. Not a Node.
 def("Line")
-  .build("loc", "value")
-  .field("loc", or(
-      def("SourceLocation"),
-      null
-  ), defaults["null"], true)
-  .field("value", isString);
+    .bases("Printable")
+    .build("loc", "value")
+    .field("value", isString);
