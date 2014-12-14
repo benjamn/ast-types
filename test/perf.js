@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var visit = require("../").visit;
-var NodeVisitor = require('../lib/node-visitor');
+var NodeVisitor = require("../").NodeVisitor;
 var parse = require("esprima").parse;
 
 var backbone = fs.readFileSync(
@@ -22,7 +22,7 @@ function timeit(label, cb) {
     console.log("%s took %dms (name count: %d)", label, stop - start, names.length);
 }
 
-timeit('NodePathVisitor', function (names) {
+timeit('PathVisitor', function (names) {
     visit(ast, {
         visitNode: function (path) {
             names.push(path.node.type);
