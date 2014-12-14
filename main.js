@@ -27,5 +27,7 @@ exports.getSupertypeNames = types.getSupertypeNames;
 exports.astNodesAreEquivalent = require("./lib/equiv");
 exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
+exports.Visitor = require("./lib/visitor");
 exports.PathVisitor = require("./lib/path-visitor");
+exports.NodeVisitor = require("./lib/node-visitor");
 exports.visit = exports.PathVisitor.visit;
