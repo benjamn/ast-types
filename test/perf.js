@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs');
-var visit = require("ast-types").visit;
+var visit = require("../").visit;
+var NodeVisitor = require('../lib/node-visitor');
 var parse = require("esprima").parse;
 
 var backbone = fs.readFileSync(
@@ -10,15 +11,31 @@ var backbone = fs.readFileSync(
 
 var ast = parse(backbone);
 
-var names = [];
-var start = +new Date;
 
-visit(ast, {
-  visitNode: function(path) {
-    names.push(path.name);
-    this.traverse(path);
-  }
+function timeit(label, cb) {
+    var names = [];
+
+    var start = +new Date;
+    cb(names);
+    var stop = +new Date;
+
+    console.log("%s took %dms (name count: %d)", label, stop - start, names.length);
+}
+
+timeit('NodePathVisitor', function (names) {
+    visit(ast, {
+        visitNode: function (path) {
+            names.push(path.node.type);
+            this.traverse(path);
+        }
+    });
 });
 
-console.log(names.length);
-console.log(new Date - start, "ms");
+timeit('NodeVisitor', function (names) {
+    NodeVisitor.visit(ast, {
+        visitNode: function(node) {
+            names.push(node.type)
+            this.traverse(node);
+        }
+    });
+});
