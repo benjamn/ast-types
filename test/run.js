@@ -1113,7 +1113,7 @@ describe("types.visit", function() {
                 path.get("object", "name").replace("asdfasdf");
                 path.get("property", "name").replace("zxcvzxcv");
 
-                this.visitor.visit(path.get("property"));
+                this.visit(path.get("property"));
             },
 
             visitIdentifier: function(path) {
