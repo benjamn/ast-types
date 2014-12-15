@@ -1360,6 +1360,13 @@ describe("types.visit", function() {
 
         assert.deepEqual(objProp.property.arguments, []);
     });
+
+    it("should complain about non-existent node types", function() {
+        types.visit(objProp, {
+            visitFunctoin: function(path) {}
+        });
+    });
+
 });
 
 describe("path.shift", function() {
