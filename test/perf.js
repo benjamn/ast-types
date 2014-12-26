@@ -35,9 +35,9 @@ timeit('NodePath', CNT, function (names) {
   });
 });
 
-var MyVisitor = require('../').Visitor.create();
+var Visitor = require('../').Visitor;
 timeit('Visitor', CNT, function (names) {
-  MyVisitor.visit(ast, {
+  Visitor.visit(ast, {
     visitNode: function(node) {
       names.push(node.type);
     }
@@ -45,7 +45,7 @@ timeit('Visitor', CNT, function (names) {
 });
 
 var namesRef;
-var precompiled = MyVisitor.fromMethodsObject({
+var precompiled = Visitor.fromMethodsObject({
   visitNode: function(node) {
     namesRef.push(node.type);
   }
