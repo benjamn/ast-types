@@ -9,6 +9,7 @@ var backbone = fs.readFileSync(
 );
 
 var ast = parse(backbone);
+// var ast = parse('1 + 2');
 
 function timeit(title, cnt, fn) {
   var times = [];
