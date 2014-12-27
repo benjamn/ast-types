@@ -58,6 +58,8 @@ timeit('Visitor', CNT, function (names) {
 
       names.push(node.type);
       this.traverse('right');
+
+      // this.done = true;
     }
   });
 });
