@@ -32,6 +32,10 @@ timeit('NodePath', CNT, function (names) {
     visitNode: function(path) {
       names.push(path.name);
       this.traverse(path);
+    },
+    visitBinaryExpression: function (path) {
+      names.push(path.name);
+      this.traverse(path);
     }
   });
 });
@@ -41,6 +45,10 @@ timeit('Visitor', CNT, function (names) {
   Visitor.visit(ast, {
     visitNode: function(node) {
       names.push(node.type);
+    },
+    visitBinaryExpression: function (node) {
+      names.push(node.type);
+      this.traverse();
     }
   });
 });
@@ -49,6 +57,10 @@ var namesRef;
 var precompiled = Visitor.fromMethodsObject({
   visitNode: function(node) {
     namesRef.push(node.type);
+  },
+  visitBinaryExpression: function (node) {
+    namesRef.push(node.type);
+    this.traverse();
   }
 })
 timeit('Precompiled', CNT, function (names) {
