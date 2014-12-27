@@ -54,7 +54,7 @@ timeit('Visitor', CNT, function (names) {
       assert.ok(this.path.node === node);
 
       // Replace left with right
-      path.get('left').replace(node.right);
+      // path.get('left').replace(node.right);
 
       names.push(node.type);
       this.traverse('right');
