@@ -47,8 +47,9 @@ timeit('Visitor', CNT, function (names) {
       names.push(node.type);
     },
     visitBinaryExpression: function (node) {
+      this.traverse('left');
       names.push(node.type);
-      this.traverse();
+      this.traverse('right');
     }
   });
 });
