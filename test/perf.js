@@ -1,3 +1,4 @@
+var assert = require("assert");
 var path = require('path');
 var fs = require('fs');
 var visit = require("../").visit;
@@ -46,8 +47,15 @@ timeit('Visitor', CNT, function (names) {
     visitNode: function(node) {
       names.push(node.type);
     },
-    visitBinaryExpression: function (node) {
+    visitBinaryExpression: function (node, path) {
       this.traverse('left');
+
+      assert.ok(path.node === node);
+      assert.ok(this.path.node === node);
+
+      // Replace left with right
+      path.get('left').replace(node.right);
+
       names.push(node.type);
       this.traverse('right');
     }
