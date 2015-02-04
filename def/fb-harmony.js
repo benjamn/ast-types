@@ -158,7 +158,7 @@ def("ArrayTypeAnnotation")
 
 def("ObjectTypeAnnotation")
   .bases("Type")
-  .build("properties")Al
+  .build("properties")
   .field("properties", [def("ObjectTypeProperty")])
   .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
   .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray);
