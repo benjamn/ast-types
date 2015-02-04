@@ -158,7 +158,7 @@ def("ArrayTypeAnnotation")
 
 def("ObjectTypeAnnotation")
   .bases("Type")
-  .build("properties")
+  .build("properties")Al
   .field("properties", [def("ObjectTypeProperty")])
   .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
   .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray);
@@ -261,6 +261,12 @@ def("TypeAlias")
   .field("id", def("Identifier"))
   .field("typeParameters", or(def("TypeParameterDeclaration"), null))
   .field("right", def("Type"));
+  
+def("TypeCastExpression")
+  .bases("Expression")
+  .build("expression", "typeAnnotation")
+  .field("expression", def("Expression"))
+  .field("typeAnnotation", def("TypeAnnotation"));
 
 def("TupleTypeAnnotation")
   .bases("Type")
