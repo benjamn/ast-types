@@ -21,7 +21,11 @@ def("Printable")
 
 def("Node")
     .bases("Printable")
-    .field("type", isString);
+    .field("type", isString)
+    .field("comments", or(
+        [def("Comment")],
+        null
+    ), defaults["null"], true);
 
 def("SourceLocation")
     .build("start", "end", "source")
@@ -37,11 +41,7 @@ def("Position")
 def("Program")
     .bases("Node")
     .build("body")
-    .field("body", [def("Statement")])
-    .field("comments", or(
-        [or(def("Block"), def("Line"))],
-        null
-    ), defaults["null"], true);
+    .field("body", [def("Statement")]);
 
 def("Function")
     .bases("Node")
@@ -354,14 +354,26 @@ def("Literal")
         isRegExp
     ));
 
-// Block comment. Not a Node.
-def("Block")
+// Abstract (non-buildable) comment supertype. Not a Node.
+def("Comment")
     .bases("Printable")
-    .build("loc", "value")
-    .field("value", isString);
+    .field("value", isString)
+    // A .leading comment comes before the node, whereas a .trailing
+    // comment comes after it. These two fields should not both be true,
+    // but they might both be false when the comment falls inside a node
+    // and the node has no children for the comment to lead or trail,
+    // e.g. { /*dangling*/ }.
+    .field("leading", isBoolean, defaults["true"])
+    .field("trailing", isBoolean, defaults["false"]);
 
-// Single line comment. Not a Node.
+// Block comment. The .type really should be BlockComment rather than
+// Block, but that's what we're stuck with for now.
+def("Block")
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");
+
+// Single line comment. The .type really should be LineComment rather than
+// Line, but that's what we're stuck with for now.
 def("Line")
-    .bases("Printable")
-    .build("loc", "value")
-    .field("value", isString);
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");
