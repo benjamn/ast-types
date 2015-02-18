@@ -400,6 +400,81 @@ describe("types.visit", function() {
             bar: true
         });
     });
+
+    it("this.abort() should abort entire traversal", function() {
+        var literal = "not visited";
+        var unvisitedTypes = [];
+        var root = types.visit(call, {
+            visitIdentifier: function(path) {
+                if (path.value.name === "foo") {
+                    this.abort();
+                }
+            },
+
+            visitLiteral: function(path) {
+                literal = path.value;
+                this.traverse(path);
+            },
+
+            visitNode: function(path) {
+                unvisitedTypes.push(path.value.type);
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(root, call);
+        assert.strictEqual(literal, "not visited");
+        assert.deepEqual(unvisitedTypes, [
+            "ExpressionStatement",
+            "CallExpression",
+            "MemberExpression"
+        ]);
+    });
+
+    it("this.abort() should be cancelable", function() {
+        var literal = "not visited";
+        var unvisitedTypes = [];
+        var root = types.visit(call, {
+            visitIdentifier: function(path) {
+                if (path.value.name === "foo") {
+                    this.abort();
+                }
+            },
+
+            visitMemberExpression: function(path) {
+                try {
+                    this.traverse(path);
+                } catch (err) {
+                    assert.ok(err instanceof this.AbortRequest);
+                    err.cancel();
+                }
+            },
+
+            visitLiteral: function(path) {
+                literal = path.value;
+                this.traverse(path);
+            },
+
+            visitNode: function(path) {
+                unvisitedTypes.push(path.value.type);
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(root, call);
+
+        n.Literal.assert(literal);
+        assert.strictEqual(literal.value, "baz");
+        assert.strictEqual(literal, call.expression.arguments[0]);
+
+        assert.deepEqual(unvisitedTypes, [
+            "ExpressionStatement",
+            "CallExpression"
+            // Note that the MemberExpression and the Literal were visited
+            // by their type-specific methods, so they were not visited by
+            // the catch-all visitNode method.
+        ]);
+    });
 });
 
 describe("path traversal", function() {
