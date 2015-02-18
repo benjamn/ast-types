@@ -105,10 +105,10 @@ def("SpreadElementPattern")
 
 def("ArrayPattern")
     .field("elements", [or(
-      def("Pattern"),
-      null,
-      // used by esprima
-      def("SpreadElement")
+        def("Pattern"),
+        null,
+        // used by esprima
+        def("SpreadElement")
     )]);
 
 var ClassBodyElement = or(
