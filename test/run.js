@@ -1091,6 +1091,133 @@ describe("catch block scope", function() {
     });
 });
 
+describe("array and object pattern scope", function() {
+
+    function scopeFromPattern(pattern) {
+        return new NodePath(
+            b.program([
+                b.variableDeclaration('var', [
+                    b.variableDeclarator(pattern, null)
+                ])
+            ])
+        ).scope;
+    }
+
+    // ObjectPattern with Property and SpreadProperty
+    // ArrayPattern with SpreadElement
+    describe("esprima", function() {
+        var objectPattern;
+        var arrayPattern;
+
+        beforeEach(function() {
+            // {a, b: c, ...d}
+            objectPattern = b.objectPattern([
+              b.property('init', b.identifier('a'), b.identifier('a')),
+              b.property('init', b.identifier('b'), b.identifier('c')),
+              b.spreadProperty(b.identifier('d')),
+            ]);
+
+            // [foo, bar, ...baz]
+            arrayPattern = b.arrayPattern([
+              b.identifier('foo'),
+              b.identifier('bar'),
+              b.spreadElement(b.identifier('baz'))
+            ]);
+        });
+
+        it("should handle object patterns variable declarations", function() {
+            var scope = scopeFromPattern(objectPattern);
+
+            assert.strictEqual(scope.declares("a"), true);
+            assert.strictEqual(scope.declares("b"), false);
+            assert.strictEqual(scope.declares("c"), true);
+            assert.strictEqual(scope.declares("d"), true);
+        });
+
+        it("should handle array patterns in variable declarations", function() {
+            var scope = scopeFromPattern(arrayPattern);
+
+            assert.strictEqual(scope.declares("foo"), true);
+            assert.strictEqual(scope.declares("bar"), true);
+            assert.strictEqual(scope.declares("baz"), true);
+        });
+
+        it("should handle nested patterns in variable declarations", function() {
+            // {a, b: c, ...d, e: [foo, bar, ...baz]}
+            objectPattern.properties.push(
+                b.property('init', b.identifier('e'), arrayPattern)
+            );
+
+            var scope = scopeFromPattern(objectPattern);
+            assert.strictEqual(scope.declares("a"), true);
+            assert.strictEqual(scope.declares("b"), false);
+            assert.strictEqual(scope.declares("c"), true);
+            assert.strictEqual(scope.declares("d"), true);
+            assert.strictEqual(scope.declares("e"), false);
+            assert.strictEqual(scope.declares("foo"), true);
+            assert.strictEqual(scope.declares("bar"), true);
+            assert.strictEqual(scope.declares("baz"), true);
+        });
+    });
+
+    // ObjectPattern with PropertyPattern and SpreadPropertyPattern
+    // ArrayPatterhn with SpreadElementPattern
+    describe("Mozilla Parser API", function() {
+        var objectPattern;
+        var arrayPattern;
+
+        beforeEach(function() {
+            // {a, b: c, ...d}
+            objectPattern = b.objectPattern([
+              b.propertyPattern(b.identifier('a'), b.identifier('a')),
+              b.propertyPattern(b.identifier('b'), b.identifier('c')),
+              b.spreadPropertyPattern(b.identifier('d')),
+            ]);
+
+            // [foo, bar, ...baz]
+            arrayPattern = b.arrayPattern([
+              b.identifier('foo'),
+              b.identifier('bar'),
+              b.spreadElementPattern(b.identifier('baz'))
+            ]);
+        });
+
+        it("should handle object patterns variable declarations", function() {
+            var scope = scopeFromPattern(objectPattern);
+
+            assert.strictEqual(scope.declares("a"), true);
+            assert.strictEqual(scope.declares("b"), false);
+            assert.strictEqual(scope.declares("c"), true);
+            assert.strictEqual(scope.declares("d"), true);
+        });
+
+        it("should handle array patterns in variable declarations", function() {
+            var scope = scopeFromPattern(arrayPattern);
+
+            assert.strictEqual(scope.declares("foo"), true);
+            assert.strictEqual(scope.declares("bar"), true);
+            assert.strictEqual(scope.declares("baz"), true);
+        });
+
+        it("should handle nested patterns in variable declarations", function() {
+            // {a, b: c, ...d, e: [foo, bar, ...baz]}
+            objectPattern.properties.push(
+                b.propertyPattern(b.identifier('e'), arrayPattern)
+            );
+
+            var scope = scopeFromPattern(objectPattern);
+            assert.strictEqual(scope.declares("a"), true);
+            assert.strictEqual(scope.declares("b"), false);
+            assert.strictEqual(scope.declares("c"), true);
+            assert.strictEqual(scope.declares("d"), true);
+            assert.strictEqual(scope.declares("e"), false);
+            assert.strictEqual(scope.declares("foo"), true);
+            assert.strictEqual(scope.declares("bar"), true);
+            assert.strictEqual(scope.declares("baz"), true);
+        });
+    });
+});
+
 describe("types.defineMethod", function() {
     function at(loc) {
         types.namedTypes.SourceLocation.assert(loc);

@@ -215,7 +215,8 @@ def("Property")
     .build("kind", "key", "value")
     .field("kind", or("init", "get", "set"))
     .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Expression"));
+    // esprima allows Pattern
+    .field("value", or(def("Expression"), def("Pattern")));
 
 def("SequenceExpression")
     .bases("Expression")
@@ -317,7 +318,8 @@ def("ObjectPattern")
     .bases("Pattern")
     .build("properties")
     // TODO File a bug to get PropertyPattern added to the interfaces API.
-    .field("properties", [def("PropertyPattern")]);
+    // esprima uses Property
+    .field("properties", [or(def("PropertyPattern"), def("Property"))]);
 
 def("PropertyPattern")
     .bases("Pattern")
