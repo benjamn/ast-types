@@ -245,10 +245,12 @@ function usesThis(funcNode) {
         visitThisExpression: function(path) {
             result = true;
 
-            // ThisExpression nodes don't have any children, so it
-            // wouldn't hurt to call this.traverse(path) here instead of
-            // returning false. Either way, we're done with this subtree.
-            return false;
+            // The quickest way to terminate the traversal is to call
+            // this.abort(), which throws a special exception (instanceof
+            // this.AbortRequest) that will be caught in the top-level
+            // types.visit method, so you don't have to worry about
+            // catching the exception yourself.
+            this.abort();
         },
 
         visitFunction: function(path) {
@@ -267,7 +269,7 @@ function usesThis(funcNode) {
             // any ThisExpression nodes.
             if (this.isSuperCallExpression(node)) {
                 result = true;
-                return false;
+                this.abort(); // Throws AbortRequest exception.
             }
 
             this.traverse(path);
@@ -296,6 +298,13 @@ function usesThis(funcNode) {
     return result;
 }
 ```
+
+As you might guess, when an `AbortRequest` is thrown from a subtree, the
+exception will propagate from the corresponding calls to `this.traverse`
+in the ancestor visitor methods. If you decide you want to cancel the
+request, simply catch the exception and call its `.cancel()` method. The
+rest of the subtree beneath the `try`-`catch` block will be abandoned, but
+the remaining siblings of the ancestor node will still be visited.
 
 NodePath
 ---
