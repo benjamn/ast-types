@@ -475,6 +475,97 @@ describe("types.visit", function() {
             // the catch-all visitNode method.
         ]);
     });
+
+    it("should visit comments", function() {
+        var ast = esprima.parse([
+            "function getArgs(/*arguments*/) {",
+            "  // Turn arguments into an array.",
+            "  return Array.prototype.slice.call(arguments);",
+            "}"
+        ].join("\n"), {
+            comment: true
+        });
+
+        var blockComments = [];
+        var lineComments = [];
+
+        types.visit(ast, {
+            visitComment: function(path) {
+                this.traverse(path);
+                if (n.Block.check(path.value)) {
+                    blockComments.push(path.value);
+                } else if (n.Line.check(path.value)) {
+                    lineComments.push(path.value);
+                }
+            }
+        });
+
+        assert.strictEqual(blockComments.length, 1);
+        assert.strictEqual(blockComments[0].value, "arguments");
+
+        assert.strictEqual(lineComments.length, 1);
+        assert.strictEqual(
+            lineComments[0].value,
+            " Turn arguments into an array."
+        );
+
+        blockComments.length = 0;
+        lineComments.length = 0;
+
+        types.visit(ast, {
+            visitBlock: function(path) {
+                blockComments.push(path.value);
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(blockComments.length, 1);
+        assert.strictEqual(blockComments[0].value, "arguments");
+
+        assert.strictEqual(lineComments.length, 0);
+
+        blockComments.length = 0;
+        lineComments.length = 0;
+
+        types.visit(ast, {
+            visitLine: function(path) {
+                lineComments.push(path.value);
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(blockComments.length, 0);
+
+        assert.strictEqual(lineComments.length, 1);
+        assert.strictEqual(
+            lineComments[0].value,
+            " Turn arguments into an array."
+        );
+
+        blockComments.length = 0;
+        lineComments.length = 0;
+
+        types.visit(ast, {
+            visitBlock: function(path) {
+                blockComments.push(path.value);
+                this.traverse(path);
+            },
+
+            visitLine: function(path) {
+                lineComments.push(path.value);
+                this.traverse(path);
+            }
+        });
+
+        assert.strictEqual(blockComments.length, 1);
+        assert.strictEqual(blockComments[0].value, "arguments");
+
+        assert.strictEqual(lineComments.length, 1);
+        assert.strictEqual(
+            lineComments[0].value,
+            " Turn arguments into an array."
+        );
+    });
 });
 
 describe("path traversal", function() {
