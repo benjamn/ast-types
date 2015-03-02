@@ -7,67 +7,67 @@ var isString = builtin.string;
 var isBoolean = builtin.boolean;
 var defaults = require("../lib/shared").defaults;
 
-def("XJSAttribute")
+def("JSXAttribute")
     .bases("Node")
     .build("name", "value")
-    .field("name", or(def("XJSIdentifier"), def("XJSNamespacedName")))
+    .field("name", or(def("JSXIdentifier"), def("JSXNamespacedName")))
     .field("value", or(
         def("Literal"), // attr="value"
-        def("XJSExpressionContainer"), // attr={value}
+        def("JSXExpressionContainer"), // attr={value}
         null // attr= or just attr
     ), defaults["null"]);
 
-def("XJSIdentifier")
+def("JSXIdentifier")
     .bases("Node")
     .build("name")
     .field("name", isString);
 
-def("XJSNamespacedName")
+def("JSXNamespacedName")
     .bases("Node")
     .build("namespace", "name")
-    .field("namespace", def("XJSIdentifier"))
-    .field("name", def("XJSIdentifier"));
+    .field("namespace", def("JSXIdentifier"))
+    .field("name", def("JSXIdentifier"));
 
-def("XJSMemberExpression")
+def("JSXMemberExpression")
     .bases("MemberExpression")
     .build("object", "property")
-    .field("object", or(def("XJSIdentifier"), def("XJSMemberExpression")))
-    .field("property", def("XJSIdentifier"))
+    .field("object", or(def("JSXIdentifier"), def("JSXMemberExpression")))
+    .field("property", def("JSXIdentifier"))
     .field("computed", isBoolean, defaults.false);
 
-var XJSElementName = or(
-    def("XJSIdentifier"),
-    def("XJSNamespacedName"),
-    def("XJSMemberExpression")
+var JSXElementName = or(
+    def("JSXIdentifier"),
+    def("JSXNamespacedName"),
+    def("JSXMemberExpression")
 );
 
-def("XJSSpreadAttribute")
+def("JSXSpreadAttribute")
     .bases("Node")
     .build("argument")
     .field("argument", def("Expression"));
 
-var XJSAttributes = [or(
-    def("XJSAttribute"),
-    def("XJSSpreadAttribute")
+var JSXAttributes = [or(
+    def("JSXAttribute"),
+    def("JSXSpreadAttribute")
 )];
 
-def("XJSExpressionContainer")
+def("JSXExpressionContainer")
     .bases("Expression")
     .build("expression")
     .field("expression", def("Expression"));
 
-def("XJSElement")
+def("JSXElement")
     .bases("Expression")
     .build("openingElement", "closingElement", "children")
-    .field("openingElement", def("XJSOpeningElement"))
-    .field("closingElement", or(def("XJSClosingElement"), null), defaults["null"])
+    .field("openingElement", def("JSXOpeningElement"))
+    .field("closingElement", or(def("JSXClosingElement"), null), defaults["null"])
     .field("children", [or(
-        def("XJSElement"),
-        def("XJSExpressionContainer"),
-        def("XJSText"),
-        def("Literal") // TODO Esprima should return XJSText instead.
+        def("JSXElement"),
+        def("JSXExpressionContainer"),
+        def("JSXText"),
+        def("Literal") // TODO Esprima should return JSXText instead.
     )], defaults.emptyArray)
-    .field("name", XJSElementName, function() {
+    .field("name", JSXElementName, function() {
         // Little-known fact: the `this` object inside a default function
         // is none other than the partially-built object itself, and any
         // fields initialized directly from builder function arguments
@@ -78,28 +78,28 @@ def("XJSElement")
     .field("selfClosing", isBoolean, function() {
         return this.openingElement.selfClosing;
     })
-    .field("attributes", XJSAttributes, function() {
+    .field("attributes", JSXAttributes, function() {
         return this.openingElement.attributes;
     });
 
-def("XJSOpeningElement")
-    .bases("Node") // TODO Does this make sense? Can't really be an XJSElement.
+def("JSXOpeningElement")
+    .bases("Node") // TODO Does this make sense? Can't really be an JSXElement.
     .build("name", "attributes", "selfClosing")
-    .field("name", XJSElementName)
-    .field("attributes", XJSAttributes, defaults.emptyArray)
+    .field("name", JSXElementName)
+    .field("attributes", JSXAttributes, defaults.emptyArray)
     .field("selfClosing", isBoolean, defaults["false"]);
 
-def("XJSClosingElement")
+def("JSXClosingElement")
     .bases("Node") // TODO Same concern.
     .build("name")
-    .field("name", XJSElementName);
+    .field("name", JSXElementName);
 
-def("XJSText")
+def("JSXText")
     .bases("Literal")
     .build("value")
     .field("value", isString);
 
-def("XJSEmptyExpression").bases("Expression").build();
+def("JSXEmptyExpression").bases("Expression").build();
 
 // Type Annotations
 def("Type")
