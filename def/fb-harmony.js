@@ -119,6 +119,7 @@ def("StringTypeAnnotation")
 
 def("StringLiteralTypeAnnotation")
   .bases("Type")
+  .bases("Literal")
   .build("value", "raw")
   .field("value", isString)
   .field("raw", isString);
@@ -150,7 +151,7 @@ def("FunctionTypeParam")
   .field("name", def("Identifier"))
   .field("typeAnnotation", def("Type"))
   .field("optional", isBoolean);
-  
+
 def("ArrayTypeAnnotation")
   .bases("Type")
   .build("elementType")
@@ -164,7 +165,7 @@ def("ObjectTypeAnnotation")
   .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray);
 
 def("ObjectTypeProperty")
-  .bases("Node")
+  .bases("Literal")
   .build("key", "value", "optional")
   .field("key", or(def("Literal"), def("Identifier")))
   .field("value", def("Type"))
@@ -261,7 +262,7 @@ def("TypeAlias")
   .field("id", def("Identifier"))
   .field("typeParameters", or(def("TypeParameterDeclaration"), null))
   .field("right", def("Type"));
-  
+
 def("TypeCastExpression")
   .bases("Expression")
   .build("expression", "typeAnnotation")
