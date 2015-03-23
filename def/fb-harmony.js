@@ -18,7 +18,7 @@ def("JSXAttribute")
     ), defaults["null"]);
 
 def("JSXIdentifier")
-    .bases("Node")
+    .bases("Identifier")
     .build("name")
     .field("name", isString);
 
@@ -150,7 +150,7 @@ def("FunctionTypeParam")
   .field("name", def("Identifier"))
   .field("typeAnnotation", def("Type"))
   .field("optional", isBoolean);
-  
+
 def("ArrayTypeAnnotation")
   .bases("Type")
   .build("elementType")
@@ -261,7 +261,7 @@ def("TypeAlias")
   .field("id", def("Identifier"))
   .field("typeParameters", or(def("TypeParameterDeclaration"), null))
   .field("right", def("Type"));
-  
+
 def("TypeCastExpression")
   .bases("Expression")
   .build("expression", "typeAnnotation")
