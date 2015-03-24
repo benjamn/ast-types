@@ -78,11 +78,12 @@ def("PropertyPattern")
 
 def("MethodDefinition")
     .bases("Declaration")
-    .build("kind", "key", "value")
+    .build("kind", "key", "value", "static")
     .field("kind", or("init", "get", "set", ""))
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("value", def("Function"))
-    .field("computed", isBoolean, defaults["false"]);
+    .field("computed", isBoolean, defaults["false"])
+    .field("static", isBoolean, defaults["false"]);
 
 def("SpreadElement")
     .bases("Node")
