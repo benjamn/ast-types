@@ -310,7 +310,7 @@ def("MemberExpression")
     .build("object", "property", "computed")
     .field("object", def("Expression"))
     .field("property", or(def("Identifier"), def("Expression")))
-    .field("computed", isBoolean);
+    .field("computed", isBoolean, defaults["false"]);
 
 def("Pattern").bases("Node");
 
