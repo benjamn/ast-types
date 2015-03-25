@@ -139,7 +139,7 @@ def("ClassBody")
 def("ClassDeclaration")
     .bases("Declaration")
     .build("id", "body", "superClass")
-    .field("id", def("Identifier"))
+    .field("id", or(def("Identifier"), null))
     .field("body", def("ClassBody"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
