@@ -4,6 +4,10 @@ var def = types.Type.def;
 var or = types.Type.or;
 var geq = require("../lib/shared").geq;
 
+def("Function")
+    // SpiderMonkey allows expression closures: function(x) x+1
+    .field("body", or(def("BlockStatement"), def("Expression")));
+
 def("ForOfStatement")
     .bases("Statement")
     .build("left", "right", "body")

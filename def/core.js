@@ -47,7 +47,7 @@ def("Function")
     .bases("Node")
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("params", [def("Pattern")])
-    .field("body", or(def("BlockStatement"), def("Expression")));
+    .field("body", def("BlockStatement"));
 
 def("Statement").bases("Node");
 

@@ -29,6 +29,8 @@ def("ArrowFunctionExpression")
     // The forced null value here is compatible with the overridden
     // definition of the "id" field in the Function interface.
     .field("id", null, defaults["null"])
+    // Arrow function bodies are allowed to be expressions.
+    .field("body", or(def("BlockStatement"), def("Expression")))
     // The current spec forbids arrow generators, so I have taken the
     // liberty of enforcing that. TODO Report this.
     .field("generator", false, defaults["false"]);
