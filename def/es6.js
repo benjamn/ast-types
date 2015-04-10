@@ -62,11 +62,6 @@ def("ComprehensionBlock")
     .field("right", def("Expression"))
     .field("each", isBoolean);
 
-def("ModuleSpecifier")
-    .bases("Literal")
-    .build("value")
-    .field("value", isString);
-
 def("Property")
     // Esprima extensions not mentioned in the Mozilla Parser API:
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
@@ -210,7 +205,7 @@ def("ExportDeclaration")
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
     )], defaults.emptyArray)
-    .field("source", or(def("ModuleSpecifier"), null), defaults["null"]);
+    .field("source", or(def("Literal"), null), defaults["null"]);
 
 def("ImportDeclaration")
     .bases("Declaration")
@@ -220,7 +215,7 @@ def("ImportDeclaration")
         def("ImportNamespaceSpecifier"),
         def("ImportDefaultSpecifier")
     )], defaults.emptyArray)
-    .field("source", def("ModuleSpecifier"));
+    .field("source", def("Literal"));
 
 def("TaggedTemplateExpression")
     .bases("Expression")
