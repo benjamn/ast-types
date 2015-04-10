@@ -10,6 +10,7 @@ var parse = esprima.parse;
 var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
 var PathVisitor = require("../lib/path-visitor");
+var rawTypes = require("../lib/types");
 
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");
@@ -183,16 +184,17 @@ describe("whole-program validation", function() {
 });
 
 describe("esprima Syntax types", function() {
-    it("should all be buildable", function() {
-        var def = types.Type.def;
-        var todo = {
-            ClassHeritage: true,
-            ComprehensionBlock: true,
-            ComprehensionExpression: true,
-            ExportSpecifierSet: true,
-            Glob: true
-        };
+    var def = types.Type.def;
 
+    var todo = {
+        ClassHeritage: true,
+        ComprehensionBlock: true,
+        ComprehensionExpression: true,
+        ExportSpecifierSet: true,
+        Glob: true
+    };
+
+    it("should all be buildable", function() {
         Object.keys(esprimaSyntax).forEach(function(name) {
             if (todo[name] === true) return;
             assert.ok(n.hasOwnProperty(name), name);
@@ -202,6 +204,19 @@ describe("esprima Syntax types", function() {
             if (name in esprimaSyntax)
                 assert.ok(def(name).buildable, name);
         });
+    });
+
+    it("builders for subtypes of Expression should have equivalent ExpressionStatement builders", function() {
+        Object.keys(n).forEach(function(name) {
+            if (name in esprimaSyntax && def("Expression").isSupertypeOf(def(name)) && def(name).buildable) {
+                var statementBuilderName = rawTypes.getStatementBuilderName(name);
+                assert.ok(b[statementBuilderName], name + ":" +statementBuilderName);
+            }
+        });
+
+        // sanity check
+        var expStmt = b.assignmentStatement("=", b.identifier("a"), b.identifier("b"));
+        assert.strictEqual(expStmt.type, "ExpressionStatement");
     });
 });
 
