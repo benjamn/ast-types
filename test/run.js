@@ -1033,11 +1033,14 @@ describe("scope methods", function () {
     });
 
     it("getBindings should work for import statements", function() {
-        var ast = require("esprima-fb").parse([
+        var ast = require("esprima-fb").parse(
+          [
             "import {x, y as z} from 'xy';",
             "import xyDefault from 'xy';",
             "import * as xyNamespace from 'xy';"
-        ].join("\n"));
+          ].join("\n"),
+          {sourceType: "module"}
+        );
 
         var names;
 
