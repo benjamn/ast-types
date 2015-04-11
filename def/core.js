@@ -354,7 +354,24 @@ def("Literal")
         null, // isNull would also work here.
         isNumber,
         isRegExp
-    ));
+    ))
+    .field("regex", or({
+        pattern: isString,
+        flags: isString
+    }, null), function() {
+        if (!isRegExp.check(this.value))
+            return null;
+
+        var flags = "";
+        if (this.value.ignoreCase) flags += "i";
+        if (this.value.multiline) flags += "m";
+        if (this.value.global) flags += "g";
+
+        return {
+            pattern: this.value.source,
+            flags: flags
+        };
+    });
 
 // Abstract (non-buildable) comment supertype. Not a Node.
 def("Comment")
