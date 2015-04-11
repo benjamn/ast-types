@@ -1,4 +1,4 @@
-/// <reference path="ast-types-api.d.ts"/>
+/// <reference path="../lib/types.d.ts"/>
 declare module AstTypes {
 
   export interface SourceLocationType {
@@ -65,6 +65,6 @@ declare module AstTypes {
 
   // Extend The Existing NamedTypes Interface
   export interface NamedTypes {
-    Expression: Type
+    Expression: TypeInstance
   }
 }
