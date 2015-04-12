@@ -8,19 +8,21 @@ declare module AstTypes {
   }
 
   //instance methods of Path class
-  export interface PathInstance {
+  export interface IPathInstance<T> {
     getValueProperty(name: string): any
-    get(...name: string[]): PathInstance
+    get(...name: string[]): T
     each(callback:(path:PathInstance)=>any, context:any)
     map<T>(callback:(path:PathInstance)=>T, context:any):T[]
-    filter(callback:(path:PathInstance)=>boolean, context:any):PathInstance[]
+    filter(callback:(path:PathInstance)=>boolean, context:any):T[]
     shift(): any
     unshift(...nodes: any[]): number
     push(...nodes: any[]): number
     pop(): any
-    insertAt(index:number, ...nodes:any[]):PathInstance
-    insertBefore(...nodes:any[]):PathInstance
-    insertAfter(...nodes:any[]):PathInstance
+    insertAt(index:number, ...nodes:any[]):T
+    insertBefore(...nodes:any[]):T
+    insertAfter(...nodes:any[]):T
     replace(...nodes:any[]):any[]
   }
+
+  export interface PathInstance extends IPathInstance<PathInstance> {}
 }

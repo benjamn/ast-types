@@ -2,16 +2,14 @@
 /// <reference path="lib/path.d.ts"/>
 /// <reference path="lib/node-path.d.ts"/>
 /// <reference path="lib/path-visitor.d.ts"/>
+/// <reference path="lib/scope.d.ts"/>
 /// <reference path="def/manually-generated.d.ts"/>
 
 declare module AstTypes {
 
-  export interface Base {
-    Type: TypeStatic
-    namedTypes: NamedTypes
-    builtInTypes: BuiltInTypes
-    builders: Builders
+  export interface Base extends TypesExportsMain {
     PathVisitor : PathVisitorStatic
+    visit: PathVisitor_visit
   }
 
 }

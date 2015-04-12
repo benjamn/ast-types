@@ -80,22 +80,27 @@ declare module AstTypes {
 
   type eachFieldCb = (fieldName:string, value:any)=>any
 
-  export interface TypesExports {
-    Type: TypeInstance
+  // exported properties that are copied to main
+  export interface TypesExportsMain {
+    Type: TypeStatic
     builtInTypes: BuiltInTypes
-    getSupertypeNames(typeName:string): string[]
-    computeSupertypeLookupTable(candidates:{[typeName:string]:any}): {[typeName:string]:string}
+    namedTypes: NamedTypes
     builders: Builders
     defineMethod(name:string) // delete function
     defineMethod(name:string, func:(...args:any[])=>any)
-    getBuilderName(typeName:string): string
-    namedTypes: NamedTypes
     getFieldNames(object:any): string[]
     getFieldValue(object:any, fieldName:string): any
     eachField(object:any, callback:eachFieldCb): void
     eachField(object:any, callback:eachFieldCb, context:any): void
     someField(object:any, callback:eachFieldCb): boolean
     someField(object:any, callback:eachFieldCb, context:any): boolean
+    getSupertypeNames(typeName:string): string[]
     finalize(): void
+  }
+
+  // exported properties that are *not* copied to main
+  export interface TypesExports extends TypesExportsMain {
+    computeSupertypeLookupTable(candidates:{[typeName:string]:any}): {[typeName:string]:string}
+    getBuilderName(typeName:string): string
   }
 }
