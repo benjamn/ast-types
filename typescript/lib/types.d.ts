@@ -1,13 +1,19 @@
 declare module AstTypes {
 
+  // the `toType` method accepts a number of types for it's `from` parameter
+  // `toTypeFromParam` defines a reusable alias for the allowed types
+  type typeCheckCb = () => boolean;
+  type toTypeFromBase= TypeInstance|DefInstance|typeCheckCb;
+  type toTypeFromParam=toTypeFromBase|toTypeFromBase[]|{[fieldName:string]:toTypeFromBase}
+
   export interface TypeStatic {
     //TODO: It appears deep is supposed to be a function?
     new(check:(value:any, deep:any)=>boolean, name:string): TypeInstance
     //TODO: It appears deep is supposed to be a function?
     new(check:(value:any, deep:any)=>boolean, name:()=>string): TypeInstance
-    or(...types:any[]): TypeInstance
-    fromArray(arr:any[]): TypeInstance
-    fromObject(obj): TypeInstance
+    or(...types:toTypeFromParam[]): TypeInstance
+    fromArray(arr:toTypeFromParam[]): TypeInstance
+    fromObject(obj:{[fieldName:string]:toTypeFromParam}): TypeInstance
     def(typeName:string): DefInstance
   }
 
@@ -37,7 +43,10 @@ declare module AstTypes {
     bases(...superTypeNames:string[]):DefInstance
     buildable: boolean
     build(...params:string[]):DefInstance
-
+    field(name:string, type:toTypeFromParam):DefInstance
+    field(name:string, type:toTypeFromParam, defaultFn:(obj:any)=>any):DefInstance
+    field(name:string, type:toTypeFromParam, defaultFn:(obj:any)=>any, hidden:boolean):DefInstance
+    finalize()
   }
 
   export interface FieldInstance {
@@ -69,14 +78,24 @@ declare module AstTypes {
     undefined: TypeInstance
   }
 
+  type eachFieldCb = (fieldName:string, value:any)=>any
+
   export interface TypesExports {
     Type: TypeInstance
     builtInTypes: BuiltInTypes
     getSupertypeNames(typeName:string): string[]
-    computeSupertypeLookupTable(candidates:{[typeName:string]:any}):{[typeName:string]:string}
+    computeSupertypeLookupTable(candidates:{[typeName:string]:any}): {[typeName:string]:string}
     builders: Builders
     defineMethod(name:string) // delete function
     defineMethod(name:string, func:(...args:any[])=>any)
+    getBuilderName(typeName:string): string
+    namedTypes: NamedTypes
+    getFieldNames(object:any): string[]
+    getFieldValue(object:any, fieldName:string): any
+    eachField(object:any, callback:eachFieldCb): void
+    eachField(object:any, callback:eachFieldCb, context:any): void
+    someField(object:any, callback:eachFieldCb): boolean
+    someField(object:any, callback:eachFieldCb, context:any): boolean
+    finalize(): void
   }
-
 }
