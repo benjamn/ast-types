@@ -1,4 +1,5 @@
-/// <reference path="../lib/types.d.ts"/>
+/// <reference path="types.d.ts"/>
+
 declare module AstTypes {
 
   //constructors and static methods of Path class
@@ -7,22 +8,25 @@ declare module AstTypes {
     new(value: any, parentPath:PathInstance, name:string): PathInstance
   }
 
+  type StringOrNumberParam = string|number
+
   //instance methods of Path class
-  export interface IPathInstance<T> {
-    getValueProperty(name: string): any
-    get(...name: string[]): T
-    each(callback:(path:PathInstance)=>any, context:any)
-    map<T>(callback:(path:PathInstance)=>T, context:any):T[]
-    filter(callback:(path:PathInstance)=>boolean, context:any):T[]
+  export interface PathInstance {
+    value: any
+    parentPath?: PathInstance
+    name?: any
+    getValueProperty(name: string|number): any
+    get(...name: StringOrNumberParam[]): PathInstance
+    each(callback:(path:PathInstance)=>any, context?:any)
+    map<X>(callback:(path:PathInstance)=>X, context?:any):X[]
+    filter(callback:(path:PathInstance)=>boolean, context?:any):PathInstance[]
     shift(): any
     unshift(...nodes: any[]): number
     push(...nodes: any[]): number
     pop(): any
-    insertAt(index:number, ...nodes:any[]):T
-    insertBefore(...nodes:any[]):T
-    insertAfter(...nodes:any[]):T
+    insertAt(index:number, ...nodes:any[]):PathInstance
+    insertBefore(...nodes:any[]):PathInstance
+    insertAfter(...nodes:any[]):PathInstance
     replace(...nodes:any[]):any[]
   }
-
-  export interface PathInstance extends IPathInstance<PathInstance> {}
 }

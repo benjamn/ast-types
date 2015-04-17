@@ -33,7 +33,7 @@ function magic(){return function(){}}
 
 // Scope constructor and static methods
 //scope = new Scope(nodePath);            // Webstorm complains about this.
-//scope = new Scope(nodePath, scope);     // TODO: file bug report
+//scope = new Scope(nodePath, scope);     // https://youtrack.jetbrains.com/issue/WEB-15899
 boolean = Scope.isEstablishedBy({});
 string = Scope.isEstablishedBy({});  //bad
 
