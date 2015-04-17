@@ -8,15 +8,13 @@ declare module AstTypes {
     new(value: any, parentPath:PathInstance, name:string): PathInstance
   }
 
-  type StringOrNumberParam = string|number
-
   //instance methods of Path class
   export interface PathInstance {
     value: any
     parentPath?: PathInstance
     name?: any
     getValueProperty(name: string|number): any
-    get(...name: StringOrNumberParam[]): PathInstance
+    get(...name: (string|number)[]): PathInstance
     each(callback:(path:PathInstance)=>any, context?:any)
     map<X>(callback:(path:PathInstance)=>X, context?:any):X[]
     filter(callback:(path:PathInstance)=>boolean, context?:any):PathInstance[]
