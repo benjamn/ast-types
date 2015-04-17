@@ -34,8 +34,7 @@
   "devDependencies": {
     "esprima": "~1.2.2",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
-    "mocha": "~1.20.1",
-    "typescript": "^1.5.0-alpha"
+    "mocha": "~1.20.1"
   },
   "engines": {
     "node": ">= 0.6"
