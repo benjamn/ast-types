@@ -6,10 +6,8 @@
 /// <reference path="def/manually-generated.d.ts"/>
 
 declare module AstTypes {
-
   export interface Base extends TypesExportsMain {
     PathVisitor : PathVisitorStatic
-    visit: PathVisitor_visit
+    visit: (node: any, methods: PathVisitorMethods) => NodePathInstance
   }
-
 }

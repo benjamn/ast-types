@@ -3,14 +3,12 @@ declare module AstTypes {
   // the `toType` method accepts a number of types for it's `from` parameter
   // `toTypeFromParam` defines a reusable alias for the allowed types
   type typeCheckCb = () => boolean;
-  type toTypeFromBase= TypeInstance|DefInstance|typeCheckCb;
-  type toTypeFromParam=toTypeFromBase|toTypeFromBase[]|{[fieldName:string]:toTypeFromBase}
+  type toTypeFromBase= TypeInstance|DefInstance|typeCheckCb|{[fieldName:string]:toTypeFromParam};
+  type toTypeFromParam= toTypeFromBase|toTypeFromBase[];
 
   export interface TypeStatic {
     //TODO: It appears deep is supposed to be a function?
     new(check:(value:any, deep:any)=>boolean, name:string): TypeInstance
-    //TODO: It appears deep is supposed to be a function?
-    new(check:(value:any, deep:any)=>boolean, name:()=>string): TypeInstance
     or(...types:toTypeFromParam[]): TypeInstance
     fromArray(arr:toTypeFromParam[]): TypeInstance
     fromObject(obj:{[fieldName:string]:toTypeFromParam}): TypeInstance
@@ -35,17 +33,13 @@ declare module AstTypes {
     fieldNames: string[]
     type: TypeInstance
     isSupertypeOf(that:DefInstance): boolean
-    checkAllFields(value:any): boolean
     //TODO: deep is a function?
-    checkAllFields(value:any, deep:any): boolean
-    //TODO: deep is a function?
-    check(value:any, deep:any): boolean
+    checkAllFields(value:any, deep?:any): boolean
+    check(value:any, deep?:any): boolean
     bases(...superTypeNames:string[]):DefInstance
     buildable: boolean
     build(...params:string[]):DefInstance
-    field(name:string, type:toTypeFromParam):DefInstance
-    field(name:string, type:toTypeFromParam, defaultFn:(obj:any)=>any):DefInstance
-    field(name:string, type:toTypeFromParam, defaultFn:(obj:any)=>any, hidden:boolean):DefInstance
+    field(name:string, type:toTypeFromParam, defaultFn?:(obj:any)=>any, hidden?:boolean):DefInstance
     finalize()
   }
 
@@ -86,14 +80,11 @@ declare module AstTypes {
     builtInTypes: BuiltInTypes
     namedTypes: NamedTypes
     builders: Builders
-    defineMethod(name:string) // delete function
-    defineMethod(name:string, func:(...args:any[])=>any)
+    defineMethod(name:string, func?:(...args:any[])=>any)  //no func means delete
     getFieldNames(object:any): string[]
     getFieldValue(object:any, fieldName:string): any
-    eachField(object:any, callback:eachFieldCb): void
-    eachField(object:any, callback:eachFieldCb, context:any): void
-    someField(object:any, callback:eachFieldCb): boolean
-    someField(object:any, callback:eachFieldCb, context:any): boolean
+    eachField(object:any, callback:eachFieldCb, context?:any): void
+    someField(object:any, callback:eachFieldCb, context?:any): boolean
     getSupertypeNames(typeName:string): string[]
     finalize(): void
   }
