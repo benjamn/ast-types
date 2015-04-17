@@ -210,7 +210,11 @@ def("ExportDeclaration")
         def("ExportSpecifier"),
         def("ExportBatchSpecifier")
     )], defaults.emptyArray)
-    .field("source", or(def("ModuleSpecifier"), null), defaults["null"]);
+    .field("source", or(
+        def("Literal"),
+        def("ModuleSpecifier"),
+        null
+    ), defaults["null"]);
 
 def("ImportDeclaration")
     .bases("Declaration")
@@ -220,7 +224,10 @@ def("ImportDeclaration")
         def("ImportNamespaceSpecifier"),
         def("ImportDefaultSpecifier")
     )], defaults.emptyArray)
-    .field("source", def("ModuleSpecifier"));
+    .field("source", or(
+        def("Literal"),
+        def("ModuleSpecifier")
+    ));
 
 def("TaggedTemplateExpression")
     .bases("Expression")
