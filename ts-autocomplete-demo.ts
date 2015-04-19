@@ -1,15 +1,20 @@
 /// <reference path="typings/tsd.d.ts"/>
-
-/// <reference path="typescript/ast-types.d.ts"/>
+/// <reference path="typescript/main.d.ts"/>
 
 var types:AstTypes.Base = require('ast-types');
 
 var b = types.builders;
 
-var hello = b.identifier('hello');
-var world = b.identifier('world');
-var returnHello = b.returnStatement(hello);
+var assign:AstTypes.AssignmentExpressionType = b.assignmentExpression(
+  '=',
+  b.identifier('a'),
+  b.binaryExpression('+', b.identifier('b'), b.identifier('c'))
+);
 
-var assign = b.assignmentExpression('=', hello, world);
+types.visit({},{
+  visitAnyTypeAnnotation(path:AstTypes.NodePathInstance){
+    this.traverse(path);
+  }
+});
 
-var x:Array<string>  = [];
+b.templateElement({cooked:"foo", raw:"bar"}, true);

@@ -1,6 +1,6 @@
 /// <reference path="types.d.ts"/>
 /// <reference path="node-path.d.ts"/>
-/// <reference path="../def/manually-generated.d.ts"/>
+/// <reference path="../def/generated.d.ts"/>
 declare module AstTypes {
 
   export interface ScopeStatic {
