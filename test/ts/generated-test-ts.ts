@@ -1,5 +1,5 @@
-/// <reference path="typings/tsd.d.ts"/>
-/// <reference path="typescript/main.d.ts"/>
+/// <reference path="../../typings/tsd.d.ts"/>
+/// <reference path="../../ts/main.d.ts"/>
 
 var types:AstTypes.Base = require('ast-types');
 

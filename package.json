@@ -27,10 +27,9 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec test/run.js"
+    "test": "mocha --reporter spec test/run.js && ./test-ts.sh"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "esprima": "~1.2.2",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
@@ -38,5 +37,8 @@
   },
   "engines": {
     "node": ">= 0.6"
+  },
+  "optionalDependencies": {
+    "typescript": "^1.4.1"
   }
 }

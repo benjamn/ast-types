@@ -1,4 +1,4 @@
-/// <reference path="path-visitor.d.ts"/>
+/// <reference path="../../ts/lib/path-visitor.d.ts"/>
 
 // call this and cast to the desired type
 function magic(...params:any[]):any{}

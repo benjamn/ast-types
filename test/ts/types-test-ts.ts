@@ -1,4 +1,4 @@
-/// <reference path="types.d.ts"/>
+/// <reference path="../../ts/lib/types.d.ts"/>
 
 // call this and cast to the desired type
 function magic():any{}

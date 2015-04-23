@@ -12,5 +12,6 @@ var assign = b.assignmentExpression('=', hello, world);
 
 types.visit({}, {
   visitAnyTypeAnnotation:function(path){
+
   }
 });

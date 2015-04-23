@@ -1,4 +1,4 @@
-/// <reference path="node-path.d.ts"/>
+/// <reference path="../../ts/lib/path.d.ts"/>
 
 // call this and cast to the desired type
 function magic(...params:any[]):any{}
@@ -11,27 +11,12 @@ var booleanArray: boolean[];
 var stringArray: string[];
 var numberArray: number[];
 var pathArray: AstTypes.PathInstance[];
-var node: {type:string};
-var scope: AstTypes.ScopeInstance;
 
 // test subjects
-var Path: AstTypes.NodePathStatic = magic();
-var path: AstTypes.NodePathInstance = magic();
+var Path: AstTypes.PathStatic = magic();
+var path: AstTypes.PathInstance = magic();
 
-// Begin Tests Unique To NodePath
-node = path.node;
-path = path.parent;
-scope = path.scope;
-boolean = path.needsParens();
-boolean = path.needsParens(true);
-boolean = path.canBeFirstInStatement();
-boolean = path.firstInStatement();
-path = path.prune();
-
-
-// NOTE: ---- EVERYTHING BELOW COPIED FROM PATH TESTS ---
-// don't edit this stuff copy and paste from path-test-ts.js
-// TODO: automate?
+// Begin Tests
 
 // Scope constructor and static methods
 path = new Path({type:'Comment'});
