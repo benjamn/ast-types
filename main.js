@@ -11,7 +11,7 @@ require("./def/es7");
 require("./def/mozilla");
 require("./def/e4x");
 require("./def/fb-harmony");
-
+require("./def/es6-modules");
 types.finalize();
 
 exports.Type = types.Type;
