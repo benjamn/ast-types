@@ -2,89 +2,79 @@ var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
 var defaults = require("../lib/shared").defaults;
+var builtin = types.builtInTypes;
+var isString = builtin.string;
 
-// Specifier and NamedSpecifier2 are abstract non-standard types that I
-// introduced for definitional convenience.
-def("NamedSpecifier2")
-    .bases("Specifier")
-    // Note: this abstract type is intentionally not buildable.
-    .field("local", def("Identifier"))
-    .field("name", or(def("Identifier"), null), defaults["null"]);
+// Based on https://github.com/estree/estree
 
-// Like NamedSpecifier2, except type:"ExportSpecifier" and buildable.
-// export {<id [as name]>} [from ...];
-def("ExportSpecifier")
-    .bases("NamedSpecifier2")
-    .build("local", "name");
 
-// export <*> from ...;
-def("ExportAllDeclaration")
-    .bases("Statement")
-    .field("source", def("ModuleSpecifier"));
-
-// Like NamedSpecifier2, except type:"ImportSpecifier2" and buildable.
-// import {<id [as name]>} from ...;
-def("ImportSpecifier2")
-    .bases("NamedSpecifier2")
-    .build("local", "name");
-
-// import <* as id> from ...;
-def("ImportNamespaceSpecifier2")
-    .bases("Specifier")
+def("ModuleSpecifier2")
+    .bases("Node")
     .build("local")
     .field("local", def("Identifier"));
 
-// import <id> from ...;
-def("ImportDefaultSpecifier2")
-    .bases("Specifier")
-    .build("local")
-    .field("local", def("Identifier"));
+def("ModuleSource");
 
-def("ExportDefaultDeclaration")
-    .bases("Declaration")
-    .build("declaration", "specifiers", "source")
-    .field("declaration", or(
-        def("Declaration"),
-        def("Expression"), // Implies default.
-        null
-    ))
-    .field("specifiers", [or(
-        def("ExportSpecifier"),
-        def("ExportBatchSpecifier")
-    )], defaults.emptyArray)
-    .field("source", or(
-        def("Literal"),
-        def("ModuleSpecifier"),
-        null
-    ), defaults["null"]);
+def("ImportSpecifier")
+    .bases("ModuleSpecifier2")
+    .build("imported")
+    .field("imported", def("Identifier"));
 
-def("ExportNamedDeclaration")
-    .bases("Declaration")
-    .build("declaration", "specifiers", "source")
-    .field("declaration", or(
-        def("Declaration"),
-        def("Expression"), // Implies default.
-        null
-    ))
-    .field("specifiers", [or(
-        def("ExportSpecifier"),
-        def("ExportBatchSpecifier")
-    )], defaults.emptyArray)
-    .field("source", or(
-        def("Literal"),
-        def("ModuleSpecifier"),
-        null
-    ), defaults["null"]);
+def("ImportDefaultSpecifier")
+    .bases("ModuleSpecifier2")
+
+def("ImportNamespaceSpecifier")
+    .bases("ModuleSpecifier2")
 
 def("ImportDeclaration")
-    .bases("Declaration")
+    .bases("Node")
     .build("specifiers", "source")
     .field("specifiers", [or(
-        def("ImportSpecifier2"),
-        def("ImportNamespaceSpecifier2"),
-        def("ImportDefaultSpecifier2")
+        def("ImportSpecifier"),
+        def("ImportDefaultSpecifier"),
+        def("ImportNamespaceSpecifier")
+    )], defaults.emptyArray)
+    .field("source", def("Literal"));
+
+def("ExportNamedDeclaration")
+    .bases("Statement")
+    .build("declaration", "specifiers", "source")
+    .field("declaration", or(
+        def("Declaration"),
+        null
+    ))
+    .field("specifiers", [or(
+        def("ExportSpecifier")
     )], defaults.emptyArray)
     .field("source", or(
         def("Literal"),
-        def("ModuleSpecifier")
+        null
+    ), defaults["null"]);
+
+def("ExportSpecifier")
+    .bases("ModuleSpecifier2")
+    .build("exported")
+    .field("exported", def("Identifier"));
+
+def("ExportDefaultDeclaration")
+    .bases("Statement")
+    .build("declaration")
+    .field("declaration", or(
+        def("Declaration"),
+        def("Expression")
     ));
+
+def("ExportAllDeclaration")
+    .bases("Statement")
+    .build("source")
+    .field("source", def("Literal"));
+
+
+
+
+
+
+
+
+
+
