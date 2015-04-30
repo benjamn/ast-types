@@ -1035,7 +1035,29 @@ describe("scope methods", function () {
         );
     });
 
-    it("getBindings should work for import statements", function() {
+    it("getBindings should work for import statements (esprima-fb)", function() {
+        var ast = require("esprima-fb").parse(
+            [
+                "import {x, y as z} from 'xy';",
+                "import xyDefault from 'xy';",
+                "import * as xyNamespace from 'xy';"
+            ].join("\n"),
+            {sourceType: "module"}
+        );
+
+        var names;
+
+        types.visit(ast, {
+            visitProgram: function(path) {
+                names = Object.keys(path.scope.getBindings()).sort();
+                this.traverse(path);
+            }
+        });
+
+        assert.deepEqual(names, ["x", "xyDefault", "xyNamespace", "z"]);
+    });
+
+    it("getBindings should work for import statements (acorn)", function() {
         var ast = require("babel-core/lib/acorn").parse(
           [
             "import {x, y as z} from 'xy';",
