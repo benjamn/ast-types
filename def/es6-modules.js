@@ -10,10 +10,7 @@ var isString = builtin.string;
 
 def("ModuleSpecifier2")
     .bases("Node")
-    .build("local")
     .field("local", def("Identifier"));
-
-def("ModuleSource");
 
 def("ImportSpecifier")
     .bases("ModuleSpecifier2")
@@ -21,10 +18,10 @@ def("ImportSpecifier")
     .field("imported", def("Identifier"));
 
 def("ImportDefaultSpecifier")
-    .bases("ModuleSpecifier2")
+    .bases("ModuleSpecifier2");
 
 def("ImportNamespaceSpecifier")
-    .bases("ModuleSpecifier2")
+    .bases("ModuleSpecifier2");
 
 def("ImportDeclaration")
     .bases("Node")
