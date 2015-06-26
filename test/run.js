@@ -10,6 +10,9 @@ var parse = esprima.parse;
 var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
 var PathVisitor = require("../lib/path-visitor");
+var builtin = types.builtInTypes
+var isRegExp = builtin.RegExp;
+var isString = builtin.string;
 var rawTypes = require("../lib/types");
 
 describe("basic type checking", function() {
@@ -1048,11 +1051,14 @@ describe("scope methods", function () {
     });
 
     it("getBindings should work for import statements", function() {
-        var ast = require("esprima-fb").parse([
+        var ast = require("esprima-fb").parse(
+          [
             "import {x, y as z} from 'xy';",
             "import xyDefault from 'xy';",
             "import * as xyNamespace from 'xy';"
-        ].join("\n"));
+          ].join("\n"),
+          {sourceType: "module"}
+        );
 
         var names;
 
@@ -2043,5 +2049,41 @@ describe("types.astNodesAreEquivalent", function() {
             "  Foo = /asdf/.test(x);",
             "})(/*'~asdf~'*/);"
         ].join("\n\n"));
+    });
+});
+
+describe("RegExpLiteral nodes", function() {
+    it("should have a default-computable .regex field", function() {
+        var ast = parse('/x*/gmi.test("xxx")');
+        var regExp = ast.body[0].expression.callee.object;
+
+        n.Literal.assert(regExp);
+        isRegExp.assert(regExp.value);
+
+        var regex = types.getFieldValue(regExp, "regex");
+
+        assert.deepEqual(regex, {
+            pattern: "x*",
+            flags: "img"
+        });
+
+        types.Type.fromObject({
+            pattern: isString,
+            flags: isString
+        }).assert(regex);
+    });
+
+    it("should typecheck with explicit .regex field", function() {
+        var stringLiteral = b.literal("asdf");
+        assert.strictEqual(stringLiteral.regex, null);
+        n.Literal.assert(stringLiteral, true);
+
+        var regExpLiteral = b.literal(/a.b/gi);
+        assert.strictEqual(regExpLiteral.regex.pattern, "a.b");
+        assert.strictEqual(regExpLiteral.regex.flags, "ig");
+        n.Literal.assert(regExpLiteral, true);
+
+        regExpLiteral.regex.pattern = 1234;
+        assert.strictEqual(n.Literal.check(regExpLiteral, true), false);
     });
 });

@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.7.2",
+  "version": "0.7.6",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "esprima": "~1.2.2",
-    "esprima-fb": "~7001.1.0-dev-harmony-fb",
+    "esprima-fb": "~14001.1.0-dev-harmony-fb",
     "mocha": "~1.20.1"
   },
   "engines": {
