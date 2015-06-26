@@ -133,6 +133,12 @@ def("StringLiteralTypeAnnotation")
 def("BooleanTypeAnnotation")
   .bases("Type");
 
+def("BooleanLiteralTypeAnnotation")
+  .bases("Type")
+  .build("value", "raw")
+  .field("value", isBoolean)
+  .field("raw", isString);
+
 def("TypeAnnotation")
   .bases("Node")
   .build("typeAnnotation")
