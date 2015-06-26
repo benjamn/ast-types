@@ -4,6 +4,7 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isString = builtin.string;
+var isNumber = builtin.number;
 var isBoolean = builtin.boolean;
 var defaults = require("../lib/shared").defaults;
 
@@ -113,6 +114,12 @@ def("VoidTypeAnnotation")
 
 def("NumberTypeAnnotation")
   .bases("Type");
+
+def("NumberLiteralTypeAnnotation")
+  .bases("Type")
+  .build("value", "raw")
+  .field("value", isNumber)
+  .field("raw", isString);
 
 def("StringTypeAnnotation")
   .bases("Type");
