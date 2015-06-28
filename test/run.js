@@ -5,7 +5,6 @@ var b = types.builders;
 var path = require("path");
 var fs = require("fs");
 var esprima = require("esprima");
-var esprimaSyntax = esprima.Syntax;
 var parse = esprima.parse;
 var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
@@ -14,6 +13,7 @@ var builtin = types.builtInTypes
 var isRegExp = builtin.RegExp;
 var isString = builtin.string;
 var rawTypes = require("../lib/types");
+var hasOwn = Object.prototype.hasOwnProperty;
 
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");
@@ -188,30 +188,29 @@ describe("whole-program validation", function() {
 
 describe("esprima Syntax types", function() {
     var def = types.Type.def;
+    var typeNames = {};
 
-    var todo = {
-        ClassHeritage: true,
-        ComprehensionBlock: true,
-        ComprehensionExpression: true,
-        ExportSpecifierSet: true,
-        Glob: true
-    };
+    function addTypeName(name) {
+        typeNames[name] = name;
+    }
+
+    Object.keys(require("esprima").Syntax).forEach(addTypeName);
+    Object.keys(require("esprima-fb").Syntax).forEach(addTypeName);
+    Object.keys(
+        require("babel-core").types.VISITOR_KEYS
+    ).forEach(addTypeName);
 
     it("should all be buildable", function() {
-        Object.keys(esprimaSyntax).forEach(function(name) {
-            if (todo[name] === true) return;
-            assert.ok(n.hasOwnProperty(name), name);
-        });
-
-        Object.keys(n).forEach(function(name) {
-            if (name in esprimaSyntax)
-                assert.ok(def(name).buildable, name);
+        Object.keys(typeNames).forEach(function(name) {
+            assert.ok(hasOwn.call(n, name), name);
+            assert.strictEqual(def(name).buildable, true, name);
         });
     });
 
     it("builders for subtypes of Expression should have equivalent ExpressionStatement builders", function() {
-        Object.keys(n).forEach(function(name) {
-            if (name in esprimaSyntax && def("Expression").isSupertypeOf(def(name)) && def(name).buildable) {
+        Object.keys(typeNames).forEach(function(name) {
+            if (def(name).buildable &&
+                def("Expression").isSupertypeOf(def(name))) {
                 var statementBuilderName = rawTypes.getStatementBuilderName(name);
                 assert.ok(b[statementBuilderName], name + ":" +statementBuilderName);
             }
