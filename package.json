@@ -32,11 +32,12 @@
   "dependencies": {
   },
   "devDependencies": {
+    "babel-core": "~5.1.13",
     "esprima": "~1.2.2",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
     "mocha": "~1.20.1"
   },
   "engines": {
-    "node": ">= 0.6"
+    "node": ">= 0.8"
   }
 }
