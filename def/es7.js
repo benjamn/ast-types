@@ -23,11 +23,9 @@ def("SpreadPropertyPattern")
 
 def("ObjectPattern")
     .field("properties", [or(
-        def("PropertyPattern"),
-        def("SpreadPropertyPattern"),
-        // used by esprima
         def("Property"),
-        def("SpreadProperty")
+        def("PropertyPattern"),
+        def("SpreadPropertyPattern")
     )]);
 
 def("AwaitExpression")

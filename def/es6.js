@@ -8,13 +8,18 @@ def("Function")
     .field("generator", Boolean, defaults["false"])
     .field("expression", Boolean, defaults["false"])
     .field("defaults", [or(def("Expression"), null)], defaults.emptyArray)
-    // TODO This could be represented as a SpreadElementPattern in .params.
+    // TODO This could be represented as a RestElement in .params.
     .field("rest", or(def("Identifier"), null), defaults["null"]);
 
 // The ESTree way of representing a ...rest parameter.
 def("RestElement")
     .bases("Pattern")
-    .build("arguments")
+    .build("argument")
+    .field("argument", def("Pattern"));
+
+def("SpreadElementPattern")
+    .bases("Pattern")
+    .build("argument")
     .field("argument", def("Pattern"));
 
 def("FunctionDeclaration")
@@ -23,8 +28,8 @@ def("FunctionDeclaration")
 def("FunctionExpression")
     .build("id", "params", "body", "generator", "expression");
 
-// TODO The Parser API calls this ArrowExpression, but Esprima uses
-// ArrowFunctionExpression.
+// The Parser API calls this ArrowExpression, but Esprima and all other
+// actual parsers use ArrowFunctionExpression.
 def("ArrowFunctionExpression")
     .bases("Function", "Expression")
     .build("params", "body", "expression")
@@ -64,14 +69,9 @@ def("ComprehensionBlock")
     .field("right", def("Expression"))
     .field("each", Boolean);
 
-def("ModuleSpecifier")
-    .bases("Literal")
-    .build("value")
-    .field("value", String);
-
 def("Property")
-    // Esprima extensions not mentioned in the Mozilla Parser API:
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+    .field("value", or(def("Expression"), def("Pattern")))
     .field("method", Boolean, defaults["false"])
     .field("shorthand", Boolean, defaults["false"])
     .field("computed", Boolean, defaults["false"]);
@@ -86,8 +86,6 @@ def("PropertyPattern")
 def("ObjectPattern")
     .bases("Pattern")
     .build("properties")
-    // TODO File a bug to get PropertyPattern added to the interfaces API.
-    // esprima uses Property
     .field("properties", [or(def("PropertyPattern"), def("Property"))]);
 
 def("ArrayPattern")
@@ -98,7 +96,7 @@ def("ArrayPattern")
 def("MethodDefinition")
     .bases("Declaration")
     .build("kind", "key", "value", "static")
-    .field("kind", or("init", "get", "set", ""))
+    .field("kind", or("constructor", "method", "get", "set"))
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("value", def("Function"))
     .field("computed", Boolean, defaults["false"])
@@ -117,19 +115,6 @@ def("NewExpression")
 
 def("CallExpression")
     .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
-
-def("SpreadElementPattern")
-    .bases("Pattern")
-    .build("argument")
-    .field("argument", def("Pattern"));
-
-def("ArrayPattern")
-    .field("elements", [or(
-        def("Pattern"),
-        null,
-        // used by esprima
-        def("SpreadElement")
-    )]);
 
 // Note: this node type is *not* an AssignmentExpression with a Pattern on
 // the left-hand side! The existing AssignmentExpression type already
@@ -191,72 +176,6 @@ def("ClassImplements")
 // Specifier and NamedSpecifier are abstract non-standard types that I
 // introduced for definitional convenience.
 def("Specifier").bases("Node");
-def("NamedSpecifier")
-    .bases("Specifier")
-    // Note: this abstract type is intentionally not buildable.
-    .field("id", def("Identifier"))
-    .field("name", or(def("Identifier"), null), defaults["null"]);
-
-// Like NamedSpecifier, except type:"ExportSpecifier" and buildable.
-// export {<id [as name]>} [from ...];
-def("ExportSpecifier")
-    .bases("NamedSpecifier")
-    .build("id", "name");
-
-// export <*> from ...;
-def("ExportBatchSpecifier")
-    .bases("Specifier")
-    .build();
-
-// Like NamedSpecifier, except type:"ImportSpecifier" and buildable.
-// import {<id [as name]>} from ...;
-def("ImportSpecifier")
-    .bases("NamedSpecifier")
-    .build("id", "name");
-
-// import <* as id> from ...;
-def("ImportNamespaceSpecifier")
-    .bases("Specifier")
-    .build("id")
-    .field("id", def("Identifier"));
-
-// import <id> from ...;
-def("ImportDefaultSpecifier")
-    .bases("Specifier")
-    .build("id")
-    .field("id", def("Identifier"));
-
-def("ExportDeclaration")
-    .bases("Declaration")
-    .build("default", "declaration", "specifiers", "source")
-    .field("default", Boolean)
-    .field("declaration", or(
-        def("Declaration"),
-        def("Expression"), // Implies default.
-        null
-    ))
-    .field("specifiers", [or(
-        def("ExportSpecifier"),
-        def("ExportBatchSpecifier")
-    )], defaults.emptyArray)
-    .field("source", or(
-        def("Literal"),
-        def("ModuleSpecifier"),
-        null
-    ), defaults["null"]);
-
-def("ImportDeclaration")
-    .bases("Declaration")
-    .build("specifiers", "source")
-    .field("specifiers", [or(
-        def("ImportSpecifier"),
-        def("ImportNamespaceSpecifier"),
-        def("ImportDefaultSpecifier")
-    )], defaults.emptyArray)
-    .field("source", or(
-        def("Literal"),
-        def("ModuleSpecifier")
-    ));
 
 def("TaggedTemplateExpression")
     .bases("Expression")

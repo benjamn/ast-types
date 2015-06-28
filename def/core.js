@@ -178,10 +178,7 @@ def("VariableDeclaration")
     .bases("Declaration")
     .build("kind", "declarations")
     .field("kind", or("var", "let", "const"))
-    .field("declarations", [or(
-        def("VariableDeclarator"),
-        def("Identifier") // TODO Esprima deviation.
-    )]);
+    .field("declarations", [def("VariableDeclarator")]);
 
 def("VariableDeclarator")
     .bases("Node")
@@ -210,8 +207,7 @@ def("Property")
     .build("kind", "key", "value")
     .field("kind", or("init", "get", "set"))
     .field("key", or(def("Literal"), def("Identifier")))
-    // esprima allows Pattern
-    .field("value", or(def("Expression"), def("Pattern")));
+    .field("value", def("Expression"));
 
 def("SequenceExpression")
     .bases("Expression")
@@ -227,8 +223,8 @@ def("UnaryExpression")
     .build("operator", "argument", "prefix")
     .field("operator", UnaryOperator)
     .field("argument", def("Expression"))
-    // TODO Esprima doesn't bother with this field, presumably because
-    // it's always true for unary operators.
+    // Esprima doesn't bother with this field, presumably because it's
+    // always true for unary operators.
     .field("prefix", Boolean, defaults["true"]);
 
 var BinaryOperator = or(
