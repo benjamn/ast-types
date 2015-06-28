@@ -15,6 +15,12 @@ def("Function")
     // TODO This could be represented as a SpreadElementPattern in .params.
     .field("rest", or(def("Identifier"), null), defaults["null"]);
 
+// The ESTree way of representing a ...rest parameter.
+def("RestElement")
+    .bases("Pattern")
+    .build("arguments")
+    .field("argument", def("Pattern"));
+
 def("FunctionDeclaration")
     .build("id", "params", "body", "generator", "expression");
 
@@ -75,8 +81,23 @@ def("Property")
     .field("computed", isBoolean, defaults["false"]);
 
 def("PropertyPattern")
+    .bases("Pattern")
+    .build("key", "pattern")
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+    .field("pattern", def("Pattern"))
     .field("computed", isBoolean, defaults["false"]);
+
+def("ObjectPattern")
+    .bases("Pattern")
+    .build("properties")
+    // TODO File a bug to get PropertyPattern added to the interfaces API.
+    // esprima uses Property
+    .field("properties", [or(def("PropertyPattern"), def("Property"))]);
+
+def("ArrayPattern")
+    .bases("Pattern")
+    .build("elements")
+    .field("elements", [or(def("Pattern"), null)]);
 
 def("MethodDefinition")
     .bases("Declaration")
@@ -113,6 +134,18 @@ def("ArrayPattern")
         // used by esprima
         def("SpreadElement")
     )]);
+
+// Note: this node type is *not* an AssignmentExpression with a Pattern on
+// the left-hand side! The existing AssignmentExpression type already
+// supports destructuring assignments. AssignmentPattern nodes may appear
+// wherever a Pattern is allowed, and the right-hand side represents a
+// default value to be destructured against the left-hand side, if no
+// value is otherwise provided. For example: default parameter values.
+def("AssignmentPattern")
+    .bases("Pattern")
+    .build("left", "right")
+    .field("left", def("Pattern"))
+    .field("right", def("Expression"));
 
 var ClassBodyElement = or(
     def("MethodDefinition"),

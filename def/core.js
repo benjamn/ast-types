@@ -314,24 +314,6 @@ def("MemberExpression")
 
 def("Pattern").bases("Node");
 
-def("ObjectPattern")
-    .bases("Pattern")
-    .build("properties")
-    // TODO File a bug to get PropertyPattern added to the interfaces API.
-    // esprima uses Property
-    .field("properties", [or(def("PropertyPattern"), def("Property"))]);
-
-def("PropertyPattern")
-    .bases("Pattern")
-    .build("key", "pattern")
-    .field("key", or(def("Literal"), def("Identifier")))
-    .field("pattern", def("Pattern"));
-
-def("ArrayPattern")
-    .bases("Pattern")
-    .build("elements")
-    .field("elements", [or(def("Pattern"), null)]);
-
 def("SwitchCase")
     .bases("Node")
     .build("test", "consequent")

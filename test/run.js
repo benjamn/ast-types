@@ -1073,14 +1073,14 @@ describe("scope methods", function () {
     });
 
     it("getBindings should work for import statements (acorn)", function() {
-        var ast = require("babel-core/lib/acorn").parse(
-          [
-            "import {x, y as z} from 'xy';",
-            "import xyDefault from 'xy';",
-            "import * as xyNamespace from 'xy';"
-          ].join("\n"),
-          {sourceType: "module", 'ecmaVersion': 6}
-        );
+        var ast = require("babel-core").parse([
+          "import {x, y as z} from 'xy';",
+          "import xyDefault from 'xy';",
+          "import * as xyNamespace from 'xy';"
+        ].join("\n"), {
+          sourceType: "module",
+          ecmaVersion: 6
+        });
 
         var names;
 
