@@ -100,17 +100,19 @@ def("JSXText")
 def("JSXEmptyExpression").bases("Expression").build();
 
 // Type Annotations
-def("Type")
-  .bases("Node");
+def("Type").bases("Node");
 
 def("AnyTypeAnnotation")
-  .bases("Type");
+  .bases("Type")
+  .build();
 
 def("VoidTypeAnnotation")
-  .bases("Type");
+  .bases("Type")
+  .build();
 
 def("NumberTypeAnnotation")
-  .bases("Type");
+  .bases("Type")
+  .build();
 
 def("NumberLiteralTypeAnnotation")
   .bases("Type")
@@ -119,7 +121,8 @@ def("NumberLiteralTypeAnnotation")
   .field("raw", String);
 
 def("StringTypeAnnotation")
-  .bases("Type");
+  .bases("Type")
+  .build();
 
 def("StringLiteralTypeAnnotation")
   .bases("Type")
@@ -128,7 +131,8 @@ def("StringLiteralTypeAnnotation")
   .field("raw", String);
 
 def("BooleanTypeAnnotation")
-  .bases("Type");
+  .bases("Type")
+  .build();
 
 def("BooleanLiteralTypeAnnotation")
   .bases("Type")
@@ -171,7 +175,9 @@ def("ObjectTypeAnnotation")
   .build("properties")
   .field("properties", [def("ObjectTypeProperty")])
   .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
-  .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray);
+  .field("callProperties",
+         [def("ObjectTypeCallProperty")],
+         defaults.emptyArray);
 
 def("ObjectTypeProperty")
   .bases("Node")
@@ -196,7 +202,9 @@ def("ObjectTypeCallProperty")
 def("QualifiedTypeIdentifier")
   .bases("Node")
   .build("qualification", "id")
-  .field("qualification", or(def("Identifier"), def("QualifiedTypeIdentifier")))
+  .field("qualification",
+         or(def("Identifier"),
+            def("QualifiedTypeIdentifier")))
   .field("id", def("Identifier"));
 
 def("GenericTypeAnnotation")
@@ -209,7 +217,9 @@ def("MemberTypeAnnotation")
   .bases("Type")
   .build("object", "property")
   .field("object", def("Identifier"))
-  .field("property", or(def("MemberTypeAnnotation"), def("GenericTypeAnnotation")));
+  .field("property",
+         or(def("MemberTypeAnnotation"),
+            def("GenericTypeAnnotation")));
 
 def("UnionTypeAnnotation")
   .bases("Type")
@@ -240,8 +250,12 @@ def("TypeParameterInstantiation")
   .field("params", [def("Type")]);
 
 def("Function")
-  .field("returnType", or(def("TypeAnnotation"), null), defaults["null"])
-  .field("typeParameters", or(def("TypeParameterDeclaration"), null), defaults["null"]);
+  .field("returnType",
+         or(def("TypeAnnotation"), null),
+         defaults["null"])
+  .field("typeParameters",
+         or(def("TypeParameterDeclaration"), null),
+         defaults["null"]);
 
 def("ClassProperty")
   .build("key", "typeAnnotation")
@@ -249,13 +263,17 @@ def("ClassProperty")
   .field("static", Boolean, false);
 
 def("ClassImplements")
-  .field("typeParameters", or(def("TypeParameterInstantiation"), null), defaults["null"]);
+  .field("typeParameters",
+         or(def("TypeParameterInstantiation"), null),
+         defaults["null"]);
 
 def("InterfaceDeclaration")
   .bases("Statement")
   .build("id", "body", "extends")
   .field("id", def("Identifier"))
-  .field("typeParameters", or(def("TypeParameterDeclaration"), null), defaults["null"])
+  .field("typeParameters",
+         or(def("TypeParameterDeclaration"), null),
+         defaults["null"])
   .field("body", def("ObjectTypeAnnotation"))
   .field("extends", [def("InterfaceExtends")]);
 
