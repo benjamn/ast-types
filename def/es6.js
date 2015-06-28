@@ -179,6 +179,7 @@ def("Specifier").bases("Node");
 
 def("TaggedTemplateExpression")
     .bases("Expression")
+    .build("tag", "quasi")
     .field("tag", def("Expression"))
     .field("quasi", def("TemplateLiteral"));
 

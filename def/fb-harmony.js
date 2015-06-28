@@ -106,6 +106,10 @@ def("AnyTypeAnnotation")
   .bases("Type")
   .build();
 
+def("MixedTypeAnnotation")
+  .bases("Type")
+  .build();
+
 def("VoidTypeAnnotation")
   .bases("Type")
   .build();
