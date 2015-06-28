@@ -3,11 +3,10 @@ var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
-var isBoolean = builtin.boolean;
 var defaults = require("../lib/shared").defaults;
 
 def("Function")
-    .field("async", isBoolean, defaults["false"]);
+    .field("async", Boolean, defaults["false"]);
 
 def("SpreadProperty")
     .bases("Node")
@@ -35,4 +34,4 @@ def("AwaitExpression")
     .bases("Expression")
     .build("argument", "all")
     .field("argument", or(def("Expression"), null))
-    .field("all", isBoolean, defaults["false"]);
+    .field("all", Boolean, defaults["false"]);

@@ -2,11 +2,6 @@ var types = require("../lib/types");
 var Type = types.Type;
 var def = Type.def;
 var or = Type.or;
-var builtin = types.builtInTypes;
-var isString = builtin.string;
-var isNumber = builtin.number;
-var isBoolean = builtin.boolean;
-var isRegExp = builtin.RegExp;
 var shared = require("../lib/shared");
 var defaults = shared.defaults;
 var geq = shared.geq;
@@ -21,7 +16,7 @@ def("Printable")
 
 def("Node")
     .bases("Printable")
-    .field("type", isString)
+    .field("type", String)
     .field("comments", or(
         [def("Comment")],
         null
@@ -31,7 +26,7 @@ def("SourceLocation")
     .build("start", "end", "source")
     .field("start", def("Position"))
     .field("end", def("Position"))
-    .field("source", or(isString, null), defaults["null"]);
+    .field("source", or(String, null), defaults["null"]);
 
 def("Position")
     .build("line", "column")
@@ -101,7 +96,7 @@ def("SwitchStatement")
     .build("discriminant", "cases", "lexical")
     .field("discriminant", def("Expression"))
     .field("cases", [def("SwitchCase")])
-    .field("lexical", isBoolean, defaults["false"]);
+    .field("lexical", Boolean, defaults["false"]);
 
 def("ReturnStatement")
     .bases("Statement")
@@ -164,7 +159,7 @@ def("ForInStatement")
         def("Expression")))
     .field("right", def("Expression"))
     .field("body", def("Statement"))
-    .field("each", isBoolean);
+    .field("each", Boolean);
 
 def("DebuggerStatement").bases("Statement").build();
 
@@ -234,7 +229,7 @@ def("UnaryExpression")
     .field("argument", def("Expression"))
     // TODO Esprima doesn't bother with this field, presumably because
     // it's always true for unary operators.
-    .field("prefix", isBoolean, defaults["true"]);
+    .field("prefix", Boolean, defaults["true"]);
 
 var BinaryOperator = or(
     "==", "!=", "===", "!==",
@@ -271,7 +266,7 @@ def("UpdateExpression")
     .build("operator", "argument", "prefix")
     .field("operator", UpdateOperator)
     .field("argument", def("Expression"))
-    .field("prefix", isBoolean);
+    .field("prefix", Boolean);
 
 var LogicalOperator = or("||", "&&");
 
@@ -310,7 +305,7 @@ def("MemberExpression")
     .build("object", "property", "computed")
     .field("object", def("Expression"))
     .field("property", or(def("Identifier"), def("Expression")))
-    .field("computed", isBoolean, defaults["false"]);
+    .field("computed", Boolean, defaults["false"]);
 
 def("Pattern").bases("Node");
 
@@ -324,48 +319,44 @@ def("Identifier")
     // But aren't Expressions and Patterns already Nodes? TODO Report this.
     .bases("Node", "Expression", "Pattern")
     .build("name")
-    .field("name", isString);
+    .field("name", String);
 
 def("Literal")
     // But aren't Expressions already Nodes? TODO Report this.
     .bases("Node", "Expression")
     .build("value")
-    .field("value", or(
-        isString,
-        isBoolean,
-        null, // isNull would also work here.
-        isNumber,
-        isRegExp
-    ))
+    .field("value", or(String, Boolean, null, Number, RegExp))
     .field("regex", or({
-        pattern: isString,
-        flags: isString
+        pattern: String,
+        flags: String
     }, null), function() {
-        if (!isRegExp.check(this.value))
-            return null;
+        if (this.value instanceof RegExp) {
+            var flags = "";
 
-        var flags = "";
-        if (this.value.ignoreCase) flags += "i";
-        if (this.value.multiline) flags += "m";
-        if (this.value.global) flags += "g";
+            if (this.value.ignoreCase) flags += "i";
+            if (this.value.multiline) flags += "m";
+            if (this.value.global) flags += "g";
 
-        return {
-            pattern: this.value.source,
-            flags: flags
-        };
+            return {
+                pattern: this.value.source,
+                flags: flags
+            };
+        }
+
+        return null;
     });
 
 // Abstract (non-buildable) comment supertype. Not a Node.
 def("Comment")
     .bases("Printable")
-    .field("value", isString)
+    .field("value", String)
     // A .leading comment comes before the node, whereas a .trailing
     // comment comes after it. These two fields should not both be true,
     // but they might both be false when the comment falls inside a node
     // and the node has no children for the comment to lead or trail,
     // e.g. { /*dangling*/ }.
-    .field("leading", isBoolean, defaults["true"])
-    .field("trailing", isBoolean, defaults["false"]);
+    .field("leading", Boolean, defaults["true"])
+    .field("trailing", Boolean, defaults["false"]);
 
 // Block comment. The .type really should be BlockComment rather than
 // Block, but that's what we're stuck with for now.

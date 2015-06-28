@@ -2,15 +2,11 @@ require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
-var builtin = types.builtInTypes;
-var isBoolean = builtin.boolean;
-var isObject = builtin.object;
-var isString = builtin.string;
 var defaults = require("../lib/shared").defaults;
 
 def("Function")
-    .field("generator", isBoolean, defaults["false"])
-    .field("expression", isBoolean, defaults["false"])
+    .field("generator", Boolean, defaults["false"])
+    .field("expression", Boolean, defaults["false"])
     .field("defaults", [or(def("Expression"), null)], defaults.emptyArray)
     // TODO This could be represented as a SpreadElementPattern in .params.
     .field("rest", or(def("Identifier"), null), defaults["null"]);
@@ -45,7 +41,7 @@ def("YieldExpression")
     .bases("Expression")
     .build("argument", "delegate")
     .field("argument", or(def("Expression"), null))
-    .field("delegate", isBoolean, defaults["false"]);
+    .field("delegate", Boolean, defaults["false"]);
 
 def("GeneratorExpression")
     .bases("Expression")
@@ -66,26 +62,26 @@ def("ComprehensionBlock")
     .build("left", "right", "each")
     .field("left", def("Pattern"))
     .field("right", def("Expression"))
-    .field("each", isBoolean);
+    .field("each", Boolean);
 
 def("ModuleSpecifier")
     .bases("Literal")
     .build("value")
-    .field("value", isString);
+    .field("value", String);
 
 def("Property")
     // Esprima extensions not mentioned in the Mozilla Parser API:
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
-    .field("method", isBoolean, defaults["false"])
-    .field("shorthand", isBoolean, defaults["false"])
-    .field("computed", isBoolean, defaults["false"]);
+    .field("method", Boolean, defaults["false"])
+    .field("shorthand", Boolean, defaults["false"])
+    .field("computed", Boolean, defaults["false"]);
 
 def("PropertyPattern")
     .bases("Pattern")
     .build("key", "pattern")
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("pattern", def("Pattern"))
-    .field("computed", isBoolean, defaults["false"]);
+    .field("computed", Boolean, defaults["false"]);
 
 def("ObjectPattern")
     .bases("Pattern")
@@ -105,8 +101,8 @@ def("MethodDefinition")
     .field("kind", or("init", "get", "set", ""))
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
     .field("value", def("Function"))
-    .field("computed", isBoolean, defaults["false"])
-    .field("static", isBoolean, defaults["false"]);
+    .field("computed", Boolean, defaults["false"])
+    .field("static", Boolean, defaults["false"]);
 
 def("SpreadElement")
     .bases("Node")
@@ -158,7 +154,7 @@ def("ClassProperty")
   .bases("Declaration")
   .build("key")
   .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
-  .field("computed", isBoolean, defaults["false"]);
+  .field("computed", Boolean, defaults["false"]);
 
 def("ClassPropertyDefinition") // static property
     .bases("Declaration")
@@ -233,7 +229,7 @@ def("ImportDefaultSpecifier")
 def("ExportDeclaration")
     .bases("Declaration")
     .build("default", "declaration", "specifiers", "source")
-    .field("default", isBoolean)
+    .field("default", Boolean)
     .field("declaration", or(
         def("Declaration"),
         def("Expression"), // Implies default.
@@ -276,5 +272,5 @@ def("TemplateLiteral")
 def("TemplateElement")
     .bases("Node")
     .build("value", "tail")
-    .field("value", {"cooked": isString, "raw": isString})
-    .field("tail", isBoolean);
+    .field("value", {"cooked": String, "raw": String})
+    .field("tail", Boolean);

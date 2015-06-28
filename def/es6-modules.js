@@ -2,8 +2,6 @@ var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
 var defaults = require("../lib/shared").defaults;
-var builtin = types.builtInTypes;
-var isString = builtin.string;
 
 // Based on https://github.com/estree/estree
 

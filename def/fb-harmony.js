@@ -2,10 +2,6 @@ require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
-var builtin = types.builtInTypes;
-var isString = builtin.string;
-var isNumber = builtin.number;
-var isBoolean = builtin.boolean;
 var defaults = require("../lib/shared").defaults;
 
 def("JSXAttribute")
@@ -21,7 +17,7 @@ def("JSXAttribute")
 def("JSXIdentifier")
     .bases("Identifier")
     .build("name")
-    .field("name", isString);
+    .field("name", String);
 
 def("JSXNamespacedName")
     .bases("Node")
@@ -34,7 +30,7 @@ def("JSXMemberExpression")
     .build("object", "property")
     .field("object", or(def("JSXIdentifier"), def("JSXMemberExpression")))
     .field("property", def("JSXIdentifier"))
-    .field("computed", isBoolean, defaults.false);
+    .field("computed", Boolean, defaults.false);
 
 var JSXElementName = or(
     def("JSXIdentifier"),
@@ -76,7 +72,7 @@ def("JSXElement")
         // guaranteed to be available.
         return this.openingElement.name;
     })
-    .field("selfClosing", isBoolean, function() {
+    .field("selfClosing", Boolean, function() {
         return this.openingElement.selfClosing;
     })
     .field("attributes", JSXAttributes, function() {
@@ -88,7 +84,7 @@ def("JSXOpeningElement")
     .build("name", "attributes", "selfClosing")
     .field("name", JSXElementName)
     .field("attributes", JSXAttributes, defaults.emptyArray)
-    .field("selfClosing", isBoolean, defaults["false"]);
+    .field("selfClosing", Boolean, defaults["false"]);
 
 def("JSXClosingElement")
     .bases("Node") // TODO Same concern.
@@ -98,7 +94,7 @@ def("JSXClosingElement")
 def("JSXText")
     .bases("Literal")
     .build("value")
-    .field("value", isString);
+    .field("value", String);
 
 def("JSXEmptyExpression").bases("Expression").build();
 
@@ -118,8 +114,8 @@ def("NumberTypeAnnotation")
 def("NumberLiteralTypeAnnotation")
   .bases("Type")
   .build("value", "raw")
-  .field("value", isNumber)
-  .field("raw", isString);
+  .field("value", Number)
+  .field("raw", String);
 
 def("StringTypeAnnotation")
   .bases("Type");
@@ -127,8 +123,8 @@ def("StringTypeAnnotation")
 def("StringLiteralTypeAnnotation")
   .bases("Type")
   .build("value", "raw")
-  .field("value", isString)
-  .field("raw", isString);
+  .field("value", String)
+  .field("raw", String);
 
 def("BooleanTypeAnnotation")
   .bases("Type");
@@ -136,8 +132,8 @@ def("BooleanTypeAnnotation")
 def("BooleanLiteralTypeAnnotation")
   .bases("Type")
   .build("value", "raw")
-  .field("value", isBoolean)
-  .field("raw", isString);
+  .field("value", Boolean)
+  .field("raw", String);
 
 def("TypeAnnotation")
   .bases("Node")
@@ -162,7 +158,7 @@ def("FunctionTypeParam")
   .build("name", "typeAnnotation", "optional")
   .field("name", def("Identifier"))
   .field("typeAnnotation", def("Type"))
-  .field("optional", isBoolean);
+  .field("optional", Boolean);
 
 def("ArrayTypeAnnotation")
   .bases("Type")
@@ -181,7 +177,7 @@ def("ObjectTypeProperty")
   .build("key", "value", "optional")
   .field("key", or(def("Literal"), def("Identifier")))
   .field("value", def("Type"))
-  .field("optional", isBoolean);
+  .field("optional", Boolean);
 
 def("ObjectTypeIndexer")
   .bases("Node")
@@ -194,7 +190,7 @@ def("ObjectTypeCallProperty")
   .bases("Node")
   .build("value")
   .field("value", def("FunctionTypeAnnotation"))
-  .field("static", isBoolean, false);
+  .field("static", Boolean, false);
 
 def("QualifiedTypeIdentifier")
   .bases("Node")
@@ -249,7 +245,7 @@ def("Function")
 def("ClassProperty")
   .build("key", "typeAnnotation")
   .field("typeAnnotation", def("TypeAnnotation"))
-  .field("static", isBoolean, false);
+  .field("static", Boolean, false);
 
 def("ClassImplements")
   .field("typeParameters", or(def("TypeParameterInstantiation"), null), defaults["null"]);
