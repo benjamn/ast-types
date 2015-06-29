@@ -4,8 +4,7 @@ var n = types.namedTypes;
 var b = types.builders;
 var path = require("path");
 var fs = require("fs");
-var esprima = require("esprima");
-var parse = esprima.parse;
+var parse = require("esprima").parse;
 var Path = require("../lib/path");
 var NodePath = require("../lib/node-path");
 var PathVisitor = require("../lib/path-visitor");
@@ -164,13 +163,26 @@ describe("shallow and deep checks", function() {
 function validateProgram(file) {
     var fullPath = path.join(__dirname, "..", file);
 
-    it("should validate " + file, function(done) {
+    it("should validate " + file + " with Esprima", function(done) {
+        var parse = require("esprima").parse;
+
         fs.readFile(fullPath, "utf8", function(err, code) {
             if (err) throw err;
 
-            assert.ok(n.Program.check(parse(code), true));
-            assert.ok(n.Program.check(parse(code, { loc: true }), true));
+            n.Program.assert(parse(code), true);
+            n.Program.assert(parse(code, { loc: true }), true);
 
+            done();
+        });
+    });
+
+    it("should validate " + file + " with Babel", function(done) {
+        var parse = require("babel-core").parse;
+
+        fs.readFile(fullPath, "utf8", function(err, code) {
+            if (err) throw err;
+            var ast = parse(code);
+            n.Program.assert(ast, true);
             done();
         });
     });
@@ -494,7 +506,7 @@ describe("types.visit", function() {
     });
 
     it("should visit comments", function() {
-        var ast = esprima.parse([
+        var ast = parse([
             "function getArgs(/*arguments*/) {",
             "  // Turn arguments into an array.",
             "  return Array.prototype.slice.call(arguments);",
