@@ -153,13 +153,12 @@ def("ForStatement")
 
 def("ForInStatement")
     .bases("Statement")
-    .build("left", "right", "body", "each")
+    .build("left", "right", "body")
     .field("left", or(
         def("VariableDeclaration"),
         def("Expression")))
     .field("right", def("Expression"))
-    .field("body", def("Statement"))
-    .field("each", Boolean);
+    .field("body", def("Statement"));
 
 def("DebuggerStatement").bases("Statement").build();
 
