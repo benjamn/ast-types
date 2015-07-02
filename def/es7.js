@@ -1,4 +1,5 @@
-require("./core");
+require("./es6");
+
 var types = require("../lib/types");
 var def = types.Type.def;
 var or = types.Type.or;
