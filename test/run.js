@@ -189,6 +189,8 @@ function validateProgram(file) {
 }
 
 describe("whole-program validation", function() {
+    this.timeout(20000);
+
     validateProgram("main.js");
     validateProgram("lib/shared.js");
     validateProgram("def/core.js");
