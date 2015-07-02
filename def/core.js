@@ -33,6 +33,11 @@ def("Position")
     .field("line", geq(1))
     .field("column", geq(0));
 
+def("File")
+    .bases("Node")
+    .build("program")
+    .field("program", def("Program"));
+
 def("Program")
     .bases("Node")
     .build("body")
