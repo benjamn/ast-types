@@ -29,6 +29,16 @@ def("Decorator")
   .build("expression")
   .field("expression", def("Expression"));
 
+def("Property")
+  .field("decorators",
+         or([def("Decorator")], null),
+         defaults["null"]);
+
+def("MethodDefinition")
+  .field("decorators",
+         or([def("Decorator")], null),
+         defaults["null"]);
+
 def("MetaProperty")
   .bases("Expression")
   .build("meta", "property")
