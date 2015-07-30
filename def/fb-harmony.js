@@ -262,7 +262,7 @@ def("Function")
          defaults["null"]);
 
 def("ClassProperty")
-  .build("key", "value", "typeAnnotation")
+  .build("key", "value", "typeAnnotation", "static")
   .field("value", or(def("Expression"), null))
   .field("typeAnnotation", or(def("TypeAnnotation"), null))
   .field("static", Boolean, defaults["false"]);
