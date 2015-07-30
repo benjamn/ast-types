@@ -108,7 +108,12 @@ def("SpreadElement")
     .field("argument", def("Expression"));
 
 def("ArrayExpression")
-    .field("elements", [or(def("Expression"), def("SpreadElement"), null)]);
+    .field("elements", [or(
+        def("Expression"),
+        def("SpreadElement"),
+        def("RestElement"),
+        null
+    )]);
 
 def("NewExpression")
     .field("arguments", [or(def("Expression"), def("SpreadElement"))]);
