@@ -358,14 +358,10 @@ def("Comment")
     .field("leading", Boolean, defaults["true"])
     .field("trailing", Boolean, defaults["false"]);
 
-// Block comment. The .type really should be BlockComment rather than
-// Block, but that's what we're stuck with for now.
-def("Block")
+def("CommentBlock")
     .bases("Comment")
     .build("value", /*optional:*/ "leading", "trailing");
 
-// Single line comment. The .type really should be LineComment rather than
-// Line, but that's what we're stuck with for now.
-def("Line")
+def("CommentLine")
     .bases("Comment")
     .build("value", /*optional:*/ "leading", "trailing");

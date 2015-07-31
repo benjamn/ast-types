@@ -94,3 +94,9 @@ def("ImportDeclaration")
         def("ImportDefaultSpecifier")
     )], defaults.emptyArray)
     .field("source", def("Literal"));
+
+def("Block")
+  .bases("CommentBlock");
+
+def("Line")
+  .bases("CommentLine");
