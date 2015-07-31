@@ -357,11 +357,3 @@ def("Comment")
     // e.g. { /*dangling*/ }.
     .field("leading", Boolean, defaults["true"])
     .field("trailing", Boolean, defaults["false"]);
-
-def("CommentBlock")
-    .bases("Comment")
-    .build("value", /*optional:*/ "leading", "trailing");
-
-def("CommentLine")
-    .bases("Comment")
-    .build("value", /*optional:*/ "leading", "trailing");

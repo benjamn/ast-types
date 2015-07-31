@@ -96,7 +96,9 @@ def("ImportDeclaration")
     .field("source", def("Literal"));
 
 def("Block")
-  .bases("CommentBlock");
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");
 
 def("Line")
-  .bases("CommentLine");
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");

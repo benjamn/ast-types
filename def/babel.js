@@ -99,3 +99,11 @@ def("ExportAllDeclaration")
   .build("exported", "source")
   .field("exported", or(def("Identifier"), null))
   .field("source", def("Literal"));
+
+def("CommentBlock")
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");
+
+def("CommentLine")
+    .bases("Comment")
+    .build("value", /*optional:*/ "leading", "trailing");
