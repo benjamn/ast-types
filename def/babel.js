@@ -50,10 +50,6 @@ def("ParenthesizedExpression")
   .build("expression")
   .field("expression", def("Expression"));
 
-def("ModuleSpecifier")
-  .bases("Specifier")
-  .field("local", def("Identifier"));
-
 def("ImportSpecifier")
   .bases("ModuleSpecifier")
   .build("imported", "local")

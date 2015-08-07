@@ -32,16 +32,10 @@ def("ObjectPattern")
         def("SpreadProperty") // Used by Esprima.
     )]);
 
-def("NamedSpecifier")
-    .bases("Specifier")
-    // Note: this abstract type is intentionally not buildable.
-    .field("id", def("Identifier"))
-    .field("name", or(def("Identifier"), null), defaults["null"]);
-
-// Like NamedSpecifier, except type:"ExportSpecifier" and buildable.
+// Like ModuleSpecifier, except type:"ExportSpecifier" and buildable.
 // export {<id [as name]>} [from ...];
 def("ExportSpecifier")
-    .bases("NamedSpecifier")
+    .bases("ModuleSpecifier")
     .build("id", "name");
 
 // export <*> from ...;
@@ -49,10 +43,10 @@ def("ExportBatchSpecifier")
     .bases("Specifier")
     .build();
 
-// Like NamedSpecifier, except type:"ImportSpecifier" and buildable.
+// Like ModuleSpecifier, except type:"ImportSpecifier" and buildable.
 // import {<id [as name]>} from ...;
 def("ImportSpecifier")
-    .bases("NamedSpecifier")
+    .bases("ModuleSpecifier")
     .build("id", "name");
 
 // import <* as id> from ...;

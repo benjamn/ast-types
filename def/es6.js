@@ -178,9 +178,25 @@ def("ClassImplements")
     .field("id", def("Identifier"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
-// Specifier and NamedSpecifier are abstract non-standard types that I
+// Specifier and ModuleSpecifier are abstract non-standard types
 // introduced for definitional convenience.
 def("Specifier").bases("Node");
+
+// This supertype is shared/abused by both def/babel.js and
+// def/esprima.js. In the future, it will be possible to load only one set
+// of definitions appropriate for a given parser, but until then we must
+// rely on default functions to reconcile the conflicting AST formats.
+def("ModuleSpecifier")
+    .bases("Specifier")
+    // This local field is used by Babel/Acorn. It should not technically
+    // be optional in the Babel/Acorn AST format, but it must be optional
+    // in the Esprima AST format.
+    .field("local", or(def("Identifier"), null), defaults["null"])
+    // The id and name fields are used by Esprima. The id field should not
+    // technically be optional in the Esprima AST format, but it must be
+    // optional in the Babel/Acorn AST format.
+    .field("id", or(def("Identifier"), null), defaults["null"])
+    .field("name", or(def("Identifier"), null), defaults["null"]);
 
 def("TaggedTemplateExpression")
     .bases("Expression")
