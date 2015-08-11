@@ -2122,3 +2122,21 @@ describe("RegExpLiteral nodes", function() {
         assert.strictEqual(n.Literal.check(regExpLiteral, true), false);
     });
 });
+
+describe("Custom Types", function() {
+    types.Type.def("MyCustomType")
+      .bases("Node")
+      .build("a", "b")
+      .field("a", String)
+      .field("b", Number);
+
+    types.finalize();
+    
+    it("builder function", function() {
+        assert.strictEqual(b.myCustomType.paramCount, 2);
+        assert.strictEqual(b.myCustomType[0].name, "a");
+        assert.strictEqual(b.myCustomType[0].type, builtin.string);
+        assert.strictEqual(b.myCustomType[1].name, "b");
+        assert.strictEqual(b.myCustomType[1].type, builtin.number);
+    });
+});
