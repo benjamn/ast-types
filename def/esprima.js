@@ -51,15 +51,13 @@ def("ImportSpecifier")
 
 // import <* as id> from ...;
 def("ImportNamespaceSpecifier")
-    .bases("Specifier")
-    .build("id")
-    .field("id", def("Identifier"));
+    .bases("ModuleSpecifier")
+    .build("id");
 
 // import <id> from ...;
 def("ImportDefaultSpecifier")
-    .bases("Specifier")
-    .build("id")
-    .field("id", def("Identifier"));
+    .bases("ModuleSpecifier")
+    .build("id");
 
 def("ExportDeclaration")
     .bases("Declaration")
