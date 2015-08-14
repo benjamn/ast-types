@@ -12,6 +12,7 @@ var builtin = types.builtInTypes
 var isRegExp = builtin.RegExp;
 var isString = builtin.string;
 var rawTypes = require("../lib/types");
+
 var hasOwn = Object.prototype.hasOwnProperty;
 
 describe("basic type checking", function() {
@@ -34,6 +35,16 @@ describe("basic type checking", function() {
         assert.ok(n.Expression.check(ifFoo.test));
         assert.ok(n.Identifier.check(ifFoo.test));
         assert.ok(!n.Statement.check(ifFoo.test));
+        assert.ok(n.ImportDeclaration.check(
+          b.importDeclaration(
+            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar"))
+          )
+        );
+        assert.ok(n.ImportDeclaration.check(
+          b.importDeclaration(
+            [b.importNamespaceSpecifier(b.identifier("foo"))], b.literal("bar"))
+          )
+        );
     });
 });
 
