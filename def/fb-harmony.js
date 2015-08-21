@@ -72,13 +72,13 @@ def("JSXElement")
         // (like openingElement, closingElement, and children) are
         // guaranteed to be available.
         return this.openingElement.name;
-    })
+    }, true) // hidden from traversal
     .field("selfClosing", Boolean, function() {
         return this.openingElement.selfClosing;
-    })
+    }, true) // hidden from traversal
     .field("attributes", JSXAttributes, function() {
         return this.openingElement.attributes;
-    });
+    }, true); // hidden from traversal
 
 def("JSXOpeningElement")
     .bases("Node") // TODO Does this make sense? Can't really be an JSXElement.
