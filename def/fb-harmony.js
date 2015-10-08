@@ -289,7 +289,7 @@ def("InterfaceExtends")
   .field("typeParameters", or(def("TypeParameterInstantiation"), null));
 
 def("TypeAlias")
-  .bases("Statement")
+  .bases("Declaration")
   .build("id", "typeParameters", "right")
   .field("id", def("Identifier"))
   .field("typeParameters", or(def("TypeParameterDeclaration"), null))
