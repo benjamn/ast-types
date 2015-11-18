@@ -325,3 +325,23 @@ def("DeclareModule")
   .build("id", "body")
   .field("id", or(def("Identifier"), def("Literal")))
   .field("body", def("BlockStatement"));
+
+def("DeclareExportDeclaration")
+    .bases("Declaration")
+    .build("default", "declaration", "specifiers", "source")
+    .field("default", Boolean)
+    .field("declaration", or(
+        def("DeclareVariable"),
+        def("DeclareFunction"),
+        def("DeclareClass"),
+        def("Type"), // Implies default.
+        null
+    ))
+    .field("specifiers", [or(
+        def("ExportSpecifier"),
+        def("ExportBatchSpecifier")
+    )], defaults.emptyArray)
+    .field("source", or(
+        def("Literal"),
+        null
+    ), defaults["null"]);
