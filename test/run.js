@@ -2133,3 +2133,35 @@ describe("RegExpLiteral nodes", function() {
         assert.strictEqual(n.Literal.check(regExpLiteral, true), false);
     });
 });
+
+describe("Custom Types", function() {
+    function three() {
+        return 3;
+    }
+
+    types.Type.def("MyCustomType")
+      .bases("Node")
+      .build("a", "b", "c", "d")
+      .field("a", Number, three)
+      .field("b", String)
+      .field("c", Number, three)
+      .field("d", Number, three);
+
+    types.finalize();
+    
+    it("builder function", function() {
+        assert.strictEqual(b.myCustomType.paramCount, 4);
+
+        assert.strictEqual(b.myCustomType[0].name, "a");
+        assert.strictEqual(b.myCustomType[0].type, builtin.number);
+        //even though a defaultFn is supplied, "a" is required due to position
+        assert.strictEqual(b.myCustomType[0].required, true);
+
+        assert.strictEqual(b.myCustomType[1].name, "b");
+        assert.strictEqual(b.myCustomType[1].type, builtin.string);
+        assert.strictEqual(b.myCustomType[1].required, true);
+
+        assert.strictEqual(b.myCustomType[2].required, false);
+        assert.strictEqual(b.myCustomType[3].required, false);
+    });
+});
