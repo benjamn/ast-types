@@ -305,7 +305,15 @@ def("MemberExpression")
     .build("object", "property", "computed")
     .field("object", def("Expression"))
     .field("property", or(def("Identifier"), def("Expression")))
-    .field("computed", Boolean, defaults["false"]);
+    .field("computed", Boolean, function(){
+        var type = this.property.type;
+        if (type === 'Literal' ||
+            type === 'MemberExpression' ||
+            type === 'BinaryExpression') {
+            return true;
+        }
+        return false;
+    });
 
 def("Pattern").bases("Node");
 

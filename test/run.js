@@ -2133,3 +2133,61 @@ describe("RegExpLiteral nodes", function() {
         assert.strictEqual(n.Literal.check(regExpLiteral, true), false);
     });
 });
+
+
+describe("MemberExpression", function() {
+    it("should set computed flag to false by default", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.identifier('bar')
+        )
+
+        assert.strictEqual(memberExpression.computed, false)
+    });
+
+    it("should not set computed to true if property is a callExpression", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.callExpression(b.identifier('bar'), [])
+        )
+
+        assert.strictEqual(memberExpression.computed, false)
+    });
+
+    it("should set computed flag to true if property is a literal", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.literal('bar')
+        )
+
+        assert.strictEqual(memberExpression.computed, true)
+    });
+
+    it("should set computed flag to true if property is a memberExpression", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.memberExpression(b.identifier('foo'), b.literal('bar'))
+        )
+
+        assert.strictEqual(memberExpression.computed, true)
+    });
+
+    it("should set computed flag to true if property is a binaryExpression", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.memberExpression(b.identifier('foo'), b.literal('bar'))
+        )
+
+        assert.strictEqual(memberExpression.computed, true)
+    });
+
+    it("should override computed value when passed as a third argument to the builder", function(){
+        var memberExpression = b.memberExpression(
+            b.identifier('foo'),
+            b.callExpression(b.identifier('bar'), []),
+            true
+        )
+
+        assert.strictEqual(memberExpression.computed, true);
+    });
+});
