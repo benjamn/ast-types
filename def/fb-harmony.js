@@ -154,6 +154,10 @@ def("NullableTypeAnnotation")
   .build("typeAnnotation")
   .field("typeAnnotation", def("Type"));
 
+def("NullLiteralTypeAnnotation")
+  .bases("Type")
+  .build();
+
 def("FunctionTypeAnnotation")
   .bases("Type")
   .build("params", "returnType", "rest", "typeParameters")
