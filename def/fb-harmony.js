@@ -201,7 +201,7 @@ def("ObjectTypeCallProperty")
   .bases("Node")
   .build("value")
   .field("value", def("FunctionTypeAnnotation"))
-  .field("static", Boolean, false);
+  .field("static", Boolean, defaults["false"]);
 
 def("QualifiedTypeIdentifier")
   .bases("Node")
