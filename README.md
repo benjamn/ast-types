@@ -481,8 +481,9 @@ b.file("lib/types.js", b.thisExpression());
 ```
 The `def` syntax is used to define all the default AST node types found in
 [core.js](def/core.js),
+[e4x.js](def/e4x.js),
 [es6.js](def/es6.js),
-[mozilla.js](def/mozilla.js),
-[e4x.js](def/e4x.js), and
-[fb-harmony.js](def/fb-harmony.js), so you have
+[es7.js](def/es7.js),
+[flow.js](def/flow.js), and
+[jsx.js](def/jsx.js), so you have
 no shortage of examples to learn from.
