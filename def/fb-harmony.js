@@ -273,7 +273,7 @@ def("ClassImplements")
          defaults["null"]);
 
 def("InterfaceDeclaration")
-  .bases("Statement")
+  .bases("Declaration")
   .build("id", "body", "extends")
   .field("id", def("Identifier"))
   .field("typeParameters",
