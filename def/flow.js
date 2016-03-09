@@ -64,6 +64,10 @@ def("NullLiteralTypeAnnotation")
   .bases("Type")
   .build();
 
+def("ThisTypeAnnotation")
+  .bases("Type")
+  .build();
+
 def("FunctionTypeAnnotation")
   .bases("Type")
   .build("params", "returnType", "rest", "typeParameters")
@@ -192,6 +196,10 @@ def("InterfaceDeclaration")
   .field("body", def("ObjectTypeAnnotation"))
   .field("extends", [def("InterfaceExtends")]);
 
+def("DeclareInterface")
+  .bases("InterfaceDeclaration")
+  .build("id", "body", "extends");
+
 def("InterfaceExtends")
   .bases("Node")
   .build("id")
@@ -204,6 +212,10 @@ def("TypeAlias")
   .field("id", def("Identifier"))
   .field("typeParameters", or(def("TypeParameterDeclaration"), null))
   .field("right", def("Type"));
+
+def("DeclareTypeAlias")
+  .bases("TypeAlias")
+  .build("id", "typeParameters", "right");
 
 def("TypeCastExpression")
   .bases("Expression")
