@@ -68,6 +68,10 @@ def("ThisTypeAnnotation")
   .bases("Type")
   .build();
 
+def("ExistsTypeAnnotation")
+  .bases("Type")
+  .build();
+
 def("FunctionTypeAnnotation")
   .bases("Type")
   .build("params", "returnType", "rest", "typeParameters")
