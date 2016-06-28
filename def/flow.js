@@ -64,6 +64,10 @@ def("NullLiteralTypeAnnotation")
   .bases("Type")
   .build();
 
+def("NullTypeAnnotation")
+  .bases("Type")
+  .build();
+
 def("ThisTypeAnnotation")
   .bases("Type")
   .build();
@@ -164,12 +168,22 @@ def("Identifier")
 def("TypeParameterDeclaration")
   .bases("Node")
   .build("params")
-  .field("params", [def("Identifier")]);
+  .field("params", [or(def("Identifier"), def("TypeParameter"))]);
 
 def("TypeParameterInstantiation")
   .bases("Node")
   .build("params")
   .field("params", [def("Type")]);
+
+def("TypeParameter")
+  .bases("Identifier")
+  .build("variance", "bound")
+  .field("variance",
+         or("plus", "minus", null),
+         defaults["null"])
+  .field("bound",
+         or(def("TypeAnnotation"), null),
+         defaults["null"])
 
 def("Function")
   .field("returnType",
