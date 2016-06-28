@@ -168,7 +168,7 @@ def("Identifier")
 def("TypeParameterDeclaration")
   .bases("Node")
   .build("params")
-  .field("params", [or(def("Identifier"), def("TypeParameter"))]);
+  .field("params", [def("TypeParameter")]);
 
 def("TypeParameterInstantiation")
   .bases("Node")
@@ -176,8 +176,9 @@ def("TypeParameterInstantiation")
   .field("params", [def("Type")]);
 
 def("TypeParameter")
-  .bases("Identifier")
-  .build("variance", "bound")
+  .bases("Type")
+  .build("name", "variance", "bound")
+  .field("name", String)
   .field("variance",
          or("plus", "minus", null),
          defaults["null"])
