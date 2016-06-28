@@ -183,7 +183,7 @@ def("TypeParameter")
          defaults["null"])
   .field("bound",
          or(def("TypeAnnotation"), null),
-         defaults["null"])
+         defaults["null"]);
 
 def("Function")
   .field("returnType",
