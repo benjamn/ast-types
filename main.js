@@ -31,4 +31,5 @@ exports.astNodesAreEquivalent = require("./lib/equiv");
 exports.finalize = types.finalize;
 exports.NodePath = require("./lib/node-path");
 exports.PathVisitor = require("./lib/path-visitor");
+exports.Visitor = require("./lib/visitor");
 exports.visit = exports.PathVisitor.visit;
