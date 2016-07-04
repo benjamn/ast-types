@@ -12,5 +12,6 @@ module.exports = require('./fork')([
     require("./def/jsx"),
     require("./def/flow"),
     require("./def/esprima"),
-    require("./def/babel")
+    require("./def/babel"),
+    require("./def/babel6")
 ]);
