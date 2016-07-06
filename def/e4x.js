@@ -1,6 +1,5 @@
 module.exports = function (fork) {
     fork.use(require("./core"));
-    // var types = fork.types;
     var types = fork.use(require("../lib/types"));
     var def = types.Type.def;
     var or = types.Type.or;

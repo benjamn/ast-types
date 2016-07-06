@@ -1,9 +1,7 @@
 module.exports = function (fork) {
     fork.use(require("./es7"));
 
-    // var types = fork.types;
     var types = fork.use(require("../lib/types"));
-    // var defaults = fork.shared.defaults;
     var defaults = fork.use(require("../lib/shared")).defaults;
     var def = types.Type.def;
     var or = types.Type.or;

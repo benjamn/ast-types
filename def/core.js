@@ -1,10 +1,8 @@
 module.exports = function (fork) {
-    // var types = fork.types;
     var types = fork.use(require("../lib/types"));
     var Type = types.Type;
     var def = Type.def;
     var or = Type.or;
-    // var shared = fork.shared;
     var shared = fork.use(require("../lib/shared"));
     var defaults = shared.defaults;
     var geq = shared.geq;
