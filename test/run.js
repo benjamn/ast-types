@@ -5,13 +5,13 @@ var b = types.builders;
 var path = require("path");
 var fs = require("fs");
 var parse = require("esprima").parse;
-var Path = require("../lib/path");
-var NodePath = require("../lib/node-path");
-var PathVisitor = require("../lib/path-visitor");
-var builtin = types.builtInTypes
+var Path = types.Path;
+var NodePath = types.NodePath;
+var PathVisitor = types.PathVisitor;
+var builtin = types.builtInTypes;
 var isRegExp = builtin.RegExp;
 var isString = builtin.string;
-var rawTypes = require("../lib/types");
+var rawTypes = types.use(require("../lib/types"));
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -64,7 +64,7 @@ describe("isSupertypeOf", function() {
 
 describe("supertype lookup", function() {
     it("should resolve the most precise supertypes", function() {
-        var table = require("../lib/types").computeSupertypeLookupTable({
+        var table = types.use(require("../lib/types")).computeSupertypeLookupTable({
             Function: true,
             Declaration: true,
             ArrowFunctionExpression: true,
