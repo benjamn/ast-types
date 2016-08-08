@@ -1122,6 +1122,7 @@ describe("scope methods", function () {
         var names;
 
         var ast = require("espree").parse([
+            "var zap;",
             "export default function(zom) {",
             "    var innerFn = function(zip) {};",
             "    return innerFn(zom);",
@@ -1133,8 +1134,8 @@ describe("scope methods", function () {
 
         types.visit(ast, {
             visitFunctionDeclaration: function(path) {
-                names = Object.keys(path.scope.lookup("zom").getBindings()).sort();
-                assert.deepEqual(names, ["innerFn", "zom"]);
+                names = Object.keys(path.scope.lookup("zap").getBindings()).sort();
+                assert.deepEqual(names, ["zap"]);
                 this.traverse(path);
             }
         });
