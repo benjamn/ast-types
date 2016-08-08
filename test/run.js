@@ -1137,7 +1137,7 @@ describe("scope methods", function () {
                 assert.deepEqual(names, ["innerFn", "zom"]);
                 this.traverse(path);
             }
-        });
+        }); // bump for Travis-CI build
     });
 
     it("should inject temporary into current scope", function() {
