@@ -1133,11 +1133,11 @@ describe("scope methods", function () {
 
         types.visit(ast, {
             visitFunctionDeclaration: function(path) {
-                names = Object.keys(path.lookup("zom").getBindings()).sort();
+                names = Object.keys(path.scope.lookup("zom").getBindings()).sort();
                 assert.deepEqual(names, ["innerFn", "zom"]);
                 this.traverse(path);
             }
-        }); // bump for Travis-CI build
+        });
     });
 
     it("should inject temporary into current scope", function() {
