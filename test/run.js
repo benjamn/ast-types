@@ -1118,6 +1118,28 @@ describe("scope methods", function () {
         assert.deepEqual(names, ["x", "xyDefault", "xyNamespace", "z"]);
     });
 
+    it("should work for ES6 syntax (espree)", function() {
+        var names;
+
+        var ast = require("espree").parse([
+            "export default function(zom) {",
+            "    var innerFn = function(zip) {};",
+            "    return innerFn(zom);",
+            "};"
+        ].join("\n"), {
+            sourceType: "module",
+            ecmaVersion: 6
+        });
+
+        types.visit(ast, {
+            visitFunctionDeclaration: function(path) {
+                names = Object.keys(path.lookup("zom").getBindings()).sort();
+                assert.deepEqual(names, ["innerFn", "zom"]);
+                this.traverse(path);
+            }
+        });
+    });
+
     it("should inject temporary into current scope", function() {
         var ast = parse(scope.join("\n"));
         var bindings;
