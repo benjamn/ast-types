@@ -35,7 +35,7 @@
     "espree": "^3.1.7",
     "esprima": "~1.2.2",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
-    "mocha": "~2.5.3"
+    "mocha": "~3.0.2"
   },
   "engines": {
     "node": ">= 0.8"
