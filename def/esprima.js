@@ -90,7 +90,9 @@ module.exports = function (fork) {
       .field("importKind", or(
         "value",
         "type"
-      ), defaults["value"]);
+      ), function() {
+        return "value";
+      });
 
     def("Block")
       .bases("Comment")
