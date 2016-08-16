@@ -37,12 +37,14 @@ describe("basic type checking", function() {
         assert.ok(!n.Statement.check(ifFoo.test));
         assert.ok(n.ImportDeclaration.check(
           b.importDeclaration(
-            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar"))
+            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar"),
+              "type")
           )
         );
         assert.ok(n.ImportDeclaration.check(
           b.importDeclaration(
-            [b.importNamespaceSpecifier(b.identifier("foo"))], b.literal("bar"))
+            [b.importNamespaceSpecifier(b.identifier("foo"))], b.literal("bar"),
+              "type")
           )
         );
     });
