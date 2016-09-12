@@ -311,6 +311,13 @@ describe("types.getFieldValue", function() {
             []
         );
     });
+
+    it("should handle undefined objects", function() {
+        assert.equal(
+            types.getFieldValue(undefined, "name"),
+            undefined
+        );
+    });
 });
 
 describe("types.eachField", function() {
