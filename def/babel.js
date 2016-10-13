@@ -104,4 +104,13 @@ module.exports = function (fork) {
     def("CommentLine")
         .bases("Comment")
         .build("value", /*optional:*/ "leading", "trailing");
+
+    def("ForAwaitStatement")
+        .bases("Statement")
+        .build("left", "right", "body")
+        .field("left", or(
+            def("VariableDeclaration"),
+            def("Expression")))
+        .field("right", def("Expression"))
+        .field("body", def("Statement"));
 };
