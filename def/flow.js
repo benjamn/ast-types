@@ -112,7 +112,8 @@ module.exports = function (fork) {
       .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
       .field("callProperties",
         [def("ObjectTypeCallProperty")],
-        defaults.emptyArray);
+        defaults.emptyArray)
+      .field("exact", Boolean, defaults["false"]);
 
     def("ObjectTypeProperty")
       .bases("Node")
