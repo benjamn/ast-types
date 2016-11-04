@@ -1287,6 +1287,11 @@ describe("array and object pattern scope", function() {
     // ObjectPattern with Property and SpreadProperty
     // ArrayPattern with SpreadElement
     describe("esprima", function() {
+        var types = require('../fork')([
+            require("../def/esprima")
+        ]);
+        var b = types.builders;
+
         var objectPattern;
         var arrayPattern;
 
@@ -1344,6 +1349,14 @@ describe("array and object pattern scope", function() {
     // ObjectPattern with PropertyPattern and SpreadPropertyPattern
     // ArrayPatterhn with SpreadElementPattern
     describe("Mozilla Parser API", function() {
+        var types = require('../fork')([
+            require("../def/core"),
+            require("../def/es6"),
+            require("../def/es7"),
+            require("../def/mozilla"),
+        ]);
+        var b = types.builders;
+
         var objectPattern;
         var arrayPattern;
 
