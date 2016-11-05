@@ -135,7 +135,9 @@ module.exports = function (fork) {
         .bases("Pattern")
         .build("properties")
         .field("properties", [ObjectPatternProperty])
-        .field("decorators", [def("Decorator")]);
+        .field("decorators",
+               or([def("Decorator")], null),
+               defaults["null"]);
 
     def("SpreadProperty")
       .bases("Node")
