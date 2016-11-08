@@ -85,11 +85,19 @@ module.exports = function (fork) {
         .field("value", or(def("Expression"), def("Pattern")))
         .field("computed", Boolean, defaults["false"]);
 
+    var ClassBodyElement = or(
+      def("MethodDefinition"),
+      def("VariableDeclarator"),
+      def("ClassPropertyDefinition"),
+      def("ClassProperty"),
+      def("ClassMethod")
+    );
+
     // MethodDefinition -> ClassMethod
     def("ClassBody")
         .bases("Declaration")
         .build("body")
-        .field("body", [or(def("ClassMethod"), def("ClassProperty"))]);
+        .field("body", [ClassBodyElement]);
 
     def("ClassMethod")
         .bases("Declaration", "Function")
