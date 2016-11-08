@@ -57,11 +57,18 @@ module.exports = function (fork) {
         .field("pattern", String)
         .field("flags", String);
 
+    var ObjectExpressionProperty = or(
+      def("Property"),
+      def("ObjectMethod"),
+      def("ObjectProperty"),
+      def("SpreadProperty")
+    );
+
     // Split Property -> ObjectProperty and ObjectMethod
     def("ObjectExpression")
         .bases("Expression")
         .build("properties")
-        .field("properties", [or(def("Property"), def("ObjectMethod"), def("ObjectProperty"), def("SpreadProperty"))]);
+        .field("properties", [ObjectExpressionProperty]);
 
     // ObjectMethod hoist .value properties to own properties
     def("ObjectMethod")
@@ -114,11 +121,20 @@ module.exports = function (fork) {
             or([def("Decorator")], null),
             defaults["null"]);
 
+    var ObjectPatternProperty = or(
+        def("Property"),
+        def("PropertyPattern"),
+        def("SpreadPropertyPattern"),
+        def("SpreadProperty"), // Used by Esprima
+        def("ObjectProperty"), // Babel 6
+        def("RestProperty") // Babel 6
+    );
+
     // Split into RestProperty and SpreadProperty
     def("ObjectPattern")
         .bases("Pattern")
         .build("properties")
-        .field("properties", [or(def("Property"), def("RestProperty"), def("ObjectProperty"))])
+        .field("properties", [ObjectPatternProperty])
         .field("decorators", [def("Decorator")]);
 
     def("SpreadProperty")
