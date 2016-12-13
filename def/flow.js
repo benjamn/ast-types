@@ -13,6 +13,10 @@ module.exports = function (fork) {
       .bases("Type")
       .build();
 
+    def("EmptyTypeAnnotation")
+      .bases("Type")
+      .build();
+
     def("MixedTypeAnnotation")
       .bases("Type")
       .build();
@@ -68,7 +72,7 @@ module.exports = function (fork) {
     def("NullTypeAnnotation")
       .bases("Type")
       .build();
-    
+
     def("ThisTypeAnnotation")
       .bases("Type")
       .build();
@@ -76,7 +80,11 @@ module.exports = function (fork) {
     def("ExistsTypeAnnotation")
       .bases("Type")
       .build();
-    
+
+    def("ExistentialTypeParam")
+      .bases("Type")
+      .build();
+
     def("FunctionTypeAnnotation")
       .bases("Type")
       .build("params", "returnType", "rest", "typeParameters")
@@ -104,21 +112,28 @@ module.exports = function (fork) {
       .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
       .field("callProperties",
         [def("ObjectTypeCallProperty")],
-        defaults.emptyArray);
+        defaults.emptyArray)
+      .field("exact", Boolean, defaults["false"]);
 
     def("ObjectTypeProperty")
       .bases("Node")
       .build("key", "value", "optional")
       .field("key", or(def("Literal"), def("Identifier")))
       .field("value", def("Type"))
-      .field("optional", Boolean);
+      .field("optional", Boolean)
+      .field("variance",
+        or("plus", "minus", null),
+        defaults["null"]);
 
     def("ObjectTypeIndexer")
       .bases("Node")
       .build("id", "key", "value")
       .field("id", def("Identifier"))
       .field("key", def("Type"))
-      .field("value", def("Type"));
+      .field("value", def("Type"))
+      .field("variance",
+        or("plus", "minus", null),
+        defaults["null"]);
 
     def("ObjectTypeCallProperty")
       .bases("Node")
@@ -186,7 +201,7 @@ module.exports = function (fork) {
       .field("bound",
         or(def("TypeAnnotation"), null),
         defaults["null"]);
-    
+
     def("Function")
       .field("returnType",
         or(def("TypeAnnotation"), null),
@@ -199,7 +214,10 @@ module.exports = function (fork) {
       .build("key", "value", "typeAnnotation", "static")
       .field("value", or(def("Expression"), null))
       .field("typeAnnotation", or(def("TypeAnnotation"), null))
-      .field("static", Boolean, defaults["false"]);
+      .field("static", Boolean, defaults["false"])
+      .field("variance",
+        or("plus", "minus", null),
+        defaults["null"]);
 
     def("ClassImplements")
       .field("typeParameters",
@@ -267,6 +285,11 @@ module.exports = function (fork) {
       .build("id", "body")
       .field("id", or(def("Identifier"), def("Literal")))
       .field("body", def("BlockStatement"));
+
+    def("DeclareModuleExports")
+      .bases("Statement")
+      .build("typeAnnotation")
+      .field("typeAnnotation", def("Type"));
 
     def("DeclareExportDeclaration")
       .bases("Declaration")
