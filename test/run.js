@@ -35,9 +35,24 @@ describe("basic type checking", function() {
         assert.ok(n.Expression.check(ifFoo.test));
         assert.ok(n.Identifier.check(ifFoo.test));
         assert.ok(!n.Statement.check(ifFoo.test));
+        assert.equal(
+          b.importDeclaration(
+            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar")
+          ).importKind,
+          "value"
+        );
+        assert.throws(function () {
+            b.importDeclaration(
+              [b.importDefaultSpecifier(b.identifier("foo"))],
+              b.literal("bar"),
+              "baz"
+            )
+          }
+        );
         assert.ok(n.ImportDeclaration.check(
           b.importDeclaration(
-            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar"))
+            [b.importDefaultSpecifier(b.identifier("foo"))], b.literal("bar"),
+              "type")
           )
         );
         assert.ok(n.ImportDeclaration.check(

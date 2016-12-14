@@ -80,13 +80,19 @@ module.exports = function (fork) {
 
     def("ImportDeclaration")
       .bases("Declaration")
-      .build("specifiers", "source")
+      .build("specifiers", "source", "importKind")
       .field("specifiers", [or(
         def("ImportSpecifier"),
         def("ImportNamespaceSpecifier"),
         def("ImportDefaultSpecifier")
       )], defaults.emptyArray)
-      .field("source", def("Literal"));
+      .field("source", def("Literal"))
+      .field("importKind", or(
+        "value",
+        "type"
+      ), function() {
+        return "value";
+      });
 
     def("Block")
       .bases("Comment")
