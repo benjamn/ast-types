@@ -36,8 +36,9 @@ module.exports = function (fork) {
 
     def("File")
         .bases("Node")
-        .build("program")
-        .field("program", def("Program"));
+        .build("program", "name")
+        .field("program", def("Program"))
+        .field("name", or(String, null), defaults["null"]);
 
     def("Program")
         .bases("Node")
