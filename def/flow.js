@@ -310,4 +310,12 @@ module.exports = function (fork) {
         def("Literal"),
         null
       ), defaults["null"]);
+
+    def("DeclareExportAllDeclaration")
+      .bases("Declaration")
+      .build("source")
+      .field("source", or(
+        def("Literal"),
+        null
+      ), defaults["null"]);
 };
