@@ -157,4 +157,9 @@ module.exports = function (fork) {
       def("Expression")))
     .field("right", def("Expression"))
     .field("body", def("Statement"));
+
+  // The callee node of a dynamic import(...) expression.
+  def("Import")
+    .bases("Expression")
+    .build();
 };
