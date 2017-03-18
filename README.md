@@ -1,6 +1,8 @@
 AST Types
 ===
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/benjamn/ast-types.svg)](https://greenkeeper.io/)
+
 This module provides an efficient, modular,
 [Esprima](https://github.com/ariya/esprima)-compatible implementation of
 the [abstract syntax
