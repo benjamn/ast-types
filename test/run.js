@@ -2171,9 +2171,11 @@ describe("RegExpLiteral nodes", function() {
 
         var regex = types.getFieldValue(regExp, "regex");
 
+        regex.flags = regex.flags.split("").sort().join("");
+
         assert.deepEqual(regex, {
             pattern: "x*",
-            flags: "img"
+            flags: "gim"
         });
 
         types.Type.fromObject({
