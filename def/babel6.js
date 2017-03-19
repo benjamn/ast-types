@@ -44,7 +44,8 @@ module.exports = function (fork) {
 
   def("NullLiteral")
     .bases("Literal")
-    .build();
+    .build()
+    .field("value", null, defaults["null"]);
 
   def("BooleanLiteral")
     .bases("Literal")
