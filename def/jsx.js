@@ -99,4 +99,11 @@ module.exports = function (fork) {
     .field("value", String);
 
   def("JSXEmptyExpression").bases("Expression").build();
+
+  // This PR has caused many people issues, but supporting it seems like a
+  // good idea anyway: https://github.com/babel/babel/pull/4988
+  def("JSXSpreadChild")
+    .bases("Expression")
+    .build("expression")
+    .field("expression", def("Expression"));
 };
