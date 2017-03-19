@@ -15,6 +15,13 @@ var rawTypes = types.use(require("../lib/types"));
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
+var reifyBabylonParse = require("reify/lib/parsers/babylon.js").parse;
+function babylonParse(source) {
+    var ast = reifyBabylonParse(source);
+    if (ast.type === "File") ast = ast.program;
+    return ast;
+}
+
 describe("basic type checking", function() {
     var fooId = b.identifier("foo");
     var ifFoo = b.ifStatement(fooId, b.blockStatement([
@@ -203,11 +210,9 @@ function validateProgram(file) {
     });
 
     it("should validate " + file + " with Babel", function(done) {
-        var parse = require("babel-core").parse;
-
         fs.readFile(fullPath, "utf8", function(err, code) {
             if (err) throw err;
-            var ast = parse(code);
+            var ast = babylonParse(code);
             n.Program.assert(ast, true);
             done();
         });
@@ -237,7 +242,7 @@ describe("esprima Syntax types", function() {
     Object.keys(require("esprima").Syntax).forEach(addTypeName);
     Object.keys(require("esprima-fb").Syntax).forEach(addTypeName);
     Object.keys(
-        require("babel-core").types.VISITOR_KEYS
+        require("babel-types").VISITOR_KEYS
     ).forEach(addTypeName);
 
     it("should all be buildable", function() {
@@ -1119,7 +1124,7 @@ describe("scope methods", function () {
     });
 
     it("getBindings should work for import statements (acorn)", function() {
-        var ast = require("babel-core").parse([
+        var ast = babylonParse([
           "import {x, y as z} from 'xy';",
           "import xyDefault from 'xy';",
           "import * as xyNamespace from 'xy';"
