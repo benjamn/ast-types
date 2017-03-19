@@ -1,4 +1,4 @@
-# AST Types [![Build Status](https://travis-ci.org/benjamn/ast-types.png?branch=master)](https://travis-ci.org/benjamn/ast-types) [![Greenkeeper badge](https://badges.greenkeeper.io/benjamn/ast-types.svg)](https://greenkeeper.io/)
+# AST Types [![Build Status](https://travis-ci.org/benjamn/ast-types.svg?branch=master)](https://travis-ci.org/benjamn/ast-types) [![Greenkeeper badge](https://badges.greenkeeper.io/benjamn/ast-types.svg)](https://greenkeeper.io/)
 
 This module provides an efficient, modular,
 [Esprima](https://github.com/ariya/esprima)-compatible implementation of
