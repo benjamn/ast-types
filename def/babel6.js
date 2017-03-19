@@ -56,7 +56,10 @@ module.exports = function (fork) {
     .bases("Literal")
     .build("pattern", "flags")
     .field("pattern", String)
-    .field("flags", String);
+    .field("flags", String)
+    .field("value", RegExp, function () {
+      return new RegExp(this.pattern, this.flags);
+    });
 
   var ObjectExpressionProperty = or(
     def("Property"),
