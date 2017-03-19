@@ -189,6 +189,9 @@ module.exports = function (fork) {
     def("Identifier")
       .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
 
+    def("ObjectPattern")
+      .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
+
     def("TypeParameterDeclaration")
       .bases("Node")
       .build("params")
