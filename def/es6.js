@@ -43,6 +43,14 @@ module.exports = function (fork) {
     // liberty of enforcing that. TODO Report this.
     .field("generator", false, defaults["false"]);
 
+  def("ForOfStatement")
+    .build("left", "right", "body")
+    .field("left", or(
+      def("VariableDeclaration"),
+      def("Pattern")))
+    .field("right", def("Expression"))
+    .field("body", def("Statement"));
+
   def("YieldExpression")
     .bases("Expression")
     .build("argument", "delegate")

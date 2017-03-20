@@ -15,15 +15,6 @@ module.exports = function (fork) {
         .build("left", "right", "body", "each")
         .field("each", Boolean, defaults["false"]);
 
-    def("ForOfStatement")
-        .bases("Statement")
-        .build("left", "right", "body")
-        .field("left", or(
-            def("VariableDeclaration"),
-            def("Expression")))
-        .field("right", def("Expression"))
-        .field("body", def("Statement"));
-
     def("LetStatement")
         .bases("Statement")
         .build("head", "body")
