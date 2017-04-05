@@ -44,6 +44,7 @@ module.exports = function (fork) {
     .field("generator", false, defaults["false"]);
 
   def("ForOfStatement")
+    .bases("Statement")
     .build("left", "right", "body")
     .field("left", or(
       def("VariableDeclaration"),
