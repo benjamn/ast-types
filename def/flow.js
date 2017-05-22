@@ -186,6 +186,11 @@ module.exports = function (fork) {
       .build("argument")
       .field("argument", def("Type"));
 
+    def("ObjectTypeSpreadProperty")
+      .bases("Node")
+      .build("argument")
+      .field("argument", def("Type"));
+
     def("Identifier")
       .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
 
