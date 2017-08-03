@@ -32,12 +32,12 @@
   "dependencies": {},
   "devDependencies": {
     "babel-types": "6.25.0",
-    "babylon": "6.17.3",
+    "babylon": "6.17.4",
     "espree": "3.4.3",
     "esprima": "4.0.0",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",
-    "mocha": "3.4.2",
-    "reify": "0.11.24"
+    "mocha": "3.5.0",
+    "reify": "0.12.0"
   },
   "engines": {
     "node": ">= 4.0"
