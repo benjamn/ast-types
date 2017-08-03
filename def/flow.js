@@ -334,4 +334,9 @@ module.exports = function (fork) {
         def("Literal"),
         null
       ), defaults["null"]);
+      
+    def("DeclareModuleExports")
+      .bases("Statement")
+      .build("typeAnnotation")
+      .field("typeAnnotation", def("TypeAnnotation"));
 };
