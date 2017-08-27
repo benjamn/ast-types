@@ -1,6 +1,6 @@
 {
   "author": "Ben Newman <bn@cs.stanford.edu>",
-  "name": "ast-types",
+  "name": "@gerhobbelt/ast-types",
   "description": "Esprima-compatible implementation of the Mozilla JS Parser API",
   "keywords": [
     "ast",
@@ -18,22 +18,23 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.9.13-3",
+  "version": "0.9.13-4",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
-    "url": "git://github.com/benjamn/ast-types.git"
+    "url": "git://github.com/GerHobbelt/ast-types.git"
   },
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec --full-trace test/run.js"
+    "test": "mocha --reporter spec --full-trace test/run.js",
+    "pub": "npm publish --access public"
   },
   "dependencies": {},
   "devDependencies": {
-    "babel-types": "6.25.0",
-    "babylon": "6.17.4",
-    "espree": "3.4.3",
+    "babel-types": "6.26.0",
+    "babylon": "6.18.0",
+    "espree": "3.5.0",
     "esprima": "4.0.0",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",
     "mocha": "3.5.0",
