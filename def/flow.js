@@ -267,9 +267,21 @@ module.exports = function (fork) {
       .field("typeParameters", or(def("TypeParameterDeclaration"), null))
       .field("right", def("Type"));
 
+    def("OpaqueType")
+      .bases("Declaration")
+      .build("id", "typeParameters", "impltype", "supertype")
+      .field("id", def("Identifier"))
+      .field("typeParameters", or(def("TypeParameterDeclaration"), null))
+      .field("implType", def("Type"))
+      .field("superType", def("Type"));
+
     def("DeclareTypeAlias")
       .bases("TypeAlias")
       .build("id", "typeParameters", "right");
+
+    def("DeclareOpaqueType")
+      .bases("TypeAlias")
+      .build("id", "typeParameters", "supertype");
 
     def("TypeCastExpression")
       .bases("Expression")
