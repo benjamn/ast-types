@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec --full-trace test/run.js",
+    "test": "mocha --check-leaks --reporter spec --full-trace test/run.js",
     "pub": "npm publish --access public"
   },
   "dependencies": {},
