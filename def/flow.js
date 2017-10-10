@@ -116,7 +116,7 @@ module.exports = function (fork) {
     def("ObjectTypeAnnotation")
       .bases("Type")
       .build("properties", "indexers", "callProperties")
-      .field("properties", [def("ObjectTypeProperty")])
+      .field("properties", [or(def("ObjectTypeProperty"), def("ObjectTypeSpreadProperty"))])
       .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
       .field("callProperties",
         [def("ObjectTypeCallProperty")],
