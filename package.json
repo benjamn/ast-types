@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.9.14-8",
+  "version": "0.9.14-9",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "espree": "3.5.1",
     "esprima": "4.0.0",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",
-    "mocha": "3.5.3",
+    "mocha": "4.0.1",
     "reify": "0.12.3"
   },
   "engines": {
