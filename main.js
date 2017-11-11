@@ -13,5 +13,5 @@ module.exports = require('./fork')([
     require("./def/flow"),
     require("./def/esprima"),
     require("./def/babel-core"),
-    require("./def/babel6")
+    require("./def/babel")
 ]);
