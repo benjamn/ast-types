@@ -126,15 +126,25 @@ module.exports = function (fork) {
            defaults.emptyArray)
     .field("exact", Boolean, defaults["false"]);
 
+  def("Variance")
+    .bases("Node")
+    .build("kind")
+    .field("kind", or("plus", "minus"));
+
+  var LegacyVariance = or(
+    def("Variance"),
+    "plus",
+    "minus",
+    null
+  );
+
   def("ObjectTypeProperty")
     .bases("Node")
     .build("key", "value", "optional")
     .field("key", or(def("Literal"), def("Identifier")))
     .field("value", def("Type"))
     .field("optional", Boolean)
-    .field("variance",
-           or("plus", "minus", null),
-           defaults["null"]);
+    .field("variance", LegacyVariance, defaults["null"]);
 
   def("ObjectTypeIndexer")
     .bases("Node")
@@ -142,9 +152,7 @@ module.exports = function (fork) {
     .field("id", def("Identifier"))
     .field("key", def("Type"))
     .field("value", def("Type"))
-    .field("variance",
-           or("plus", "minus", null),
-           defaults["null"]);
+    .field("variance", LegacyVariance, defaults["null"]);
 
   def("ObjectTypeCallProperty")
     .bases("Node")
@@ -214,9 +222,7 @@ module.exports = function (fork) {
     .bases("Type")
     .build("name", "variance", "bound")
     .field("name", String)
-    .field("variance",
-           or("plus", "minus", null),
-           defaults["null"])
+    .field("variance", LegacyVariance, defaults["null"])
     .field("bound",
            or(def("TypeAnnotation"), null),
            defaults["null"]);
@@ -234,9 +240,7 @@ module.exports = function (fork) {
     .field("value", or(def("Expression"), null))
     .field("typeAnnotation", or(def("TypeAnnotation"), null))
     .field("static", Boolean, defaults["false"])
-    .field("variance",
-           or("plus", "minus", null),
-           defaults["null"]);
+    .field("variance", LegacyVariance, defaults["null"]);
 
   def("ClassImplements")
     .field("typeParameters",
