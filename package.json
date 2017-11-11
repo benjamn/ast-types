@@ -32,7 +32,7 @@
   "dependencies": {},
   "devDependencies": {
     "babel-types": "^6.26.0",
-    "babylon": "^6.16.1",
+    "babylon": "^7.0.0-beta.31",
     "espree": "^3.1.7",
     "esprima": "~4.0.0",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
