@@ -2196,6 +2196,74 @@ describe("RegExpLiteral nodes", function() {
   });
 });
 
+describe("BigIntLiteral nodes", function () {
+  it("should parse correctly with Babylon", function () {
+    var types = require('../fork')([
+      require("../def/babel"),
+    ]);
+    var n = types.namedTypes;
+    var BigIntLiteral = n.BigIntLiteral;
+    var parse = require("babylon").parse;
+    var parseOptions = {
+      plugins: ["bigInt"]
+    };
+
+    function check(code) {
+      parseAndCheck(code);
+      parseAndCheck("-" + code);
+      parseAndCheck("+" + code);
+    }
+
+    function parseAndCheck(code) {
+      var file = parse(code, parseOptions);
+      var exp = file.program.body[0].expression;
+      if (n.UnaryExpression.check(exp)) {
+        checkExp(exp.argument);
+      } else {
+        checkExp(exp);
+      }
+    }
+
+    function checkExp(exp) {
+      BigIntLiteral.assert(exp, true);
+
+      assert.strictEqual(
+        exp.extra.rawValue,
+        exp.value
+      );
+
+      assert.strictEqual(
+        exp.extra.raw,
+        exp.value + "n"
+      );
+
+      delete exp.extra;
+
+      BigIntLiteral.assert(exp, true);
+
+      var extra = types.getFieldValue(exp, "extra");
+
+      assert.strictEqual(
+        extra.rawValue,
+        exp.value
+      );
+
+      assert.strictEqual(
+        extra.raw,
+        exp.value + "n"
+      );
+    }
+
+    check("0n");
+    check("12345n");
+    check("0b101011101n");
+    check("0xFFF123n");
+    check("0xfff123n");
+    check("728374682736419273912879879610912837401293846n");
+    check("0xc00cda0a30d6312b54c55789befdea84f5949d92n");
+    check("0o16432n");
+  });
+});
 
 describe("MemberExpression", function() {
   it("should set computed flag to false by default", function(){

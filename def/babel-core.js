@@ -138,6 +138,22 @@ module.exports = function (fork) {
     .build("value")
     .field("value", Number);
 
+  def("BigIntLiteral")
+    .bases("Literal")
+    .build("value")
+    // Only String really seems appropriate here, since BigInt values
+    // often exceed the limits of JS numbers.
+    .field("value", or(String, Number))
+    .field("extra", {
+      rawValue: String,
+      raw: String
+    }, function getDefault() {
+      return {
+        rawValue: String(this.value),
+        raw: this.value + "n"
+      };
+    });
+
   def("NullLiteral")
     .bases("Literal")
     .build()
