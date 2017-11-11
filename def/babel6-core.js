@@ -1,5 +1,5 @@
 module.exports = function (fork) {
-  fork.use(require("./babel"));
+  fork.use(require("./babel-core"));
 
   // var types = fork.types;
   var types = fork.use(require("../lib/types"));
