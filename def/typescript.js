@@ -72,6 +72,11 @@ module.exports = function (fork) {
     .field("computed", or(Boolean), false)
     .field("typeAnnotation", def("TSTypeAnnotation"))
 
+  def("TSEnumMember")
+    .bases("Node")
+    .build("id")
+    .field("id", def("Identifier"));
+
   def("TSTypeLiteral")
     .bases("TSTypeAnnotation")
     .field("members", [def("TSPropertySignature")]);
@@ -83,6 +88,12 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("params")
     .field("params", [def("TSTypeParameter")]);
+
+  def("TSEnumDeclaration")
+    .bases("Declaration")
+    .build("id")
+    .field("id", def("Identifier"))
+    .field("members", [def("TSEnumMember")]);
 
   def("TSTypeAliasDeclaration")
     .bases("Declaration")
