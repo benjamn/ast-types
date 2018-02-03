@@ -30,6 +30,10 @@ module.exports = function (fork) {
     .bases("TSType")
     .build();
 
+  def("TSVoidKeyword")
+    .bases("TSType")
+    .build();
+
   def("TSNeverKeyword")
     .bases("TSType")
     .build();
@@ -44,10 +48,17 @@ module.exports = function (fork) {
     .build()
     .field("types", [def("TSType")])
 
+  def("TSFunctionType")
+    .bases("TSType")
+    .build()
+    .field("typeParameters", def("TSTypeParameterDeclaration"))
+    .field("parameters", [def("Identifier")])
+    .field("typeAnnotation", def("TSTypeAnnotation"));
+
   def("TSTypeAnnotation")
     .bases("Node")
-    .field("typeAnnotation", def("TSType"))
-    .build();
+    .build()
+    .field("typeAnnotation", def("TSType"));
 
   def("TSPropertySignature")
     .bases("Node")
