@@ -55,6 +55,11 @@ module.exports = function (fork) {
     .field("parameters", [def("Identifier")])
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
+  def("TSTupleType")
+    .bases("TSType")
+    .build()
+    .field("elementTypes", [def("TSType")])
+
   def("TSTypeAnnotation")
     .bases("Node")
     .build()
