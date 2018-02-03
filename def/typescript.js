@@ -34,6 +34,10 @@ module.exports = function (fork) {
     .bases("TSType")
     .build();
 
+  def("TSUndefinedKeyword")
+    .bases("TSType")
+    .build();
+
   def("TSNeverKeyword")
     .bases("TSType")
     .build();
@@ -75,7 +79,8 @@ module.exports = function (fork) {
   def("TSEnumMember")
     .bases("Node")
     .build("id")
-    .field("id", def("Identifier"));
+    .field("id", def("Identifier"))
+    .field("initializer", def("Literal"));
 
   def("TSTypeLiteral")
     .bases("TSTypeAnnotation")
