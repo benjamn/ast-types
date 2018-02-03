@@ -8,13 +8,41 @@ module.exports = function (fork) {
   def("TSType")
     .bases("Node");
 
+  def("TSTypeReference")
+    .bases("TSType")
+    .field("typeName", def("Identifier"));
+
+  def("TSAsExpression")
+    .bases("Expression")
+    .build()
+    .field("expression", def("Identifier"))
+    .field("typeAnnotation", def("TSTypeReference"))
+
   def("TSNumberKeyword")
     .bases("TSType")
     .build();
 
-  def("TSTypeReference")
+  def("TSStringKeyword")
     .bases("TSType")
-    .field("typeName", def("Identifier"));
+    .build();
+
+  def("TSAnyKeyword")
+    .bases("TSType")
+    .build();
+
+  def("TSNeverKeyword")
+    .bases("TSType")
+    .build();
+
+  def("TSLiteralType")
+    .bases("TSType")
+    .build()
+    .field("literal", def("StringLiteral"))
+
+  def("TSUnionType")
+    .bases("TSType")
+    .build()
+    .field("types", [def("TSType")])
 
   def("TSTypeAnnotation")
     .bases("Node")
@@ -29,8 +57,8 @@ module.exports = function (fork) {
     .field("typeAnnotation", def("TSTypeAnnotation"))
 
   def("TSTypeLiteral")
-    .bases('TSTypeAnnotation')
-    .field('members', [def("TSPropertySignature")]);
+    .bases("TSTypeAnnotation")
+    .field("members", [def("TSPropertySignature")]);
 
   def("TSTypeParameter")
     .bases("Identifier");
