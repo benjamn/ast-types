@@ -22,6 +22,10 @@ module.exports = function (fork) {
     .bases("TSType")
     .build();
 
+  def("TSBooleanKeyword")
+    .bases("TSType")
+    .build();
+
   def("TSStringKeyword")
     .bases("TSType")
     .build();
