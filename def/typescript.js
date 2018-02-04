@@ -166,6 +166,8 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("id")
     .field("id", def("Identifier"))
+    .field("const", Boolean, false)
+    .field("declare", Boolean, false)
     .field("members", [def("TSEnumMember")]);
 
   def("TSTypeAliasDeclaration")
