@@ -4,6 +4,7 @@ module.exports = function (fork) {
   var types = fork.use(require("../lib/types"));
   var def = types.Type.def;
   var or = types.Type.or;
+  var defaults = fork.use(require("../lib/shared")).defaults;
 
   def("TSType")
     .bases("Node");
@@ -83,7 +84,7 @@ module.exports = function (fork) {
   def("TSIndexSignature")
     .bases("Node")
     .build()
-    .field("readonly", Boolean, false)
+    .field("readonly", Boolean, defaults["false"])
     .field("parameters", [def("Identifier")])
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
@@ -91,15 +92,15 @@ module.exports = function (fork) {
     .bases("Node")
     .build("key")
     .field("key", def("Identifier"))
-    .field("computed", Boolean, false)
-    .field("readonly", Boolean, false)
+    .field("computed", Boolean, defaults["false"])
+    .field("readonly", Boolean, defaults["false"])
     .field("typeAnnotation", def("TSTypeAnnotation"))
 
   def("TSMethodSignature")
     .bases("Node")
     .build("key")
     .field("key", def("Identifier"))
-    .field("computed", Boolean, false)
+    .field("computed", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
     .field("parameters", [def("Identifier")])
     .field("typeAnnotation", def("TSTypeAnnotation"));

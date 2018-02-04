@@ -329,7 +329,8 @@ module.exports = function (fork) {
         // But aren't Expressions and Patterns already Nodes? TODO Report this.
         .bases("Node", "Expression", "Pattern")
         .build("name")
-        .field("name", String);
+        .field("name", String)
+        .field("optional", Boolean, defaults["false"]);
 
     def("Literal")
         // But aren't Expressions already Nodes? TODO Report this.
