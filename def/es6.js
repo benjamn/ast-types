@@ -16,7 +16,9 @@ module.exports = function (fork) {
   def("RestElement")
     .bases("Pattern")
     .build("argument")
-    .field("argument", def("Pattern"));
+    .field("argument", def("Pattern"))
+    .field("typeAnnotation", // for Babylon. Flow parser puts it on the identifier
+      or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
 
   def("SpreadElementPattern")
     .bases("Pattern")
