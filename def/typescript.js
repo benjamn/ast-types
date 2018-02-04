@@ -27,6 +27,11 @@ module.exports = function (fork) {
     .field("typeAnnotation", def("TSTypeReference"))
     .field("extra", or({parenthesized: Boolean}, null));
 
+  def("TSNonNullExpression")
+    .bases("Expression")
+    .build("expression")
+    .field("expression", def("Identifier"));
+
   def("TSNumberKeyword")
     .bases("TSType")
     .build();
@@ -44,6 +49,10 @@ module.exports = function (fork) {
     .build();
 
   def("TSVoidKeyword")
+    .bases("TSType")
+    .build();
+
+  def("TSNullKeyword")
     .bases("TSType")
     .build();
 
@@ -70,6 +79,11 @@ module.exports = function (fork) {
     .build()
     .field("types", [def("TSType")])
 
+  def("TSIntersectionType")
+    .bases("TSType")
+    .build("types")
+    .field("types", [def("TSType")]);
+
   def("TSFunctionType")
     .bases("TSType")
     .build()
@@ -81,6 +95,12 @@ module.exports = function (fork) {
     .bases("TSType")
     .build()
     .field("elementTypes", [def("TSType")]);
+
+  def("TSIndexedAccessType")
+    .bases("TSType")
+    .build("objectType", "indexType")
+    .field("objectType", def("TSTypeReference"))
+    .field("indexType", def("TSTypeReference"))
 
   def("TSTypeOperator")
     .bases("Node")
@@ -114,6 +134,12 @@ module.exports = function (fork) {
     .field("computed", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
     .field("parameters", [def("Identifier")])
+    .field("typeAnnotation", def("TSTypeAnnotation"));
+
+  def("TSTypePredicate")
+    .bases("TSTypeAnnotation")
+    .build("parameterName", "typeAnnotation")
+    .field("parameterName", def("Identifier"))
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
   def("TSCallSignatureDeclaration")
