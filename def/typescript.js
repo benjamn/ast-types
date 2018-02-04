@@ -80,12 +80,36 @@ module.exports = function (fork) {
     .build()
     .field("typeAnnotation", def("TSType"));
 
+  def("TSIndexSignature")
+    .bases("Node")
+    .build()
+    .field("readonly", Boolean, false)
+    .field("parameters", [def("Identifier")])
+    .field("typeAnnotation", def("TSTypeAnnotation"));
+
   def("TSPropertySignature")
     .bases("Node")
     .build("key")
     .field("key", def("Identifier"))
-    .field("computed", or(Boolean), false)
+    .field("computed", Boolean, false)
+    .field("readonly", Boolean, false)
     .field("typeAnnotation", def("TSTypeAnnotation"))
+
+  def("TSMethodSignature")
+    .bases("Node")
+    .build("key")
+    .field("key", def("Identifier"))
+    .field("computed", Boolean, false)
+    .field("typeParameters", def("TSTypeParameterDeclaration"))
+    .field("parameters", [def("Identifier")])
+    .field("typeAnnotation", def("TSTypeAnnotation"));
+
+  def("TSCallSignatureDeclaration")
+    .bases("Declaration")
+    .build()
+    .field("typeParameters", def("TSTypeParameterDeclaration"))
+    .field("parameters", [def("Identifier")])
+    .field("typeAnnotation", def("TSTypeAnnotation"));
 
   def("TSEnumMember")
     .bases("Node")
@@ -128,4 +152,22 @@ module.exports = function (fork) {
     .build("id")
     .field("id", def("Identifier"))
     .field("typeAnnotation", def("TSType"));
+
+  def("TSInterfaceBody")
+    .bases("Node")
+    .build()
+    .field("body", [def("TSPropertySignature")]);
+
+  def("TSExpressionWithTypeArguments")
+    .bases("Node")
+    .build()
+    .field("expression", def("Identifier"))
+    .field("typeParameters", [def("TSTypeParameter")]);
+
+  def("TSInterfaceDeclaration")
+    .bases("Declaration")
+    .build("id")
+    .field("typeParameters", def("TSTypeParameterDeclaration"))
+    .field("extends", [def("TSExpressionWithTypeArguments")])
+    .field("body", def("TSInterfaceBody"));
 };
