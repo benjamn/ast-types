@@ -136,7 +136,17 @@ module.exports = function (fork) {
   def("NumericLiteral")
     .bases("Literal")
     .build("value")
-    .field("value", Number);
+    .field("value", Number)
+    .field("raw", or(String, null), defaults["null"])
+    .field("extra", {
+      rawValue: Number,
+      raw: String
+    }, function getDefault() {
+      return {
+        rawValue: this.value,
+        raw: this.value + ""
+      }
+    });
 
   def("BigIntLiteral")
     .bases("Literal")
