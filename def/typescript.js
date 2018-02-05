@@ -199,8 +199,8 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("id")
     .field("id", def("Identifier"))
-    .field("const", Boolean, false)
-    .field("declare", Boolean, false)
+    .field("const", Boolean, defaults["false"])
+    .field("declare", Boolean, defaults["false"])
     .field("members", [def("TSEnumMember")]);
 
   def("TSTypeAliasDeclaration")
@@ -208,6 +208,18 @@ module.exports = function (fork) {
     .build("id")
     .field("id", def("Identifier"))
     .field("typeAnnotation", def("TSType"));
+
+  def("TSModuleBlock")
+    .bases("Node")
+    .build()
+    .field("body", [def("Declaration")]); // this is probably not right
+
+  def("TSModuleDeclaration")
+    .bases("Declaration")
+    .build("id")
+    .field("id", def("Identifier"))
+    .field("declare", Boolean, defaults["false"])
+    .field("body", def("TSModuleBlock"));
 
   def("TSInterfaceBody")
     .bases("Node")
