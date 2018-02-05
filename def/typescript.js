@@ -91,6 +91,13 @@ module.exports = function (fork) {
     .field("parameters", [def("Identifier")])
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
+  def("TSMappedType")
+    .bases("TSType")
+    .build("typeParameter", "typeAnnotation")
+    .field("readonly", Boolean, defaults["false"])
+    .field("typeParameter", def("TSTypeParameter"))
+    .field("typeAnnotation", def("TSTypeAnnotation"));
+
   def("TSTupleType")
     .bases("TSType")
     .build()
