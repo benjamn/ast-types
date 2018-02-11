@@ -34,37 +34,22 @@ module.exports = function (fork) {
     .build("expression")
     .field("expression", def("Identifier"));
 
-  def("TSNumberKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSBooleanKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSStringKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSAnyKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSVoidKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSNullKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSUndefinedKeyword")
-    .bases("TSType")
-    .build();
-
-  def("TSNeverKeyword")
-    .bases("TSType")
-    .build();
+  [ // Define all the simple keyword types.
+    "TSAnyKeyword",
+    "TSBooleanKeyword",
+    "TSNeverKeyword",
+    "TSNullKeyword",
+    "TSNumberKeyword",
+    "TSObjectKeyword",
+    "TSStringKeyword",
+    "TSSymbolKeyword",
+    "TSUndefinedKeyword",
+    "TSVoidKeyword",
+  ].forEach(keywordType => {
+    def(keywordType)
+      .bases("TSType")
+      .build();
+  });
 
   def("TSArrayType")
     .bases("TSType")
