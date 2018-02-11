@@ -108,9 +108,10 @@ module.exports = function (fork) {
     .field("indexType", def("TSType"))
 
   def("TSTypeOperator")
-    .bases("Node")
-    .field("operator", def("Literal"))
-    .field("typeAnnotation", def("TSTypeReference"));
+    .bases("TSType")
+    .build("operator")
+    .field("operator", or(def("Literal"), def("StringLiteral")))
+    .field("typeAnnotation", def("TSType"));
 
   def("TSTypeAnnotation")
     .bases("Node")
