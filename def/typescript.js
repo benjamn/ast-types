@@ -24,10 +24,12 @@ module.exports = function (fork) {
 
   def("TSAsExpression")
     .bases("Expression")
-    .build()
-    .field("expression", def("Identifier"))
-    .field("typeAnnotation", def("TSTypeReference"))
-    .field("extra", or({parenthesized: Boolean}, null));
+    .build("expression")
+    .field("expression", def("Expression"))
+    .field("typeAnnotation", def("TSType"))
+    .field("extra",
+           or({ parenthesized: Boolean }, null),
+           defaults["null"]);
 
   def("TSNonNullExpression")
     .bases("Expression")
