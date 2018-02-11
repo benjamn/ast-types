@@ -62,7 +62,7 @@ module.exports = function (fork) {
   def("TSArrayType")
     .bases("TSType")
     .build("elementType")
-    .field("elementType", "TSType")
+    .field("elementType", def("TSType"))
 
   def("TSLiteralType")
     .bases("TSType")
