@@ -58,8 +58,11 @@ module.exports = function (fork) {
 
   def("TSLiteralType")
     .bases("TSType")
-    .build()
-    .field("literal", def("StringLiteral"))
+    .build("literal")
+    .field("literal",
+           or(def("NumericLiteral"),
+              def("StringLiteral"),
+              def("BooleanLiteral")));
 
   ["TSUnionType",
    "TSIntersectionType",
