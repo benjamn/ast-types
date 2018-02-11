@@ -228,6 +228,10 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("id")
     .field("id", def("Identifier"))
+    .field("declare", Boolean, defaults["false"])
+    .field("typeParameters",
+           or(def("TSTypeParameterDeclaration"), null),
+           defaults["null"])
     .field("typeAnnotation", def("TSType"));
 
   def("TSModuleBlock")
