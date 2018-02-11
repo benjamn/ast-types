@@ -278,4 +278,14 @@ module.exports = function (fork) {
            or([def("TSExpressionWithTypeArguments")], null),
            defaults["null"])
     .field("body", def("TSInterfaceBody"));
+
+  def("TSParameterProperty")
+    .bases("Pattern")
+    .build("parameter")
+    .field("accessibility",
+           or("public", "private", "protected", void 0),
+           defaults["undefined"])
+    .field("readonly", Boolean, defaults["false"])
+    .field("parameter", or(def("Identifier"),
+                           def("AssignmentPattern")));
 };
