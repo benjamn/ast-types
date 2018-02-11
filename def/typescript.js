@@ -263,8 +263,14 @@ module.exports = function (fork) {
 
   def("TSInterfaceDeclaration")
     .bases("Declaration")
-    .build("id")
-    .field("typeParameters", def("TSTypeParameterDeclaration"))
-    .field("extends", [def("TSExpressionWithTypeArguments")])
+    .build("id", "body")
+    .field("id", def("Identifier"))
+    .field("declare", Boolean, defaults["false"])
+    .field("typeParameters",
+           or(def("TSTypeParameterDeclaration"), null),
+           defaults["null"])
+    .field("extends",
+           or([def("TSExpressionWithTypeArguments")], null),
+           defaults["null"])
     .field("body", def("TSInterfaceBody"));
 };
