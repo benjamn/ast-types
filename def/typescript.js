@@ -142,6 +142,7 @@ module.exports = function (fork) {
     .build("key")
     .field("key", def("Identifier"))
     .field("computed", Boolean, defaults["false"])
+    .field("optional", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
     .field("parameters", [or(def("Identifier"), def("RestElement"))])
     .field("typeAnnotation", def("TSTypeAnnotation"));
