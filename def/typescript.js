@@ -61,15 +61,14 @@ module.exports = function (fork) {
     .build()
     .field("literal", def("StringLiteral"))
 
-  def("TSUnionType")
-    .bases("TSType")
-    .build()
-    .field("types", [def("TSType")])
-
-  def("TSIntersectionType")
-    .bases("TSType")
-    .build("types")
-    .field("types", [def("TSType")]);
+  ["TSUnionType",
+   "TSIntersectionType",
+  ].forEach(typeName => {
+    def(typeName)
+      .bases("TSType")
+      .build("types")
+      .field("types", [def("TSType")]);
+  });
 
   def("TSFunctionType")
     .bases("TSType")
