@@ -81,6 +81,11 @@ module.exports = function (fork) {
       .field("types", [def("TSType")]);
   });
 
+  def("TSParenthesizedType")
+    .bases("TSType")
+    .build("typeAnnotation")
+    .field("typeAnnotation", def("TSType"));
+
   var ParametersType = [or(
     def("Identifier"),
     def("RestElement")
