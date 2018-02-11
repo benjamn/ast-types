@@ -332,6 +332,20 @@ module.exports = function (fork) {
     .field("body", or(def("TSModuleBlock"),
                       def("TSModuleDeclaration")));
 
+  def("TSImportEqualsDeclaration")
+    .bases("Statement")
+    .build("id", "moduleReference")
+    .field("id", def("Identifier"))
+    .field("isExport", Boolean, defaults["false"])
+    .field("moduleReference",
+           or(def("Identifier"),
+              def("TSExternalModuleReference")));
+
+  def("TSExternalModuleReference")
+    .bases("Node")
+    .build("expression")
+    .field("expression", def("StringLiteral"));
+
   def("TSInterfaceBody")
     .bases("Node")
     .build("body")
