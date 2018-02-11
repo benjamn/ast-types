@@ -16,11 +16,16 @@ module.exports = function (fork) {
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
 
+  var IdOrQualifiedName = or(
+    def("Identifier"),
+    def("TSQualifiedName")
+  );
+
   def("TSQualifiedName")
     .bases("Node")
     .build("left", "right")
-    .field("left", or("Identifier", "TSQualifiedName"))
-    .field("right", or("Identifier", "TSQualifiedName"));
+    .field("left", IdOrQualifiedName)
+    .field("right", IdOrQualifiedName);
 
   def("TSAsExpression")
     .bases("Expression")
