@@ -47,6 +47,7 @@ module.exports = function (fork) {
     "TSSymbolKeyword",
     "TSUndefinedKeyword",
     "TSVoidKeyword",
+    "TSThisType",
   ].forEach(keywordType => {
     def(keywordType)
       .bases("TSType")
