@@ -7,7 +7,7 @@ module.exports = function (fork) {
   var or = types.Type.or;
 
   def("Noop")
-    .bases("Node")
+    .bases("Statement")
     .build();
 
   def("DoExpression")
