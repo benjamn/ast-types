@@ -91,7 +91,10 @@ module.exports = function (fork) {
     .build("typeParameter", "typeAnnotation")
     .field("readonly", Boolean, defaults["false"])
     .field("typeParameter", def("TSTypeParameter"))
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+    .field("optional", Boolean, defaults["false"])
+    .field("typeAnnotation",
+           or(def("TSType"), null),
+           defaults["null"]);
 
   def("TSTupleType")
     .bases("TSType")
