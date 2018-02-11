@@ -190,8 +190,9 @@ module.exports = function (fork) {
 
   def("TSTypeParameter")
     .bases("Identifier")
-    .field("name", def("Literal"))
-    .field("constraint", def("TSTypeReference"));
+    .field("name", or(def("Literal"), def("StringLiteral")))
+    .field("constraint", or(def("TSType"), null), defaults["null"])
+    .field("default", or(def("TSType"), null), defaults["null"]);
 
   def("TSTypeAssertion")
     .bases("Expression")
