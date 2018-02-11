@@ -168,9 +168,11 @@ module.exports = function (fork) {
 
   def("TSEnumMember")
     .bases("Node")
-    .build("id")
-    .field("id", def("Identifier"))
-    .field("initializer", def("Literal"));
+    .build("id", "initializer")
+    .field("id", or(def("Identifier"), def("StringLiteral")))
+    .field("initializer",
+           or(def("Expression"), null),
+           defaults["null"]);
 
   def("TSTypeLiteral")
     .bases("TSTypeAnnotation")
@@ -202,11 +204,14 @@ module.exports = function (fork) {
 
   def("TSEnumDeclaration")
     .bases("Declaration")
-    .build("id")
+    .build("id", "members")
     .field("id", def("Identifier"))
     .field("const", Boolean, defaults["false"])
     .field("declare", Boolean, defaults["false"])
-    .field("members", [def("TSEnumMember")]);
+    .field("members", [def("TSEnumMember")])
+    .field("initializer",
+           or(def("Expression"), null),
+           defaults["null"]);
 
   def("TSTypeAliasDeclaration")
     .bases("Declaration")
