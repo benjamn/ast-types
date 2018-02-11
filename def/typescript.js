@@ -12,7 +12,9 @@ module.exports = function (fork) {
   def("TSTypeReference")
     .bases("TSType")
     .field("typeName", def("Identifier"))
-    .field("typeParameters", [def("TSType")]);
+    .field("typeParameters",
+           or(def("TSTypeParameterInstantiation"), null),
+           defaults["null"]);
 
   def("TSQualifiedName")
     .bases("Node")
