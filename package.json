@@ -37,7 +37,7 @@
     "esprima": "~4.0.0",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
     "mocha": "^4.0.1",
-    "reify": "^0.13.1"
+    "reify": "^0.14.1"
   },
   "engines": {
     "node": ">= 0.8"
