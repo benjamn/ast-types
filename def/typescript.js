@@ -253,6 +253,11 @@ module.exports = function (fork) {
            or(def("Expression"), null),
            defaults["null"]);
 
+  def("TSTypeQuery")
+    .bases("TSType")
+    .build("exprName")
+    .field("exprName", def("Identifier"));
+
   // Inferred from Babylon's tsParseTypeMember method.
   var TSTypeMember = or(
     def("TSCallSignatureDeclaration"),
