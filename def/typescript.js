@@ -34,7 +34,7 @@ module.exports = function (fork) {
   def("TSNonNullExpression")
     .bases("Expression")
     .build("expression")
-    .field("expression", def("Identifier"));
+    .field("expression", def("Expression"));
 
   [ // Define all the simple keyword types.
     "TSAnyKeyword",
@@ -55,7 +55,7 @@ module.exports = function (fork) {
 
   def("TSArrayType")
     .bases("TSType")
-    .build()
+    .build("elementType")
     .field("elementType", "TSType")
 
   def("TSLiteralType")
@@ -95,14 +95,14 @@ module.exports = function (fork) {
 
   def("TSTupleType")
     .bases("TSType")
-    .build()
+    .build("elementTypes")
     .field("elementTypes", [def("TSType")]);
 
   def("TSIndexedAccessType")
     .bases("TSType")
     .build("objectType", "indexType")
-    .field("objectType", def("TSTypeReference"))
-    .field("indexType", def("TSTypeReference"))
+    .field("objectType", def("TSType"))
+    .field("indexType", def("TSType"))
 
   def("TSTypeOperator")
     .bases("Node")
@@ -111,20 +111,20 @@ module.exports = function (fork) {
 
   def("TSTypeAnnotation")
     .bases("Node")
-    .build()
+    .build("typeAnnotation")
     .field("typeAnnotation", def("TSType"));
 
   def("TSIndexSignature")
     .bases("Node")
-    .build()
+    .build("parameters")
+    .field("parameters", [def("Identifier")]) // Length === 1
     .field("readonly", Boolean, defaults["false"])
-    .field("parameters", [def("Identifier")])
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
   def("TSPropertySignature")
     .bases("Node")
     .build("key")
-    .field("key", def("Identifier"))
+    .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("readonly", Boolean, defaults["false"])
     .field("typeAnnotation", def("TSTypeAnnotation"))
@@ -135,7 +135,7 @@ module.exports = function (fork) {
     .field("key", def("Identifier"))
     .field("computed", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
-    .field("parameters", [def("Identifier")])
+    .field("parameters", [or(def("Identifier"), def("RestElement"))])
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
   def("TSTypePredicate")
@@ -174,11 +174,13 @@ module.exports = function (fork) {
     .field("constraint", def("TSTypeReference"));
 
   def("TSTypeAssertion")
-    .bases("Node")
-    .build()
+    .bases("Expression")
+    .build("typeAnnotation", "expression")
     .field("typeAnnotation", def("TSType"))
-    .field("expression", def("Identifier"))
-    .field("extra", or({parenthesized: Boolean}, null));
+    .field("expression", def("Expression"))
+    .field("extra",
+           or({ parenthesized: Boolean }, null),
+           defaults["null"]);
 
   def("TSTypeParameterDeclaration")
     .bases("Declaration")
