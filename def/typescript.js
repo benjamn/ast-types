@@ -174,9 +174,19 @@ module.exports = function (fork) {
            or(def("Expression"), null),
            defaults["null"]);
 
+  // Inferred from Babylon's tsParseTypeMember method.
+  var TSTypeMember = or(
+    def("TSCallSignatureDeclaration"),
+    def("TSConstructSignatureDeclaration"),
+    def("TSIndexSignature"),
+    def("TSMethodSignature"),
+    def("TSPropertySignature")
+  );
+
   def("TSTypeLiteral")
-    .bases("TSTypeAnnotation")
-    .field("members", [def("TSPropertySignature")]);
+    .bases("TSType")
+    .build("members")
+    .field("members", [TSTypeMember]);
 
   def("TSTypeParameter")
     .bases("Identifier")
@@ -233,8 +243,8 @@ module.exports = function (fork) {
 
   def("TSInterfaceBody")
     .bases("Node")
-    .build()
-    .field("body", [def("TSPropertySignature")]);
+    .build("body")
+    .field("body", [TSTypeMember]);
 
   def("TSExpressionWithTypeArguments")
     .bases("Node")
