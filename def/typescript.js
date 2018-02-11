@@ -254,10 +254,12 @@ module.exports = function (fork) {
     .field("body", [TSTypeMember]);
 
   def("TSExpressionWithTypeArguments")
-    .bases("Node")
-    .build()
+    .bases("TSType")
+    .build("expression", "typeParameters")
     .field("expression", def("Identifier"))
-    .field("typeParameters", [def("TSTypeParameter")]);
+    .field("typeParameters",
+           or(def("TSTypeParameterInstantiation"), null),
+           defaults["null"]);
 
   def("TSInterfaceDeclaration")
     .bases("Declaration")
