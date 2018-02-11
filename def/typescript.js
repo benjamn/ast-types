@@ -153,19 +153,16 @@ module.exports = function (fork) {
     .field("parameterName", def("Identifier"))
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
-  def("TSCallSignatureDeclaration")
-    .bases("Declaration")
-    .build()
-    .field("typeParameters", def("TSTypeParameterDeclaration"))
-    .field("parameters", [def("Identifier")])
-    .field("typeAnnotation", def("TSTypeAnnotation"));
-
-  def("TSConstructSignatureDeclaration")
-    .bases("Declaration")
-    .build()
-    .field("typeParameters", [def("TSTypeParameterDeclaration")])
-    .field("parameters", [def("Identifier")])
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+  ["TSCallSignatureDeclaration",
+   "TSConstructSignatureDeclaration",
+  ].forEach(typeName => {
+    def(typeName)
+      .bases("Declaration")
+      .build("parameters")
+      .field("typeParameters", def("TSTypeParameterDeclaration"))
+      .field("parameters", [or(def("Identifier"), def("RestElement"))])
+      .field("typeAnnotation", def("TSTypeAnnotation"));
+  });
 
   def("TSEnumMember")
     .bases("Node")
