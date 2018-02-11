@@ -131,6 +131,10 @@ module.exports = function (fork) {
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("readonly", Boolean, defaults["false"])
+    .field("optional", Boolean, defaults["false"])
+    .field("initializer",
+           or(def("Expression"), null),
+           defaults["null"])
     .field("typeAnnotation", def("TSTypeAnnotation"))
 
   def("TSMethodSignature")
