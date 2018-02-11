@@ -91,6 +91,69 @@ module.exports = function (fork) {
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
 
+  def("TSDeclareFunction")
+    .bases("Declaration")
+    .build("id", "params", "returnType")
+    .field("declare", Boolean, defaults["false"])
+    .field("async", Boolean, defaults["false"])
+    .field("generator", Boolean, defaults["false"])
+    .field("id", or(def("Identifier"), null), defaults["null"])
+    .field("params", [def("Pattern")])
+    // tSFunctionTypeAnnotationCommon
+    .field("returnType",
+           or(def("TSTypeAnnotation"),
+              def("Noop"), // Still used?
+              null),
+           defaults["null"])
+    .field("typeParameters",
+           or(def("TSTypeParameterDeclaration"),
+              def("Noop"), // Still used?
+              null),
+           defaults["null"]);
+
+  def("TSDeclareMethod")
+    .bases("Declaration")
+    .build("key", "params", "returnType")
+    .field("async", Boolean, defaults["false"])
+    .field("generator", Boolean, defaults["false"])
+    .field("params", [def("Pattern")])
+    // classMethodOrPropertyCommon
+    .field("abstract", Boolean, defaults["false"])
+    .field("accessibility",
+           or("public", "private", "protected", void 0),
+           defaults["undefined"])
+    .field("static", Boolean, defaults["false"])
+    .field("computed", Boolean, defaults["false"])
+    .field("optional", Boolean, defaults["false"])
+    .field("key", or(
+      def("Identifier"),
+      def("StringLiteral"),
+      def("NumericLiteral"),
+      // Only allowed if .computed is true.
+      def("Expression")
+    ))
+    // classMethodOrDeclareMethodCommon
+    .field("kind",
+           or("get", "set", "method", "constructor"),
+           function getDefault() { return "method"; })
+    .field("access", // Not "accessibility"?
+           or("public", "private", "protected", void 0),
+           defaults["undefined"])
+    .field("decorators",
+           or([def("Decorator")], null),
+           defaults["null"])
+    // tSFunctionTypeAnnotationCommon
+    .field("returnType",
+           or(def("TSTypeAnnotation"),
+              def("Noop"), // Still used?
+              null),
+           defaults["null"])
+    .field("typeParameters",
+           or(def("TSTypeParameterDeclaration"),
+              def("Noop"), // Still used?
+              null),
+           defaults["null"]);
+
   def("TSMappedType")
     .bases("TSType")
     .build("typeParameter", "typeAnnotation")
