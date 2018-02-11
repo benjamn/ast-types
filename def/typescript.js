@@ -75,12 +75,16 @@ module.exports = function (fork) {
       .field("types", [def("TSType")]);
   });
 
-  def("TSFunctionType")
-    .bases("TSType")
-    .build()
-    .field("typeParameters", def("TSTypeParameterDeclaration"))
-    .field("parameters", [def("Identifier")])
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+  ["TSFunctionType",
+   "TSConstructorType",
+  ].forEach(typeName => {
+    def(typeName)
+      .bases("TSType")
+      .build("parameters")
+      .field("typeParameters", def("TSTypeParameterDeclaration"))
+      .field("parameters", [or(def("Identifier"), def("RestElement"))])
+      .field("typeAnnotation", def("TSTypeAnnotation"));
+  });
 
   def("TSMappedType")
     .bases("TSType")
