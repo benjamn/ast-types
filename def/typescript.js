@@ -236,15 +236,17 @@ module.exports = function (fork) {
 
   def("TSModuleBlock")
     .bases("Node")
-    .build()
-    .field("body", [def("Declaration")]); // this is probably not right
+    .build("body")
+    .field("body", [def("Statement")]);
 
   def("TSModuleDeclaration")
     .bases("Declaration")
-    .build("id")
+    .build("id", "body")
     .field("id", def("Identifier"))
     .field("declare", Boolean, defaults["false"])
-    .field("body", def("TSModuleBlock"));
+    .field("global", Boolean, defaults["false"])
+    .field("body", or(def("TSModuleBlock"),
+                      def("TSModuleDeclaration")));
 
   def("TSInterfaceBody")
     .bases("Node")
