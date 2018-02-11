@@ -150,7 +150,9 @@ module.exports = function (fork) {
   def("TSTypePredicate")
     .bases("TSTypeAnnotation")
     .build("parameterName", "typeAnnotation")
-    .field("parameterName", def("Identifier"))
+    .field("parameterName",
+           or(def("Identifier"),
+              def("TSThisType")))
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
   ["TSCallSignatureDeclaration",
