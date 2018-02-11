@@ -75,6 +75,11 @@ module.exports = function (fork) {
       .field("types", [def("TSType")]);
   });
 
+  var ParametersType = [or(
+    def("Identifier"),
+    def("RestElement")
+  )];
+
   ["TSFunctionType",
    "TSConstructorType",
   ].forEach(typeName => {
@@ -82,7 +87,7 @@ module.exports = function (fork) {
       .bases("TSType")
       .build("parameters")
       .field("typeParameters", def("TSTypeParameterDeclaration"))
-      .field("parameters", [or(def("Identifier"), def("RestElement"))])
+      .field("parameters", ParametersType)
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
 
@@ -144,7 +149,7 @@ module.exports = function (fork) {
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
-    .field("parameters", [or(def("Identifier"), def("RestElement"))])
+    .field("parameters", ParametersType)
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
   def("TSTypePredicate")
@@ -162,7 +167,7 @@ module.exports = function (fork) {
       .bases("Declaration")
       .build("parameters")
       .field("typeParameters", def("TSTypeParameterDeclaration"))
-      .field("parameters", [or(def("Identifier"), def("RestElement"))])
+      .field("parameters", ParametersType)
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
 
