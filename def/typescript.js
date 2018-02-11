@@ -346,6 +346,16 @@ module.exports = function (fork) {
     .build("expression")
     .field("expression", def("StringLiteral"));
 
+  def("TSExportAssignment")
+    .bases("Statement")
+    .build("expression")
+    .field("expression", def("Expression"));
+
+  def("TSNamespaceExportDeclaration")
+    .bases("Statement")
+    .build("id")
+    .field("id", def("Identifier"));
+
   def("TSInterfaceBody")
     .bases("Node")
     .build("body")
