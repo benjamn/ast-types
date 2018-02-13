@@ -63,6 +63,7 @@ module.exports = function (fork) {
     .field("children", [or(
       def("JSXElement"),
       def("JSXExpressionContainer"),
+      def("JSXFragment"),
       def("JSXText"),
       def("Literal") // TODO Esprima should return JSXText instead.
     )], defaults.emptyArray)
@@ -92,6 +93,27 @@ module.exports = function (fork) {
     .bases("Node") // TODO Same concern.
     .build("name")
     .field("name", JSXElementName);
+
+  def("JSXFragment")
+    .bases("Expression")
+    .build("openingElement", "closingElement", "children")
+    .field("openingElement", def("JSXOpeningFragment"))
+    .field("closingElement", def("JSXClosingFragment"))
+    .field("children", [or(
+      def("JSXElement"),
+      def("JSXExpressionContainer"),
+      def("JSXFragment"),
+      def("JSXText"),
+      def("Literal") // TODO Esprima should return JSXText instead.
+    )], defaults.emptyArray)
+
+  def("JSXOpeningFragment")
+    .bases("Node") // TODO Same concern.
+    .build();
+
+  def("JSXClosingFragment")
+    .bases("Node") // TODO Same concern.
+    .build();
 
   def("JSXText")
     .bases("Literal")

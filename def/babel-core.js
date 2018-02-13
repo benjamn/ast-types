@@ -7,7 +7,7 @@ module.exports = function (fork) {
   var or = types.Type.or;
 
   def("Noop")
-    .bases("Node")
+    .bases("Statement")
     .build();
 
   def("DoExpression")
@@ -136,7 +136,17 @@ module.exports = function (fork) {
   def("NumericLiteral")
     .bases("Literal")
     .build("value")
-    .field("value", Number);
+    .field("value", Number)
+    .field("raw", or(String, null), defaults["null"])
+    .field("extra", {
+      rawValue: Number,
+      raw: String
+    }, function getDefault() {
+      return {
+        rawValue: this.value,
+        raw: this.value + ""
+      }
+    });
 
   def("BigIntLiteral")
     .bases("Literal")
