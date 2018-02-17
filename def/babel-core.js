@@ -187,7 +187,8 @@ module.exports = function (fork) {
     def("Property"),
     def("ObjectMethod"),
     def("ObjectProperty"),
-    def("SpreadProperty")
+    def("SpreadProperty"),
+    def("SpreadElement")
   );
 
   // Split Property -> ObjectProperty and ObjectMethod

@@ -16,7 +16,11 @@ module.exports = function (fork) {
     .field("argument", def("Expression"));
 
   def("ObjectExpression")
-    .field("properties", [or(def("Property"), def("SpreadProperty"))]);
+    .field("properties", [or(
+      def("Property"),
+      def("SpreadProperty"),
+      def("SpreadElement")
+    )]);
 
   def("SpreadPropertyPattern")
     .bases("Pattern")
