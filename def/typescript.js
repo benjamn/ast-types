@@ -402,7 +402,8 @@ module.exports = function (fork) {
       def("ClassPropertyDefinition"),
       def("ClassProperty"),
       def("ClassMethod"),
-      // Just need to add this type:
-      def("TSDeclareMethod")
+      // Just need to add these types:
+      def("TSDeclareMethod"),
+      TSTypeMember
     )]);
 };
