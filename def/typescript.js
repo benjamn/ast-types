@@ -24,9 +24,14 @@ module.exports = function (fork) {
   def("TSType")
     .bases("Node");
 
+  var IdOrQualifiedName = or(
+    def("Identifier"),
+    def("TSQualifiedName")
+  );
+
   def("TSTypeReference")
     .bases("TSType")
-    .field("typeName", def("Identifier"))
+    .field("typeName", IdOrQualifiedName)
     .field("typeParameters",
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
@@ -44,11 +49,6 @@ module.exports = function (fork) {
     .field("typeAnnotation",
            or(def("TSTypeAnnotation"), null),
            defaults["null"]);
-
-  var IdOrQualifiedName = or(
-    def("Identifier"),
-    def("TSQualifiedName")
-  );
 
   def("TSQualifiedName")
     .bases("Node")
