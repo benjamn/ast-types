@@ -221,7 +221,9 @@ module.exports = function (fork) {
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
     .field("parameters", ParametersType)
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+    .field("typeAnnotation",
+           or(def("TSTypeAnnotation"), null),
+           defaults["null"]);
 
   def("TSTypePredicate")
     .bases("TSTypeAnnotation")
