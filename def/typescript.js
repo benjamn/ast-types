@@ -25,6 +25,13 @@ module.exports = function (fork) {
            or(def("TSTypeParameterDeclaration"), null),
            defaults["null"]);
 
+  // An abstract (non-buildable) base type that provide a commonly-needed
+  // optional .typeAnnotation field.
+  def("TSHasOptionalTypeAnnotation")
+    .field("typeAnnotation",
+           or(def("TSTypeAnnotation"), null),
+           defaults["null"]);
+
   var IdOrQualifiedName = or(
     def("Identifier"),
     def("TSQualifiedName")
@@ -104,10 +111,11 @@ module.exports = function (fork) {
    "TSConstructorType",
   ].forEach(typeName => {
     def(typeName)
-      .bases("TSType", "TSHasOptionalTypeParameters")
+      .bases("TSType",
+             "TSHasOptionalTypeParameters",
+             "TSHasOptionalTypeAnnotation")
       .build("parameters")
-      .field("parameters", ParametersType)
-      .field("typeAnnotation", def("TSTypeAnnotation"));
+      .field("parameters", ParametersType);
   });
 
   def("TSDeclareFunction")
@@ -196,14 +204,13 @@ module.exports = function (fork) {
     .field("typeAnnotation", def("TSType"));
 
   def("TSIndexSignature")
-    .bases("Node")
+    .bases("Node", "TSHasOptionalTypeAnnotation")
     .build("parameters")
     .field("parameters", [def("Identifier")]) // Length === 1
-    .field("readonly", Boolean, defaults["false"])
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+    .field("readonly", Boolean, defaults["false"]);
 
   def("TSPropertySignature")
-    .bases("Node")
+    .bases("Node", "TSHasOptionalTypeAnnotation")
     .build("key")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
@@ -211,19 +218,17 @@ module.exports = function (fork) {
     .field("optional", Boolean, defaults["false"])
     .field("initializer",
            or(def("Expression"), null),
-           defaults["null"])
-    .field("typeAnnotation", def("TSTypeAnnotation"))
+           defaults["null"]);
 
   def("TSMethodSignature")
-    .bases("Node", "TSHasOptionalTypeParameters")
+    .bases("Node",
+           "TSHasOptionalTypeParameters",
+           "TSHasOptionalTypeAnnotation")
     .build("key")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
-    .field("parameters", ParametersType)
-    .field("typeAnnotation",
-           or(def("TSTypeAnnotation"), null),
-           defaults["null"]);
+    .field("parameters", ParametersType);
 
   def("TSTypePredicate")
     .bases("TSTypeAnnotation")
@@ -237,10 +242,11 @@ module.exports = function (fork) {
    "TSConstructSignatureDeclaration",
   ].forEach(typeName => {
     def(typeName)
-      .bases("Declaration", "TSHasOptionalTypeParameters")
+      .bases("Declaration",
+             "TSHasOptionalTypeParameters",
+             "TSHasOptionalTypeAnnotation")
       .build("parameters")
-      .field("parameters", ParametersType)
-      .field("typeAnnotation", def("TSTypeAnnotation"));
+      .field("parameters", ParametersType);
   });
 
   def("TSEnumMember")
