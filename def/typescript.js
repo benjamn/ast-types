@@ -18,6 +18,13 @@ module.exports = function (fork) {
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
 
+  // An abstract (non-buildable) base type that provide a commonly-needed
+  // optional .typeParameters field.
+  def("TSHasOptionalTypeParameters")
+    .field("typeParameters",
+           or(def("TSTypeParameterDeclaration"), null),
+           defaults["null"]);
+
   var IdOrQualifiedName = or(
     def("Identifier"),
     def("TSQualifiedName")
@@ -97,15 +104,14 @@ module.exports = function (fork) {
    "TSConstructorType",
   ].forEach(typeName => {
     def(typeName)
-      .bases("TSType")
+      .bases("TSType", "TSHasOptionalTypeParameters")
       .build("parameters")
-      .field("typeParameters", def("TSTypeParameterDeclaration"))
       .field("parameters", ParametersType)
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
 
   def("TSDeclareFunction")
-    .bases("Declaration")
+    .bases("Declaration", "TSHasOptionalTypeParameters")
     .build("id", "params", "returnType")
     .field("declare", Boolean, defaults["false"])
     .field("async", Boolean, defaults["false"])
@@ -117,15 +123,10 @@ module.exports = function (fork) {
            or(def("TSTypeAnnotation"),
               def("Noop"), // Still used?
               null),
-           defaults["null"])
-    .field("typeParameters",
-           or(def("TSTypeParameterDeclaration"),
-              def("Noop"), // Still used?
-              null),
            defaults["null"]);
 
   def("TSDeclareMethod")
-    .bases("Declaration")
+    .bases("Declaration", "TSHasOptionalTypeParameters")
     .build("key", "params", "returnType")
     .field("async", Boolean, defaults["false"])
     .field("generator", Boolean, defaults["false"])
@@ -158,11 +159,6 @@ module.exports = function (fork) {
     // tSFunctionTypeAnnotationCommon
     .field("returnType",
            or(def("TSTypeAnnotation"),
-              def("Noop"), // Still used?
-              null),
-           defaults["null"])
-    .field("typeParameters",
-           or(def("TSTypeParameterDeclaration"),
               def("Noop"), // Still used?
               null),
            defaults["null"]);
@@ -219,12 +215,11 @@ module.exports = function (fork) {
     .field("typeAnnotation", def("TSTypeAnnotation"))
 
   def("TSMethodSignature")
-    .bases("Node")
+    .bases("Node", "TSHasOptionalTypeParameters")
     .build("key")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
-    .field("typeParameters", def("TSTypeParameterDeclaration"))
     .field("parameters", ParametersType)
     .field("typeAnnotation", def("TSTypeAnnotation"));
 
@@ -240,11 +235,8 @@ module.exports = function (fork) {
    "TSConstructSignatureDeclaration",
   ].forEach(typeName => {
     def(typeName)
-      .bases("Declaration")
+      .bases("Declaration", "TSHasOptionalTypeParameters")
       .build("parameters")
-      .field("typeParameters",
-             or(def("TSTypeParameterDeclaration"), null),
-             defaults["null"])
       .field("parameters", ParametersType)
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
@@ -313,13 +305,10 @@ module.exports = function (fork) {
            defaults["null"]);
 
   def("TSTypeAliasDeclaration")
-    .bases("Declaration")
+    .bases("Declaration", "TSHasOptionalTypeParameters")
     .build("id")
     .field("id", def("Identifier"))
     .field("declare", Boolean, defaults["false"])
-    .field("typeParameters",
-           or(def("TSTypeParameterDeclaration"), null),
-           defaults["null"])
     .field("typeAnnotation", def("TSType"));
 
   def("TSModuleBlock")
@@ -377,13 +366,10 @@ module.exports = function (fork) {
            defaults["null"]);
 
   def("TSInterfaceDeclaration")
-    .bases("Declaration")
+    .bases("Declaration", "TSHasOptionalTypeParameters")
     .build("id", "body")
     .field("id", IdOrQualifiedName)
     .field("declare", Boolean, defaults["false"])
-    .field("typeParameters",
-           or(def("TSTypeParameterDeclaration"), null),
-           defaults["null"])
     .field("extends",
            or([def("TSExpressionWithTypeArguments")], null),
            defaults["null"])
