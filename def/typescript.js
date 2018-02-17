@@ -328,11 +328,14 @@ module.exports = function (fork) {
   def("TSModuleDeclaration")
     .bases("Declaration")
     .build("id", "body")
-    .field("id", def("Identifier"))
+    .field("id", or(def("StringLiteral"), IdOrQualifiedName))
     .field("declare", Boolean, defaults["false"])
     .field("global", Boolean, defaults["false"])
-    .field("body", or(def("TSModuleBlock"),
-                      def("TSModuleDeclaration")));
+    .field("body",
+           or(def("TSModuleBlock"),
+              def("TSModuleDeclaration"),
+              null),
+           defaults["null"]);
 
   def("TSImportEqualsDeclaration")
     .bases("Statement")
