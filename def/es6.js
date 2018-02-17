@@ -203,6 +203,38 @@ module.exports = function (fork) {
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("name", or(def("Identifier"), null), defaults["null"]);
 
+  // Like ModuleSpecifier, except type:"ImportSpecifier" and buildable.
+  // import {<id [as name]>} from ...;
+  def("ImportSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id", "name");
+
+  // import <* as id> from ...;
+  def("ImportNamespaceSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id");
+
+  // import <id> from ...;
+  def("ImportDefaultSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id");
+
+  def("ImportDeclaration")
+    .bases("Declaration")
+    .build("specifiers", "source", "importKind")
+    .field("specifiers", [or(
+      def("ImportSpecifier"),
+      def("ImportNamespaceSpecifier"),
+      def("ImportDefaultSpecifier")
+    )], defaults.emptyArray)
+    .field("source", def("Literal"))
+    .field("importKind", or(
+      "value",
+      "type"
+    ), function() {
+      return "value";
+    });
+
   def("TaggedTemplateExpression")
     .bases("Expression")
     .build("tag", "quasi")

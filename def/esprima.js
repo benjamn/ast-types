@@ -44,22 +44,6 @@ module.exports = function (fork) {
     .bases("Specifier")
     .build();
 
-  // Like ModuleSpecifier, except type:"ImportSpecifier" and buildable.
-  // import {<id [as name]>} from ...;
-  def("ImportSpecifier")
-    .bases("ModuleSpecifier")
-    .build("id", "name");
-
-  // import <* as id> from ...;
-  def("ImportNamespaceSpecifier")
-    .bases("ModuleSpecifier")
-    .build("id");
-
-  // import <id> from ...;
-  def("ImportDefaultSpecifier")
-    .bases("ModuleSpecifier")
-    .build("id");
-
   def("ExportDeclaration")
     .bases("Declaration")
     .build("default", "declaration", "specifiers", "source")
@@ -77,22 +61,6 @@ module.exports = function (fork) {
       def("Literal"),
       null
     ), defaults["null"]);
-
-  def("ImportDeclaration")
-    .bases("Declaration")
-    .build("specifiers", "source", "importKind")
-    .field("specifiers", [or(
-      def("ImportSpecifier"),
-      def("ImportNamespaceSpecifier"),
-      def("ImportDefaultSpecifier")
-    )], defaults.emptyArray)
-    .field("source", def("Literal"))
-    .field("importKind", or(
-      "value",
-      "type"
-    ), function() {
-      return "value";
-    });
 
   def("Block")
     .bases("Comment")
