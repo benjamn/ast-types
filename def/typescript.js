@@ -242,7 +242,9 @@ module.exports = function (fork) {
     def(typeName)
       .bases("Declaration")
       .build("parameters")
-      .field("typeParameters", def("TSTypeParameterDeclaration"))
+      .field("typeParameters",
+             or(def("TSTypeParameterDeclaration"), null),
+             defaults["null"])
       .field("parameters", ParametersType)
       .field("typeAnnotation", def("TSTypeAnnotation"));
   });
