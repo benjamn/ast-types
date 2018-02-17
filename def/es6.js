@@ -109,7 +109,7 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("kind", "key", "value", "static")
     .field("kind", or("constructor", "method", "get", "set"))
-    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+    .field("key", def("Expression"))
     .field("value", def("Function"))
     .field("computed", Boolean, defaults["false"])
     .field("static", Boolean, defaults["false"]);

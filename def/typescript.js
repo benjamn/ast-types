@@ -221,7 +221,7 @@ module.exports = function (fork) {
   def("TSMethodSignature")
     .bases("Node")
     .build("key")
-    .field("key", def("Identifier"))
+    .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
     .field("typeParameters", def("TSTypeParameterDeclaration"))
