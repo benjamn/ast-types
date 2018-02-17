@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec --full-trace test/run.js"
+    "test": "test/run.sh"
   },
   "dependencies": {},
   "devDependencies": {
