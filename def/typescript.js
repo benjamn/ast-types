@@ -393,4 +393,16 @@ module.exports = function (fork) {
     .field("readonly", Boolean, defaults["false"])
     .field("parameter", or(def("Identifier"),
                            def("AssignmentPattern")));
+
+  // Defined already in es6 and babel-core.
+  def("ClassBody")
+    .field("body", [or(
+      def("MethodDefinition"),
+      def("VariableDeclarator"),
+      def("ClassPropertyDefinition"),
+      def("ClassProperty"),
+      def("ClassMethod"),
+      // Just need to add this type:
+      def("TSDeclareMethod")
+    )]);
 };
