@@ -181,13 +181,6 @@ module.exports = function (fork) {
     .build("id", "body", "superClass")
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("body", def("ClassBody"))
-    .field("superClass", or(def("Expression"), null), defaults["null"])
-    .field("implements", [def("ClassImplements")], defaults.emptyArray);
-
-  def("ClassImplements")
-    .bases("Node")
-    .build("id")
-    .field("id", def("Identifier"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
   // Specifier and ModuleSpecifier are abstract non-standard types
