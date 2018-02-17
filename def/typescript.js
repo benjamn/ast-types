@@ -4,9 +4,22 @@ module.exports = function (fork) {
   fork.use(require("./babel-core"));
 
   var types = fork.use(require("../lib/types"));
+  var n = types.namedTypes;
   var def = types.Type.def;
   var or = types.Type.or;
   var defaults = fork.use(require("../lib/shared")).defaults;
+  var StringLiteral = new types.Type(function (value, deep) {
+    if (n.StringLiteral &&
+        n.StringLiteral.check(value, deep)) {
+      return true
+    }
+    if (n.Literal &&
+        n.Literal.check(value, deep) &&
+        typeof value.value === "string") {
+      return true;
+    }
+    return false;
+  }, "StringLiteral");
 
   def("TSType")
     .bases("Node");
@@ -195,7 +208,7 @@ module.exports = function (fork) {
   def("TSTypeOperator")
     .bases("TSType")
     .build("operator")
-    .field("operator", or(def("Literal"), def("StringLiteral")))
+    .field("operator", String)
     .field("typeAnnotation", def("TSType"));
 
   def("TSTypeAnnotation")
@@ -252,7 +265,7 @@ module.exports = function (fork) {
   def("TSEnumMember")
     .bases("Node")
     .build("id", "initializer")
-    .field("id", or(def("Identifier"), def("StringLiteral")))
+    .field("id", or(def("Identifier"), StringLiteral))
     .field("initializer",
            or(def("Expression"), null),
            defaults["null"]);
@@ -327,7 +340,7 @@ module.exports = function (fork) {
   def("TSModuleDeclaration")
     .bases("Declaration")
     .build("id", "body")
-    .field("id", or(def("StringLiteral"), IdOrQualifiedName))
+    .field("id", or(StringLiteral, IdOrQualifiedName))
     .field("declare", Boolean, defaults["false"])
     .field("global", Boolean, defaults["false"])
     .field("body",
@@ -348,7 +361,7 @@ module.exports = function (fork) {
   def("TSExternalModuleReference")
     .bases("Node")
     .build("expression")
-    .field("expression", def("StringLiteral"));
+    .field("expression", StringLiteral);
 
   def("TSExportAssignment")
     .bases("Statement")
