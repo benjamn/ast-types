@@ -343,7 +343,7 @@ module.exports = function (fork) {
     .field("id", def("Identifier"))
     .field("isExport", Boolean, defaults["false"])
     .field("moduleReference",
-           or(def("Identifier"),
+           or(IdOrQualifiedName,
               def("TSExternalModuleReference")));
 
   def("TSExternalModuleReference")
