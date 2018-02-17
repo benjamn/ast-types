@@ -1,2 +1,3 @@
 node_modules
-test/data/typescript
+test/data/babylon-typescript-fixtures
+test/data/typescript-compiler

@@ -3,22 +3,28 @@ var fs = require("fs");
 var path = require("path");
 var shared = require("./shared.js");
 var pkgRootDir = path.resolve(__dirname, "..");
-var tsRootDir = path.resolve(__dirname, "data", "typescript");
 var tsTypes = require("../fork.js")([
   require("../def/typescript"),
   require("../def/jsx"),
 ]);
 
+var babylonTSFixturesDir =
+  path.resolve(__dirname, "data", "babylon-typescript-fixtures");
+
 require("glob")("**/input.js", {
-  cwd: tsRootDir,
+  cwd: babylonTSFixturesDir,
 }, (error, files) => {
-  describe("TypeScript whole-program validation", function () {
+  if (error) {
+    throw error;
+  }
+
+  describe("Whole-program validation for Babylon TypeScript tests", function () {
     if (error) {
       throw error;
     }
 
     files.forEach(tsPath => {
-      var fullPath = path.join(tsRootDir, tsPath);
+      var fullPath = path.join(babylonTSFixturesDir, tsPath);
 
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
@@ -34,59 +40,104 @@ require("glob")("**/input.js", {
       });
     });
   });
-});
 
-function tryParse(code, fullPath) {
-  var parseOptions = getOptions(fullPath);
+  function tryParse(code, fullPath) {
+    var parseOptions = getOptions(fullPath);
 
-  try {
-    return require("babylon").parse(code, parseOptions).program;
+    try {
+      return require("babylon").parse(code, parseOptions).program;
 
-  } catch (error) {
-    // If parsing fails, check options.json to see if the failure was
-    // expected.
+    } catch (error) {
+      // If parsing fails, check options.json to see if the failure was
+      // expected.
+      try {
+        var options = JSON.parse(fs.readFileSync(
+          path.join(path.dirname(fullPath), "options.json")));
+      } catch (optionsError) {
+        console.error(optionsError.message);
+      }
+
+      if (options &&
+          options.throws === error.message) {
+        return null;
+      }
+
+      throw error;
+    }
+  }
+
+  function getOptions(fullPath) {
+    var plugins = getPlugins(path.dirname(fullPath));
+    return {
+      sourceType: "module",
+      plugins,
+    };
+  }
+
+  function getPlugins(dir) {
     try {
       var options = JSON.parse(fs.readFileSync(
-        path.join(path.dirname(fullPath), "options.json")));
-    } catch (optionsError) {
-      console.error(optionsError.message);
+        path.join(dir, "options.json")
+      ));
+    } catch (ignored) {
+      options = {};
     }
 
-    if (options &&
-        options.throws === error.message) {
-      return null;
+    if (options.plugins) {
+      return options.plugins;
     }
 
+    if (dir !== babylonTSFixturesDir) {
+      return getPlugins(path.dirname(dir));
+    }
+
+    return [
+      "typescript",
+    ];
+  }
+});
+
+var tsCompilerDir =
+  path.resolve( __dirname, "data", "typescript-compiler");
+
+require("glob")("**/*.ts", {
+  cwd: tsCompilerDir,
+}, (error, files) => {
+  if (error) {
     throw error;
   }
-}
 
-function getOptions(fullPath) {
-  var plugins = getPlugins(path.dirname(fullPath));
-  return {
-    sourceType: "module",
-    plugins,
-  };
-}
+  describe("Whole-program validation for TypeScript codebase", function () {
+    if (error) {
+      throw error;
+    }
 
-function getPlugins(dir) {
-  try {
-    var options = JSON.parse(fs.readFileSync(
-      path.join(dir, "options.json")
-    ));
-  } catch (ignored) {
-    options = {};
-  }
+    this.timeout(20000);
 
-  if (options.plugins) {
-    return options.plugins;
-  }
+    files.forEach(tsPath => {
+      var fullPath = path.join(tsCompilerDir, tsPath);
 
-  if (dir !== tsRootDir) {
-    return getPlugins(path.dirname(dir));
-  }
+      it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
+        fs.readFile(fullPath, "utf8", function (error, code) {
+          if (error) {
+            throw error;
+          }
 
-  return [
-    "typescript",
-  ];
-}
+          var program = require("babylon").parse(code, {
+            sourceType: "module",
+            plugins: [
+              "typescript",
+              "objectRestSpread",
+              "classProperties",
+              "optionalCatchBinding",
+            ]
+          }).program;
+
+          tsTypes.namedTypes.Program.assert(program, true);
+
+          done();
+        });
+      });
+    });
+  });
+});
