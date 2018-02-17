@@ -6,6 +6,7 @@ var pkgRootDir = path.resolve(__dirname, "..");
 var tsRootDir = path.resolve(__dirname, "data", "typescript");
 var tsTypes = require("../fork.js")([
   require("../def/typescript"),
+  require("../def/jsx"),
 ]);
 
 require("glob")("**/input.js", {
