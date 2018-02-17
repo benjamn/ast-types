@@ -131,7 +131,8 @@ module.exports = function (fork) {
     def("CatchClause")
         .bases("Node")
         .build("param", "guard", "body")
-        .field("param", def("Pattern"))
+        // https://github.com/tc39/proposal-optional-catch-binding
+        .field("param", or(def("Pattern"), null), defaults["null"])
         .field("guard", or(def("Expression"), null), defaults["null"])
         .field("body", def("BlockStatement"));
 
