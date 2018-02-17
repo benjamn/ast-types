@@ -366,7 +366,7 @@ module.exports = function (fork) {
   def("TSExpressionWithTypeArguments")
     .bases("TSType")
     .build("expression", "typeParameters")
-    .field("expression", def("Identifier"))
+    .field("expression", IdOrQualifiedName)
     .field("typeParameters",
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
@@ -374,7 +374,7 @@ module.exports = function (fork) {
   def("TSInterfaceDeclaration")
     .bases("Declaration")
     .build("id", "body")
-    .field("id", def("Identifier"))
+    .field("id", IdOrQualifiedName)
     .field("declare", Boolean, defaults["false"])
     .field("typeParameters",
            or(def("TSTypeParameterDeclaration"), null),
@@ -383,6 +383,15 @@ module.exports = function (fork) {
            or([def("TSExpressionWithTypeArguments")], null),
            defaults["null"])
     .field("body", def("TSInterfaceBody"));
+
+  ["ClassDeclaration",
+   "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("implements",
+             [def("TSExpressionWithTypeArguments")],
+             defaults.emptyArray);
+  });
 
   def("TSParameterProperty")
     .bases("Pattern")
