@@ -1,5 +1,7 @@
 module.exports = function (fork) {
-  fork.use(require("./es7"));
+  // Since TypeScript is parsed by Babylon, include the core Babylon types
+  // but omit the Flow-related types.
+  fork.use(require("./babel-core"));
 
   var types = fork.use(require("../lib/types"));
   var def = types.Type.def;
