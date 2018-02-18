@@ -214,7 +214,9 @@ module.exports = function (fork) {
   def("TSTypeAnnotation")
     .bases("Node")
     .build("typeAnnotation")
-    .field("typeAnnotation", def("TSType"));
+    .field("typeAnnotation",
+           or(def("TSType"),
+              def("TSTypeAnnotation")));
 
   def("TSIndexSignature")
     .bases("Node", "TSHasOptionalTypeAnnotation")
