@@ -131,7 +131,8 @@ module.exports = function (fork) {
     def("CatchClause")
         .bases("Node")
         .build("param", "guard", "body")
-        .field("param", def("Pattern"))
+        // https://github.com/tc39/proposal-optional-catch-binding
+        .field("param", or(def("Pattern"), null), defaults["null"])
         .field("guard", or(def("Expression"), null), defaults["null"])
         .field("body", def("BlockStatement"));
 
@@ -237,7 +238,7 @@ module.exports = function (fork) {
         "==", "!=", "===", "!==",
         "<", "<=", ">", ">=",
         "<<", ">>", ">>>",
-        "+", "-", "*", "/", "%",
+        "+", "-", "*", "/", "%", "**",
         "&", // TODO Missing from the Parser API.
         "|", "^", "in",
         "instanceof", "..");
@@ -329,7 +330,8 @@ module.exports = function (fork) {
         // But aren't Expressions and Patterns already Nodes? TODO Report this.
         .bases("Node", "Expression", "Pattern")
         .build("name")
-        .field("name", String);
+        .field("name", String)
+        .field("optional", Boolean, defaults["false"]);
 
     def("Literal")
         // But aren't Expressions already Nodes? TODO Report this.

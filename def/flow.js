@@ -243,9 +243,20 @@ module.exports = function (fork) {
     .field("variance", LegacyVariance, defaults["null"]);
 
   def("ClassImplements")
+    .bases("Node")
+    .build("id")
+    .field("id", def("Identifier"))
+    .field("superClass", or(def("Expression"), null), defaults["null"])
     .field("typeParameters",
            or(def("TypeParameterInstantiation"), null),
            defaults["null"]);
+
+  ["ClassDeclaration",
+   "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("implements", [def("ClassImplements")], defaults.emptyArray);
+  });
 
   def("InterfaceDeclaration")
     .bases("Declaration")
