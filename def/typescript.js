@@ -110,6 +110,19 @@ module.exports = function (fork) {
       .field("types", [def("TSType")]);
   });
 
+  def("TSConditionalType")
+    .bases("TSType")
+    .build("checkType", "extendsType", "trueType", "falseType")
+    .field("checkType", def("TSType"))
+    .field("extendsType", def("TSType"))
+    .field("trueType", def("TSType"))
+    .field("falseType", def("TSType"));
+
+  def("TSInferType")
+    .bases("TSType")
+    .build("typeParameter")
+    .field("typeParameter", def("TSType"));
+
   def("TSParenthesizedType")
     .bases("TSType")
     .build("typeAnnotation")
