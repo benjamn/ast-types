@@ -61,6 +61,56 @@ describe("basic type checking", function() {
   });
 });
 
+describe("builders", function() {
+  it("should build types using positional arguments", function() {
+    var fooId = b.identifier("foo");
+    var consequent = b.blockStatement([
+      b.expressionStatement(b.callExpression(fooId, []))
+    ]);
+    var ifFoo = b.ifStatement(fooId, consequent);
+
+    assert.ok(n.Identifier.check(fooId));
+    assert.ok(n.IfStatement.check(ifFoo));
+    assert.ok(n.Statement.check(ifFoo));
+
+    assert.strictEqual(fooId.name, "foo");
+    assert.strictEqual(fooId.optional, false);
+
+    assert.strictEqual(ifFoo.test, fooId);
+    assert.strictEqual(ifFoo.consequent, consequent);
+    assert.strictEqual(ifFoo.alternate, null);
+  });
+
+  it("should build types using `.from`", function() {
+    var fooId = b.identifier.from({
+      name: "foo",
+      optional: true
+    });
+    var consequent = b.blockStatement.from({
+      body: [
+        b.expressionStatement.from({
+          expression: b.callExpression.from({ callee: fooId, arguments: [] })
+        })
+      ]
+    });
+    var ifFoo = b.ifStatement.from({
+      test: fooId,
+      consequent: consequent
+    });
+
+    assert.ok(n.Identifier.check(fooId));
+    assert.ok(n.IfStatement.check(ifFoo));
+    assert.ok(n.Statement.check(ifFoo));
+    
+    assert.strictEqual(fooId.name, "foo");
+    assert.strictEqual(fooId.optional, true);
+
+    assert.strictEqual(ifFoo.test, fooId);
+    assert.strictEqual(ifFoo.consequent, consequent);
+    assert.strictEqual(ifFoo.alternate, null);
+  });
+});
+
 describe("isSupertypeOf", function() {
   it("should report correct supertype relationships", function() {
     var def = types.Type.def;
