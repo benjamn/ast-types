@@ -6,6 +6,10 @@ cd $(dirname $0)/data
 
 if [ ! -d babylon-typescript-fixtures ]
 then
+	if [ -d babel ]
+	then
+    	rm -rf babel
+	fi
     git clone --depth 1 https://github.com/babel/babel.git
     mv babel/packages/babylon/test/fixtures/typescript \
        babylon-typescript-fixtures
@@ -14,6 +18,10 @@ fi
 
 if [ ! -d typescript-compiler ]
 then
+	if [ -d TypeScript ]
+	then
+    	rm -rf TypeScript
+    fi
     git clone --depth 1 https://github.com/Microsoft/TypeScript.git
     mv TypeScript/src/compiler typescript-compiler
     rm -rf TypeScript
