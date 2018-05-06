@@ -1,3 +1,5 @@
+"use strict";
+
 var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
@@ -8,8 +10,10 @@ var tsTypes = require("../fork.js")([
   require("../def/jsx"),
 ]);
 
-var babylonTSFixturesDir =
-  path.resolve(__dirname, "data", "babylon-typescript-fixtures");
+const babylonDir = path.resolve(__dirname, "data", "babylon");
+
+const babylonTSFixturesDir =
+  path.join(babylonDir, "test", "fixtures", "typescript");
 
 require("glob")("**/input.js", {
   cwd: babylonTSFixturesDir,
