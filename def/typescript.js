@@ -110,6 +110,19 @@ module.exports = function (fork) {
       .field("types", [def("TSType")]);
   });
 
+  def("TSConditionalType")
+    .bases("TSType")
+    .build("checkType", "extendsType", "trueType", "falseType")
+    .field("checkType", def("TSType"))
+    .field("extendsType", def("TSType"))
+    .field("trueType", def("TSType"))
+    .field("falseType", def("TSType"));
+
+  def("TSInferType")
+    .bases("TSType")
+    .build("typeParameter")
+    .field("typeParameter", def("TSType"));
+
   def("TSParenthesizedType")
     .bases("TSType")
     .build("typeAnnotation")
@@ -219,13 +232,13 @@ module.exports = function (fork) {
               def("TSTypeAnnotation")));
 
   def("TSIndexSignature")
-    .bases("Node", "TSHasOptionalTypeAnnotation")
+    .bases("Declaration", "TSHasOptionalTypeAnnotation")
     .build("parameters")
     .field("parameters", [def("Identifier")]) // Length === 1
     .field("readonly", Boolean, defaults["false"]);
 
   def("TSPropertySignature")
-    .bases("Node", "TSHasOptionalTypeAnnotation")
+    .bases("Declaration", "TSHasOptionalTypeAnnotation")
     .build("key")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
@@ -236,7 +249,7 @@ module.exports = function (fork) {
            defaults["null"]);
 
   def("TSMethodSignature")
-    .bases("Node",
+    .bases("Declaration",
            "TSHasOptionalTypeParameters",
            "TSHasOptionalTypeAnnotation")
     .build("key")
@@ -352,7 +365,7 @@ module.exports = function (fork) {
            defaults["null"]);
 
   def("TSImportEqualsDeclaration")
-    .bases("Statement")
+    .bases("Declaration")
     .build("id", "moduleReference")
     .field("id", def("Identifier"))
     .field("isExport", Boolean, defaults["false"])
@@ -361,7 +374,7 @@ module.exports = function (fork) {
               def("TSExternalModuleReference")));
 
   def("TSExternalModuleReference")
-    .bases("Node")
+    .bases("Declaration")
     .build("expression")
     .field("expression", StringLiteral);
 
@@ -371,7 +384,7 @@ module.exports = function (fork) {
     .field("expression", def("Expression"));
 
   def("TSNamespaceExportDeclaration")
-    .bases("Statement")
+    .bases("Declaration")
     .build("id")
     .field("id", def("Identifier"));
 

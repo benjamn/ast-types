@@ -4,13 +4,16 @@ set -ex
 
 cd $(dirname $0)/data
 
+BAB_TAG=v$(node -p 'require("babylon/package.json").version')
+
 if [ ! -d babylon-typescript-fixtures ]
 then
 	if [ -d babel ]
 	then
     	rm -rf babel
 	fi
-    git clone --depth 1 https://github.com/babel/babel.git
+    git clone --branch "$BAB_TAG" --depth 1 \
+        https://github.com/babel/babel.git
     mv babel/packages/babylon/test/fixtures/typescript \
        babylon-typescript-fixtures
     rm -rf babel
