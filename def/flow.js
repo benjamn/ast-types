@@ -347,7 +347,7 @@ module.exports = function (fork) {
   def("DeclareModuleExports")
     .bases("Statement")
     .build("typeAnnotation")
-    .field("typeAnnotation", def("Type"));
+    .field("typeAnnotation", def("TypeAnnotation"));
 
   def("DeclareExportDeclaration")
     .bases("Declaration")

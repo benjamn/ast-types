@@ -40,5 +40,21 @@ describe("flow types", function () {
 
     assert.deepEqual(identifierNames, ["A", "C", "D", "f"]);
     assert.deepEqual(typeParamNames, ["B", "E"]);
-  })
+  });
+
+  it("issue #261", function () {
+    const parser = {
+      parse(code) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse('declare module.exports: {};');
+
+    assert.strictEqual(program.body[0].type, 'DeclareModuleExports');
+    assert.notEqual(program.body[0].typeAnnotation, undefined);
+    assert.strictEqual(program.body[0].typeAnnotation.type, 'TypeAnnotation');
+  });
 });
