@@ -16,7 +16,9 @@ module.exports = function (fork) {
   def("RestElement")
     .bases("Pattern")
     .build("argument")
-    .field("argument", def("Pattern"));
+    .field("argument", def("Pattern"))
+    .field("typeAnnotation", // for Babylon. Flow parser puts it on the identifier
+      or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
 
   def("SpreadElementPattern")
     .bases("Pattern")
@@ -107,7 +109,7 @@ module.exports = function (fork) {
     .bases("Declaration")
     .build("kind", "key", "value", "static")
     .field("kind", or("constructor", "method", "get", "set"))
-    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
+    .field("key", def("Expression"))
     .field("value", def("Function"))
     .field("computed", Boolean, defaults["false"])
     .field("static", Boolean, defaults["false"]);
@@ -179,13 +181,6 @@ module.exports = function (fork) {
     .build("id", "body", "superClass")
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("body", def("ClassBody"))
-    .field("superClass", or(def("Expression"), null), defaults["null"])
-    .field("implements", [def("ClassImplements")], defaults.emptyArray);
-
-  def("ClassImplements")
-    .bases("Node")
-    .build("id")
-    .field("id", def("Identifier"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
   // Specifier and ModuleSpecifier are abstract non-standard types
@@ -207,6 +202,38 @@ module.exports = function (fork) {
     // optional in the Babel/Acorn AST format.
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("name", or(def("Identifier"), null), defaults["null"]);
+
+  // Like ModuleSpecifier, except type:"ImportSpecifier" and buildable.
+  // import {<id [as name]>} from ...;
+  def("ImportSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id", "name");
+
+  // import <* as id> from ...;
+  def("ImportNamespaceSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id");
+
+  // import <id> from ...;
+  def("ImportDefaultSpecifier")
+    .bases("ModuleSpecifier")
+    .build("id");
+
+  def("ImportDeclaration")
+    .bases("Declaration")
+    .build("specifiers", "source", "importKind")
+    .field("specifiers", [or(
+      def("ImportSpecifier"),
+      def("ImportNamespaceSpecifier"),
+      def("ImportDefaultSpecifier")
+    )], defaults.emptyArray)
+    .field("source", def("Literal"))
+    .field("importKind", or(
+      "value",
+      "type"
+    ), function() {
+      return "value";
+    });
 
   def("TaggedTemplateExpression")
     .bases("Expression")
