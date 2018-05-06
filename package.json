@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "test/run.sh"
+    "test": "bash -c test/run.sh"
   },
   "dependencies": {},
   "devDependencies": {
