@@ -1,6 +1,6 @@
 node_modules
-#test/data/babylon-typescript-fixtures
-#test/data/babylon
-#test/data/typescript-compiler
+test/data/babylon-typescript-fixtures
+test/data/babylon
+test/data/typescript-compiler
 test/data/Typescript
 test/data/babel
