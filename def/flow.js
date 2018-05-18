@@ -380,4 +380,15 @@ module.exports = function (fork) {
       def("Literal"),
       null
     ), defaults["null"]);
+
+  def("FlowPredicate").bases("Flow");
+
+  def("InferredPredicate")
+    .bases("FlowPredicate")
+    .build();
+
+  def("DeclaredPredicate")
+    .bases("FlowPredicate")
+    .build("value")
+    .field("value", def("Expression"));
 };
