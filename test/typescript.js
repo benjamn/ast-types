@@ -29,8 +29,11 @@ require("glob")("**/input.js", {
 
     files.forEach(tsPath => {
       var fullPath = path.join(babylonTSFixturesDir, tsPath);
+      // Until https://github.com/babel/babel/pull/7967 is released:
+      var shouldSkip = tsPath.endsWith("conditional-infer/input.js");
 
-      it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
+      (shouldSkip ? xit : it)
+      ("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
             throw error;
