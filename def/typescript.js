@@ -121,7 +121,7 @@ module.exports = function (fork) {
   def("TSInferType")
     .bases("TSType")
     .build("typeParameter")
-    .field("typeParameter", def("TSType"));
+    .field("typeParameter", def("TSTypeParameter"));
 
   def("TSParenthesizedType")
     .bases("TSType")
