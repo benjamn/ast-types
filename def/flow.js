@@ -6,31 +6,35 @@ module.exports = function (fork) {
   var or = types.Type.or;
   var defaults = fork.use(require("../lib/shared")).defaults;
 
-  // Type Annotations
-  def("Type").bases("Node");
+  // Base types
+
+  def("Flow").bases("Node");
+  def("FlowType").bases("Flow");
+
+  // Type annotations
 
   def("AnyTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("EmptyTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("MixedTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("VoidTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("NumberTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("NumberLiteralTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("value", "raw")
     .field("value", Number)
     .field("raw", String);
@@ -38,27 +42,27 @@ module.exports = function (fork) {
   // Babylon 6 differs in AST from Flow
   // same as NumberLiteralTypeAnnotation
   def("NumericLiteralTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("value", "raw")
     .field("value", Number)
     .field("raw", String);
 
   def("StringTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("StringLiteralTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("value", "raw")
     .field("value", String)
     .field("raw", String);
 
   def("BooleanTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("BooleanLiteralTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("value", "raw")
     .field("value", Boolean)
     .field("raw", String);
@@ -66,38 +70,38 @@ module.exports = function (fork) {
   def("TypeAnnotation")
     .bases("Node")
     .build("typeAnnotation")
-    .field("typeAnnotation", def("Type"));
+    .field("typeAnnotation", def("FlowType"));
 
   def("NullableTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("typeAnnotation")
-    .field("typeAnnotation", def("Type"));
+    .field("typeAnnotation", def("FlowType"));
 
   def("NullLiteralTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("NullTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("ThisTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("ExistsTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("ExistentialTypeParam")
-    .bases("Type")
+    .bases("FlowType")
     .build();
 
   def("FunctionTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("params", "returnType", "rest", "typeParameters")
     .field("params", [def("FunctionTypeParam")])
-    .field("returnType", def("Type"))
+    .field("returnType", def("FlowType"))
     .field("rest", or(def("FunctionTypeParam"), null))
     .field("typeParameters", or(def("TypeParameterDeclaration"), null));
 
@@ -105,16 +109,16 @@ module.exports = function (fork) {
     .bases("Node")
     .build("name", "typeAnnotation", "optional")
     .field("name", def("Identifier"))
-    .field("typeAnnotation", def("Type"))
+    .field("typeAnnotation", def("FlowType"))
     .field("optional", Boolean);
 
   def("ArrayTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("elementType")
-    .field("elementType", def("Type"));
+    .field("elementType", def("FlowType"));
 
   def("ObjectTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("properties", "indexers", "callProperties")
     .field("properties", [
       or(def("ObjectTypeProperty"),
@@ -142,7 +146,7 @@ module.exports = function (fork) {
     .bases("Node")
     .build("key", "value", "optional")
     .field("key", or(def("Literal"), def("Identifier")))
-    .field("value", def("Type"))
+    .field("value", def("FlowType"))
     .field("optional", Boolean)
     .field("variance", LegacyVariance, defaults["null"]);
 
@@ -150,8 +154,8 @@ module.exports = function (fork) {
     .bases("Node")
     .build("id", "key", "value")
     .field("id", def("Identifier"))
-    .field("key", def("Type"))
-    .field("value", def("Type"))
+    .field("key", def("FlowType"))
+    .field("value", def("FlowType"))
     .field("variance", LegacyVariance, defaults["null"]);
 
   def("ObjectTypeCallProperty")
@@ -169,13 +173,13 @@ module.exports = function (fork) {
     .field("id", def("Identifier"));
 
   def("GenericTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("id", "typeParameters")
     .field("id", or(def("Identifier"), def("QualifiedTypeIdentifier")))
     .field("typeParameters", or(def("TypeParameterInstantiation"), null));
 
   def("MemberTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("object", "property")
     .field("object", def("Identifier"))
     .field("property",
@@ -183,24 +187,24 @@ module.exports = function (fork) {
               def("GenericTypeAnnotation")));
 
   def("UnionTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("types")
-    .field("types", [def("Type")]);
+    .field("types", [def("FlowType")]);
 
   def("IntersectionTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("types")
-    .field("types", [def("Type")]);
+    .field("types", [def("FlowType")]);
 
   def("TypeofTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("argument")
-    .field("argument", def("Type"));
+    .field("argument", def("FlowType"));
 
   def("ObjectTypeSpreadProperty")
     .bases("Node")
     .build("argument")
-    .field("argument", def("Type"));
+    .field("argument", def("FlowType"));
 
   def("Identifier")
     .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
@@ -216,10 +220,10 @@ module.exports = function (fork) {
   def("TypeParameterInstantiation")
     .bases("Node")
     .build("params")
-    .field("params", [def("Type")]);
+    .field("params", [def("FlowType")]);
 
   def("TypeParameter")
-    .bases("Type")
+    .bases("FlowType")
     .build("name", "variance", "bound")
     .field("name", String)
     .field("variance", LegacyVariance, defaults["null"])
@@ -295,15 +299,15 @@ module.exports = function (fork) {
     .build("id", "typeParameters", "right")
     .field("id", def("Identifier"))
     .field("typeParameters", or(def("TypeParameterDeclaration"), null))
-    .field("right", def("Type"));
+    .field("right", def("FlowType"));
 
   def("OpaqueType")
     .bases("Declaration")
     .build("id", "typeParameters", "impltype", "supertype")
     .field("id", def("Identifier"))
     .field("typeParameters", or(def("TypeParameterDeclaration"), null))
-    .field("implType", def("Type"))
-    .field("superType", def("Type"));
+    .field("implType", def("FlowType"))
+    .field("superType", def("FlowType"));
 
   def("DeclareTypeAlias")
     .bases("TypeAlias")
@@ -320,9 +324,9 @@ module.exports = function (fork) {
     .field("typeAnnotation", def("TypeAnnotation"));
 
   def("TupleTypeAnnotation")
-    .bases("Type")
+    .bases("FlowType")
     .build("types")
-    .field("types", [def("Type")]);
+    .field("types", [def("FlowType")]);
 
   def("DeclareVariable")
     .bases("Statement")
@@ -357,7 +361,7 @@ module.exports = function (fork) {
       def("DeclareVariable"),
       def("DeclareFunction"),
       def("DeclareClass"),
-      def("Type"), // Implies default.
+      def("FlowType"), // Implies default.
       null
     ))
     .field("specifiers", [or(
@@ -376,4 +380,15 @@ module.exports = function (fork) {
       def("Literal"),
       null
     ), defaults["null"]);
+
+  def("FlowPredicate").bases("Flow");
+
+  def("InferredPredicate")
+    .bases("FlowPredicate")
+    .build();
+
+  def("DeclaredPredicate")
+    .bases("FlowPredicate")
+    .build("value")
+    .field("value", def("Expression"));
 };
