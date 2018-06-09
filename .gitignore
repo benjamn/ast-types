@@ -4,3 +4,5 @@ test/data/babylon
 test/data/typescript-compiler
 test/data/Typescript
 test/data/babel
+test/data/babel-parser
+

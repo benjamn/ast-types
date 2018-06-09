@@ -9,6 +9,7 @@ var tsTypes = require("../fork.js")([
   require("../def/typescript"),
   require("../def/jsx"),
 ]);
+var babylon = require("@babel/parser");
 
 const babylonDir = path.resolve(__dirname, "data", "babylon");
 
@@ -52,7 +53,7 @@ require("glob")("**/input.js", {
     var parseOptions = getOptions(fullPath);
 
     try {
-      return require("babylon").parse(code, parseOptions).program;
+      return babylon.parse(code, parseOptions).program;
 
     } catch (error) {
       // If parsing fails, check options.json to see if the failure was
@@ -130,7 +131,7 @@ require("glob")("**/*.ts", {
             throw error;
           }
 
-          var program = require("babylon").parse(code, {
+          var program = babylon.parse(code, {
             sourceType: "module",
             plugins: [
               "typescript",
