@@ -18,7 +18,7 @@
     "transformation",
     "syntax"
   ],
-  "version": "0.11.4-22",
+  "version": "0.11.5-23",
   "homepage": "http://github.com/benjamn/ast-types",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   "dependencies": {},
   "devDependencies": {
     "babel-types": "6.26.0",
-    "babylon": "7.0.0-beta.40",
+    "@babel/parser": "7.0.0-beta.47",
     "espree": "3.5.4",
     "esprima": "4.0.0",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",

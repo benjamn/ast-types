@@ -2337,3 +2337,70 @@ describe("MemberExpression", function() {
     assert.strictEqual(memberExpression.computed, true);
   });
 });
+
+describe("Optional Chaining", function() {
+  describe('OptionalMemberExpression', function() {
+    it("should set optional to true by default", function(){
+      var optionalMemberExpression = b.optionalMemberExpression(
+        b.identifier('foo'),
+        b.identifier('bar')
+      );
+
+      assert.strictEqual(optionalMemberExpression.optional, true);
+    });
+
+    it("should allow optional to be false", function(){
+      var optionalMemberExpression = b.optionalMemberExpression(
+        b.identifier('foo'),
+        b.identifier('bar'),
+        true,
+        false
+      );
+
+      assert.strictEqual(optionalMemberExpression.optional, false);
+    });
+  });
+
+  describe('OptionalCallExpression', function() {
+    it("should set optional to true by default", function(){
+      var optionalCallExpression = b.optionalCallExpression(
+        b.identifier('foo'),
+        []
+      );
+
+      assert.strictEqual(optionalCallExpression.optional, true);
+    });
+
+    it("should allow optional to be false", function(){
+      var optionalCallExpression = b.optionalCallExpression(
+        b.identifier('foo'),
+        [],
+        false
+      );
+
+      assert.strictEqual(optionalCallExpression.optional, false);
+    });
+  });
+});
+
+describe('Nullish Coalescing Operator', function() {
+  it('should allow `??` as operator', function() {
+    var logicalExpression = b.logicalExpression(
+      "??",
+      b.identifier("a"),
+      b.identifier("b")
+    );
+
+    assert.strictEqual(logicalExpression.operator, "??");
+  });
+
+  it('should not allow `crap` as operator', function() {
+    assert.throws(function() {
+      b.logicalExpression(
+        "crap",
+        b.identifier("a"),
+        b.identifier("b")
+      );
+    }, "does not match field \"operator\"");
+  });
+});

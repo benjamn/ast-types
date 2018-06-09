@@ -13,5 +13,6 @@ module.exports = require('./fork')([
   require("./def/flow"),
   require("./def/esprima"),
   require("./def/babel"),
-  require("./def/typescript")
+  require("./def/typescript"),
+  require("./def/es-proposals")
 ]);
