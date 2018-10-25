@@ -135,6 +135,7 @@ export default function (fork: Fork) {
     .field("callProperties",
            [def("ObjectTypeCallProperty")],
            defaults.emptyArray)
+    .field("inexact", or(Boolean, void 0), defaults["undefined"])
     .field("exact", Boolean, defaults["false"])
     .field("internalSlots", [def("ObjectTypeInternalSlot")], defaults.emptyArray);
 
