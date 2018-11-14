@@ -8,6 +8,10 @@ import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
 import { visit } from "../main";
+import { ASTNode } from "../lib/types";
+import { NodePath } from "../lib/node-path";
+import { Visitor } from "../gen/visitor";
+import { Context } from "../lib/path-visitor";
 
 var pkgRootDir = path.resolve(__dirname, "..");
 var tsTypes = fork([
@@ -185,6 +189,151 @@ glob("**/*.ts", {
           assert.equal(path.scope.lookupType('Foo').getTypes()['Foo'][0].parent.node.type, 'TSTypeAliasDeclaration');
           assert.equal(path.scope.lookupType('Bar').getTypes()['Bar'][0].parent.node.type, 'TSInterfaceDeclaration');
           return false;
+        }
+      });
+    });
+  });
+
+  function assertVisited(node: ASTNode, visitors: Visitor<any>): any {
+    const visitedSet: Set<string> = new Set();
+    const wrappedVisitors: Visitor<any> = {}
+    for (const _key of Object.keys(visitors)) {
+      const key = _key as keyof Visitor<any>
+      wrappedVisitors[key] = function (this: Context, path: NodePath<any>) {
+        visitedSet.add(key);
+        (visitors[key] as any)?.call(this, path)
+      }
+    }
+    tsTypes.visit(node, wrappedVisitors);
+
+    for (const key of Object.keys(visitors)) {
+      assert.equal(visitedSet.has(key), true);
+    }
+  }
+
+  describe('typescript types', () => {
+    it("issue #294 - function declarations", function () {
+      const program = babelParse([
+        "function foo<T>(): T { }",
+        "let bar: T",
+      ].join("\n"),
+        { plugins: ['typescript'] }
+      )
+
+      assertVisited(program, {
+        visitFunctionDeclaration(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          assert.equal(path.scope.lookupType('T'), null);
+          this.traverse(path);
+        }
+      });
+    });
+
+    it("issue #294 - function expressions", function () {
+      const program = babelParse([
+        "const foo = function <T>(): T { }",
+        "let bar: T",
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitFunctionExpression(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          if (path.node.id.type === 'Identifier' && path.node.id.name === 'bar') {
+            assert.equal(path.scope.lookupType('T'), null);
+          }
+          this.traverse(path);
+        }
+      });
+    });
+
+    it("issue #294 - arrow function expressions", function () {
+      const program = babelParse([
+        "const foo = <T>(): T => { }",
+        "let bar: T"
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitArrowFunctionExpression(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          assert.equal(path.scope.lookupType('T'), null);
+          this.traverse(path);
+        }
+      });
+    });
+
+    it("issue #294 - class declarations", function () {
+      const program = babelParse([
+        "class Foo<T> extends Bar<Array<T>> { }",
+        "let bar: T"
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitTSTypeParameterInstantiation(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          assert.equal(path.scope.lookupType('T'), null);
+          this.traverse(path);
+        }
+      });
+    });
+
+    it("issue #294 - class expressions", function () {
+      const program = babelParse([
+        "const foo = class Foo<T> extends Bar<Array<T>> { }",
+        "let bar: T"
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitTSTypeParameterInstantiation(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          if (path.node.id.type === 'Identifier' && path.node.id.name === 'bar') {
+            assert.equal(path.scope.lookupType('T'), null);
+            assert.equal(path.scope.lookupType('Foo'), null);
+          }
+          this.traverse(path);
+        }
+      });
+    });
+
+    it("issue #296 - interface declarations", function () {
+      const program = babelParse([
+        "interface Foo<T> extends Bar<Array<T>> { }",
+        "let bar: T"
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitTSTypeParameterInstantiation(path) {
+          assert.ok(path.scope.lookupType('T'));
+          this.traverse(path);
+        },
+        visitVariableDeclarator(path) {
+          assert.equal(path.scope.lookupType('T'), null);
+          assert.ok(path.scope.lookupType('Foo'));
+          this.traverse(path);
         }
       });
     });
