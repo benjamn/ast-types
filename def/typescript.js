@@ -425,15 +425,6 @@ module.exports = function (fork) {
            defaults["null"])
     .field("body", def("TSInterfaceBody"));
 
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("implements",
-             [def("TSExpressionWithTypeArguments")],
-             defaults.emptyArray);
-  });
-
   def("TSParameterProperty")
     .bases("Pattern")
     .build("parameter")

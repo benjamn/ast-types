@@ -241,13 +241,6 @@ module.exports = function (fork) {
            or(def("TypeParameterInstantiation"), null),
            defaults["null"]);
 
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("implements", [def("ClassImplements")], defaults.emptyArray);
-  });
-
   def("InterfaceDeclaration")
     .bases("Declaration")
     .build("id", "body", "extends")

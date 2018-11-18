@@ -42,4 +42,13 @@ module.exports = function (fork) {
              or(def("TypeParameterInstantiation"), def("TSTypeParameterInstantiation"), null),
              defaults["null"]);
   });
+
+  ["ClassDeclaration",
+   "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("implements",
+             or([def("ClassImplements")], [def("TSExpressionWithTypeArguments")]),
+             defaults.emptyArray);
+  });
 };
