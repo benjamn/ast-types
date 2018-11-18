@@ -27,7 +27,10 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "test/run.sh"
+    "test": "test/run.sh",
+    "tsc": "tsc --noEmit",
+    "clean": "node script/clean.js",
+    "build": "npm run clean && tsc"
   },
   "dependencies": {},
   "devDependencies": {
