@@ -95,4 +95,64 @@ describe("type annotations", function () {
       });
     });
   });
+
+  it("can build ClassDeclaration with Flow or TS typeParameters and superTypeParameters", function () {
+    assert.doesNotThrow(function () {
+      types.builders.classDeclaration.from({
+        id: types.builders.identifier("SomeClass"),
+        typeParameters: types.builders.typeParameterDeclaration([
+          types.builders.typeParameter("T")
+        ]),
+        superClass: types.builders.identifier("SomeSuperClass"),
+        superTypeParameters: types.builders.typeParameterInstantiation([
+          types.builders.genericTypeAnnotation(types.builders.identifier("U"), null)
+        ]),
+        body: types.builders.classBody([])
+      });
+    });
+
+    assert.doesNotThrow(function () {
+      types.builders.classDeclaration.from({
+        id: types.builders.identifier("SomeClass"),
+        typeParameters: types.builders.tsTypeParameterDeclaration([
+          types.builders.tsTypeParameter("T")
+        ]),
+        superClass: types.builders.identifier("SomeSuperClass"),
+        superTypeParameters: types.builders.tsTypeParameterInstantiation([
+          types.builders.tsTypeReference(types.builders.identifier("U"))
+        ]),
+        body: types.builders.classBody([])
+      });
+    });
+  });
+
+  it("can build ClassExpression with Flow or TS typeParameters and superTypeParameters", function () {
+    assert.doesNotThrow(function () {
+      types.builders.classExpression.from({
+        id: types.builders.identifier("SomeClass"),
+        typeParameters: types.builders.typeParameterDeclaration([
+          types.builders.typeParameter("T")
+        ]),
+        superClass: types.builders.identifier("SomeSuperClass"),
+        superTypeParameters: types.builders.typeParameterInstantiation([
+          types.builders.genericTypeAnnotation(types.builders.identifier("U"), null)
+        ]),
+        body: types.builders.classBody([])
+      });
+    });
+
+    assert.doesNotThrow(function () {
+      types.builders.classExpression.from({
+        id: types.builders.identifier("SomeClass"),
+        typeParameters: types.builders.tsTypeParameterDeclaration([
+          types.builders.tsTypeParameter("T")
+        ]),
+        superClass: types.builders.identifier("SomeSuperClass"),
+        superTypeParameters: types.builders.tsTypeParameterInstantiation([
+          types.builders.tsTypeReference(types.builders.identifier("U"))
+        ]),
+        body: types.builders.classBody([])
+      });
+    });
+  });
 });

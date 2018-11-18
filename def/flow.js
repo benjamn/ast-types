@@ -232,18 +232,6 @@ module.exports = function (fork) {
     .field("static", Boolean, defaults["false"])
     .field("variance", LegacyVariance, defaults["null"]);
 
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("typeParameters",
-             or(def("TypeParameterDeclaration"), null),
-             defaults["null"])
-      .field("superTypeParameters",
-             or([def("GenericTypeAnnotation")], null),
-             defaults["null"]);
-  });
-
   def("ClassImplements")
     .bases("Node")
     .build("id")

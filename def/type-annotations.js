@@ -30,4 +30,16 @@ module.exports = function (fork) {
   def("ClassProperty")
     .field("typeAnnotation",
            or(def("TypeAnnotation"), def("TSTypeAnnotation"), null));
+
+  ["ClassDeclaration",
+    "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("typeParameters",
+             or(def("TypeParameterDeclaration"), def("TSTypeParameterDeclaration"), null),
+             defaults["null"])
+      .field("superTypeParameters",
+             or(def("TypeParameterInstantiation"), def("TSTypeParameterInstantiation"), null),
+             defaults["null"]);
+  });
 };
