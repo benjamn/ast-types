@@ -227,9 +227,6 @@ module.exports = function (fork) {
            defaults["null"]);
 
   def("ClassProperty")
-    .build("key", "value", "typeAnnotation", "static")
-    .field("value", or(def("Expression"), null))
-    .field("static", Boolean, defaults["false"])
     .field("variance", LegacyVariance, defaults["null"]);
 
   def("ClassImplements")

@@ -203,9 +203,9 @@ module.exports = function (fork) {
   def("TSMappedType")
     .bases("TSType")
     .build("typeParameter", "typeAnnotation")
-    .field("readonly", Boolean, defaults["false"])
+    .field("readonly", or(Boolean, "+", "-"), defaults["false"])
     .field("typeParameter", def("TSTypeParameter"))
-    .field("optional", Boolean, defaults["false"])
+    .field("optional", or(Boolean, "+", "-"), defaults["false"])
     .field("typeAnnotation",
            or(def("TSType"), null),
            defaults["null"]);
@@ -301,7 +301,7 @@ module.exports = function (fork) {
   def("TSTypeQuery")
     .bases("TSType")
     .build("exprName")
-    .field("exprName", def("Identifier"));
+    .field("exprName", IdOrQualifiedName);
 
   // Inferred from Babylon's tsParseTypeMember method.
   var TSTypeMember = or(
