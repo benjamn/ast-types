@@ -12,4 +12,8 @@ module.exports = function (fork) {
   def("Identifier")
     .field("typeAnnotation",
       or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
+
+  def("ObjectPattern")
+    .field("typeAnnotation",
+      or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
 };

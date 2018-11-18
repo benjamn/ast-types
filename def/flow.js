@@ -207,9 +207,6 @@ module.exports = function (fork) {
     .build("argument")
     .field("argument", def("FlowType"));
 
-  def("ObjectPattern")
-    .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
-
   def("TypeParameterDeclaration")
     .bases("Node")
     .build("params")
