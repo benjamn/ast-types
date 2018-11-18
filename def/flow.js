@@ -226,14 +226,6 @@ module.exports = function (fork) {
            or(def("TypeAnnotation"), null),
            defaults["null"]);
 
-  def("Function")
-    .field("returnType",
-           or(def("TypeAnnotation"), null),
-           defaults["null"])
-    .field("typeParameters",
-           or(def("TypeParameterDeclaration"), null),
-           defaults["null"]);
-
   def("ClassProperty")
     .build("key", "value", "typeAnnotation", "static")
     .field("value", or(def("Expression"), null))

@@ -319,6 +319,7 @@ module.exports = function (fork) {
 
   def("TSTypeParameter")
     .bases("Identifier")
+    .build("name", "constraint", "default")
     .field("name", String)
     .field("constraint", or(def("TSType"), null), defaults["null"])
     .field("default", or(def("TSType"), null), defaults["null"]);

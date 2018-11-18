@@ -11,9 +11,19 @@ module.exports = function (fork) {
 
   def("Identifier")
     .field("typeAnnotation",
-      or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
+           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
+           defaults["null"]);
 
   def("ObjectPattern")
     .field("typeAnnotation",
-      or(def("TypeAnnotation"), def("TSTypeAnnotation"), null), defaults["null"]);
+           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
+           defaults["null"]);
+
+  def("Function")
+    .field("returnType",
+           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
+           defaults["null"])
+    .field("typeParameters",
+           or(def("TypeParameterDeclaration"), def("TSTypeParameterDeclaration"), null),
+           defaults["null"]);
 };
