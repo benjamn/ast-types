@@ -26,4 +26,8 @@ module.exports = function (fork) {
     .field("typeParameters",
            or(def("TypeParameterDeclaration"), def("TSTypeParameterDeclaration"), null),
            defaults["null"]);
+
+  def("ClassProperty")
+    .field("typeAnnotation",
+           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null));
 };

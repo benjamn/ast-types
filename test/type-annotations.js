@@ -2,7 +2,7 @@ var assert = require("assert");
 var types = require("../main.js");
 
 describe("type annotations", function () {
-  it("can build Identifier with either Flow or TS type annotation", function () {
+  it("can build Identifier with Flow or TS typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.identifier.from({
         name: "x",
@@ -18,7 +18,7 @@ describe("type annotations", function () {
     });
   });
 
-  it("can build ObjectPattern with either Flow or TS type annotation", function () {
+  it("can build ObjectPattern with Flow or TS typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.objectPattern.from({
         properties: [
@@ -48,7 +48,7 @@ describe("type annotations", function () {
     });
   });
   
-  it("can build FunctionDeclaration with either Flow or TS return type and type parameters", function () {
+  it("can build FunctionDeclaration with Flow or TS typeParameters and returnType", function () {
     assert.doesNotThrow(function () {
       types.builders.functionDeclaration.from({
         id: types.builders.identifier("someFunction"),
@@ -74,6 +74,24 @@ describe("type annotations", function () {
           types.builders.tsTypeReference(types.builders.identifier("SomeType"))
         ),
         body: types.builders.blockStatement([])
+      });
+    });
+  });
+
+  it("can build ClassProperty with Flow or TS typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.classProperty.from({
+        key: types.builders.identifier("someClassProperty"),
+        typeAnnotation: types.builders.typeAnnotation(types.builders.stringTypeAnnotation()),
+        value: null
+      });
+    });
+
+    assert.doesNotThrow(function () {
+      types.builders.classProperty.from({
+        key: types.builders.identifier("someClassProperty"),
+        typeAnnotation: types.builders.tsTypeAnnotation(types.builders.tsStringKeyword()),
+        value: null
       });
     });
   });

@@ -229,7 +229,6 @@ module.exports = function (fork) {
   def("ClassProperty")
     .build("key", "value", "typeAnnotation", "static")
     .field("value", or(def("Expression"), null))
-    .field("typeAnnotation", or(def("TypeAnnotation"), null))
     .field("static", Boolean, defaults["false"])
     .field("variance", LegacyVariance, defaults["null"]);
 
