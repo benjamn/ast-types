@@ -1,5 +1,6 @@
 module.exports = function (fork) {
   fork.use(require("./es7"));
+  fork.use(require("./type-annotations"));
 
   var types = fork.use(require("../lib/types"));
   var def = types.Type.def;
@@ -205,9 +206,6 @@ module.exports = function (fork) {
     .bases("Node")
     .build("argument")
     .field("argument", def("FlowType"));
-
-  def("Identifier")
-    .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
 
   def("ObjectPattern")
     .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);

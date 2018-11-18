@@ -2,6 +2,7 @@ module.exports = function (fork) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
   fork.use(require("./babel-core"));
+  fork.use(require("./type-annotations"));
 
   var types = fork.use(require("../lib/types"));
   var n = types.namedTypes;
