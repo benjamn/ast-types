@@ -1,3 +1,17 @@
 node_modules
 test/data/babylon
 test/data/typescript-compiler
+
+# Ignore TypeScript-emitted files
+*.js.map
+*.d.ts.map
+def/**/*.js
+def/**/*.d.ts
+lib/**/*.js
+lib/**/*.d.ts
+test/**/*.js
+test/**/*.d.ts
+main.js
+main.d.ts
+fork.js
+fork.d.ts
