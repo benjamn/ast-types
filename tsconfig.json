@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": [
+    "def",
+    "lib",
+    "test",
+    "fork.ts",
+    "main.ts"
+  ],
+  "exclude": [
+    "test/data"
+  ]
+}
