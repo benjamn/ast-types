@@ -2,14 +2,16 @@ var assert = require("assert");
 var types = require("../main.js");
 
 describe("type annotations", function () {
-  it("can build Identifier with Flow or TS typeAnnotation", function () {
+  it("can build Identifier with Flow typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.identifier.from({
         name: "x",
         typeAnnotation: types.builders.typeAnnotation(types.builders.stringTypeAnnotation())
       });
     })
+  });
 
+  it("can build Identifier with TS typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.identifier.from({
         name: "x",
@@ -18,7 +20,7 @@ describe("type annotations", function () {
     });
   });
 
-  it("can build ObjectPattern with Flow or TS typeAnnotation", function () {
+  it("can build ObjectPattern with Flow typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.objectPattern.from({
         properties: [
@@ -32,7 +34,9 @@ describe("type annotations", function () {
         ),
       });
     });
+  });
 
+  it("can build ObjectPattern with TS typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.objectPattern.from({
         properties: [
@@ -47,8 +51,8 @@ describe("type annotations", function () {
       });
     });
   });
-  
-  it("can build FunctionDeclaration with Flow or TS typeParameters and returnType", function () {
+
+  it("can build FunctionDeclaration with Flow typeParameters and returnType", function () {
     assert.doesNotThrow(function () {
       types.builders.functionDeclaration.from({
         id: types.builders.identifier("someFunction"),
@@ -62,7 +66,9 @@ describe("type annotations", function () {
         body: types.builders.blockStatement([])
       });
     });
+  });
 
+  it("can build FunctionDeclaration with TS typeParameters and returnType", function () {
     assert.doesNotThrow(function () {
       types.builders.functionDeclaration.from({
         id: types.builders.identifier("someFunction"),
@@ -78,7 +84,7 @@ describe("type annotations", function () {
     });
   });
 
-  it("can build ClassProperty with Flow or TS typeAnnotation", function () {
+  it("can build ClassProperty with Flow typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.classProperty.from({
         key: types.builders.identifier("someClassProperty"),
@@ -86,7 +92,9 @@ describe("type annotations", function () {
         value: null
       });
     });
+  });
 
+  it("can build ClassProperty with TS typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.classProperty.from({
         key: types.builders.identifier("someClassProperty"),
@@ -96,7 +104,7 @@ describe("type annotations", function () {
     });
   });
 
-  it("can build ClassDeclaration with Flow or TS typeParameters and superTypeParameters", function () {
+  it("can build ClassDeclaration with Flow typeParameters and superTypeParameters", function () {
     assert.doesNotThrow(function () {
       types.builders.classDeclaration.from({
         id: types.builders.identifier("SomeClass"),
@@ -110,7 +118,9 @@ describe("type annotations", function () {
         body: types.builders.classBody([])
       });
     });
+  });
 
+  it("can build ClassDeclaration with TS typeParameters and superTypeParameters", function () {
     assert.doesNotThrow(function () {
       types.builders.classDeclaration.from({
         id: types.builders.identifier("SomeClass"),
@@ -126,7 +136,7 @@ describe("type annotations", function () {
     });
   });
 
-  it("can build ClassExpression with Flow or TS typeParameters and superTypeParameters", function () {
+  it("can build ClassExpression with Flow typeParameters and superTypeParameters", function () {
     assert.doesNotThrow(function () {
       types.builders.classExpression.from({
         id: types.builders.identifier("SomeClass"),
@@ -140,7 +150,9 @@ describe("type annotations", function () {
         body: types.builders.classBody([])
       });
     });
+  });
 
+  it("can build ClassExpression with TS typeParameters and superTypeParameters", function () {
     assert.doesNotThrow(function () {
       types.builders.classExpression.from({
         id: types.builders.identifier("SomeClass"),
