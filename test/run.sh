@@ -27,4 +27,4 @@ fi
 
 cd .. # back to the ast-types/test/ directory
 
-exec mocha --reporter spec --full-trace $@ run.js
+exec mocha --require ts-node/register --reporter spec --full-trace $@ run.ts

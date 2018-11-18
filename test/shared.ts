@@ -37,7 +37,7 @@ exports.validateECMAScript = function (file) {
   });
 };
 
-var reifyBabylonParse = require("reify/lib/parsers/babylon.js").parse;
+var reifyBabylonParse = require("reify/lib/parsers/babylon").parse;
 function babylonParse(source) {
   var ast = reifyBabylonParse(source);
   if (ast.type === "File") ast = ast.program;

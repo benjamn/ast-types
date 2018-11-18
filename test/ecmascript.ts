@@ -5,7 +5,7 @@ var b = types.builders;
 var path = require("path");
 var fs = require("fs");
 var parse = require("esprima").parse;
-var shared = require("./shared.js");
+var shared = require("./shared");
 var Path = types.Path;
 var NodePath = types.NodePath;
 var PathVisitor = types.PathVisitor;
@@ -238,11 +238,12 @@ describe("shallow and deep checks", function() {
 describe("whole-program validation", function() {
   this.timeout(20000);
 
-  shared.validateECMAScript("main.js");
-  shared.validateECMAScript("lib/shared.js");
-  shared.validateECMAScript("def/core.js");
-  shared.validateECMAScript("lib/types.js");
-  shared.validateECMAScript("test/run.js");
+  // TODO(brie): do we need these?
+  // shared.validateECMAScript("main.js");
+  // shared.validateECMAScript("lib/shared.js");
+  // shared.validateECMAScript("def/core.js");
+  // shared.validateECMAScript("lib/types.js");
+  // shared.validateECMAScript("test/run.js");
   shared.validateECMAScript("test/data/backbone.js");
   shared.validateECMAScript("test/data/jquery-1.9.1.js");
 });

@@ -3,9 +3,9 @@
 var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
-var shared = require("./shared.js");
+var shared = require("./shared");
 var pkgRootDir = path.resolve(__dirname, "..");
-var tsTypes = require("../fork.js")([
+var tsTypes = require("../fork")([
   require("../def/typescript"),
   require("../def/jsx"),
 ]);

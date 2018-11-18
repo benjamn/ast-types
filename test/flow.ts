@@ -1,5 +1,5 @@
 var assert = require("assert");
-var types = require("../fork.js")([
+var types = require("../fork")([
   require("../def/flow"),
 ]);
 
