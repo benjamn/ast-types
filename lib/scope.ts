@@ -3,25 +3,7 @@ import typesPlugin from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-interface ScopeType {
-  declares(name: any): any;
-  declaresType(name: any): any;
-  declareTemporary(prefix?: any): any;
-  injectTemporary(identifier: any, init: any): any;
-  scan(force?: any): void;
-  getBindings(): any;
-  getTypes(): any;
-  lookup(name: any): this;
-  lookupType(name: any): this;
-  getGlobalScope(): this;
-}
-
-interface ScopeConstructor {
-  new(path: any, parentScope?: any): ScopeType;
-  isEstablishedBy(node: any): any;
-}
-
-export = function (fork: Fork): ScopeConstructor {
+export = function (fork: Fork) {
   var types = fork.use(typesPlugin);
   var Type = types.Type;
   var namedTypes = types.namedTypes;
@@ -29,6 +11,39 @@ export = function (fork: Fork): ScopeConstructor {
   var Expression = namedTypes.Expression;
   var isArray = types.builtInTypes.array;
   var b = types.builders;
+
+  function Scope(this: any, path: any, parentScope: any) {
+    if (!(this instanceof Scope)) {
+      throw new Error("Scope constructor cannot be invoked without 'new'");
+    }
+    // Use `require` to avoid circular dependency
+    if (!(path instanceof fork.use<any>(require("./node-path")))) {
+      throw new Error("");
+    }
+    ScopeType.assert(path.value);
+
+    var depth;
+
+    if (parentScope) {
+      if (!(parentScope instanceof Scope)) {
+        throw new Error("");
+      }
+      depth = parentScope.depth + 1;
+    } else {
+      parentScope = null;
+      depth = 0;
+    }
+
+    Object.defineProperties(this, {
+      path: { value: path },
+      node: { value: path.value },
+      isGlobal: { value: !parentScope, enumerable: true },
+      depth: { value: depth },
+      parent: { value: parentScope },
+      bindings: { value: {} },
+      types: { value: {} },
+    });
+  }
 
   var scopeTypes = [
     // Program nodes introduce global scopes.
@@ -45,149 +60,87 @@ export = function (fork: Fork): ScopeConstructor {
 
   var ScopeType = Type.or.apply(Type, scopeTypes);
 
-  class Scope implements ScopeType {
-    path: any; // TODO NodePath
-    parentScope: any; // TODO Scope
-    depth: any;
-    bindings: any;
-    types: any;
-    parent: any;
-    isGlobal: any;
+  Scope.isEstablishedBy = function(node: any) {
+    return ScopeType.check(node);
+  };
 
-    // Will be overridden after an instance lazily calls scanScope.
-    didScan = false;
+  var Sp = Scope.prototype;
 
-    static isEstablishedBy = function(node: any) {
-      return ScopeType.check(node);
-    };
+// Will be overridden after an instance lazily calls scanScope.
+  Sp.didScan = false;
 
-    constructor(path: any, parentScope?: any) {
-      if (!(this instanceof Scope)) {
-        throw new Error("Scope constructor cannot be invoked without 'new'");
-      }
-      // Use `require` to avoid circular dependency
-      if (!(path instanceof fork.use<any>(require("./node-path")))) {
+  Sp.declares = function(name: any) {
+    this.scan();
+    return hasOwn.call(this.bindings, name);
+  };
+
+  Sp.declaresType = function(name: any) {
+    this.scan();
+    return hasOwn.call(this.types, name);
+  };
+
+  Sp.declareTemporary = function(prefix: any) {
+    if (prefix) {
+      if (!/^[a-z$_]/i.test(prefix)) {
         throw new Error("");
       }
-      ScopeType.assert(path.value);
+    } else {
+      prefix = "t$";
+    }
 
-      var depth;
+    // Include this.depth in the name to make sure the name does not
+    // collide with any variables in nested/enclosing scopes.
+    prefix += this.depth.toString(36) + "$";
 
-      if (parentScope) {
-        if (!(parentScope instanceof Scope)) {
-          throw new Error("");
-        }
-        depth = parentScope.depth + 1;
-      } else {
-        parentScope = null;
-        depth = 0;
+    this.scan();
+
+    var index = 0;
+    while (this.declares(prefix + index)) {
+      ++index;
+    }
+
+    var name = prefix + index;
+    return this.bindings[name] = types.builders.identifier(name);
+  };
+
+  Sp.injectTemporary = function(identifier: any, init: any) {
+    identifier || (identifier = this.declareTemporary());
+
+    var bodyPath = this.path.get("body");
+    if (namedTypes.BlockStatement.check(bodyPath.value)) {
+      bodyPath = bodyPath.get("body");
+    }
+
+    bodyPath.unshift(
+      b.variableDeclaration(
+      "var",
+      [b.variableDeclarator(identifier, init || null)]
+      )
+    );
+
+    return identifier;
+  };
+
+  Sp.scan = function(force: any) {
+    if (force || !this.didScan) {
+      for (var name in this.bindings) {
+        // Empty out this.bindings, just in cases.
+        delete this.bindings[name];
       }
-
-      Object.defineProperties(this, {
-        path: { value: path },
-        node: { value: path.value },
-        isGlobal: { value: !parentScope, enumerable: true },
-        depth: { value: depth },
-        parent: { value: parentScope },
-        bindings: { value: {} },
-        types: { value: {} },
-      });
+      scanScope(this.path, this.bindings, this.types);
+      this.didScan = true;
     }
+  };
 
-    declares(name: any) {
-      this.scan();
-      return hasOwn.call(this.bindings, name);
-    }
+  Sp.getBindings = function () {
+    this.scan();
+    return this.bindings;
+  };
 
-    declaresType(name: any) {
-      this.scan();
-      return hasOwn.call(this.types, name);
-    }
-
-    declareTemporary(prefix?: any) {
-      if (prefix) {
-        if (!/^[a-z$_]/i.test(prefix)) {
-          throw new Error("");
-        }
-      } else {
-        prefix = "t$";
-      }
-
-      // Include this.depth in the name to make sure the name does not
-      // collide with any variables in nested/enclosing scopes.
-      prefix += this.depth.toString(36) + "$";
-
-      this.scan();
-
-      var index = 0;
-      while (this.declares(prefix + index)) {
-        ++index;
-      }
-
-      var name = prefix + index;
-      return this.bindings[name] = types.builders.identifier(name);
-    }
-
-    injectTemporary(identifier: any, init: any) {
-      identifier || (identifier = this.declareTemporary());
-
-      var bodyPath = this.path.get("body");
-      if (namedTypes.BlockStatement.check(bodyPath.value)) {
-        bodyPath = bodyPath.get("body");
-      }
-
-      bodyPath.unshift(
-        b.variableDeclaration(
-        "var",
-        [b.variableDeclarator(identifier, init || null)]
-        )
-      );
-
-      return identifier;
-    }
-
-    scan(force?: any) {
-      if (force || !this.didScan) {
-        for (var name in this.bindings) {
-          // Empty out this.bindings, just in cases.
-          delete this.bindings[name];
-        }
-        scanScope(this.path, this.bindings, this.types);
-        this.didScan = true;
-      }
-    }
-
-    getBindings() {
-      this.scan();
-      return this.bindings;
-    }
-
-    getTypes() {
-      this.scan();
-      return this.types;
-    }
-
-    lookup(name: any) {
-      for (var scope = this; scope; scope = scope.parent)
-        if (scope.declares(name))
-          break;
-      return scope;
-    }
-
-    lookupType(name: any) {
-      for (var scope = this; scope; scope = scope.parent)
-        if (scope.declaresType(name))
-          break;
-      return scope;
-    }
-
-    getGlobalScope() {
-      var scope = this;
-      while (!scope.isGlobal)
-        scope = scope.parent;
-      return scope;
-    };
-  }
+  Sp.getTypes = function () {
+    this.scan();
+    return this.types;
+  };
 
   function scanScope(path: any, bindings: any, scopeTypes: any) {
     var node = path.value;
@@ -380,6 +333,27 @@ export = function (fork: Fork): ScopeConstructor {
 
     }
   }
+
+  Sp.lookup = function(name: any) {
+    for (var scope = this; scope; scope = scope.parent)
+      if (scope.declares(name))
+        break;
+    return scope;
+  };
+
+  Sp.lookupType = function(name: any) {
+    for (var scope = this; scope; scope = scope.parent)
+      if (scope.declaresType(name))
+        break;
+    return scope;
+  };
+
+  Sp.getGlobalScope = function() {
+    var scope = this;
+    while (!scope.isGlobal)
+      scope = scope.parent;
+    return scope;
+  };
 
   return Scope;
 };
