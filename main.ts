@@ -10,8 +10,13 @@ import esprimaDef from "./def/esprima";
 import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
+import { NamedTypes } from "./gen/namedTypes";
 
-export = fork([
+type Main = ReturnType<typeof fork> & {
+  namedTypes: NamedTypes;
+};
+
+const main = fork([
   // This core module of AST types captures ES5 as it is parsed today by
   // git://github.com/ariya/esprima.git#master.
   coreDef,
@@ -28,4 +33,6 @@ export = fork([
   babelDef,
   typescriptDef,
   esProposalsDef,
-]);
+]) as Main;
+
+export = main;

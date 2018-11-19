@@ -1,5 +1,4 @@
 import { Fork } from "../types";
-import { NamedTypes } from "./namedTypes";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -9,20 +8,23 @@ var funObjStr = objToStr.call(function(){});
 var strObjStr = objToStr.call("");
 var hasOwn = Op.hasOwnProperty;
 
+declare const __typeBrand: unique symbol;
+
 // We have to use a namespace to export types along with `export =`
 // See https://github.com/Microsoft/TypeScript/issues/2719
 namespace typesPlugin {
     export type CheckFn = (value: any, deep: any) => any;
     export type NameType = string | (() => string);
-    export type NodeValue = object | string | number | boolean | null | undefined;
+    export type ValueType = object | string | number | boolean | null | undefined;
 
-    export interface TypeType<T extends NodeValue = any> {
+    export interface TypeType<T extends ValueType = any> {
         name: NameType;
-        check(value: NodeValue, deep?: any): value is T;
+        check(value: ValueType, deep?: any): value is T;
         check(value: any, deep?: any): boolean;
         assert(value: any, deep?: any): boolean;
         arrayOf(): TypeType;
         toString(): string;
+        [__typeBrand]?: T;
     }
 
     export interface TypeConstructor {
@@ -81,7 +83,7 @@ import DefType = typesPlugin.DefType;
 import DefConstructor = typesPlugin.DefConstructor;
 import FieldType = typesPlugin.FieldType;
 import FieldConstructor = typesPlugin.FieldConstructor;
-import NodeValue = typesPlugin.NodeValue;
+import ValueType = typesPlugin.ValueType;
 
 function typesPlugin(_fork?: Fork) {
     // A type is an object with a .check method that takes a value and returns
@@ -158,7 +160,7 @@ function typesPlugin(_fork?: Fork) {
     var builtInCtorTypes: TypeType[] = [];
     var builtInTypes: { [name: string]: TypeType } = {};
 
-    function defBuiltInType<T extends NodeValue>(example: T, name: string): TypeType<T> {
+    function defBuiltInType<T extends ValueType>(example: T, name: string): TypeType<T> {
         var objStr = objToStr.call(example);
 
         var type = new Type(function (value) {
@@ -751,7 +753,7 @@ function typesPlugin(_fork?: Fork) {
         return this; // For chaining.
     };
 
-    var namedTypes: NamedTypes = {};
+    var namedTypes: { [name: string]: TypeType } = {};
 
     // Like Object.keys, but aware of what fields each AST type should have.
     function getFieldNames(object: any) {

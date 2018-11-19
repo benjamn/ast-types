@@ -51,8 +51,6 @@ import VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
 function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var NodePath = fork.use(nodePathPlugin);
-  // @ts-ignore 'Printable' is declared but its value is never read. [6133]
-  var Printable = types.namedTypes.Printable;
   var isArray = types.builtInTypes.array;
   var isObject = types.builtInTypes.object;
   var isFunction = types.builtInTypes.function;
