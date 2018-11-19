@@ -19,7 +19,7 @@ const babylonTSFixturesDir =
 
 glob("**/input.js", {
   cwd: babylonTSFixturesDir,
-}, (error: any, files: any) => {
+}, (error, files) => {
   if (error) {
     throw error;
   }
@@ -36,7 +36,7 @@ glob("**/input.js", {
 
       (shouldSkip ? xit : it)
       ("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
-        fs.readFile(fullPath, "utf8", function (error: any, code: any) {
+        fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
             throw error;
           }
@@ -111,7 +111,7 @@ var tsCompilerDir =
 
 glob("**/*.ts", {
   cwd: tsCompilerDir,
-}, (error: any, files: any) => {
+}, (error, files) => {
   if (error) {
     throw error;
   }
@@ -127,7 +127,7 @@ glob("**/*.ts", {
       var fullPath = path.join(tsCompilerDir, tsPath);
 
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
-        fs.readFile(fullPath, "utf8", function (error: any, code: any) {
+        fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
             throw error;
           }

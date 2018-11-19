@@ -10,7 +10,7 @@ function validateECMAScript(file: any) {
   var fullPath = path.join(__dirname, "..", file);
 
   it("should validate " + file + " with Esprima", function (done) {
-    fs.readFile(fullPath, "utf8", function(err: any, code: any) {
+    fs.readFile(fullPath, "utf8", function(err, code) {
       if (err) {
         throw err;
       }
@@ -25,7 +25,7 @@ function validateECMAScript(file: any) {
   });
 
   it("should validate " + file + " with Babylon", function (done) {
-    fs.readFile(fullPath, "utf8", function (err: any, code: any) {
+    fs.readFile(fullPath, "utf8", function (err, code) {
       if (err) {
         throw err;
       }
