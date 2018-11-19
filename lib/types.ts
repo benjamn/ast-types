@@ -158,9 +158,22 @@ function typesPlugin(_fork?: Fork) {
 
     var builtInCtorFns: Function[] = [];
     var builtInCtorTypes: TypeType[] = [];
-    var builtInTypes: { [name: string]: TypeType } = {};
 
-    function defBuiltInType<T extends ValueType>(example: T, name: string): TypeType<T> {
+    type BuiltInTypes = {
+        string: typeof isString;
+        function: typeof isFunction;
+        array: typeof isArray;
+        object: typeof isObject;
+        RegExp: typeof isRegExp;
+        Date: typeof isDate;
+        number: typeof isNumber;
+        boolean: typeof isBoolean;
+        null: typeof isNull;
+        undefined: typeof isUndefined;
+    };
+    var builtInTypes = {} as BuiltInTypes;
+
+    function defBuiltInType<T extends ValueType>(example: T, name: keyof BuiltInTypes): TypeType<T> {
         var objStr = objToStr.call(example);
 
         var type = new Type(function (value) {
@@ -185,11 +198,11 @@ function typesPlugin(_fork?: Fork) {
     var isFunction = defBuiltInType<Function>(function () {}, "function");
     var isArray = defBuiltInType<any[]>([], "array");
     var isObject = defBuiltInType<{ [key: string]: any }>({}, "object");
-    /*var isRegExp = */defBuiltInType<RegExp>(/./, "RegExp");
-    /*var isDate = */defBuiltInType<Date>(new Date, "Date");
-    /*var isNumber = */defBuiltInType<number>(3, "number");
-    /*var isBoolean = */defBuiltInType<boolean>(true, "boolean");
-    /*var isNull = */defBuiltInType<null>(null, "null");
+    var isRegExp = defBuiltInType<RegExp>(/./, "RegExp");
+    var isDate = defBuiltInType<Date>(new Date, "Date");
+    var isNumber = defBuiltInType<number>(3, "number");
+    var isBoolean = defBuiltInType<boolean>(true, "boolean");
+    var isNull = defBuiltInType<null>(null, "null");
     var isUndefined = defBuiltInType<undefined>(void 0, "undefined");
 
     // There are a number of idiomatic ways of expressing types, so this
@@ -254,7 +267,7 @@ function typesPlugin(_fork?: Fork) {
         });
     };
 
-    Type.fromArray = function (arr: any) {
+    Type.fromArray = function (arr) {
         if (!isArray.check(arr)) {
             throw new Error("");
         }
