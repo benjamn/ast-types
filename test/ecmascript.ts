@@ -727,6 +727,7 @@ describe("replacing the root", function() {
 
 describe("NodePath", function() {
   it("should have the expected type hierarchy", function() {
+    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     assert.strictEqual(new Path({}).constructor, Path);
 
     // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
