@@ -4,6 +4,32 @@ import nodePathPlugin from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
+interface PathVisitorType {
+  _reusableContextStack: any;
+  _methodNameTable: any;
+  _shouldVisitComments: any;
+  Context: any;
+  _visiting: any;
+  _changeReported: any;
+  _abortRequested: boolean;
+  visit(...args: any[]): any;
+  reset(path: any, ...args: any[]): any;
+  visitWithoutReset(path: any): any;
+  AbortRequest: any;
+  abort(): any;
+  visitor: any;
+  acquireContext(path: any): any;
+  releaseContext(context: any): void;
+  reportChanged(): void;
+  wasChangeReported(): any;
+}
+
+interface PathVisitorConstructor {
+  new(): PathVisitorType;
+  fromMethodsObject(methods: any): any;
+  visit(node: any, methods?: any): any;
+}
+
 export = function (fork: Fork) {
   var types = fork.use(typesPlugin);
   var NodePath = fork.use(nodePathPlugin);
@@ -14,7 +40,7 @@ export = function (fork: Fork) {
   var isFunction = types.builtInTypes.function;
   var undefined: any;
 
-  function PathVisitor(this: any) {
+  const PathVisitor = function PathVisitor(this: PathVisitorType) {
     if (!(this instanceof PathVisitor)) {
       throw new Error(
         "PathVisitor constructor cannot be invoked without 'new'"
@@ -34,7 +60,7 @@ export = function (fork: Fork) {
     // State reset every time PathVisitor.prototype.visit is called.
     this._visiting = false;
     this._changeReported = false;
-  }
+  } as any as PathVisitorConstructor;
 
   function computeMethodNameTable(visitor: any) {
     var typeNames = Object.create(null);
@@ -68,7 +94,6 @@ export = function (fork: Fork) {
 
     if (!isObject.check(methods)) {
       // An empty visitor?
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       return new PathVisitor;
     }
 
@@ -110,7 +135,7 @@ export = function (fork: Fork) {
     return PathVisitor.fromMethodsObject(methods).visit(node);
   };
 
-  var PVp = PathVisitor.prototype;
+  var PVp: PathVisitorType = PathVisitor.prototype;
 
   PVp.visit = function () {
     if (this._visiting) {
@@ -178,11 +203,11 @@ export = function (fork: Fork) {
     throw request;
   };
 
-  PVp.reset = function (_path: any/*, additional arguments */) {
+  PVp.reset = function (_path/*, additional arguments */) {
     // Empty stub; may be reassigned or overridden by subclasses.
   };
 
-  PVp.visitWithoutReset = function (path: any) {
+  PVp.visitWithoutReset = function (path) {
     if (this instanceof this.Context) {
       // Since this.Context.prototype === this, there's a chance we
       // might accidentally call context.visitWithoutReset. If that
@@ -261,14 +286,14 @@ export = function (fork: Fork) {
     return path.value;
   }
 
-  PVp.acquireContext = function (path: any) {
+  PVp.acquireContext = function (path) {
     if (this._reusableContextStack.length === 0) {
       return new this.Context(path);
     }
     return this._reusableContextStack.pop().reset(path);
   };
 
-  PVp.releaseContext = function (context: any) {
+  PVp.releaseContext = function (context) {
     if (!(context instanceof this.Context)) {
       throw new Error("");
     }
@@ -285,7 +310,12 @@ export = function (fork: Fork) {
   };
 
   function makeContextConstructor(visitor: any) {
-    function Context(this: any, path: any) {
+    interface ContextType {
+      currentPath: any;
+      needToCallTraverse: any;
+    }
+
+    function Context(this: ContextType, path: any) {
       if (!(this instanceof Context)) {
         throw new Error("");
       }
