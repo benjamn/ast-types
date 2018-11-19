@@ -18,6 +18,8 @@
     "def",
     "lib",
     "test",
+    "types",
+    "types.ts",
     "fork.ts",
     "main.ts"
   ],

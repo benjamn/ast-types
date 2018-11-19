@@ -11,7 +11,9 @@ lib/**/*.js
 lib/**/*.d.ts
 test/**/*.js
 test/**/*.d.ts
-main.js
-main.d.ts
 fork.js
 fork.d.ts
+types.js
+types.d.ts
+main.js
+main.d.ts
