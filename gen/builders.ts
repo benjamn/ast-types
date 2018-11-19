@@ -2751,6 +2751,25 @@ export interface TSInferTypeBuilder {
   ): N.TSInferType;
 }
 
+export interface TSTypeParameterBuilder {
+  (
+    name: string,
+    constraint?: K.TSTypeKind | null,
+    defaultParam?: K.TSTypeKind | null
+  ): N.TSTypeParameter;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      constraint?: K.TSTypeKind | null,
+      default?: K.TSTypeKind | null,
+      loc?: K.SourceLocationKind | null,
+      name: string,
+      optional?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null
+    }
+  ): N.TSTypeParameter;
+}
+
 export interface TSParenthesizedTypeBuilder {
   (typeAnnotation: K.TSTypeKind): N.TSParenthesizedType;
   from(
@@ -3451,6 +3470,7 @@ export interface Builders {
   tsIntersectionType: TSIntersectionTypeBuilder;
   tsConditionalType: TSConditionalTypeBuilder;
   tsInferType: TSInferTypeBuilder;
+  tsTypeParameter: TSTypeParameterBuilder;
   tsParenthesizedType: TSParenthesizedTypeBuilder;
   tsFunctionType: TSFunctionTypeBuilder;
   tsConstructorType: TSConstructorTypeBuilder;
