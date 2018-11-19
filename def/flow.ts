@@ -212,7 +212,10 @@ export = function (fork: Fork) {
     .field("argument", def("FlowType"));
 
   def("Identifier")
-    .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
+    .field("typeAnnotation",
+           // TODO: Remove in favor of https://github.com/benjamn/ast-types/pull/299
+           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
+           defaults["null"]);
 
   def("ObjectPattern")
     .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
