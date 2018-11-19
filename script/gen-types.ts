@@ -111,21 +111,8 @@ const builderTypeNames = Object.keys(astTypes.namedTypes).filter(typeName => {
   const typeDef = astTypes.Type.def(typeName);
   const builderName = getBuilderName(typeName);
 
-  return !!typeDef.buildParams && !!astTypes.builders[builderName];
+  return !!typeDef.buildParams && !!(astTypes.builders as any)[builderName];
 });
-
-const declareModule = (name: string, body: any[]) =>
-  b.file.from({
-    program: b.program.from({
-      body: [
-        b.tsModuleDeclaration.from({
-          id: b.stringLiteral(name),
-          declare: true,
-          body: b.tsModuleBlock.from({ body }),
-        }),
-      ],
-    }),
-  });
 
 const createModule = (body: any[]) =>
   b.file.from({
@@ -333,8 +320,8 @@ const out = [
       b.exportNamedDeclaration(
         b.tsInterfaceDeclaration.from({
           id: b.identifier("Builders"),
-          body: b.tsInterfaceBody(
-            builderTypeNames.map(typeName =>
+          body: b.tsInterfaceBody([
+            ...builderTypeNames.map(typeName =>
               b.tsPropertySignature.from({
                 key: b.identifier(getBuilderName(typeName)),
                 typeAnnotation: b.tsTypeAnnotation.from({
@@ -343,47 +330,63 @@ const out = [
                   }),
                 }),
               })
-            )
-          ),
+            ),
+            b.tsIndexSignature.from({
+              parameters: [
+                b.identifier.from({
+                  name: "builderName",
+                  typeAnnotation: b.tsTypeAnnotation(b.tsStringKeyword()),
+                }),
+              ],
+              typeAnnotation: b.tsTypeAnnotation.from({ typeAnnotation: b.tsAnyKeyword() }),
+            }),
+          ]),
         })
       ),
     ]),
   },
-  // TODO
-  false && {
-    file: "visitor.d.ts",
-    ast: declareModule("ast-types/lib/path-visitor", [
+  {
+    file: "visitor.ts",
+    ast: createModule([
       b.importDeclaration(
-        [b.importSpecifier(b.identifier("NodePath"))],
-        b.stringLiteral("ast-types/lib/node-path")
+        [b.importSpecifier(b.identifier("NodePathType"), b.identifier("NodePath"))],
+        b.stringLiteral("../lib/node-path")
       ),
-      b.tsInterfaceDeclaration(
-        b.identifier("Visitor"),
-        b.tsInterfaceBody([
-          ...Object.keys(astTypes.namedTypes).map(typeName => {
-            return b.tsMethodSignature.from({
-              key: b.identifier(`visit${typeName}`),
-              parameters: [
-                b.identifier.from({
-                  name: "path",
-                  typeAnnotation: b.tsTypeAnnotation(b.tsTypeReference(b.identifier("NodePath"))),
-                }),
-              ],
-              optional: true,
-              typeAnnotation: b.tsTypeAnnotation(b.tsAnyKeyword()),
-            });
-          }),
-        ])
+      b.importDeclaration(
+        [b.importSpecifier(b.identifier("ContextType"), b.identifier("Context"))],
+        b.stringLiteral("../lib/path-visitor")
+      ),
+      b.exportNamedDeclaration(
+        b.tsInterfaceDeclaration(
+          b.identifier("Visitor"),
+          b.tsInterfaceBody([
+            ...Object.keys(astTypes.namedTypes).map(typeName => {
+              return b.tsMethodSignature.from({
+                key: b.identifier(`visit${typeName}`),
+                parameters: [
+                  b.identifier.from({
+                    name: "this",
+                    typeAnnotation: b.tsTypeAnnotation(b.tsTypeReference(b.identifier("Context"))),
+                  }),
+                  b.identifier.from({
+                    name: "path",
+                    typeAnnotation: b.tsTypeAnnotation(b.tsTypeReference(b.identifier("NodePath"))),
+                  }),
+                ],
+                optional: true,
+                typeAnnotation: b.tsTypeAnnotation(b.tsAnyKeyword()),
+              });
+            }),
+          ])
+        )
       ),
     ]),
   },
 ];
 
-out
-  .filter(el => !!el)
-  .forEach(({ file, ast }: any) => {
-    fs.writeFileSync(
-      path.resolve(__dirname, `../gen/${file}`),
-      prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
-    );
-  });
+out.forEach(({ file, ast }) => {
+  fs.writeFileSync(
+    path.resolve(__dirname, `../gen/${file}`),
+    prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
+  );
+});

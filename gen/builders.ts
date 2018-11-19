@@ -3506,4 +3506,5 @@ export interface Builders {
   tsParameterProperty: TSParameterPropertyBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
+  [builderName: string]: any;
 }

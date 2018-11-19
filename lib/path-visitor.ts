@@ -1,4 +1,4 @@
-import { Fork } from "../types";
+import { Fork, Omit } from "../types";
 import typesPlugin from "./types";
 import nodePathPlugin from "./node-path";
 
@@ -19,7 +19,7 @@ namespace pathVisitorPlugin {
     reset(path: any, ...args: any[]): any;
     visitWithoutReset(path: any): any;
     AbortRequest: any;
-    abort(): any;
+    abort(): void;
     visitor: any;
     acquireContext(path: any): any;
     releaseContext(context: any): void;
@@ -42,11 +42,28 @@ namespace pathVisitorPlugin {
   export interface VisitorConstructor extends PathVisitorStatics {
     new(): VisitorType;
   }
+
+  export interface SharedContextMethods {
+    currentPath: any;
+    needToCallTraverse: boolean;
+    Context: any;
+    visitor: any;
+    reset(path: any, ...args: any[]): any;
+    invokeVisitorMethod(methodName: string): any;
+    traverse(path: any, newVisitor?: any): any;
+    visit(path: any, newVisitor?: any): any;
+    reportChanged(): void;
+    abort(): void;
+  }
+
+  export interface ContextType extends Omit<PathVisitorType, "visit">, SharedContextMethods {}
 }
 
 import PathVisitorType = pathVisitorPlugin.PathVisitorType;
 import PathVisitorConstructor = pathVisitorPlugin.PathVisitorConstructor;
 import VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
+import ContextType = pathVisitorPlugin.ContextType;
+import SharedContextMethods = pathVisitorPlugin.SharedContextMethods;
 
 function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
@@ -322,11 +339,6 @@ function pathVisitorPlugin(fork: Fork) {
   };
 
   function makeContextConstructor(visitor: any) {
-    interface ContextType {
-      currentPath: any;
-      needToCallTraverse: any;
-    }
-
     function Context(this: ContextType, path: any) {
       if (!(this instanceof Context)) {
         throw new Error("");
@@ -365,13 +377,13 @@ function pathVisitorPlugin(fork: Fork) {
     return Context;
   }
 
-// Every PathVisitor has a different this.Context constructor and
-// this.Context.prototype object, but those prototypes can all use the
-// same reset, invokeVisitorMethod, and traverse function objects.
-  var sharedContextProtoMethods = Object.create(null);
+  // Every PathVisitor has a different this.Context constructor and
+  // this.Context.prototype object, but those prototypes can all use the
+  // same reset, invokeVisitorMethod, and traverse function objects.
+  var sharedContextProtoMethods: SharedContextMethods = Object.create(null);
 
   sharedContextProtoMethods.reset =
-    function reset(path: any) {
+    function reset(path) {
       if (!(this instanceof this.Context)) {
         throw new Error("");
       }
@@ -386,7 +398,7 @@ function pathVisitorPlugin(fork: Fork) {
     };
 
   sharedContextProtoMethods.invokeVisitorMethod =
-    function invokeVisitorMethod(methodName: any) {
+    function invokeVisitorMethod(methodName) {
       if (!(this instanceof this.Context)) {
         throw new Error("");
       }
@@ -425,7 +437,7 @@ function pathVisitorPlugin(fork: Fork) {
     };
 
   sharedContextProtoMethods.traverse =
-    function traverse(path: any, newVisitor: any) {
+    function traverse(path, newVisitor) {
       if (!(this instanceof this.Context)) {
         throw new Error("");
       }
@@ -444,7 +456,7 @@ function pathVisitorPlugin(fork: Fork) {
     };
 
   sharedContextProtoMethods.visit =
-    function visit(path: any, newVisitor: any) {
+    function visit(path, newVisitor) {
       if (!(this instanceof this.Context)) {
         throw new Error("");
       }

@@ -10,20 +10,26 @@ import esprimaDef from "./def/esprima";
 import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
+import { Omit } from "./types";
 import { NamedTypes as _NamedTypes } from "./gen/namedTypes";
 import { Builders as _Builders } from "./gen/builders";
+import { Visitor as _Visitor } from "./gen/visitor";
 
 // We have to use a namespace to export types along with `export =`
 // See https://github.com/Microsoft/TypeScript/issues/2719
 namespace main {
   export type NamedTypes = _NamedTypes;
   export type Builders = _Builders;
+  export type Visitor = _Visitor;
 }
 
-type Main = ReturnType<typeof fork> & {
+type GenTypes = {
   namedTypes: main.NamedTypes;
   builders: main.Builders;
+  visit: (node: any, methods?: main.Visitor) => any;
 };
+
+type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;
 
 const main = fork([
   // This core module of AST types captures ES5 as it is parsed today by
@@ -42,6 +48,6 @@ const main = fork([
   babelDef,
   typescriptDef,
   esProposalsDef,
-]) as Main;
+]) as any as Main;
 
 export = main;
