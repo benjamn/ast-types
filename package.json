@@ -27,8 +27,9 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "test/run.sh",
     "tsc": "tsc --noEmit",
+    "mocha": "test/run.sh",
+    "test": "npm run tsc && npm run mocha",
     "clean": "node script/clean.js",
     "build": "npm run clean && tsc"
   },
