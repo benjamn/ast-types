@@ -4,43 +4,51 @@ import nodePathPlugin from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-interface PathVisitorType {
-  _reusableContextStack: any;
-  _methodNameTable: any;
-  _shouldVisitComments: any;
-  Context: any;
-  _visiting: any;
-  _changeReported: any;
-  _abortRequested: boolean;
-  visit(...args: any[]): any;
-  reset(path: any, ...args: any[]): any;
-  visitWithoutReset(path: any): any;
-  AbortRequest: any;
-  abort(): any;
-  visitor: any;
-  acquireContext(path: any): any;
-  releaseContext(context: any): void;
-  reportChanged(): void;
-  wasChangeReported(): any;
+// We have to use a namespace to export types along with `export =`
+// See https://github.com/Microsoft/TypeScript/issues/2719
+namespace pathVisitorPlugin {
+  export interface PathVisitorType {
+    _reusableContextStack: any;
+    _methodNameTable: any;
+    _shouldVisitComments: any;
+    Context: any;
+    _visiting: any;
+    _changeReported: any;
+    _abortRequested: boolean;
+    visit(...args: any[]): any;
+    reset(path: any, ...args: any[]): any;
+    visitWithoutReset(path: any): any;
+    AbortRequest: any;
+    abort(): any;
+    visitor: any;
+    acquireContext(path: any): any;
+    releaseContext(context: any): void;
+    reportChanged(): void;
+    wasChangeReported(): any;
+  }
+
+  export interface PathVisitorStatics {
+    fromMethodsObject(): VisitorType;
+    fromMethodsObject<M>(methods: M): VisitorType & M;
+    visit(node: any, methods?: any): any;
+  }
+
+  export interface PathVisitorConstructor extends PathVisitorStatics {
+    new(): PathVisitorType;
+  }
+
+  export interface VisitorType extends PathVisitorType {}
+
+  export interface VisitorConstructor extends PathVisitorStatics {
+    new(): VisitorType;
+  }
 }
 
-interface PathVisitorStatics {
-  fromMethodsObject(): VisitorType;
-  fromMethodsObject<M>(methods: M): VisitorType & M;
-  visit(node: any, methods?: any): any;
-}
+type PathVisitorType = pathVisitorPlugin.PathVisitorType;
+type PathVisitorConstructor = pathVisitorPlugin.PathVisitorConstructor;
+type VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
 
-interface PathVisitorConstructor extends PathVisitorStatics {
-  new(): PathVisitorType;
-}
-
-interface VisitorType extends PathVisitorType {}
-
-interface VisitorConstructor extends PathVisitorStatics {
-  new(): VisitorType;
-}
-
-export = function (fork: Fork) {
+function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var NodePath = fork.use(nodePathPlugin);
   // @ts-ignore 'Printable' is declared but its value is never read. [6133]
@@ -468,3 +476,5 @@ export = function (fork: Fork) {
 
   return PathVisitor;
 };
+
+export = pathVisitorPlugin;
