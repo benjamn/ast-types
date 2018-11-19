@@ -1,5 +1,5 @@
-module.exports = function (fork) {
-    var exports = {};
+module.exports = function (fork: any) {
+    var exports: any = {};
     var types = fork.use(require("../lib/types"));
     var Type = types.Type;
     var builtin = types.builtInTypes;
@@ -7,8 +7,8 @@ module.exports = function (fork) {
 
     // An example of constructing a new type with arbitrary constraints from
     // an existing type.
-    exports.geq = function (than) {
-        return new Type(function (value) {
+    exports.geq = function (than: any) {
+        return new Type(function (value: any) {
             return isNumber.check(value) && value >= than;
         }, isNumber + " >= " + than);
     };
@@ -34,7 +34,7 @@ module.exports = function (fork) {
       builtin.undefined
     );
 
-    exports.isPrimitive = new Type(function (value) {
+    exports.isPrimitive = new Type(function (value: any) {
         if (value === null)
             return true;
         var type = typeof value;

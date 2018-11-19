@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
     var types = fork.use(require("./types"));
     var n = types.namedTypes;
     var b = types.builders;
@@ -7,7 +7,7 @@ module.exports = function (fork) {
     var Path = fork.use(require("./path"));
     var Scope = fork.use(require("./scope"));
 
-    function NodePath(value, parentPath, name) {
+    function NodePath(this: any, value: any, parentPath: any, name: any) {
         if (!(this instanceof NodePath)) {
             throw new Error("NodePath constructor cannot be invoked without 'new'");
         }
@@ -120,7 +120,7 @@ module.exports = function (fork) {
         return scope || null;
     };
 
-    NPp.getValueProperty = function (name) {
+    NPp.getValueProperty = function (name: any) {
         return types.getFieldValue(this.value, name);
     };
 
@@ -137,7 +137,7 @@ module.exports = function (fork) {
      * enclosing statement and thus needing parentheses to avoid being parsed
      * as a FunctionDeclaration with a missing name.
      */
-    NPp.needsParens = function (assumeExpressionContext) {
+    NPp.needsParens = function (assumeExpressionContext: any) {
         var pp = this.parentPath;
         if (!pp) {
             return false;
@@ -294,12 +294,13 @@ module.exports = function (fork) {
         return false;
     };
 
-    function isBinary(node) {
+    function isBinary(node: any) {
         return n.BinaryExpression.check(node)
           || n.LogicalExpression.check(node);
     }
 
-    function isUnaryLike(node) {
+    // @ts-ignore 'isUnaryLike' is declared but its value is never read. [6133]
+    function isUnaryLike(node: any) {
         return n.UnaryExpression.check(node)
           // I considered making SpreadElement and SpreadProperty subtypes
           // of UnaryExpression, but they're not really Expression nodes.
@@ -307,7 +308,7 @@ module.exports = function (fork) {
           || (n.SpreadProperty && n.SpreadProperty.check(node));
     }
 
-    var PRECEDENCE = {};
+    var PRECEDENCE: any = {};
     [["||"],
         ["&&"],
         ["|"],
@@ -324,7 +325,7 @@ module.exports = function (fork) {
         });
     });
 
-    function containsCallExpression(node) {
+    function containsCallExpression(node: any) {
         if (n.CallExpression.check(node)) {
             return true;
         }
@@ -334,7 +335,7 @@ module.exports = function (fork) {
         }
 
         if (n.Node.check(node)) {
-            return types.someField(node, function (name, child) {
+            return types.someField(node, function (_name: any, child: any) {
                 return containsCallExpression(child);
             });
         }
@@ -352,7 +353,7 @@ module.exports = function (fork) {
         return firstInStatement(this);
     };
 
-    function firstInStatement(path) {
+    function firstInStatement(path: any) {
         for (var node, parent; path.parent; path = path.parent) {
             node = path.node;
             parent = path.parent.node;
@@ -433,7 +434,7 @@ module.exports = function (fork) {
     /**
      * Pruning certain nodes will result in empty or incomplete nodes, here we clean those nodes up.
      */
-    function cleanUpNodesAfterPrune(remainingNodePath) {
+    function cleanUpNodesAfterPrune(remainingNodePath: any) {
         if (n.VariableDeclaration.check(remainingNodePath.node)) {
             var declarations = remainingNodePath.get('declarations').value;
             if (!declarations || declarations.length === 0) {
@@ -450,7 +451,7 @@ module.exports = function (fork) {
         return remainingNodePath;
     }
 
-    function cleanUpIfStatementAfterPrune(ifStatement) {
+    function cleanUpIfStatementAfterPrune(ifStatement: any) {
         var testExpression = ifStatement.get('test').value;
         var alternate = ifStatement.get('alternate').value;
         var consequent = ifStatement.get('consequent').value;

@@ -1,15 +1,16 @@
 var hasOwn = Object.prototype.hasOwnProperty;
 
-module.exports = function (fork) {
+module.exports = function (fork: any) {
     var types = fork.use(require("./types"));
     var NodePath = fork.use(require("./node-path"));
+    // @ts-ignore 'Printable' is declared but its value is never read. [6133]
     var Printable = types.namedTypes.Printable;
     var isArray = types.builtInTypes.array;
     var isObject = types.builtInTypes.object;
     var isFunction = types.builtInTypes.function;
-    var undefined;
+    var undefined: any;
 
-    function PathVisitor() {
+    function PathVisitor(this: any) {
         if (!(this instanceof PathVisitor)) {
             throw new Error(
               "PathVisitor constructor cannot be invoked without 'new'"
@@ -31,7 +32,7 @@ module.exports = function (fork) {
         this._changeReported = false;
     }
 
-    function computeMethodNameTable(visitor) {
+    function computeMethodNameTable(visitor: any) {
         var typeNames = Object.create(null);
 
         for (var methodName in visitor) {
@@ -43,10 +44,10 @@ module.exports = function (fork) {
         var supertypeTable = types.computeSupertypeLookupTable(typeNames);
         var methodNameTable = Object.create(null);
 
-        var typeNames = Object.keys(supertypeTable);
-        var typeNameCount = typeNames.length;
+        var typeNameKeys = Object.keys(supertypeTable);
+        var typeNameCount = typeNameKeys.length;
         for (var i = 0; i < typeNameCount; ++i) {
-            var typeName = typeNames[i];
+            var typeName = typeNameKeys[i];
             methodName = "visit" + supertypeTable[typeName];
             if (isFunction.check(visitor[methodName])) {
                 methodNameTable[typeName] = methodName;
@@ -56,17 +57,18 @@ module.exports = function (fork) {
         return methodNameTable;
     }
 
-    PathVisitor.fromMethodsObject = function fromMethodsObject(methods) {
+    PathVisitor.fromMethodsObject = function fromMethodsObject(methods: any) {
         if (methods instanceof PathVisitor) {
             return methods;
         }
 
         if (!isObject.check(methods)) {
             // An empty visitor?
+            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             return new PathVisitor;
         }
 
-        function Visitor() {
+        function Visitor(this: any) {
             if (!(this instanceof Visitor)) {
                 throw new Error(
                   "Visitor constructor cannot be invoked without 'new'"
@@ -81,13 +83,16 @@ module.exports = function (fork) {
         extend(Vp, methods);
         extend(Visitor, PathVisitor);
 
+        // @ts-ignore Property 'fromMethodsObject' does not exist on type '{ (this: any): void; prototype: any; }'. [2339]
         isFunction.assert(Visitor.fromMethodsObject);
+        // @ts-ignore Property 'visit' does not exist on type '{ (this: any): void; prototype: any; }'. [2339]
         isFunction.assert(Visitor.visit);
 
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Visitor;
     };
 
-    function extend(target, source) {
+    function extend(target: any, source: any) {
         for (var property in source) {
             if (hasOwn.call(source, property)) {
                 target[property] = source[property];
@@ -97,7 +102,7 @@ module.exports = function (fork) {
         return target;
     }
 
-    PathVisitor.visit = function visit(node, methods) {
+    PathVisitor.visit = function visit(node: any, methods: any) {
         return PathVisitor.fromMethodsObject(methods).visit(node);
     };
 
@@ -129,9 +134,10 @@ module.exports = function (fork) {
         // Called with the same arguments as .visit.
         this.reset.apply(this, args);
 
+        var didNotThrow;
         try {
             var root = this.visitWithoutReset(args[0]);
-            var didNotThrow = true;
+            didNotThrow = true;
         } finally {
             this._visiting = false;
 
@@ -167,11 +173,11 @@ module.exports = function (fork) {
         throw request;
     };
 
-    PVp.reset = function (path/*, additional arguments */) {
+    PVp.reset = function (_path: any/*, additional arguments */) {
         // Empty stub; may be reassigned or overridden by subclasses.
     };
 
-    PVp.visitWithoutReset = function (path) {
+    PVp.visitWithoutReset = function (path: any) {
         if (this instanceof this.Context) {
             // Since this.Context.prototype === this, there's a chance we
             // might accidentally call context.visitWithoutReset. If that
@@ -205,7 +211,7 @@ module.exports = function (fork) {
         }
     };
 
-    function visitChildren(path, visitor) {
+    function visitChildren(path: any, visitor: any) {
         if (!(path instanceof NodePath)) {
             throw new Error("");
         }
@@ -250,14 +256,14 @@ module.exports = function (fork) {
         return path.value;
     }
 
-    PVp.acquireContext = function (path) {
+    PVp.acquireContext = function (path: any) {
         if (this._reusableContextStack.length === 0) {
             return new this.Context(path);
         }
         return this._reusableContextStack.pop().reset(path);
     };
 
-    PVp.releaseContext = function (context) {
+    PVp.releaseContext = function (context: any) {
         if (!(context instanceof this.Context)) {
             throw new Error("");
         }
@@ -273,8 +279,8 @@ module.exports = function (fork) {
         return this._changeReported;
     };
 
-    function makeContextConstructor(visitor) {
-        function Context(path) {
+    function makeContextConstructor(visitor: any) {
+        function Context(this: any, path: any) {
             if (!(this instanceof Context)) {
                 throw new Error("");
             }
@@ -318,7 +324,7 @@ module.exports = function (fork) {
     var sharedContextProtoMethods = Object.create(null);
 
     sharedContextProtoMethods.reset =
-      function reset(path) {
+      function reset(path: any) {
           if (!(this instanceof this.Context)) {
               throw new Error("");
           }
@@ -333,7 +339,7 @@ module.exports = function (fork) {
       };
 
     sharedContextProtoMethods.invokeVisitorMethod =
-      function invokeVisitorMethod(methodName) {
+      function invokeVisitorMethod(methodName: any) {
           if (!(this instanceof this.Context)) {
               throw new Error("");
           }
@@ -372,7 +378,7 @@ module.exports = function (fork) {
       };
 
     sharedContextProtoMethods.traverse =
-      function traverse(path, newVisitor) {
+      function traverse(path: any, newVisitor: any) {
           if (!(this instanceof this.Context)) {
               throw new Error("");
           }
@@ -391,7 +397,7 @@ module.exports = function (fork) {
       };
 
     sharedContextProtoMethods.visit =
-      function visit(path, newVisitor) {
+      function visit(path: any, newVisitor: any) {
           if (!(this instanceof this.Context)) {
               throw new Error("");
           }

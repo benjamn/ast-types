@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
     var types = fork.use(require("../lib/types"));
     var Type = types.Type;
     var def = Type.def;
@@ -119,10 +119,10 @@ module.exports = function (fork) {
         .bases("Statement")
         .build("block", "handler", "finalizer")
         .field("block", def("BlockStatement"))
-        .field("handler", or(def("CatchClause"), null), function () {
+        .field("handler", or(def("CatchClause"), null), function (this: any) {
             return this.handlers && this.handlers[0] || null;
         })
-        .field("handlers", [def("CatchClause")], function () {
+        .field("handlers", [def("CatchClause")], function (this: any) {
             return this.handler ? [this.handler] : [];
         }, true) // Indicates this field is hidden from eachField iteration.
         .field("guardedHandlers", [def("CatchClause")], defaults.emptyArray)
@@ -308,7 +308,7 @@ module.exports = function (fork) {
         .build("object", "property", "computed")
         .field("object", def("Expression"))
         .field("property", or(def("Identifier"), def("Expression")))
-        .field("computed", Boolean, function () {
+        .field("computed", Boolean, function (this: any) {
             var type = this.property.type;
             if (type === 'Literal' ||
                 type === 'MemberExpression' ||
@@ -341,7 +341,7 @@ module.exports = function (fork) {
         .field("regex", or({
             pattern: String,
             flags: String
-        }, null), function () {
+        }, null), function (this: any) {
             if (this.value instanceof RegExp) {
                 var flags = "";
 

@@ -6,7 +6,7 @@ var types = require("../fork")([
 describe("flow types", function () {
   it("issue #242", function () {
     const parser = {
-      parse(code) {
+      parse(code: string) {
         return require('flow-parser').parse(code, {
           types: true
         });
@@ -18,21 +18,16 @@ describe("flow types", function () {
       "function f<E>() {}",
     ].join("\n"));
 
-    const typeParam = program.body[0].typeParameters.params[0];
-    const superTypeParam =
-      program.body[0].superTypeParameters.params[0].id;
-    const functionTypeParam = program.body[1].typeParameters.params[0];
-
-    const identifierNames = [];
-    const typeParamNames = []
+    const identifierNames: any[] = [];
+    const typeParamNames: any[] = []
 
     types.visit(program, {
-      visitIdentifier(path) {
+      visitIdentifier(path: any) {
         identifierNames.push(path.node.name);
         this.traverse(path);
       },
 
-      visitTypeParameter(path) {
+      visitTypeParameter(path: any) {
         typeParamNames.push(path.node.name);
         this.traverse(path);
       }
@@ -44,7 +39,7 @@ describe("flow types", function () {
 
   it("issue #261", function () {
     const parser = {
-      parse(code) {
+      parse(code: string) {
         return require('flow-parser').parse(code, {
           types: true
         });

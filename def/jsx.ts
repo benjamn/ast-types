@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
   fork.use(require("./es7"));
 
   var types = fork.use(require("../lib/types"));
@@ -67,7 +67,7 @@ module.exports = function (fork) {
       def("JSXText"),
       def("Literal") // TODO Esprima should return JSXText instead.
     )], defaults.emptyArray)
-    .field("name", JSXElementName, function () {
+    .field("name", JSXElementName, function (this: any) {
       // Little-known fact: the `this` object inside a default function
       // is none other than the partially-built object itself, and any
       // fields initialized directly from builder function arguments
@@ -75,10 +75,10 @@ module.exports = function (fork) {
       // guaranteed to be available.
       return this.openingElement.name;
     }, true) // hidden from traversal
-    .field("selfClosing", Boolean, function () {
+    .field("selfClosing", Boolean, function (this: any) {
       return this.openingElement.selfClosing;
     }, true) // hidden from traversal
-    .field("attributes", JSXAttributes, function () {
+    .field("attributes", JSXAttributes, function (this: any) {
       return this.openingElement.attributes;
     }, true); // hidden from traversal
 

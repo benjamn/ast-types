@@ -1,9 +1,9 @@
-module.exports = function (defs) {
-    var used = [];
-    var usedResult = [];
-    var fork = {};
+module.exports = function (defs: any) {
+    var used: any[] = [];
+    var usedResult: any[] = [];
+    var fork: any = {};
 
-    function use(plugin) {
+    function use(plugin: any) {
         var idx = used.indexOf(plugin);
         if (idx === -1) {
             idx = used.length;
@@ -21,7 +21,7 @@ module.exports = function (defs) {
 
     types.finalize();
 
-    var exports = {
+    var exports: any = {
         Type: types.Type,
         builtInTypes: types.builtInTypes,
         namedTypes: types.namedTypes,

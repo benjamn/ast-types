@@ -135,7 +135,7 @@ describe("supertype lookup", function() {
       Identifier: true
     });
 
-    function check(subtype, expectedSupertype) {
+    function check(subtype: string, expectedSupertype?: string) {
       assert.strictEqual(table[subtype], expectedSupertype);
     }
 
@@ -250,9 +250,9 @@ describe("whole-program validation", function() {
 
 describe("esprima Syntax types", function() {
   var def = types.Type.def;
-  var typeNames = {};
+  var typeNames: any = {};
 
-  function addTypeName(name) {
+  function addTypeName(name: any) {
     typeNames[name] = name;
   }
 
@@ -360,10 +360,10 @@ describe("types.getFieldValue", function() {
 describe("types.eachField", function() {
   var context = {};
 
-  function check(node, names) {
-    var seen = [];
+  function check(node: any, names: any) {
+    var seen: any[] = [];
 
-    types.eachField(node, function(name, value) {
+    types.eachField(node, function(this: any, name: any, value: any) {
       assert.strictEqual(this, context);
       if (name === "type")
         assert.strictEqual(node.type, value);
@@ -437,7 +437,7 @@ describe("types.visit", function() {
     var literalCount = 0;
 
     n.TryStatement.assert(types.visit(ts, {
-      visitLiteral: function(path) {
+      visitLiteral: function(path: any) {
         var node = path.node;
         literalCount += 1;
         assert.strictEqual(node.value, "baz");
@@ -454,14 +454,14 @@ describe("types.visit", function() {
   });
 
   it("should abort subtree traversal when false returned", function() {
-    var ids = {};
+    var ids: any = {};
 
     types.visit(ts, {
-      visitMemberExpression: function(path) {
+      visitMemberExpression: function(_path: any) {
         return false;
       },
 
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         ids[path.node.name] = true;
         this.traverse(path);
       }
@@ -473,7 +473,7 @@ describe("types.visit", function() {
     ids = {};
 
     types.visit(ts, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         ids[path.node.name] = true;
         this.traverse(path);
       }
@@ -489,20 +489,20 @@ describe("types.visit", function() {
 
   it("this.abort() should abort entire traversal", function() {
     var literal = "not visited";
-    var unvisitedTypes = [];
+    var unvisitedTypes: any[] = [];
     var root = types.visit(call, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.value.name === "foo") {
           this.abort();
         }
       },
 
-      visitLiteral: function(path) {
+      visitLiteral: function(path: any) {
         literal = path.value;
         this.traverse(path);
       },
 
-      visitNode: function(path) {
+      visitNode: function(path: any) {
         unvisitedTypes.push(path.value.type);
         this.traverse(path);
       }
@@ -518,16 +518,16 @@ describe("types.visit", function() {
   });
 
   it("this.abort() should be cancelable", function() {
-    var literal = "not visited";
-    var unvisitedTypes = [];
+    var literal: any = "not visited";
+    var unvisitedTypes: any[] = [];
     var root = types.visit(call, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.value.name === "foo") {
           this.abort();
         }
       },
 
-      visitMemberExpression: function(path) {
+      visitMemberExpression: function(path: any) {
         try {
           this.traverse(path);
         } catch (err) {
@@ -536,12 +536,12 @@ describe("types.visit", function() {
         }
       },
 
-      visitLiteral: function(path) {
+      visitLiteral: function(path: any) {
         literal = path.value;
         this.traverse(path);
       },
 
-      visitNode: function(path) {
+      visitNode: function(path: any) {
         unvisitedTypes.push(path.value.type);
         this.traverse(path);
       }
@@ -572,11 +572,11 @@ describe("types.visit", function() {
       comment: true
     });
 
-    var blockComments = [];
-    var lineComments = [];
+    var blockComments: any[] = [];
+    var lineComments: any[] = [];
 
     types.visit(ast, {
-      visitComment: function(path) {
+      visitComment: function(path: any) {
         this.traverse(path);
         if (n.Block.check(path.value)) {
           blockComments.push(path.value);
@@ -599,7 +599,7 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitBlock: function(path) {
+      visitBlock: function(path: any) {
         blockComments.push(path.value);
         this.traverse(path);
       }
@@ -614,7 +614,7 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitLine: function(path) {
+      visitLine: function(path: any) {
         lineComments.push(path.value);
         this.traverse(path);
       }
@@ -632,12 +632,12 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitBlock: function(path) {
+      visitBlock: function(path: any) {
         blockComments.push(path.value);
         this.traverse(path);
       },
 
-      visitLine: function(path) {
+      visitLine: function(path: any) {
         lineComments.push(path.value);
         this.traverse(path);
       }
@@ -673,7 +673,7 @@ describe("path traversal", function() {
     // Note that we're passing a path instead of a node as the first
     // argument to types.traverse.
     types.visit(path, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         var node = path.node;
         ++idCount;
 
@@ -702,7 +702,7 @@ describe("replacing the root", function() {
 
   it("should be possible", function() {
     var callExp = types.visit(ast, {
-      visitExpressionStatement: function(path) {
+      visitExpressionStatement: function(path: any) {
         path.replace(b.callExpression(b.identifier("f"), [
           path.node.expression
         ]));
@@ -874,7 +874,7 @@ describe("NodePath", function() {
 });
 
 describe("path.replace", function() {
-  var ast;
+  var ast: any;
 
   beforeEach(function() {
     ast = b.functionDeclaration(
@@ -891,7 +891,7 @@ describe("path.replace", function() {
 
   it("should support replacement with a single node", function() {
     types.visit(ast, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.node.name === "a") {
           path.replace(b.identifier("b"));
         }
@@ -904,7 +904,7 @@ describe("path.replace", function() {
 
   it("should support replacement in an array with a single node", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path) {
+      visitVariableDeclaration: function(path: any) {
         path.replace(b.returnStatement(null));
         this.traverse(path);
       }
@@ -916,7 +916,7 @@ describe("path.replace", function() {
 
   it("should support replacement with nothing", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path) {
+      visitVariableDeclaration: function(path: any) {
         path.replace();
         this.traverse(path);
       }
@@ -927,7 +927,7 @@ describe("path.replace", function() {
 
   it("should support replacement with itself plus more in an array", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path) {
+      visitVariableDeclaration: function(path: any) {
         var scopeBody = path.scope.path.get("body", "body");
 
         // This is contrived such that we just happen to be replacing
@@ -965,7 +965,7 @@ describe("path.replace", function() {
 
     var statements = ast.body.body;
     assert.deepEqual(
-      statements.map(function(node) { return node.type; }),
+      statements.map(function(node: any) { return node.type; }),
       ['ReturnStatement', 'VariableDeclaration', 'VariableDeclaration']
     );
 
@@ -981,7 +981,7 @@ describe("path.replace", function() {
 
   it("should not throw when replacing the same node twice", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path) {
+      visitVariableDeclaration: function(path: any) {
         path.replace(b.expressionStatement(b.literal(null)));
         n.ExpressionStatement.assert(path.value);
         n.Literal.assert(path.value.expression);
@@ -1013,16 +1013,16 @@ describe("global scope", function() {
   var ast = parse(scope.join("\n"));
 
   it("should be reachable from nested scopes", function() {
-    var globalScope;
+    var globalScope: any;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path) {
+      visitFunctionDeclaration: function(path: any) {
         var node = path.node;
         assert.strictEqual(path.scope.isGlobal, false);
 
@@ -1039,16 +1039,16 @@ describe("global scope", function() {
   });
 
   it("should be found by .lookup and .declares", function() {
-    var globalScope;
+    var globalScope: any;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path) {
+      visitFunctionDeclaration: function(path: any) {
         assert.ok(globalScope.declares("foo"));
         assert.ok(globalScope.declares("bar"));
         assert.strictEqual(path.scope.lookup("foo"), globalScope);
@@ -1080,10 +1080,10 @@ describe("scope methods", function () {
 
   it("getBindings should get local and global scope bindings", function() {
     var ast = parse(scope.join("\n"));
-    var checked = [];
+    var checked: any[] = [];
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         var bindings = path.scope.getBindings();
         assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
         assert.equal(1, bindings.foo.length);
@@ -1092,7 +1092,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path) {
+      visitFunctionDeclaration: function(path: any) {
         var bindings = path.scope.getBindings();
         assert.deepEqual(["baz"], Object.keys(bindings));
         assert.equal(1, bindings.baz.length);
@@ -1100,7 +1100,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitReturnStatement: function(path) {
+      visitReturnStatement: function(path: any) {
         var node = path.node;
         if (n.CallExpression.check(node.argument) &&
             node.argument.callee.name === "rom") {
@@ -1131,7 +1131,7 @@ describe("scope methods", function () {
     var names;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
       }
@@ -1153,7 +1153,7 @@ describe("scope methods", function () {
     var names;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
       }
@@ -1177,7 +1177,7 @@ describe("scope methods", function () {
     });
 
     types.visit(ast, {
-      visitFunctionDeclaration: function(path) {
+      visitFunctionDeclaration: function(path: any) {
         names = Object.keys(path.scope.lookup("zap").getBindings()).sort();
         assert.deepEqual(names, ["zap"]);
         this.traverse(path);
@@ -1190,14 +1190,14 @@ describe("scope methods", function () {
     var bindings;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         path.scope.injectTemporary();
         bindings = path.scope.getBindings();
         assert.deepEqual(["bar", "foo", "nom", "t$0$0"], Object.keys(bindings).sort());
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path) {
+      visitFunctionDeclaration: function(path: any) {
         path.scope.injectTemporary(
           path.scope.declareTemporary("t$")
         )
@@ -1210,12 +1210,12 @@ describe("scope methods", function () {
 
   it("declareTemporary should use distinct names in nested scopes", function() {
     var ast = parse(scope.join("\n"));
-    var globalVarDecl;
-    var barVarDecl;
-    var romVarDecl;
+    var globalVarDecl: any;
+    var barVarDecl: any;
+    var romVarDecl: any;
 
     types.visit(ast, {
-      visitProgram: function(path) {
+      visitProgram: function(path: any) {
         path.get("body").unshift(
           globalVarDecl = b.variableDeclaration("var", [
             b.variableDeclarator(
@@ -1232,7 +1232,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitFunction: function(path) {
+      visitFunction: function(path: any) {
         var funcId = path.value.id;
 
         var varDecl = b.variableDeclaration("var", [
@@ -1318,7 +1318,7 @@ describe("catch block scope", function() {
 
 describe("array and object pattern scope", function() {
 
-  function scopeFromPattern(pattern) {
+  function scopeFromPattern(pattern: any) {
     return new NodePath(
       b.program([
         b.variableDeclaration('var', [
@@ -1336,8 +1336,8 @@ describe("array and object pattern scope", function() {
     ]);
     var b = types.builders;
 
-    var objectPattern;
-    var arrayPattern;
+    var objectPattern: any;
+    var arrayPattern: any;
 
     beforeEach(function() {
       // {a, b: c, ...d}
@@ -1401,8 +1401,8 @@ describe("array and object pattern scope", function() {
     ]);
     var b = types.builders;
 
-    var objectPattern;
-    var arrayPattern;
+    var objectPattern: any;
+    var arrayPattern: any;
 
     beforeEach(function() {
       // {a, b: c, ...d}
@@ -1457,7 +1457,7 @@ describe("array and object pattern scope", function() {
 });
 
 describe("types.defineMethod", function() {
-  function at(loc) {
+  function at(this: any, loc: any) {
     types.namedTypes.SourceLocation.assert(loc);
     this.loc = loc;
   }
@@ -1488,7 +1488,7 @@ describe("types.defineMethod", function() {
 });
 
 describe("types.visit", function() {
-  var objProp;
+  var objProp: any;
 
   beforeEach(function() {
     objProp = b.memberExpression(
@@ -1509,7 +1509,7 @@ describe("types.visit", function() {
 
   it("should allow simple tree modifications", function() {
     var bar = types.visit(b.identifier("foo"), {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         assert.ok(path instanceof NodePath);
         path.value.name = "bar";
         return false;
@@ -1523,7 +1523,7 @@ describe("types.visit", function() {
   it("should complain about missing this.traverse", function() {
     try {
       types.visit(objProp, {
-        visitIdentifier: function(path) {
+        visitIdentifier: function(_path: any) {
           // buh?
         }
       });
@@ -1539,12 +1539,12 @@ describe("types.visit", function() {
   });
 
   it("should support this.traverse", function() {
-    var idNames = [];
+    var idNames: any[] = [];
 
     types.visit(objProp, {
-      visitMemberExpression: function(path) {
+      visitMemberExpression: function(path: any) {
         this.traverse(path, {
-          visitIdentifier: function(path) {
+          visitIdentifier: function(path: any) {
             idNames.push("*" + path.value.name + "*");
             return false;
           }
@@ -1556,7 +1556,7 @@ describe("types.visit", function() {
         this.visit(path.get("property"));
       },
 
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         idNames.push(path.value.name);
         return false;
       }
@@ -1567,11 +1567,11 @@ describe("types.visit", function() {
     idNames.length = 0;
 
     types.visit(objProp, {
-      visitMemberExpression: function(path) {
+      visitMemberExpression: function(path: any) {
         path.get("object", "name").replace("asdfasdf");
         path.get("property", "name").replace("zxcvzxcv");
         this.traverse(path, {
-          visitIdentifier: function(path) {
+          visitIdentifier: function(path: any) {
             idNames.push(path.value.name);
             return false;
           }
@@ -1590,7 +1590,7 @@ describe("types.visit", function() {
     ]);
 
     types.visit(seqExpr, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         assert.strictEqual(path.value.name, "zxcv");
         path.replace(
           b.identifier("foo"),
@@ -1611,7 +1611,7 @@ describe("types.visit", function() {
     assert.strictEqual(bar.name, "bar");
 
     types.visit(seqExpr, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.value.name === "foo") {
           path.replace(path.value, path.value);
         }
@@ -1635,12 +1635,12 @@ describe("types.visit", function() {
     assert.strictEqual(bar.name, "bar");
 
     types.visit(seqExpr, {
-      visitLiteral: function(path) {
+      visitLiteral: function(path: any) {
         path.replace();
         return false;
       },
 
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.value.name === "bar") {
           path.replace();
         }
@@ -1667,7 +1667,7 @@ describe("types.visit", function() {
     var propertyContext;
 
     types.visit(objProp, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         assert.strictEqual(this.needToCallTraverse, true);
         this.traverse(path);
         assert.strictEqual(path.name, path.value.name);
@@ -1704,15 +1704,15 @@ describe("types.visit", function() {
       [b.thisExpression()]
     );
 
-    var nodes = [];
-    var expressions = [];
-    var identifiers = [];
-    var statements = [];
-    var returnStatements = [];
-    var functions = [];
+    var nodes: any[] = [];
+    var expressions: any[] = [];
+    var identifiers: any[] = [];
+    var statements: any[] = [];
+    var returnStatements: any[] = [];
+    var functions: any[] = [];
 
-    function makeVisitorMethod(array) {
-      return function(path) {
+    function makeVisitorMethod(array: any) {
+      return function(this: any, path: any) {
         array.push(path.value);
         this.traverse(path);
       };
@@ -1727,8 +1727,7 @@ describe("types.visit", function() {
       visitFunction:        makeVisitorMethod(functions)
     });
 
-    function check(array) {
-      var rest = Array.prototype.slice.call(arguments, 1);
+    function check(array: any, ...rest: any[]) {
       assert.strictEqual(array.length, rest.length);
       for (var i = 0; i < rest.length; ++i) {
         assert.strictEqual(array[i], rest[i]);
@@ -1765,7 +1764,7 @@ describe("types.visit", function() {
     assert.strictEqual(objProp.computed, false);
 
     types.visit(objProp, {
-      visitIdentifier: function(path) {
+      visitIdentifier: function(path: any) {
         if (path.value.name === "property") {
           path.parent.get("computed").replace(true);
           return b.callExpression(
@@ -1781,7 +1780,7 @@ describe("types.visit", function() {
         this.traverse(path);
       },
 
-      visitThisExpression: function(path) {
+      visitThisExpression: function(_path: any) {
         return b.identifier("self");
       }
     });
@@ -2103,11 +2102,11 @@ describe("types.astNodesAreEquivalent", function() {
   });
 
   it("should work for AST nodes", function() {
-    function check(src1, src2) {
+    function check(src1: any, src2: any) {
       types.astNodesAreEquivalent.assert(parse(src1), parse(src2));
     }
 
-    function checkNot(src1, src2) {
+    function checkNot(src1: any, src2: any) {
       var ast1 = parse(src1, { loc: true, range: true });
       var ast2 = parse(src2, { loc: true });
 
@@ -2115,7 +2114,7 @@ describe("types.astNodesAreEquivalent", function() {
         types.astNodesAreEquivalent.assert(ast1, ast2);
       });
 
-      var problemPath = [];
+      var problemPath: any[] = [];
       types.astNodesAreEquivalent(parse(src1), parse(src2), problemPath);
       assert.notStrictEqual(problemPath.length, 0);
 
@@ -2223,15 +2222,14 @@ describe("BigIntLiteral nodes", function () {
     ]);
     var n = types.namedTypes;
     var BigIntLiteral = n.BigIntLiteral;
-    var parse = shared.babylonParse;
 
-    function check(code) {
+    function check(code: any) {
       parseAndCheck(code);
       parseAndCheck("-" + code);
       parseAndCheck("+" + code);
     }
 
-    function parseAndCheck(code) {
+    function parseAndCheck(code: any) {
       var program = shared.babylonParse(code);
       var exp = program.body[0].expression;
       if (n.UnaryExpression.check(exp)) {
@@ -2241,7 +2239,7 @@ describe("BigIntLiteral nodes", function () {
       }
     }
 
-    function checkExp(exp) {
+    function checkExp(exp: any) {
       BigIntLiteral.assert(exp, true);
 
       assert.strictEqual(

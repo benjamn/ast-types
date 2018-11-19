@@ -10,12 +10,12 @@ var hasOwn = Op.hasOwnProperty;
 
 module.exports = function () {
 
-    var exports = {};
+    var exports: any = {};
 
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
-    function Type(check, name) {
+    function Type(this: any, check: any, name: any) {
         var self = this;
         if (!(self instanceof Type)) {
             throw new Error("Type constructor cannot be invoked without 'new'");
@@ -37,7 +37,7 @@ module.exports = function () {
         Object.defineProperties(self, {
             name: {value: name},
             check: {
-                value: function (value, deep) {
+                value: function (value: any, deep: any) {
                     var result = check.call(self, value, deep);
                     if (!result && deep && objToStr.call(deep) === funObjStr)
                         deep(self, value);
@@ -54,7 +54,7 @@ module.exports = function () {
     exports.Type = Type;
 
     // Like .check, except that failure triggers an AssertionError.
-    Tp.assert = function (value, deep) {
+    Tp.assert = function (value: any, deep: any) {
         if (!this.check(value, deep)) {
             var str = shallowStringify(value);
             throw new Error(str + " does not match type " + this);
@@ -62,7 +62,7 @@ module.exports = function () {
         return true;
     };
 
-    function shallowStringify(value) {
+    function shallowStringify(value: any) {
         if (isObject.check(value))
             return "{" + Object.keys(value).map(function (key) {
                   return key + ": " + value[key];
@@ -86,14 +86,15 @@ module.exports = function () {
         return name + " type";
     };
 
-    var builtInCtorFns = [];
-    var builtInCtorTypes = [];
-    var builtInTypes = {};
+    var builtInCtorFns: any[] = [];
+    var builtInCtorTypes: any[] = [];
+    var builtInTypes: any = {};
     exports.builtInTypes = builtInTypes;
 
-    function defBuiltInType(example, name) {
+    function defBuiltInType(example: {} | null | undefined, name: string) {
         var objStr = objToStr.call(example);
 
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         var type = new Type(function (value) {
             return objToStr.call(value) === objStr;
         }, name);
@@ -116,17 +117,22 @@ module.exports = function () {
     var isFunction = defBuiltInType(function () {}, "function");
     var isArray = defBuiltInType([], "array");
     var isObject = defBuiltInType({}, "object");
+    // @ts-ignore 'isRegExp' is declared but its value is never read. [6133]
     var isRegExp = defBuiltInType(/./, "RegExp");
+    // @ts-ignore 'isDate' is declared but its value is never read. [6133]
     var isDate = defBuiltInType(new Date, "Date");
+    // @ts-ignore 'isNumber' is declared but its value is never read. [6133]
     var isNumber = defBuiltInType(3, "number");
+    // @ts-ignore 'isBoolean' is declared but its value is never read. [6133]
     var isBoolean = defBuiltInType(true, "boolean");
+    // @ts-ignore 'isNull' is declared but its value is never read. [6133]
     var isNull = defBuiltInType(null, "null");
     var isUndefined = defBuiltInType(void 0, "undefined");
 
     // There are a number of idiomatic ways of expressing types, so this
     // function serves to coerce them all to actual Type objects. Note that
     // providing the name argument is not necessary in most cases.
-    function toType(from, name) {
+    function toType(from: any, name?: any): any {
         // The toType function should of course be idempotent.
         if (from instanceof Type)
             return from;
@@ -153,6 +159,7 @@ module.exports = function () {
             // If isFunction.check(from), and from is not a built-in
             // constructor, assume from is a binary predicate function we can
             // use to define the type.
+            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             return new Type(from, name);
         }
 
@@ -160,6 +167,7 @@ module.exports = function () {
         // is === from. This is primarily useful for literal values like
         // toType(null), but it has the additional advantage of allowing
         // toType to be a total function.
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value) {
             return value === from;
         }, isUndefined.check(name) ? function () {
@@ -170,11 +178,12 @@ module.exports = function () {
     // Returns a type that matches the given value iff any of type1, type2,
     // etc. match the value.
     Type.or = function (/* type1, type2, ... */) {
-        var types = [];
+        var types: any[] = [];
         var len = arguments.length;
         for (var i = 0; i < len; ++i)
             types.push(toType(arguments[i]));
 
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
             for (var i = 0; i < len; ++i)
                 if (types[i].check(value, deep))
@@ -185,7 +194,7 @@ module.exports = function () {
         });
     };
 
-    Type.fromArray = function (arr) {
+    Type.fromArray = function (arr: any) {
         if (!isArray.check(arr)) {
             throw new Error("");
         }
@@ -197,8 +206,9 @@ module.exports = function () {
 
     Tp.arrayOf = function () {
         var elemType = this;
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
-            return isArray.check(value) && value.every(function (elem) {
+            return isArray.check(value) && value.every(function (elem: any) {
                   return elemType.check(elem, deep);
               });
         }, function () {
@@ -206,11 +216,13 @@ module.exports = function () {
         });
     };
 
-    Type.fromObject = function (obj) {
+    Type.fromObject = function (obj: any) {
         var fields = Object.keys(obj).map(function (name) {
+            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             return new Field(name, obj[name]);
         });
 
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
             return isObject.check(value) && fields.every(function (field) {
                   return field.type.check(value[field.name], deep);
@@ -220,7 +232,7 @@ module.exports = function () {
         });
     };
 
-    function Field(name, type, defaultFn, hidden) {
+    function Field(this: any, name: any, type?: any, defaultFn?: any, hidden?: any) {
         var self = this;
 
         if (!(self instanceof Field)) {
@@ -230,7 +242,7 @@ module.exports = function () {
 
         type = toType(type);
 
-        var properties = {
+        var properties: any = {
             name: {value: name},
             type: {value: type},
             hidden: {value: !!hidden}
@@ -249,7 +261,7 @@ module.exports = function () {
         return JSON.stringify(this.name) + ": " + this.type;
     };
 
-    Fp.getValue = function (obj) {
+    Fp.getValue = function (obj: any) {
         var value = obj[this.name];
 
         if (!isUndefined.check(value))
@@ -266,10 +278,11 @@ module.exports = function () {
     // In particular, this system allows for circular and forward definitions.
     // The Def object d returned from Type.def may be used to configure the
     // type d.type by calling methods such as d.bases, d.build, and d.field.
-    Type.def = function (typeName) {
+    Type.def = function (typeName: any) {
         isString.assert(typeName);
         return hasOwn.call(defCache, typeName)
           ? defCache[typeName]
+          // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
           : defCache[typeName] = new Def(typeName);
     };
 
@@ -277,7 +290,7 @@ module.exports = function () {
     // with a particular name, those instances need to be stored in a cache.
     var defCache = Object.create(null);
 
-    function Def(typeName) {
+    function Def(this: any, typeName: any) {
         var self = this;
         if (!(self instanceof Def)) {
             throw new Error("Def constructor cannot be invoked without 'new'");
@@ -295,6 +308,7 @@ module.exports = function () {
             fieldNames: {value: []}, // Non-hidden keys of allFields.
 
             type: {
+                // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
                 value: new Type(function (value, deep) {
                     return self.check(value, deep);
                 }, typeName)
@@ -302,7 +316,7 @@ module.exports = function () {
         });
     }
 
-    Def.fromValue = function (value) {
+    Def.fromValue = function (value: any) {
         if (value && typeof value === "object") {
             var type = value.type;
             if (typeof type === "string" &&
@@ -319,7 +333,7 @@ module.exports = function () {
 
     var Dp = Def.prototype;
 
-    Dp.isSupertypeOf = function (that) {
+    Dp.isSupertypeOf = function (that: any) {
         if (that instanceof Def) {
             if (this.finalized !== true ||
               that.finalized !== true) {
@@ -333,7 +347,7 @@ module.exports = function () {
 
     // Note that the list returned by this function is a copy of the internal
     // supertypeList, *without* the typeName itself as the first element.
-    exports.getSupertypeNames = function (typeName) {
+    exports.getSupertypeNames = function (typeName: any) {
         if (!hasOwn.call(defCache, typeName)) {
             throw new Error("");
         }
@@ -347,8 +361,8 @@ module.exports = function () {
     // Returns an object mapping from every known type in the defCache to the
     // most specific supertype whose name is an own property of the candidates
     // object.
-    exports.computeSupertypeLookupTable = function (candidates) {
-        var table = {};
+    exports.computeSupertypeLookupTable = function (candidates: any) {
+        var table: { [typeName: string ]: any } = {};
         var typeNames = Object.keys(defCache);
         var typeNameCount = typeNames.length;
 
@@ -370,13 +384,13 @@ module.exports = function () {
         return table;
     };
 
-    Dp.checkAllFields = function (value, deep) {
+    Dp.checkAllFields = function (value: any, deep: any) {
         var allFields = this.allFields;
         if (this.finalized !== true) {
             throw new Error("" + this.typeName);
         }
 
-        function checkFieldByName(name) {
+        function checkFieldByName(name: string | number) {
             var field = allFields[name];
             var type = field.type;
             var child = field.getValue(value);
@@ -387,7 +401,7 @@ module.exports = function () {
           && Object.keys(allFields).every(checkFieldByName);
     };
 
-    Dp.check = function (value, deep) {
+    Dp.check = function (value: any, deep: any) {
         if (this.finalized !== true) {
             throw new Error(
               "prematurely checking unfinalized type " + this.typeName
@@ -455,7 +469,7 @@ module.exports = function () {
             return this;
         }
 
-        args.forEach(function (baseName) {
+        args.forEach(function (baseName: any) {
             isString.assert(baseName);
 
             // This indexOf lookup may be O(n), but the typical number of base
@@ -470,16 +484,16 @@ module.exports = function () {
     // False by default until .build(...) is called on an instance.
     Object.defineProperty(Dp, "buildable", {value: false});
 
-    var builders = {};
+    var builders: any = {};
     exports.builders = builders;
 
     // This object is used as prototype for any node created by a builder.
-    var nodePrototype = {};
+    var nodePrototype: any = {};
 
     // Call this function to define a new method to be shared by all AST
      // nodes. The replaced method (if any) is returned for easy wrapping.
-    exports.defineMethod = function (name, func) {
-        var old = nodePrototype[name];
+    exports.defineMethod = function (name: any, func: any) {
+        var old: any = nodePrototype[name];
 
         // Pass undefined as func to delete nodePrototype[name].
         if (isUndefined.check(func)) {
@@ -533,7 +547,7 @@ module.exports = function () {
         // Override Dp.buildable for this Def instance.
         Object.defineProperty(self, "buildable", {value: true});
 
-        function addParam(built, param, arg, isArgAvailable) {
+        function addParam(built: any, param: any, arg: any, isArgAvailable: boolean) {
             if (hasOwn.call(built, param))
                 return;
 
@@ -555,7 +569,7 @@ module.exports = function () {
             } else {
                 var message = "no value or default function given for field " +
                   JSON.stringify(param) + " of " + self.typeName + "(" +
-                  self.buildParams.map(function (name) {
+                  self.buildParams.map(function (name: any) {
                       return all[name];
                   }).join(", ") + ")";
                 throw new Error(message);
@@ -589,7 +603,7 @@ module.exports = function () {
 
             var built = Object.create(nodePrototype);
 
-            self.buildParams.forEach(function (param, i) {
+            self.buildParams.forEach(function (param: any, i: number) {
                 if (i < argc) {
                     addParam(built, param, args[i], true)
                 } else {
@@ -613,7 +627,7 @@ module.exports = function () {
         // Calling .from on the builder function will construct an instance of the Def,
         // using field values from the passed object. For fields missing from the passed object,
         // their default value will be used.
-        builder.from = function (obj) {
+        builder.from = function (obj: any) {
             if (!self.finalized) {
                 throw new Error(
                     "attempting to instantiate unfinalized type " +
@@ -647,8 +661,8 @@ module.exports = function () {
         return self; // For chaining.
     };
 
-    function getBuilderName(typeName) {
-        return typeName.replace(/^[A-Z]+/, function (upperCasePrefix) {
+    function getBuilderName(typeName: any) {
+        return typeName.replace(/^[A-Z]+/, function (upperCasePrefix: any) {
             var len = upperCasePrefix.length;
             switch (len) {
                 case 0: return "";
@@ -666,7 +680,7 @@ module.exports = function () {
     }
     exports.getBuilderName = getBuilderName;
 
-    function getStatementBuilderName(typeName) {
+    function getStatementBuilderName(typeName: any) {
         typeName = getBuilderName(typeName);
         return typeName.replace(/(Expression)?$/, "Statement");
     }
@@ -676,13 +690,14 @@ module.exports = function () {
     // literal syntax is somewhat subtle: the object literal syntax would
     // support only one key and one value, but with .field(...) we can pass
     // any number of arguments to specify the field.
-    Dp.field = function (name, type, defaultFn, hidden) {
+    Dp.field = function (name: any, type: any, defaultFn: any, hidden: any) {
         if (this.finalized) {
             console.error("Ignoring attempt to redefine field " +
               JSON.stringify(name) + " of finalized type " +
               JSON.stringify(this.typeName));
             return this;
         }
+        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         this.ownFields[name] = new Field(name, type, defaultFn, hidden);
         return this; // For chaining.
     };
@@ -691,7 +706,7 @@ module.exports = function () {
     exports.namedTypes = namedTypes;
 
     // Like Object.keys, but aware of what fields each AST type should have.
-    function getFieldNames(object) {
+    function getFieldNames(object: any) {
         var d = Def.fromValue(object);
         if (d) {
             return d.fieldNames.slice(0);
@@ -710,7 +725,7 @@ module.exports = function () {
 
     // Get the value of an object property, taking object.type and default
     // functions into account.
-    function getFieldValue(object, fieldName) {
+    function getFieldValue(object: any, fieldName: any) {
         var d = Def.fromValue(object);
         if (d) {
             var field = d.allFields[fieldName];
@@ -727,8 +742,8 @@ module.exports = function () {
     // or undefined, passing each field name and effective value (as returned
     // by getFieldValue) to the callback. If the object has no corresponding
     // Def, the callback will never be called.
-    exports.eachField = function (object, callback, context) {
-        getFieldNames(object).forEach(function (name) {
+    exports.eachField = function (object: any, callback: any, context: any) {
+        getFieldNames(object).forEach(function (this: any, name: any) {
             callback.call(this, name, getFieldValue(object, name));
         }, context);
     };
@@ -737,8 +752,8 @@ module.exports = function () {
     // callback returns a truthy value. Like Array.prototype.some, the final
     // result is either true or false to indicates whether the callback
     // returned true for any element or not.
-    exports.someField = function (object, callback, context) {
-        return getFieldNames(object).some(function (name) {
+    exports.someField = function (object: any, callback: any, context: any) {
+        return getFieldNames(object).some(function (this: any, name: any) {
             return callback.call(this, name, getFieldValue(object, name));
         }, context);
     };
@@ -756,7 +771,7 @@ module.exports = function () {
             var allFields = self.allFields;
             var allSupertypes = self.allSupertypes;
 
-            self.baseNames.forEach(function (name) {
+            self.baseNames.forEach(function (name: any) {
                 var def = defCache[name];
                 if (def instanceof Def) {
                     def.finalize();
@@ -802,7 +817,7 @@ module.exports = function () {
 
     // Adds an additional builder for Expression subtypes
     // that wraps the built Expression in an ExpressionStatements.
-    function wrapExpressionBuilderWithStatement(typeName) {
+    function wrapExpressionBuilderWithStatement(typeName: any) {
         var wrapperName = getStatementBuilderName(typeName);
 
         // skip if the builder already exists
@@ -819,7 +834,7 @@ module.exports = function () {
         };
     }
 
-    function populateSupertypeList(typeName, list) {
+    function populateSupertypeList(typeName: any, list: any) {
         list.length = 0;
         list.push(typeName);
 
@@ -855,7 +870,7 @@ module.exports = function () {
         list.length = to;
     }
 
-    function extend(into, from) {
+    function extend(into: any, from: any) {
         Object.keys(from).forEach(function (name) {
             into[name] = from[name];
         });

@@ -17,7 +17,7 @@ const babylonTSFixturesDir =
 
 require("glob")("**/input.js", {
   cwd: babylonTSFixturesDir,
-}, (error, files) => {
+}, (error: any, files: any) => {
   if (error) {
     throw error;
   }
@@ -27,14 +27,14 @@ require("glob")("**/input.js", {
       throw error;
     }
 
-    files.forEach(tsPath => {
+    files.forEach((tsPath: any) => {
       var fullPath = path.join(babylonTSFixturesDir, tsPath);
       // Until https://github.com/babel/babel/pull/7967 is released:
       var shouldSkip = tsPath.endsWith("conditional-infer/input.js");
 
       (shouldSkip ? xit : it)
       ("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
-        fs.readFile(fullPath, "utf8", function (error, code) {
+        fs.readFile(fullPath, "utf8", function (error: any, code: any) {
           if (error) {
             throw error;
           }
@@ -48,7 +48,7 @@ require("glob")("**/input.js", {
     });
   });
 
-  function tryParse(code, fullPath) {
+  function tryParse(code: any, fullPath: any) {
     var parseOptions = getOptions(fullPath);
 
     try {
@@ -73,7 +73,7 @@ require("glob")("**/input.js", {
     }
   }
 
-  function getOptions(fullPath) {
+  function getOptions(fullPath: string) {
     var plugins = getPlugins(path.dirname(fullPath));
     return {
       sourceType: "module",
@@ -81,7 +81,7 @@ require("glob")("**/input.js", {
     };
   }
 
-  function getPlugins(dir) {
+  function getPlugins(dir: string): string[] {
     try {
       var options = JSON.parse(fs.readFileSync(
         path.join(dir, "options.json")
@@ -109,7 +109,7 @@ var tsCompilerDir =
 
 require("glob")("**/*.ts", {
   cwd: tsCompilerDir,
-}, (error, files) => {
+}, (error: any, files: any) => {
   if (error) {
     throw error;
   }
@@ -121,11 +121,11 @@ require("glob")("**/*.ts", {
 
     this.timeout(20000);
 
-    files.forEach(tsPath => {
+    files.forEach((tsPath: string) => {
       var fullPath = path.join(tsCompilerDir, tsPath);
 
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
-        fs.readFile(fullPath, "utf8", function (error, code) {
+        fs.readFile(fullPath, "utf8", function (error: any, code: any) {
           if (error) {
             throw error;
           }

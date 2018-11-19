@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
     var types = fork.use(require('../lib/types'));
     var getFieldNames = types.getFieldNames;
     var getFieldValue = types.getFieldValue;
@@ -8,7 +8,7 @@ module.exports = function (fork) {
     var isRegExp = types.builtInTypes.RegExp;
     var hasOwn = Object.prototype.hasOwnProperty;
 
-    function astNodesAreEquivalent(a, b, problemPath) {
+    function astNodesAreEquivalent(a: any, b: any, problemPath: any) {
         if (isArray.check(problemPath)) {
             problemPath.length = 0;
         } else {
@@ -18,8 +18,8 @@ module.exports = function (fork) {
         return areEquivalent(a, b, problemPath);
     }
 
-    astNodesAreEquivalent.assert = function (a, b) {
-        var problemPath = [];
+    astNodesAreEquivalent.assert = function (a: any, b: any) {
+        var problemPath: any[] = [];
         if (!astNodesAreEquivalent(a, b, problemPath)) {
             if (problemPath.length === 0) {
                 if (a !== b) {
@@ -34,14 +34,14 @@ module.exports = function (fork) {
         }
     };
 
-    function subscriptForProperty(property) {
+    function subscriptForProperty(property: any) {
         if (/[_$a-z][_$a-z0-9]*/i.test(property)) {
             return "." + property;
         }
         return "[" + JSON.stringify(property) + "]";
     }
 
-    function areEquivalent(a, b, problemPath) {
+    function areEquivalent(a: any, b: any, problemPath: any) {
         if (a === b) {
             return true;
         }
@@ -70,7 +70,7 @@ module.exports = function (fork) {
         return a == b;
     }
 
-    function arraysAreEquivalent(a, b, problemPath) {
+    function arraysAreEquivalent(a: any, b: any, problemPath: any) {
         isArray.assert(a);
         var aLength = a.length;
 
@@ -105,7 +105,7 @@ module.exports = function (fork) {
         return true;
     }
 
-    function objectsAreEquivalent(a, b, problemPath) {
+    function objectsAreEquivalent(a: any, b: any, problemPath: any) {
         isObject.assert(a);
         if (!isObject.check(b)) {
             return false;

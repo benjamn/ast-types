@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
   fork.use(require("./babel-core"));
@@ -8,7 +8,7 @@ module.exports = function (fork) {
   var def = types.Type.def;
   var or = types.Type.or;
   var defaults = fork.use(require("../lib/shared")).defaults;
-  var StringLiteral = new types.Type(function (value, deep) {
+  var StringLiteral = new types.Type(function (value: any, deep: any) {
     if (n.StringLiteral &&
         n.StringLiteral.check(value, deep)) {
       return true

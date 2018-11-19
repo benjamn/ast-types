@@ -1,6 +1,6 @@
 var hasOwn = Object.prototype.hasOwnProperty;
 
-module.exports = function (fork) {
+module.exports = function (fork: any) {
     var types = fork.use(require("./types"));
     var Type = types.Type;
     var namedTypes = types.namedTypes;
@@ -9,7 +9,7 @@ module.exports = function (fork) {
     var isArray = types.builtInTypes.array;
     var b = types.builders;
 
-    function Scope(path, parentScope) {
+    function Scope(this: any, path: any, parentScope: any) {
         if (!(this instanceof Scope)) {
             throw new Error("Scope constructor cannot be invoked without 'new'");
         }
@@ -56,7 +56,7 @@ module.exports = function (fork) {
 
     var ScopeType = Type.or.apply(Type, scopeTypes);
 
-    Scope.isEstablishedBy = function(node) {
+    Scope.isEstablishedBy = function(node: any) {
         return ScopeType.check(node);
     };
 
@@ -65,17 +65,17 @@ module.exports = function (fork) {
 // Will be overridden after an instance lazily calls scanScope.
     Sp.didScan = false;
 
-    Sp.declares = function(name) {
+    Sp.declares = function(name: any) {
         this.scan();
         return hasOwn.call(this.bindings, name);
     };
 
-    Sp.declaresType = function(name) {
+    Sp.declaresType = function(name: any) {
         this.scan();
         return hasOwn.call(this.types, name);
     };
 
-    Sp.declareTemporary = function(prefix) {
+    Sp.declareTemporary = function(prefix: any) {
         if (prefix) {
             if (!/^[a-z$_]/i.test(prefix)) {
                 throw new Error("");
@@ -99,7 +99,7 @@ module.exports = function (fork) {
         return this.bindings[name] = types.builders.identifier(name);
     };
 
-    Sp.injectTemporary = function(identifier, init) {
+    Sp.injectTemporary = function(identifier: any, init: any) {
         identifier || (identifier = this.declareTemporary());
 
         var bodyPath = this.path.get("body");
@@ -117,7 +117,7 @@ module.exports = function (fork) {
         return identifier;
     };
 
-    Sp.scan = function(force) {
+    Sp.scan = function(force: any) {
         if (force || !this.didScan) {
             for (var name in this.bindings) {
                 // Empty out this.bindings, just in cases.
@@ -138,7 +138,7 @@ module.exports = function (fork) {
         return this.types;
     };
 
-    function scanScope(path, bindings, scopeTypes) {
+    function scanScope(path: any, bindings: any, scopeTypes: any) {
         var node = path.value;
         ScopeType.assert(node);
 
@@ -153,7 +153,7 @@ module.exports = function (fork) {
         }
     }
 
-    function recursiveScanScope(path, bindings, scopeTypes) {
+    function recursiveScanScope(path: any, bindings: any, scopeTypes: any) {
         var node = path.value;
 
         if (path.parent &&
@@ -166,12 +166,12 @@ module.exports = function (fork) {
             // None of the remaining cases matter if node is falsy.
 
         } else if (isArray.check(node)) {
-            path.each(function(childPath) {
+            path.each(function(childPath: any) {
                 recursiveScanChild(childPath, bindings, scopeTypes);
             });
 
         } else if (namedTypes.Function.check(node)) {
-            path.get("params").each(function(paramPath) {
+            path.get("params").each(function(paramPath: any) {
                 addPattern(paramPath, bindings);
             });
 
@@ -198,7 +198,7 @@ module.exports = function (fork) {
             );
 
         } else if (Node.check(node) && !Expression.check(node)) {
-            types.eachField(node, function(name, child) {
+            types.eachField(node, function(name: any, child: any) {
                 var childPath = path.get(name);
                 if (!pathHasValue(childPath, child)) {
                     throw new Error("");
@@ -208,7 +208,7 @@ module.exports = function (fork) {
         }
     }
 
-    function pathHasValue(path, value) {
+    function pathHasValue(path: any, value: any) {
         if (path.value === value) {
             return true;
         }
@@ -225,7 +225,7 @@ module.exports = function (fork) {
         return false;
     }
 
-    function recursiveScanChild(path, bindings, scopeTypes) {
+    function recursiveScanChild(path: any, bindings: any, scopeTypes: any) {
         var node = path.value;
 
         if (!node || Expression.check(node)) {
@@ -263,7 +263,7 @@ module.exports = function (fork) {
         }
     }
 
-    function addPattern(patternPath, bindings) {
+    function addPattern(patternPath: any, bindings: any) {
         var pattern = patternPath.value;
         namedTypes.Pattern.assert(pattern);
 
@@ -280,7 +280,7 @@ module.exports = function (fork) {
 
         } else if (namedTypes.ObjectPattern &&
           namedTypes.ObjectPattern.check(pattern)) {
-            patternPath.get('properties').each(function(propertyPath) {
+            patternPath.get('properties').each(function(propertyPath: any) {
                 var property = propertyPath.value;
                 if (namedTypes.Pattern.check(property)) {
                     addPattern(propertyPath, bindings);
@@ -294,7 +294,7 @@ module.exports = function (fork) {
 
         } else if (namedTypes.ArrayPattern &&
           namedTypes.ArrayPattern.check(pattern)) {
-            patternPath.get('elements').each(function(elementPath) {
+            patternPath.get('elements').each(function(elementPath: any) {
                 var element = elementPath.value;
                 if (namedTypes.Pattern.check(element)) {
                     addPattern(elementPath, bindings);
@@ -316,7 +316,7 @@ module.exports = function (fork) {
         }
     }
 
-    function addTypePattern(patternPath, types) {
+    function addTypePattern(patternPath: any, types: any) {
         var pattern = patternPath.value;
         namedTypes.Pattern.assert(pattern);
 
@@ -330,14 +330,14 @@ module.exports = function (fork) {
         }
     }
 
-    Sp.lookup = function(name) {
+    Sp.lookup = function(name: any) {
         for (var scope = this; scope; scope = scope.parent)
             if (scope.declares(name))
                 break;
         return scope;
     };
 
-    Sp.lookupType = function(name) {
+    Sp.lookupType = function(name: any) {
         for (var scope = this; scope; scope = scope.parent)
             if (scope.declaresType(name))
                 break;

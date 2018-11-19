@@ -7,11 +7,11 @@ var fs = require("fs");
 
 exports.esprimaParse = require("esprima").parse;
 
-exports.validateECMAScript = function (file) {
+exports.validateECMAScript = function (file: any) {
   var fullPath = path.join(__dirname, "..", file);
 
   it("should validate " + file + " with Esprima", function (done) {
-    fs.readFile(fullPath, "utf8", function(err, code) {
+    fs.readFile(fullPath, "utf8", function(err: any, code: any) {
       if (err) {
         throw err;
       }
@@ -26,7 +26,7 @@ exports.validateECMAScript = function (file) {
   });
 
   it("should validate " + file + " with Babylon", function (done) {
-    fs.readFile(fullPath, "utf8", function (err, code) {
+    fs.readFile(fullPath, "utf8", function (err: any, code: any) {
       if (err) {
         throw err;
       }
@@ -38,7 +38,7 @@ exports.validateECMAScript = function (file) {
 };
 
 var reifyBabylonParse = require("reify/lib/parsers/babylon").parse;
-function babylonParse(source) {
+function babylonParse(source: any) {
   var ast = reifyBabylonParse(source);
   if (ast.type === "File") ast = ast.program;
   return ast;

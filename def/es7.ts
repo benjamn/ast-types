@@ -1,10 +1,9 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
   fork.use(require('./es6'));
 
   var types = fork.use(require("../lib/types"));
   var def = types.Type.def;
   var or = types.Type.or;
-  var builtin = types.builtInTypes;
   var defaults = fork.use(require("../lib/shared")).defaults;
 
   def("Function")

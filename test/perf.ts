@@ -10,15 +10,15 @@ var backbone = fs.readFileSync(
 
 var ast = parse(backbone);
 
-var names = [];
+var names: any[] = [];
 var start = +new Date;
 
 visit(ast, {
-  visitNode: function(path) {
+  visitNode: function(path: any) {
     names.push(path.name);
     this.traverse(path);
   }
 });
 
 console.log(names.length);
-console.log(new Date - start, "ms");
+console.log(+new Date - start, "ms");

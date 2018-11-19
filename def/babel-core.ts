@@ -1,4 +1,4 @@
-module.exports = function (fork) {
+module.exports = function (fork: any) {
   fork.use(require("./es7"));
 
   var types = fork.use(require("../lib/types"));
@@ -141,7 +141,7 @@ module.exports = function (fork) {
     .field("extra", {
       rawValue: Number,
       raw: String
-    }, function getDefault() {
+    }, function getDefault(this: any) {
       return {
         rawValue: this.value,
         raw: this.value + ""
@@ -157,7 +157,7 @@ module.exports = function (fork) {
     .field("extra", {
       rawValue: String,
       raw: String
-    }, function getDefault() {
+    }, function getDefault(this: any) {
       return {
         rawValue: String(this.value),
         raw: this.value + "n"
@@ -179,7 +179,7 @@ module.exports = function (fork) {
     .build("pattern", "flags")
     .field("pattern", String)
     .field("flags", String)
-    .field("value", RegExp, function () {
+    .field("value", RegExp, function (this: any) {
       return new RegExp(this.pattern, this.flags);
     });
 
