@@ -31,7 +31,8 @@
     "mocha": "test/run.sh",
     "test": "npm run tsc && npm run mocha",
     "clean": "node script/clean.js",
-    "build": "npm run clean && tsc"
+    "prepack": "npm run clean && tsc",
+    "postpack": "npm run clean"
   },
   "dependencies": {},
   "devDependencies": {
