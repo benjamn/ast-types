@@ -26,8 +26,8 @@ namespace nodePathPlugin {
     }
 }
 
-type NodePathType = nodePathPlugin.NodePathType;
-type NodePathConstructor = nodePathPlugin.NodePathConstructor;
+import NodePathType = nodePathPlugin.NodePathType;
+import NodePathConstructor = nodePathPlugin.NodePathConstructor;
 
 function nodePathPlugin(fork: Fork) {
     var types = fork.use(typesPlugin);

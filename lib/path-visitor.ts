@@ -44,9 +44,9 @@ namespace pathVisitorPlugin {
   }
 }
 
-type PathVisitorType = pathVisitorPlugin.PathVisitorType;
-type PathVisitorConstructor = pathVisitorPlugin.PathVisitorConstructor;
-type VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
+import PathVisitorType = pathVisitorPlugin.PathVisitorType;
+import PathVisitorConstructor = pathVisitorPlugin.PathVisitorConstructor;
+import VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
 
 function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);

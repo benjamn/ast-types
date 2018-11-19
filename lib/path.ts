@@ -30,8 +30,8 @@ namespace pathPlugin {
   }
 }
 
-type PathType = pathPlugin.PathType;
-type PathConstructor = pathPlugin.PathConstructor;
+import PathType = pathPlugin.PathType;
+import PathConstructor = pathPlugin.PathConstructor;
 
 function pathPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
