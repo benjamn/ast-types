@@ -24,10 +24,20 @@ interface PathVisitorType {
   wasChangeReported(): any;
 }
 
-interface PathVisitorConstructor {
-  new(): PathVisitorType;
-  fromMethodsObject(methods: any): any;
+interface PathVisitorStatics {
+  fromMethodsObject(): VisitorType;
+  fromMethodsObject<M>(methods: M): VisitorType & M;
   visit(node: any, methods?: any): any;
+}
+
+interface PathVisitorConstructor extends PathVisitorStatics {
+  new(): PathVisitorType;
+}
+
+interface VisitorType extends PathVisitorType {}
+
+interface VisitorConstructor extends PathVisitorStatics {
+  new(): VisitorType;
 }
 
 export = function (fork: Fork) {
@@ -87,7 +97,7 @@ export = function (fork: Fork) {
     return methodNameTable;
   }
 
-  PathVisitor.fromMethodsObject = function fromMethodsObject(methods: any) {
+  PathVisitor.fromMethodsObject = function fromMethodsObject(methods?: any) {
     if (methods instanceof PathVisitor) {
       return methods;
     }
@@ -97,14 +107,14 @@ export = function (fork: Fork) {
       return new PathVisitor;
     }
 
-    function Visitor(this: any) {
+    const Visitor = function Visitor(this: any) {
       if (!(this instanceof Visitor)) {
         throw new Error(
           "Visitor constructor cannot be invoked without 'new'"
         );
       }
       PathVisitor.call(this);
-    }
+    } as any as VisitorConstructor;
 
     var Vp = Visitor.prototype = Object.create(PVp);
     Vp.constructor = Visitor;
@@ -112,12 +122,9 @@ export = function (fork: Fork) {
     extend(Vp, methods);
     extend(Visitor, PathVisitor);
 
-    // @ts-ignore Property 'fromMethodsObject' does not exist on type '{ (this: any): void; prototype: any; }'. [2339]
     isFunction.assert(Visitor.fromMethodsObject);
-    // @ts-ignore Property 'visit' does not exist on type '{ (this: any): void; prototype: any; }'. [2339]
     isFunction.assert(Visitor.visit);
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     return new Visitor;
   };
 
