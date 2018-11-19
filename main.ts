@@ -10,10 +10,19 @@ import esprimaDef from "./def/esprima";
 import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
-import { NamedTypes } from "./gen/namedTypes";
+import { NamedTypes as _NamedTypes } from "./gen/namedTypes";
+import { Builders as _Builders } from "./gen/builders";
+
+// We have to use a namespace to export types along with `export =`
+// See https://github.com/Microsoft/TypeScript/issues/2719
+namespace main {
+  export type NamedTypes = _NamedTypes;
+  export type Builders = _Builders;
+}
 
 type Main = ReturnType<typeof fork> & {
-  namedTypes: NamedTypes;
+  namedTypes: main.NamedTypes;
+  builders: main.Builders;
 };
 
 const main = fork([
