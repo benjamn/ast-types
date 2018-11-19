@@ -1,4 +1,4 @@
-module.exports = function (fork: any) {
+export = function (fork: any) {
   fork.use(require("./babel-core"));
   fork.use(require("./flow"));
 };

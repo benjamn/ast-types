@@ -5,9 +5,9 @@ var n = types.namedTypes;
 var path = require("path");
 var fs = require("fs");
 
-exports.esprimaParse = require("esprima").parse;
+const esprimaParse = require("esprima").parse;
 
-exports.validateECMAScript = function (file: any) {
+function validateECMAScript(file: any) {
   var fullPath = path.join(__dirname, "..", file);
 
   it("should validate " + file + " with Esprima", function (done) {
@@ -16,8 +16,8 @@ exports.validateECMAScript = function (file: any) {
         throw err;
       }
 
-      n.Program.assert(exports.esprimaParse(code), true);
-      n.Program.assert(exports.esprimaParse(code, {
+      n.Program.assert(esprimaParse(code), true);
+      n.Program.assert(esprimaParse(code, {
         loc: true
       }), true);
 
@@ -43,4 +43,9 @@ function babylonParse(source: any) {
   if (ast.type === "File") ast = ast.program;
   return ast;
 }
-exports.babylonParse = babylonParse;
+
+export = {
+  esprimaParse,
+  validateECMAScript,
+  babylonParse,
+};

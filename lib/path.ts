@@ -1,10 +1,7 @@
-var Ap = Array.prototype;
-var slice = Ap.slice;
-var map = Ap.map;
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-module.exports = function (fork: any) {
+export = function (fork: any) {
     var types = fork.use(require("./types"));
     var isArray = types.builtInTypes.array;
     var isNumber = types.builtInTypes.number;

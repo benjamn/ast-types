@@ -1,6 +1,6 @@
 var hasOwn = Object.prototype.hasOwnProperty;
 
-module.exports = function (fork: any) {
+export = function (fork: any) {
     var types = fork.use(require("./types"));
     var Type = types.Type;
     var namedTypes = types.namedTypes;

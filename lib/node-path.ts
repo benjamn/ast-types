@@ -1,4 +1,4 @@
-module.exports = function (fork: any) {
+export = function (fork: any) {
     var types = fork.use(require("./types"));
     var n = types.namedTypes;
     var b = types.builders;

@@ -1,4 +1,4 @@
-module.exports = function (fork: any) {
+export = function (fork: any) {
   fork.use(require('./core'));
 
   var types = fork.use(require("../lib/types"));

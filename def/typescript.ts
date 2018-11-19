@@ -1,4 +1,4 @@
-module.exports = function (fork: any) {
+export = function (fork: any) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
   fork.use(require("./babel-core"));

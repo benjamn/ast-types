@@ -1,4 +1,4 @@
-module.exports = function (defs: any) {
+export = function (defs: any) {
     var used: any[] = [];
     var usedResult: any[] = [];
     var fork: any = {};
@@ -21,7 +21,7 @@ module.exports = function (defs: any) {
 
     types.finalize();
 
-    var exports: any = {
+    var exports: { [name: string]: any } = {
         Type: types.Type,
         builtInTypes: types.builtInTypes,
         namedTypes: types.namedTypes,

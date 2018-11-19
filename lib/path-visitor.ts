@@ -1,6 +1,6 @@
 var hasOwn = Object.prototype.hasOwnProperty;
 
-module.exports = function (fork: any) {
+export = function (fork: any) {
     var types = fork.use(require("./types"));
     var NodePath = fork.use(require("./node-path"));
     // @ts-ignore 'Printable' is declared but its value is never read. [6133]

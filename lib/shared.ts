@@ -1,5 +1,5 @@
-module.exports = function (fork: any) {
-    var exports: any = {};
+export = function (fork: any) {
+    var exports: { [name: string]: any } = {};
     var types = fork.use(require("../lib/types"));
     var Type = types.Type;
     var builtin = types.builtInTypes;

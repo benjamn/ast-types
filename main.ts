@@ -1,4 +1,4 @@
-module.exports = require('./fork')([
+export = require('./fork')([
   // This core module of AST types captures ES5 as it is parsed today by
   // git://github.com/ariya/esprima.git#master.
   require("./def/core"),

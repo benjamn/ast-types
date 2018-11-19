@@ -1,16 +1,14 @@
 var Ap = Array.prototype;
 var slice = Ap.slice;
-var map = Ap.map;
-var each = Ap.forEach;
 var Op = Object.prototype;
 var objToStr = Op.toString;
 var funObjStr = objToStr.call(function(){});
 var strObjStr = objToStr.call("");
 var hasOwn = Op.hasOwnProperty;
 
-module.exports = function () {
+export = function () {
 
-    var exports: any = {};
+    var exports: { [name: string]: any } = {};
 
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
