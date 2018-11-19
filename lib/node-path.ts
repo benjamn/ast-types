@@ -1,9 +1,35 @@
 import { Fork } from "../types";
 import typesPlugin from "./types";
-import pathPlugin from "./path";
+import pathPlugin, { PathType } from "./path";
 import scopePlugin from "./scope";
 
-export = function (fork: Fork) {
+// We have to use a namespace to export types along with `export =`
+// See https://github.com/Microsoft/TypeScript/issues/2719
+namespace nodePathPlugin {
+    export interface NodePathType extends PathType {
+        node: any;
+        parent: any;
+        scope: any;
+        replace(...args: any[]): any;
+        prune(...args: any[]): any;
+        _computeNode(...args: any[]): any;
+        _computeParent(...args: any[]): any;
+        _computeScope(...args: any[]): any;
+        getValueProperty(...args: any[]): any;
+        needsParens(...args: any[]): any;
+        canBeFirstInStatement(...args: any[]): any;
+        firstInStatement(...args: any[]): any;
+    }
+
+    export interface NodePathConstructor {
+        new(value: any, parentPath?: any, name?: any): NodePathType;
+    }
+}
+
+type NodePathType = nodePathPlugin.NodePathType;
+type NodePathConstructor = nodePathPlugin.NodePathConstructor;
+
+function nodePathPlugin(fork: Fork) {
     var types = fork.use(typesPlugin);
     var n = types.namedTypes;
     var b = types.builders;
@@ -12,14 +38,14 @@ export = function (fork: Fork) {
     var Path = fork.use(pathPlugin);
     var Scope = fork.use(scopePlugin);
 
-    function NodePath(this: any, value: any, parentPath?: any, name?: any) {
+    const NodePath = function NodePath(this: NodePathType, value: any, parentPath?: any, name?: any) {
         if (!(this instanceof NodePath)) {
             throw new Error("NodePath constructor cannot be invoked without 'new'");
         }
         Path.call(this, value, parentPath, name);
-    }
+    } as any as NodePathConstructor;
 
-    var NPp = NodePath.prototype = Object.create(Path.prototype, {
+    var NPp: NodePathType = NodePath.prototype = Object.create(Path.prototype, {
         constructor: {
             value: NodePath,
             enumerable: false,
@@ -481,3 +507,5 @@ export = function (fork: Fork) {
 
     return NodePath;
 };
+
+export = nodePathPlugin;

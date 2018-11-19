@@ -146,7 +146,7 @@ function pathVisitorPlugin(fork: Fork) {
     return target;
   }
 
-  PathVisitor.visit = function visit(node: any, methods?: any) {
+  PathVisitor.visit = function visit(node, methods) {
     return PathVisitor.fromMethodsObject(methods).visit(node);
   };
 
@@ -172,7 +172,6 @@ function pathVisitorPlugin(fork: Fork) {
     }
 
     if (!(args[0] instanceof NodePath)) {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       args[0] = new NodePath({root: args[0]}).get("root");
     }
 

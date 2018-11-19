@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { parse } from "esprima";
-// @ts-ignore
+// @ts-ignore Cannot find module 'ast-types'. [2307]
 import { visit } from "ast-types";
 
 var backbone = fs.readFileSync(

@@ -676,7 +676,6 @@ describe("path traversal", function() {
   );
 
   it("should accept root paths as well as AST nodes", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath(call).get("expression", "callee");
     var idCount = 0;
 
@@ -727,10 +726,8 @@ describe("replacing the root", function() {
 
 describe("NodePath", function() {
   it("should have the expected type hierarchy", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     assert.strictEqual(new Path({}).constructor, Path);
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var np = new NodePath(b.identifier("foo"));
     assert.strictEqual(np.constructor, NodePath);
     assert.ok(np.get("name") instanceof NodePath);
@@ -744,7 +741,6 @@ describe("NodePath", function() {
     ]))
   );
 
-  // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
   var path = new NodePath(ast);
 
   it("should have sane values, nodes, parents", function() {
@@ -772,7 +768,6 @@ describe("NodePath", function() {
     assert.strictEqual(exprsPath.get("length").value, 3);
     assert.ok(!exprsPath.get(1).needsParens());
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var byPath = new NodePath(binaryYield);
     assert.ok(!byPath.get("expression").needsParens());
     assert.ok(byPath.get("expression", "left").needsParens());
@@ -784,13 +779,11 @@ describe("NodePath", function() {
       b.sequenceExpression([b.literal(1), b.literal(2)])
     );
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var sequenceAssignmentPath = new NodePath(sequenceAssignmentAST);
     assert.ok(sequenceAssignmentPath.get("right").needsParens());
   });
 
   it("should support .needsParens(true)", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("(function(){})"));
     var funExpPath = programPath.get("body", 0, "expression");
     n.FunctionExpression.assert(funExpPath.value);
@@ -799,7 +792,6 @@ describe("NodePath", function() {
     assert.strictEqual(funExpPath.firstInStatement(), true);
     assert.strictEqual(funExpPath.needsParens(true), false);
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     programPath = new NodePath(parse("({ foo: 42 })"));
     var objLitPath = programPath.get("body", 0, "expression");
     n.ObjectExpression.assert(objLitPath.value);
@@ -810,7 +802,6 @@ describe("NodePath", function() {
   });
 
   it("should prune redundant variable declaration nodes", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("(function(){var y = 1,x = 2;})"));
     var funBlockStatementPath = programPath.get("body", 0, "expression", "body");
     var variableDeclaration = funBlockStatementPath.get("body", 0);
@@ -831,7 +822,6 @@ describe("NodePath", function() {
   });
 
   it("should prune redundant expression statement nodes", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("(function(){key = 'value';})"));
     var funBlockStatementPath = programPath.get("body", 0, "expression", "body");
     var assignmentExpressionPath = funBlockStatementPath.get("body", 0, "expression");
@@ -845,7 +835,6 @@ describe("NodePath", function() {
   });
 
   it("should prune redundant if statement node if no consequent and alternate remain after prune", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("if(true){var t = 0;}"));
     var consequentNodePath = programPath.get("body", 0, "consequent");
 
@@ -860,7 +849,6 @@ describe("NodePath", function() {
   });
 
   it("should modify if statement node if consequent is pruned and alternate remains", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("if(x > 10){var t = 0;}else{var f = 2;}"));
     var consequentNodePath = programPath.get("body", 0, "consequent");
 
@@ -878,7 +866,6 @@ describe("NodePath", function() {
   });
 
   it("should modify if statement node if consequent is pruned, alternate remains with no double negation", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var programPath = new NodePath(parse("if(!condition){var t = 0;}else{var f = 2;}"));
     var consequentNodePath = programPath.get("body", 0, "consequent");
 
@@ -1304,7 +1291,6 @@ describe("catch block scope", function() {
     "}"
   ];
 
-  // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
   var path = new NodePath(parse(catchWithVarDecl.join("\n")));
   var fooPath = path.get("body", 0);
   var fooScope = fooPath.scope;
@@ -1342,7 +1328,6 @@ describe("catch block scope", function() {
 describe("array and object pattern scope", function() {
 
   function scopeFromPattern(pattern: any) {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     return new NodePath(
       b.program([
         b.variableDeclaration('var', [
@@ -1827,7 +1812,6 @@ describe("types.visit", function() {
 
 describe("path.shift", function() {
   it("should work like Array.prototype.shift", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath({
       elements: [0, "foo", true]
     });
@@ -1862,7 +1846,6 @@ describe("path.shift", function() {
 
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").shift();
     });
   });
@@ -1870,7 +1853,6 @@ describe("path.shift", function() {
 
 describe("path.unshift", function() {
   it("should work like Array.prototype.unshift", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath(b.sequenceExpression([]));
     var elems = path.get("expressions");
 
@@ -1903,7 +1885,6 @@ describe("path.unshift", function() {
 
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").unshift();
     });
   });
@@ -1911,7 +1892,6 @@ describe("path.unshift", function() {
 
 describe("path.push", function() {
   it("should work like Array.prototype.push", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath({ elements: [0] });
     var elems = path.get("elements");
     assert.strictEqual(elems.get("length").value, 1);
@@ -1929,7 +1909,6 @@ describe("path.push", function() {
 
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").push("asdf");
     });
   });
@@ -1937,7 +1916,6 @@ describe("path.push", function() {
 
 describe("path.pop", function() {
   it("should work like Array.prototype.pop", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath({
       elements: [0, "foo", true]
     });
@@ -1972,7 +1950,6 @@ describe("path.pop", function() {
 
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").pop();
     });
   });
@@ -1980,7 +1957,6 @@ describe("path.pop", function() {
 
 describe("path.insertAt", function() {
   it("should insert nodes at the given index", function() {
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath({
       elements: [0, "foo", true]
     });
@@ -2004,7 +1980,6 @@ describe("path.insertAt", function() {
 
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").insertAt(0);
     });
   });
@@ -2018,7 +1993,6 @@ describe("path.insertBefore", function() {
     var foo = b.literal("foo");
     var truth = b.literal(true);
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath(b.sequenceExpression([zero, foo, truth]));
     var fooPath = path.get("expressions", 1);
     var truePath = path.get("expressions", 2);
@@ -2037,7 +2011,6 @@ describe("path.insertBefore", function() {
 
   it("should throw when path.parentPath.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").insertBefore(0);
     });
   });
@@ -2051,7 +2024,6 @@ describe("path.insertAfter", function() {
     var foo = b.literal("foo");
     var truth = b.literal(true);
 
-    // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
     var path = new NodePath(b.sequenceExpression([zero, foo, truth]));
     var fooPath = path.get("expressions", 1);
     var truePath = path.get("expressions", 2);
@@ -2080,7 +2052,6 @@ describe("path.insertAfter", function() {
 
   it("should throw when path.parentPath.value not an array", function() {
     assert.throws(function() {
-      // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
       new NodePath({ foo: 42 }).get("foo").insertAfter(0);
     });
   });

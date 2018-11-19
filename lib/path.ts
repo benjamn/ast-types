@@ -4,12 +4,41 @@ import typesPlugin from "./types";
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-export = function (fork: Fork) {
+namespace pathPlugin {
+  export interface PathType {
+    value: any;
+    parentPath: any;
+    name: any;
+    __childCache: object | null;
+    getValueProperty(name: any): any;
+    get(...names: any[]): any;
+    each(callback: any, context: any): any;
+    map(callback: any, context: any): any;
+    filter(callback: any, context: any): any;
+    shift(): any;
+    unshift(...args: any[]): any;
+    push(...args: any[]): any;
+    pop(): any;
+    insertAt(index: number, ...args: any[]): any;
+    insertBefore(...args: any[]): any;
+    insertAfter(...args: any[]): any;
+    replace(replacement: any, ...args: any[]): any;
+  }
+
+  export interface PathConstructor {
+    new(value: any, parentPath?: any, name?: any): PathType;
+  }
+}
+
+type PathType = pathPlugin.PathType;
+type PathConstructor = pathPlugin.PathConstructor;
+
+function pathPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var isArray = types.builtInTypes.array;
   var isNumber = types.builtInTypes.number;
 
-  function Path(this: any, value: any, parentPath: any, name: any) {
+  const Path = function Path(this: PathType, value: any, parentPath?: any, name?: any) {
     if (!(this instanceof Path)) {
       throw new Error("Path constructor cannot be invoked without 'new'");
     }
@@ -37,9 +66,9 @@ export = function (fork: Fork) {
     // Calling path.get("child") multiple times always returns the same
     // child Path object, for both performance and consistency reasons.
     this.__childCache = null;
-  }
+  } as any as PathConstructor;
 
-  var Pp = Path.prototype;
+  var Pp: PathType = Path.prototype;
 
   function getChildCache(path: any) {
     // Lazily create the child cache. This also cheapens cache
@@ -63,11 +92,11 @@ export = function (fork: Fork) {
 
 // This method is designed to be overridden by subclasses that need to
 // handle missing properties, etc.
-  Pp.getValueProperty = function getValueProperty(name: any) {
+  Pp.getValueProperty = function getValueProperty(name) {
     return this.value[name];
   };
 
-  Pp.get = function get(...names: any[]) {
+  Pp.get = function get(...names) {
     var path = this;
     var count = names.length;
 
@@ -78,7 +107,7 @@ export = function (fork: Fork) {
     return path;
   };
 
-  Pp.each = function each(callback: any, context: any) {
+  Pp.each = function each(callback, context) {
     var childPaths = [];
     var len = this.value.length;
     var i = 0;
@@ -102,7 +131,7 @@ export = function (fork: Fork) {
     }
   };
 
-  Pp.map = function map(callback: any, context: any) {
+  Pp.map = function map(callback, context) {
     var result: any[] = [];
 
     this.each(function (this: any, childPath: any) {
@@ -112,7 +141,7 @@ export = function (fork: Fork) {
     return result;
   };
 
-  Pp.filter = function filter(callback: any, context: any) {
+  Pp.filter = function filter(callback, context) {
     var result: any[] = [];
 
     this.each(function (this: any, childPath: any) {
@@ -189,14 +218,14 @@ export = function (fork: Fork) {
     return result;
   };
 
-  Pp.unshift = function unshift(...args: any[]) {
+  Pp.unshift = function unshift(...args) {
     var move = getMoves(this, args.length);
     var result = this.value.unshift.apply(this.value, args);
     move();
     return result;
   };
 
-  Pp.push = function push(...args: any[]) {
+  Pp.push = function push(...args) {
     isArray.assert(this.value);
     delete getChildCache(this).length
     return this.value.push.apply(this.value, args);
@@ -210,7 +239,7 @@ export = function (fork: Fork) {
     return this.value.pop();
   };
 
-  Pp.insertAt = function insertAt(index: any, _node: any) {
+  Pp.insertAt = function insertAt(index) {
     var argc = arguments.length;
     var move = getMoves(this, argc - 1, index);
     if (move === emptyMoves) {
@@ -228,7 +257,7 @@ export = function (fork: Fork) {
     return this;
   };
 
-  Pp.insertBefore = function insertBefore(...args: any[]) {
+  Pp.insertBefore = function insertBefore(...args) {
     var pp = this.parentPath;
     var argc = args.length;
     var insertAtArgs = [this.name];
@@ -238,7 +267,7 @@ export = function (fork: Fork) {
     return pp.insertAt.apply(pp, insertAtArgs);
   };
 
-  Pp.insertAfter = function insertAfter(...args: any[]) {
+  Pp.insertAfter = function insertAfter(...args) {
     var pp = this.parentPath;
     var argc = args.length;
     var insertAtArgs = [this.name + 1];
@@ -290,7 +319,7 @@ export = function (fork: Fork) {
     return path;
   }
 
-  Pp.replace = function replace(replacement: any) {
+  Pp.replace = function replace(replacement) {
     var results = [];
     var parentValue = this.parentPath.value;
     var parentCache = getChildCache(this.parentPath);
@@ -366,3 +395,5 @@ export = function (fork: Fork) {
 
   return Path;
 };
+
+export = pathPlugin;
