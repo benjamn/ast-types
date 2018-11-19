@@ -83,9 +83,6 @@ type NameStringCheck = (name: NameType) => name is string;
 type NameFnCheck = (name: NameType) => name is (() => string);
 
 function typesPlugin(_fork: Fork) {
-
-    var exports: { [name: string]: any } = {};
-
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
@@ -123,10 +120,6 @@ function typesPlugin(_fork: Fork) {
 
     var Tp: TypeType = Type.prototype;
 
-    // Throughout this file we use Object.defineProperty to prevent
-    // redefinition of exported properties.
-    exports.Type = Type;
-
     // Like .check, except that failure triggers an AssertionError.
     Tp.assert = function (value, deep) {
         if (!this.check(value, deep)) {
@@ -163,7 +156,6 @@ function typesPlugin(_fork: Fork) {
     var builtInCtorFns: any[] = [];
     var builtInCtorTypes: any[] = [];
     var builtInTypes: any = {};
-    exports.builtInTypes = builtInTypes;
 
     function defBuiltInType(example: {} | null | undefined, name: string) {
         var objStr = objToStr.call(example);
@@ -412,7 +404,7 @@ function typesPlugin(_fork: Fork) {
 
     // Note that the list returned by this function is a copy of the internal
     // supertypeList, *without* the typeName itself as the first element.
-    exports.getSupertypeNames = function (typeName: any) {
+    function getSupertypeNames(typeName: any) {
         if (!hasOwn.call(defCache, typeName)) {
             throw new Error("");
         }
@@ -426,7 +418,7 @@ function typesPlugin(_fork: Fork) {
     // Returns an object mapping from every known type in the defCache to the
     // most specific supertype whose name is an own property of the candidates
     // object.
-    exports.computeSupertypeLookupTable = function (candidates: any) {
+    function computeSupertypeLookupTable(candidates: any) {
         var table: { [typeName: string ]: any } = {};
         var typeNames = Object.keys(defCache);
         var typeNameCount = typeNames.length;
@@ -550,14 +542,13 @@ function typesPlugin(_fork: Fork) {
     Object.defineProperty(Dp, "buildable", {value: false});
 
     var builders: any = {};
-    exports.builders = builders;
 
     // This object is used as prototype for any node created by a builder.
     var nodePrototype: any = {};
 
     // Call this function to define a new method to be shared by all AST
      // nodes. The replaced method (if any) is returned for easy wrapping.
-    exports.defineMethod = function (name: any, func: any) {
+    function defineMethod(name: any, func: any) {
         var old: any = nodePrototype[name];
 
         // Pass undefined as func to delete nodePrototype[name].
@@ -743,13 +734,11 @@ function typesPlugin(_fork: Fork) {
             }
         });
     }
-    exports.getBuilderName = getBuilderName;
 
     function getStatementBuilderName(typeName: any) {
         typeName = getBuilderName(typeName);
         return typeName.replace(/(Expression)?$/, "Statement");
     }
-    exports.getStatementBuilderName = getStatementBuilderName;
 
     // The reason fields are specified using .field(...) instead of an object
     // literal syntax is somewhat subtle: the object literal syntax would
@@ -767,7 +756,6 @@ function typesPlugin(_fork: Fork) {
     };
 
     var namedTypes = {};
-    exports.namedTypes = namedTypes;
 
     // Like Object.keys, but aware of what fields each AST type should have.
     function getFieldNames(object: any) {
@@ -785,7 +773,6 @@ function typesPlugin(_fork: Fork) {
 
         return Object.keys(object);
     }
-    exports.getFieldNames = getFieldNames;
 
     // Get the value of an object property, taking object.type and default
     // functions into account.
@@ -800,13 +787,12 @@ function typesPlugin(_fork: Fork) {
 
         return object && object[fieldName];
     }
-    exports.getFieldValue = getFieldValue;
 
     // Iterate over all defined fields of an object, including those missing
     // or undefined, passing each field name and effective value (as returned
     // by getFieldValue) to the callback. If the object has no corresponding
     // Def, the callback will never be called.
-    exports.eachField = function (object: any, callback: any, context: any) {
+    function eachField(object: any, callback: any, context: any) {
         getFieldNames(object).forEach(function (this: any, name: any) {
             callback.call(this, name, getFieldValue(object, name));
         }, context);
@@ -816,7 +802,7 @@ function typesPlugin(_fork: Fork) {
     // callback returns a truthy value. Like Array.prototype.some, the final
     // result is either true or false to indicates whether the callback
     // returned true for any element or not.
-    exports.someField = function (object: any, callback: any, context: any) {
+    function someField(object: any, callback: any, context: any) {
         return getFieldNames(object).some(function (this: any, name: any) {
             return callback.call(this, name, getFieldValue(object, name));
         }, context);
@@ -942,13 +928,31 @@ function typesPlugin(_fork: Fork) {
         return into;
     };
 
-    exports.finalize = function () {
+    function finalize() {
         Object.keys(defCache).forEach(function (name) {
             defCache[name].finalize();
         });
     };
 
-    return exports;
+    return {
+        // Throughout this file we use Object.defineProperty to prevent
+        // redefinition of exported properties.
+        Type,
+
+        builtInTypes,
+        getSupertypeNames,
+        computeSupertypeLookupTable,
+        builders,
+        defineMethod,
+        getBuilderName,
+        getStatementBuilderName,
+        namedTypes,
+        getFieldNames,
+        getFieldValue,
+        eachField,
+        someField,
+        finalize,
+    };
 };
 
 export = typesPlugin;
