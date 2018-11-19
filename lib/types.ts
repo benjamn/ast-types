@@ -14,9 +14,9 @@ namespace typesPlugin {
     export type CheckFn = (value: any, deep: any) => any;
     export type NameType = string | (() => string);
 
-    export interface TypeType {
+    export interface TypeType<T = any> {
         name: NameType;
-        check(value: any, deep?: any): boolean;
+        check(value: any, deep?: any): value is T;
         assert(value: any, deep?: any): boolean;
         arrayOf(): TypeType;
         toString(): string;
@@ -79,9 +79,6 @@ import DefConstructor = typesPlugin.DefConstructor;
 import FieldType = typesPlugin.FieldType;
 import FieldConstructor = typesPlugin.FieldConstructor;
 
-type NameStringCheck = (name: NameType) => name is string;
-type NameFnCheck = (name: NameType) => name is (() => string);
-
 function typesPlugin(_fork: Fork) {
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
@@ -129,7 +126,7 @@ function typesPlugin(_fork: Fork) {
         return true;
     };
 
-    function shallowStringify(value: any) {
+    function shallowStringify(value: any): string {
         if (isObject.check(value))
             return "{" + Object.keys(value).map(function (key) {
                   return key + ": " + value[key];
@@ -144,20 +141,20 @@ function typesPlugin(_fork: Fork) {
     Tp.toString = function () {
         var name = this.name;
 
-        if ((isString.check as NameStringCheck)(name))
+        if (isString.check(name))
             return name;
 
-        if ((isFunction.check as NameFnCheck)(name))
+        if (isFunction.check(name))
             return name.call(this) + "";
 
         return name + " type";
     };
 
-    var builtInCtorFns: any[] = [];
-    var builtInCtorTypes: any[] = [];
-    var builtInTypes: any = {};
+    var builtInCtorFns: Function[] = [];
+    var builtInCtorTypes: TypeType[] = [];
+    var builtInTypes: { [name: string]: TypeType } = {};
 
-    function defBuiltInType(example: {} | null | undefined, name: string) {
+    function defBuiltInType<T>(example: T, name: string): TypeType<T> {
         var objStr = objToStr.call(example);
 
         var type = new Type(function (value) {
@@ -178,21 +175,21 @@ function typesPlugin(_fork: Fork) {
     // value, rather than using the problematic typeof operator. Note however
     // that no subtyping is considered; so, for instance, isObject.check
     // returns false for [], /./, new Date, and null.
-    var isString = defBuiltInType("truthy", "string");
-    var isFunction = defBuiltInType(function () {}, "function");
-    var isArray = defBuiltInType([], "array");
-    var isObject = defBuiltInType({}, "object");
+    var isString = defBuiltInType<string>("truthy", "string");
+    var isFunction = defBuiltInType<Function>(function () {}, "function");
+    var isArray = defBuiltInType<any[]>([], "array");
+    var isObject = defBuiltInType<{ [key: string]: any }>({}, "object");
     // @ts-ignore 'isRegExp' is declared but its value is never read. [6133]
-    var isRegExp = defBuiltInType(/./, "RegExp");
+    var isRegExp = defBuiltInType<RegExp>(/./, "RegExp");
     // @ts-ignore 'isDate' is declared but its value is never read. [6133]
-    var isDate = defBuiltInType(new Date, "Date");
+    var isDate = defBuiltInType<Date>(new Date, "Date");
     // @ts-ignore 'isNumber' is declared but its value is never read. [6133]
-    var isNumber = defBuiltInType(3, "number");
+    var isNumber = defBuiltInType<number>(3, "number");
     // @ts-ignore 'isBoolean' is declared but its value is never read. [6133]
-    var isBoolean = defBuiltInType(true, "boolean");
+    var isBoolean = defBuiltInType<boolean>(true, "boolean");
     // @ts-ignore 'isNull' is declared but its value is never read. [6133]
-    var isNull = defBuiltInType(null, "null");
-    var isUndefined = defBuiltInType(void 0, "undefined");
+    var isNull = defBuiltInType<null>(null, "null");
+    var isUndefined = defBuiltInType<undefined>(void 0, "undefined");
 
     // There are a number of idiomatic ways of expressing types, so this
     // function serves to coerce them all to actual Type objects. Note that
@@ -548,7 +545,7 @@ function typesPlugin(_fork: Fork) {
 
     // Call this function to define a new method to be shared by all AST
      // nodes. The replaced method (if any) is returned for easy wrapping.
-    function defineMethod(name: any, func: any) {
+    function defineMethod(name: any, func?: any) {
         var old: any = nodePrototype[name];
 
         // Pass undefined as func to delete nodePrototype[name].
@@ -755,7 +752,7 @@ function typesPlugin(_fork: Fork) {
         return this; // For chaining.
     };
 
-    var namedTypes = {};
+    var namedTypes: any = {};
 
     // Like Object.keys, but aware of what fields each AST type should have.
     function getFieldNames(object: any) {
@@ -792,7 +789,7 @@ function typesPlugin(_fork: Fork) {
     // or undefined, passing each field name and effective value (as returned
     // by getFieldValue) to the callback. If the object has no corresponding
     // Def, the callback will never be called.
-    function eachField(object: any, callback: any, context: any) {
+    function eachField(object: any, callback: any, context?: any) {
         getFieldNames(object).forEach(function (this: any, name: any) {
             callback.call(this, name, getFieldValue(object, name));
         }, context);
@@ -802,7 +799,7 @@ function typesPlugin(_fork: Fork) {
     // callback returns a truthy value. Like Array.prototype.some, the final
     // result is either true or false to indicates whether the callback
     // returned true for any element or not.
-    function someField(object: any, callback: any, context: any) {
+    function someField(object: any, callback: any, context?: any) {
         return getFieldNames(object).some(function (this: any, name: any) {
             return callback.call(this, name, getFieldValue(object, name));
         }, context);
