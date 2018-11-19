@@ -41,7 +41,7 @@ namespace typesPlugin {
         ownFields: any;
         allSupertypes: any;
         supertypeList: string[];
-        allFields: any;
+        allFields: { [fieldName: string]: FieldType; };
         fieldNames: string[];
         type: TypeType;
         isSupertypeOf(that: any): any;
@@ -539,7 +539,7 @@ function typesPlugin(_fork?: Fork) {
     // False by default until .build(...) is called on an instance.
     Object.defineProperty(Dp, "buildable", {value: false});
 
-    var builders: any = {};
+    var builders: { [name: string]: any } = {};
 
     // This object is used as prototype for any node created by a builder.
     var nodePrototype: any = {};
@@ -657,7 +657,7 @@ function typesPlugin(_fork?: Fork) {
 
             var built = Object.create(nodePrototype);
 
-            self.buildParams.forEach(function (param: any, i: number) {
+            self.buildParams.forEach(function (param, i) {
                 if (i < argc) {
                     addParam(built, param, args[i], true)
                 } else {

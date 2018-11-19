@@ -7,7 +7,12 @@ import astTypes from "../main";
 const { getBuilderName } = typesModuleFn();
 const { builders: b, namedTypes: n } = astTypes;
 
-const RESERVED: { [reserved: string]: boolean | undefined } = { extends: true, default: true };
+const RESERVED: { [reserved: string]: boolean | undefined } = {
+  extends: true,
+  default: true,
+  arguments: true,
+  static: true,
+};
 
 const supertypeToSubtypes: { [supertypeName: string]: string[] } = {};
 Object.keys(astTypes.namedTypes).map(typeName => {
@@ -17,7 +22,7 @@ Object.keys(astTypes.namedTypes).map(typeName => {
   });
 });
 
-function referenceForType(type: string): string {
+function referenceForType(type: string) {
   return !supertypeToSubtypes[type] || supertypeToSubtypes[type].length === 0
     ? b.identifier(type)
     : b.tsQualifiedName(b.identifier("K"), b.identifier(`${type}Kind`));
@@ -179,7 +184,7 @@ const out = [
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
             body: b.tsInterfaceBody.from({
-              body: typeDef.fieldNames.map(fieldName => {
+              body: Object.keys(typeDef.allFields).map(fieldName => {
                 const field = typeDef.allFields[fieldName];
                 const fieldType = resolveName(field.type.name);
 
@@ -230,16 +235,20 @@ const out = [
       ),
     ]),
   },
-  // TODO
-  false && {
-    file: "builders.d.ts",
-    ast: declareModule("ast-types/lib/types", [
+  {
+    file: "builders.ts",
+    ast: createModule([
+      importFromKinds(),
+      importFromNodes(),
       ...builderTypeNames.map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
 
         const returnType = b.tsTypeAnnotation.from({
           typeAnnotation: b.tsTypeReference.from({
-            typeName: b.identifier(typeName),
+            typeName: b.tsQualifiedName.from({
+              left: b.identifier("N"),
+              right: b.identifier(typeName),
+            }),
           }),
         });
 
@@ -260,86 +269,84 @@ const out = [
           }
         });
 
-        return b.tsInterfaceDeclaration.from({
-          id: b.identifier(`${typeName}Builder`),
-          body: b.tsInterfaceBody.from({
-            body: [
-              b.tsCallSignatureDeclaration.from({
-                parameters: typeDef.buildParams
-                  .filter(buildParam => !!typeDef.allFields[buildParam])
-                  .map(buildParam => {
-                    const field = typeDef.allFields[buildParam];
-                    const fieldTypeName = resolveName(field.type.name);
-                    const name = RESERVED[buildParam] ? `${buildParam}Param` : buildParam;
+        return b.exportNamedDeclaration(
+          b.tsInterfaceDeclaration.from({
+            id: b.identifier(`${typeName}Builder`),
+            body: b.tsInterfaceBody.from({
+              body: [
+                b.tsCallSignatureDeclaration.from({
+                  parameters: typeDef.buildParams
+                    .filter(buildParam => !!typeDef.allFields[buildParam])
+                    .map(buildParam => {
+                      const field = typeDef.allFields[buildParam];
+                      const fieldTypeName = resolveName(field.type.name);
+                      const name = RESERVED[buildParam] ? `${buildParam}Param` : buildParam;
 
-                    return b.identifier.from({
-                      name,
-                      typeAnnotation: b.tsTypeAnnotation(
-                        !!buildParamAllowsUndefined[buildParam]
-                          ? b.tsUnionType([
-                              getTypeAnnotation(fieldTypeName),
-                              b.tsUndefinedKeyword(),
-                            ])
-                          : getTypeAnnotation(fieldTypeName)
-                      ),
-                      optional: !!buildParamIsOptional[buildParam],
-                    });
-                  }),
-                typeAnnotation: returnType,
-              }),
-              b.tsMethodSignature.from({
-                key: b.identifier("from"),
-                parameters: [
-                  b.identifier.from({
-                    name: "params",
-                    typeAnnotation: b.tsTypeAnnotation.from({
-                      typeAnnotation: b.tsTypeLiteral.from({
-                        members: typeDef.fieldNames
-                          .filter(fieldName => fieldName !== "type")
-                          .map(fieldName => {
-                            const field = typeDef.allFields[fieldName];
-                            const fieldType = resolveName(field.type.name);
-                            const optional = field.defaultFn != null;
+                      return b.identifier.from({
+                        name,
+                        typeAnnotation: b.tsTypeAnnotation(
+                          !!buildParamAllowsUndefined[buildParam]
+                            ? b.tsUnionType([
+                                getTypeAnnotation(fieldTypeName),
+                                b.tsUndefinedKeyword(),
+                              ])
+                            : getTypeAnnotation(fieldTypeName)
+                        ),
+                        optional: !!buildParamIsOptional[buildParam],
+                      });
+                    }),
+                  typeAnnotation: returnType,
+                }),
+                b.tsMethodSignature.from({
+                  key: b.identifier("from"),
+                  parameters: [
+                    b.identifier.from({
+                      name: "params",
+                      typeAnnotation: b.tsTypeAnnotation.from({
+                        typeAnnotation: b.tsTypeLiteral.from({
+                          members: Object.keys(typeDef.allFields)
+                            .filter(fieldName => fieldName !== "type")
+                            .sort((fieldName1, fieldName2) => {
+                              const field1 = typeDef.allFields[fieldName1];
+                              const field2 = typeDef.allFields[fieldName2];
+                              return field1.name < field2.name ? -1 : 1;
+                            })
+                            .map(fieldName => {
+                              const field = typeDef.allFields[fieldName];
+                              const fieldType = resolveName(field.type.name);
+                              const optional = field.defaultFn != null;
 
-                            return getPropertySignature(fieldName, fieldType, optional);
-                          }),
+                              return getPropertySignature(fieldName, fieldType, optional);
+                            }),
+                        }),
                       }),
                     }),
-                  }),
-                ],
-                typeAnnotation: returnType,
-              }),
-            ],
-          }),
-        });
+                  ],
+                  typeAnnotation: returnType,
+                }),
+              ],
+            }),
+          })
+        );
       }),
 
-      b.tsInterfaceDeclaration.from({
-        id: b.identifier("Builders"),
-        body: b.tsInterfaceBody.from({
-          body: [
-            ...builderTypeNames.map(typeName => {
-              return b.tsPropertySignature.from({
+      b.exportNamedDeclaration(
+        b.tsInterfaceDeclaration.from({
+          id: b.identifier("Builders"),
+          body: b.tsInterfaceBody(
+            builderTypeNames.map(typeName =>
+              b.tsPropertySignature.from({
                 key: b.identifier(getBuilderName(typeName)),
                 typeAnnotation: b.tsTypeAnnotation.from({
                   typeAnnotation: b.tsTypeReference.from({
                     typeName: b.identifier(`${typeName}Builder`),
                   }),
                 }),
-              });
-            }),
-            b.tsIndexSignature.from({
-              parameters: [
-                b.identifier.from({
-                  name: "builderName",
-                  typeAnnotation: b.tsTypeAnnotation(b.tsStringKeyword()),
-                }),
-              ],
-              typeAnnotation: b.tsTypeAnnotation.from({ typeAnnotation: b.tsAnyKeyword() }),
-            }),
-          ],
-        }),
-      }),
+              })
+            )
+          ),
+        })
+      ),
     ]),
   },
   // TODO

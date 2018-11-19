@@ -27,6 +27,9 @@ var rawTypes = types.use(typesPlugin);
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
+// Type alias to indicate when we're intentionally passing invalid types.
+type $InvalidType = any;
+
 describe("basic type checking", function() {
   var fooId = b.identifier("foo");
   var ifFoo = b.ifStatement(fooId, b.blockStatement([
@@ -39,9 +42,19 @@ describe("basic type checking", function() {
     assert.ok(n.Node.check(ifFoo));
 
     assert.ok(n.BlockStatement.check(ifFoo.consequent));
-    assert.strictEqual(
-      ifFoo.consequent.body[0].expression.arguments.length,
-      0);
+    if (n.BlockStatement.check(ifFoo.consequent)) {
+      var statement = ifFoo.consequent.body[0];
+
+      assert.ok(n.ExpressionStatement.check(statement));
+      if (n.ExpressionStatement.check(statement)) {
+        var callExpression = statement.expression;
+
+        assert.ok(n.CallExpression.check(callExpression));
+        if (n.CallExpression.check(callExpression)) {
+          assert.strictEqual(callExpression.arguments.length, 0);
+        }
+      }
+    }
 
     assert.strictEqual(ifFoo.test, fooId);
     assert.ok(n.Expression.check(ifFoo.test));
@@ -57,7 +70,7 @@ describe("basic type checking", function() {
       b.importDeclaration(
         [b.importDefaultSpecifier(b.identifier("foo"))],
         b.literal("bar"),
-        "baz"
+        "baz" as $InvalidType
       )
     });
     assert.ok(n.ImportDeclaration.check(
@@ -203,7 +216,7 @@ describe("shallow and deep checks", function() {
     assert.ok(!n.Expression.check(decl));
 
     // This makes decl cease to conform to n.VariableDeclaration.
-    decl.declarations.push(b.literal("bar"));
+    decl.declarations.push(b.literal("bar") as $InvalidType);
 
     assert.ok(n.Node.check(decl));
     assert.ok(n.Statement.check(decl));
@@ -560,7 +573,11 @@ describe("types.visit", function() {
 
     n.Literal.assert(literal);
     assert.strictEqual(literal.value, "baz");
-    assert.strictEqual(literal, call.expression.arguments[0]);
+
+    n.CallExpression.assert(call.expression);
+    if (n.CallExpression.check(call.expression)) {
+      assert.strictEqual(literal, call.expression.arguments[0]);
+    }
 
     assert.deepEqual(unvisitedTypes, [
       "ExpressionStatement",
@@ -1471,7 +1488,7 @@ describe("types.defineMethod", function() {
     this.loc = loc;
   }
 
-  var thisExpr = b.thisExpression();
+  var thisExpr: any = b.thisExpression();
 
   it("should allow defining an .at method", function() {
     assert.strictEqual(types.defineMethod("at", at), void 0);
@@ -1611,11 +1628,11 @@ describe("types.visit", function() {
 
     assert.strictEqual(seqExpr.expressions.length, 4);
 
-    var foo = seqExpr.expressions[1];
+    var foo: any = seqExpr.expressions[1];
     n.Identifier.assert(foo);
     assert.strictEqual(foo.name, "foo");
 
-    var bar = seqExpr.expressions[2];
+    var bar: any = seqExpr.expressions[2];
     n.Identifier.assert(bar);
     assert.strictEqual(bar.name, "bar");
 
@@ -1631,15 +1648,15 @@ describe("types.visit", function() {
 
     assert.strictEqual(seqExpr.expressions.length, 5);
 
-    var foo = seqExpr.expressions[1];
+    var foo: any = seqExpr.expressions[1];
     n.Identifier.assert(foo);
     assert.strictEqual(foo.name, "foo");
 
-    var foo = seqExpr.expressions[2];
+    var foo: any = seqExpr.expressions[2];
     n.Identifier.assert(foo);
     assert.strictEqual(foo.name, "foo");
 
-    var bar = seqExpr.expressions[3];
+    var bar: any = seqExpr.expressions[3];
     n.Identifier.assert(bar);
     assert.strictEqual(bar.name, "bar");
 
@@ -1660,7 +1677,7 @@ describe("types.visit", function() {
 
     assert.strictEqual(seqExpr.expressions.length, 3);
 
-    var first = seqExpr.expressions[0];
+    var first: any = seqExpr.expressions[0];
     n.Identifier.assert(first);
     assert.strictEqual(first.name, "foo");
 
@@ -1696,7 +1713,7 @@ describe("types.visit", function() {
   it("should dispatch to closest visitSupertype method", function() {
     var foo = b.identifier("foo");
     var bar = b.identifier("bar");
-    var callExpr = b.callExpression(
+    var callExpr: any = b.callExpression(
       b.memberExpression(
         b.functionExpression(
           b.identifier("add"),
@@ -1787,6 +1804,7 @@ describe("types.visit", function() {
         }
 
         this.traverse(path);
+        return;
       },
 
       visitThisExpression: function(_path: any) {
@@ -2224,7 +2242,7 @@ describe("RegExpLiteral nodes", function() {
     assert.strictEqual(stringLiteral.regex, null);
     n.Literal.assert(stringLiteral, true);
 
-    var regExpLiteral = b.literal(/a.b/gi);
+    var regExpLiteral: any = b.literal(/a.b/gi);
     assert.strictEqual(regExpLiteral.regex.pattern, "a.b");
     assert.strictEqual(regExpLiteral.regex.flags, "ig");
     n.Literal.assert(regExpLiteral, true);
@@ -2415,7 +2433,7 @@ describe('Nullish Coalescing Operator', function() {
   it('should not allow `crap` as operator', function() {
     assert.throws(function() {
       b.logicalExpression(
-        "crap",
+        "crap" as $InvalidType,
         b.identifier("a"),
         b.identifier("b")
       );
