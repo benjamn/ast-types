@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import typesPlugin from "./types";
 import pathPlugin, { PathType } from "./path";
-import scopePlugin from "./scope";
+import scopePlugin, { ScopeType } from "./scope";
 
 // We have to use a namespace to export types along with `export =`
 // See https://github.com/Microsoft/TypeScript/issues/2719
@@ -12,13 +12,13 @@ namespace nodePathPlugin {
         scope: any;
         replace(...args: any[]): any;
         prune(...args: any[]): any;
-        _computeNode(...args: any[]): any;
-        _computeParent(...args: any[]): any;
-        _computeScope(...args: any[]): any;
-        getValueProperty(...args: any[]): any;
-        needsParens(...args: any[]): any;
-        canBeFirstInStatement(...args: any[]): any;
-        firstInStatement(...args: any[]): any;
+        _computeNode(): any;
+        _computeParent(): any;
+        _computeScope(): ScopeType | null;
+        getValueProperty(name: any): any;
+        needsParens(assumeExpressionContext?: boolean): boolean;
+        canBeFirstInStatement(): boolean;
+        firstInStatement(): boolean;
     }
 
     export interface NodePathConstructor {
@@ -26,8 +26,8 @@ namespace nodePathPlugin {
     }
 }
 
-import NodePathType = nodePathPlugin.NodePathType;
-import NodePathConstructor = nodePathPlugin.NodePathConstructor;
+type NodePathType = nodePathPlugin.NodePathType;
+type NodePathConstructor = nodePathPlugin.NodePathConstructor;
 
 function nodePathPlugin(fork: Fork) {
     var types = fork.use(typesPlugin);
@@ -151,7 +151,7 @@ function nodePathPlugin(fork: Fork) {
         return scope || null;
     };
 
-    NPp.getValueProperty = function (name: any) {
+    NPp.getValueProperty = function (name) {
         return types.getFieldValue(this.value, name);
     };
 
@@ -168,7 +168,7 @@ function nodePathPlugin(fork: Fork) {
      * enclosing statement and thus needing parentheses to avoid being parsed
      * as a FunctionDeclaration with a missing name.
      */
-    NPp.needsParens = function (assumeExpressionContext: any) {
+    NPp.needsParens = function (assumeExpressionContext) {
         var pp = this.parentPath;
         if (!pp) {
             return false;

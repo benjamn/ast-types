@@ -13,7 +13,7 @@ export = function (fork: Fork) {
   var def = types.Type.def;
   var or = types.Type.or;
   var defaults = fork.use(sharedPlugin).defaults;
-  var StringLiteral = new types.Type(function (value: any, deep: any) {
+  var StringLiteral = new types.Type(function (value, deep) {
     if (n.StringLiteral &&
         n.StringLiteral.check(value, deep)) {
       return true
