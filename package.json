@@ -36,6 +36,10 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/babel-types": "^6.25.2",
+    "@types/babylon": "^6.16.4",
+    "@types/esprima": "^4.0.2",
+    "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.9",
     "babel-types": "^6.26.0",
