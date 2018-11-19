@@ -1,8 +1,13 @@
-export = function (fork: any) {
-  fork.use(require("./es7"));
+import { Fork } from "../types";
+import es7Def from "./es7";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
 
-  var types = fork.use(require("../lib/types"));
-  var defaults = fork.use(require("../lib/shared")).defaults;
+export = function (fork: Fork) {
+  fork.use(es7Def);
+
+  var types = fork.use(typesPlugin);
+  var defaults = fork.use(sharedPlugin).defaults;
   var def = types.Type.def;
   var or = types.Type.or;
 

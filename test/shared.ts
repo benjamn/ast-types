@@ -1,11 +1,12 @@
 "use strict";
 
-var types = require("../main");
-var n = types.namedTypes;
-var path = require("path");
-var fs = require("fs");
+import path from "path";
+import fs from "fs";
+import { parse as esprimaParse } from "esprima";
+import { parse as reifyBabylonParse } from "reify/lib/parsers/babylon";
+import types from "../main";
 
-const esprimaParse = require("esprima").parse;
+var n = types.namedTypes;
 
 function validateECMAScript(file: any) {
   var fullPath = path.join(__dirname, "..", file);
@@ -37,9 +38,8 @@ function validateECMAScript(file: any) {
   });
 };
 
-var reifyBabylonParse = require("reify/lib/parsers/babylon").parse;
-function babylonParse(source: any) {
-  var ast = reifyBabylonParse(source);
+function babylonParse(source: any, options?: any) {
+  var ast = reifyBabylonParse(source, options);
   if (ast.type === "File") ast = ast.program;
   return ast;
 }

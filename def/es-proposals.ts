@@ -1,12 +1,17 @@
-export = function (fork: any) {
-  fork.use(require('./core'));
+import { Fork } from "../types";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
+import coreDef from "./core";
 
-  var types = fork.use(require("../lib/types"));
+export = function (fork: Fork) {
+  fork.use(coreDef);
+
+  var types = fork.use(typesPlugin);
   var Type = types.Type;
   var def = types.Type.def;
   var or = Type.or;
 
-  var shared = fork.use(require("../lib/shared"));
+  var shared = fork.use(sharedPlugin);
   var defaults = shared.defaults;
 
 

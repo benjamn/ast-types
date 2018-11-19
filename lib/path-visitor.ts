@@ -1,8 +1,12 @@
+import { Fork } from "../types";
+import typesPlugin from "./types";
+import nodePathPlugin from "./node-path";
+
 var hasOwn = Object.prototype.hasOwnProperty;
 
-export = function (fork: any) {
-    var types = fork.use(require("./types"));
-    var NodePath = fork.use(require("./node-path"));
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
+    var NodePath = fork.use(nodePathPlugin);
     // @ts-ignore 'Printable' is declared but its value is never read. [6133]
     var Printable = types.namedTypes.Printable;
     var isArray = types.builtInTypes.array;
@@ -102,7 +106,7 @@ export = function (fork: any) {
         return target;
     }
 
-    PathVisitor.visit = function visit(node: any, methods: any) {
+    PathVisitor.visit = function visit(node: any, methods?: any) {
         return PathVisitor.fromMethodsObject(methods).visit(node);
     };
 
@@ -128,6 +132,7 @@ export = function (fork: any) {
         }
 
         if (!(args[0] instanceof NodePath)) {
+            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             args[0] = new NodePath({root: args[0]}).get("root");
         }
 

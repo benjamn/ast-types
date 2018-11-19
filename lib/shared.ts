@@ -1,6 +1,9 @@
-export = function (fork: any) {
+import { Fork } from "../types";
+import typesPlugin from "./types";
+
+export = function (fork: Fork) {
     var exports: { [name: string]: any } = {};
-    var types = fork.use(require("../lib/types"));
+    var types = fork.use(typesPlugin);
     var Type = types.Type;
     var builtin = types.builtInTypes;
     var isNumber = builtin.number;

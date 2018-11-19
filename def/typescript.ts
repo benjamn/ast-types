@@ -1,13 +1,18 @@
-export = function (fork: any) {
+import { Fork } from "../types";
+import babelCoreDef from "./babel-core";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
+
+export = function (fork: Fork) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
-  fork.use(require("./babel-core"));
+  fork.use(babelCoreDef);
 
-  var types = fork.use(require("../lib/types"));
+  var types = fork.use(typesPlugin);
   var n = types.namedTypes;
   var def = types.Type.def;
   var or = types.Type.or;
-  var defaults = fork.use(require("../lib/shared")).defaults;
+  var defaults = fork.use(sharedPlugin).defaults;
   var StringLiteral = new types.Type(function (value: any, deep: any) {
     if (n.StringLiteral &&
         n.StringLiteral.check(value, deep)) {

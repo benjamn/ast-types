@@ -1,9 +1,15 @@
-export = function (fork: any) {
-  fork.use(require("./core"));
-  var types = fork.use(require("../lib/types"));
+import { Fork } from "../types";
+import coreDef from "./core";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
+
+export = function (fork: Fork) {
+  fork.use(coreDef);
+
+  var types = fork.use(typesPlugin);
   var def = types.Type.def;
   var or = types.Type.or;
-  var defaults = fork.use(require("../lib/shared")).defaults;
+  var defaults = fork.use(sharedPlugin).defaults;
 
   def("Function")
     .field("generator", Boolean, defaults["false"])

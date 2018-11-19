@@ -1,9 +1,13 @@
-export = function (fork: any) {
-    var types = fork.use(require("../lib/types"));
+import { Fork } from "../types";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
+
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
     var Type = types.Type;
     var def = Type.def;
     var or = Type.or;
-    var shared = fork.use(require("../lib/shared"));
+    var shared = fork.use(sharedPlugin);
     var defaults = shared.defaults;
     var geq = shared.geq;
 

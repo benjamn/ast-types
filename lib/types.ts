@@ -1,3 +1,5 @@
+import { Fork } from "../types";
+
 var Ap = Array.prototype;
 var slice = Ap.slice;
 var Op = Object.prototype;
@@ -6,7 +8,7 @@ var funObjStr = objToStr.call(function(){});
 var strObjStr = objToStr.call("");
 var hasOwn = Op.hasOwnProperty;
 
-export = function () {
+export = function (_fork: Fork) {
 
     var exports: { [name: string]: any } = {};
 

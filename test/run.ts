@@ -1,3 +1,3 @@
-require("./ecmascript");
-require("./typescript");
-require("./flow");
+import "./ecmascript";
+import "./typescript";
+import "./flow";

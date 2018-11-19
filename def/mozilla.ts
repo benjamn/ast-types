@@ -1,42 +1,48 @@
-export = function (fork: any) {
-    fork.use(require("./core"));
-    var types = fork.use(require("../lib/types"));
-    var def = types.Type.def;
-    var or = types.Type.or;
-    var shared = fork.use(require("../lib/shared"));
-    var geq = shared.geq;
-    var defaults = shared.defaults;
+import { Fork } from "../types";
+import coreDef from "./core";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
 
-    def("Function")
-        // SpiderMonkey allows expression closures: function(x) x+1
-        .field("body", or(def("BlockStatement"), def("Expression")));
+export = function (fork: Fork) {
+  fork.use(coreDef);
 
-    def("ForInStatement")
-        .build("left", "right", "body", "each")
-        .field("each", Boolean, defaults["false"]);
+  var types = fork.use(typesPlugin);
+  var def = types.Type.def;
+  var or = types.Type.or;
+  var shared = fork.use(sharedPlugin);
+  var geq = shared.geq;
+  var defaults = shared.defaults;
 
-    def("LetStatement")
-        .bases("Statement")
-        .build("head", "body")
-        // TODO Deviating from the spec by reusing VariableDeclarator here.
-        .field("head", [def("VariableDeclarator")])
-        .field("body", def("Statement"));
+  def("Function")
+    // SpiderMonkey allows expression closures: function(x) x+1
+    .field("body", or(def("BlockStatement"), def("Expression")));
 
-    def("LetExpression")
-        .bases("Expression")
-        .build("head", "body")
-        // TODO Deviating from the spec by reusing VariableDeclarator here.
-        .field("head", [def("VariableDeclarator")])
-        .field("body", def("Expression"));
+  def("ForInStatement")
+    .build("left", "right", "body", "each")
+    .field("each", Boolean, defaults["false"]);
 
-    def("GraphExpression")
-        .bases("Expression")
-        .build("index", "expression")
-        .field("index", geq(0))
-        .field("expression", def("Literal"));
+  def("LetStatement")
+    .bases("Statement")
+    .build("head", "body")
+    // TODO Deviating from the spec by reusing VariableDeclarator here.
+    .field("head", [def("VariableDeclarator")])
+    .field("body", def("Statement"));
 
-    def("GraphIndexExpression")
-        .bases("Expression")
-        .build("index")
-        .field("index", geq(0));
+  def("LetExpression")
+    .bases("Expression")
+    .build("head", "body")
+    // TODO Deviating from the spec by reusing VariableDeclarator here.
+    .field("head", [def("VariableDeclarator")])
+    .field("body", def("Expression"));
+
+  def("GraphExpression")
+    .bases("Expression")
+    .build("index", "expression")
+    .field("index", geq(0))
+    .field("expression", def("Literal"));
+
+  def("GraphIndexExpression")
+    .bases("Expression")
+    .build("index")
+    .field("index", geq(0));
 };

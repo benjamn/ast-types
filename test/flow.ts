@@ -1,13 +1,17 @@
-var assert = require("assert");
-var types = require("../fork")([
-  require("../def/flow"),
+import assert from "assert";
+import flowParser from "flow-parser";
+import forkFn from "../fork";
+import flowDef from "../def/flow";
+
+var types = forkFn([
+  flowDef,
 ]);
 
 describe("flow types", function () {
   it("issue #242", function () {
     const parser = {
       parse(code: string) {
-        return require('flow-parser').parse(code, {
+        return flowParser.parse(code, {
           types: true
         });
       }
@@ -40,7 +44,7 @@ describe("flow types", function () {
   it("issue #261", function () {
     const parser = {
       parse(code: string) {
-        return require('flow-parser').parse(code, {
+        return flowParser.parse(code, {
           types: true
         });
       }

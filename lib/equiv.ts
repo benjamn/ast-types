@@ -1,5 +1,8 @@
-export = function (fork: any) {
-    var types = fork.use(require('../lib/types'));
+import { Fork } from "../types";
+import typesPlugin from "./types";
+
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
     var getFieldNames = types.getFieldNames;
     var getFieldValue = types.getFieldValue;
     var isArray = types.builtInTypes.array;
@@ -8,7 +11,7 @@ export = function (fork: any) {
     var isRegExp = types.builtInTypes.RegExp;
     var hasOwn = Object.prototype.hasOwnProperty;
 
-    function astNodesAreEquivalent(a: any, b: any, problemPath: any) {
+    function astNodesAreEquivalent(a: any, b: any, problemPath?: any) {
         if (isArray.check(problemPath)) {
             problemPath.length = 0;
         } else {

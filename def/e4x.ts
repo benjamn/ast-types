@@ -1,6 +1,10 @@
-export = function (fork: any) {
-    fork.use(require("./core"));
-    var types = fork.use(require("../lib/types"));
+import { Fork } from "../types";
+import typesPlugin from "../lib/types";
+import coreDef from "./core";
+
+export = function (fork: Fork) {
+    fork.use(coreDef);
+    var types = fork.use(typesPlugin);
     var def = types.Type.def;
     var or = types.Type.or;
 

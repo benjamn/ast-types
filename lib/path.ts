@@ -1,8 +1,11 @@
+import { Fork } from "../types";
+import typesPlugin from "./types";
+
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-export = function (fork: any) {
-    var types = fork.use(require("./types"));
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
     var isArray = types.builtInTypes.array;
     var isNumber = types.builtInTypes.number;
 

@@ -1,7 +1,8 @@
-var path = require('path');
-var fs = require('fs');
-var visit = require("ast-types").visit;
-var parse = require("esprima").parse;
+import path from "path";
+import fs from "fs";
+import { parse } from "esprima";
+// @ts-ignore
+import { visit } from "ast-types";
 
 var backbone = fs.readFileSync(
   path.join(__dirname, "data", "backbone.js"),

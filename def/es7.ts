@@ -1,10 +1,15 @@
-export = function (fork: any) {
-  fork.use(require('./es6'));
+import { Fork } from "../types";
+import es6Def from "./es6";
+import typesPlugin from "../lib/types";
+import sharedPlugin from "../lib/shared";
 
-  var types = fork.use(require("../lib/types"));
+export = function (fork: Fork) {
+  fork.use(es6Def);
+
+  var types = fork.use(typesPlugin);
   var def = types.Type.def;
   var or = types.Type.or;
-  var defaults = fork.use(require("../lib/shared")).defaults;
+  var defaults = fork.use(sharedPlugin).defaults;
 
   def("Function")
     .field("async", Boolean, defaults["false"]);

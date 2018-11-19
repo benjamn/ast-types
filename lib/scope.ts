@@ -1,7 +1,11 @@
+import { Fork } from "../types";
+import typesPlugin from "./types";
+import nodePathPlugin from "./node-path";
+
 var hasOwn = Object.prototype.hasOwnProperty;
 
-export = function (fork: any) {
-    var types = fork.use(require("./types"));
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
     var Type = types.Type;
     var namedTypes = types.namedTypes;
     var Node = namedTypes.Node;
@@ -13,7 +17,7 @@ export = function (fork: any) {
         if (!(this instanceof Scope)) {
             throw new Error("Scope constructor cannot be invoked without 'new'");
         }
-        if (!(path instanceof fork.use(require("./node-path")))) {
+        if (!(path instanceof fork.use(nodePathPlugin))) {
             throw new Error("");
         }
         ScopeType.assert(path.value);

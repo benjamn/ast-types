@@ -1,46 +1,53 @@
-export = function (defs: any) {
-    var used: any[] = [];
-    var usedResult: any[] = [];
-    var fork: any = {};
+import typesPlugin from "./lib/types";
+import pathVisitorPlugin from "./lib/path-visitor";
+import equivPlugin from "./lib/equiv";
+import pathPlugin from "./lib/path";
+import nodePathPlugin from "./lib/node-path";
+import { Def, Fork, Plugin } from "./types";
 
-    function use(plugin: any) {
-        var idx = used.indexOf(plugin);
-        if (idx === -1) {
-            idx = used.length;
-            used.push(plugin);
-            usedResult[idx] = plugin(fork);
-        }
-        return usedResult[idx];
+export = function (defs: Def[]) {
+  var used: Plugin<unknown>[] = [];
+  var usedResult: unknown[] = [];
+
+  function use<T>(plugin: Plugin<T>): T {
+    var idx = used.indexOf(plugin);
+    if (idx === -1) {
+      idx = used.length;
+      used.push(plugin);
+      usedResult[idx] = plugin(fork);
     }
+    return usedResult[idx] as T;
+  }
 
-    fork.use = use;
+  var fork: Fork = { use };
 
-    var types = use(require('./lib/types'));
+  var types = use(typesPlugin);
 
-    defs.forEach(use);
+  defs.forEach(use);
 
-    types.finalize();
+  types.finalize();
 
-    var exports: { [name: string]: any } = {
-        Type: types.Type,
-        builtInTypes: types.builtInTypes,
-        namedTypes: types.namedTypes,
-        builders: types.builders,
-        defineMethod: types.defineMethod,
-        getFieldNames: types.getFieldNames,
-        getFieldValue: types.getFieldValue,
-        eachField: types.eachField,
-        someField: types.someField,
-        getSupertypeNames: types.getSupertypeNames,
-        astNodesAreEquivalent: use(require("./lib/equiv")),
-        finalize: types.finalize,
-        Path: use(require('./lib/path')),
-        NodePath: use(require("./lib/node-path")),
-        PathVisitor: use(require("./lib/path-visitor")),
-        use: use
-    };
+  var PathVisitor = use(pathVisitorPlugin);
 
-    exports.visit = exports.PathVisitor.visit;
+  var exports = {
+    Type: types.Type,
+    builtInTypes: types.builtInTypes,
+    namedTypes: types.namedTypes,
+    builders: types.builders,
+    defineMethod: types.defineMethod,
+    getFieldNames: types.getFieldNames,
+    getFieldValue: types.getFieldValue,
+    eachField: types.eachField,
+    someField: types.someField,
+    getSupertypeNames: types.getSupertypeNames,
+    astNodesAreEquivalent: use(equivPlugin),
+    finalize: types.finalize,
+    Path: use(pathPlugin),
+    NodePath: use(nodePathPlugin),
+    PathVisitor,
+    use: use,
+    visit: PathVisitor.visit
+  };
 
-    return exports;
+  return exports;
 };

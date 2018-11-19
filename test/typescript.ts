@@ -1,13 +1,17 @@
 "use strict";
 
-var assert = require("assert");
-var fs = require("fs");
-var path = require("path");
-var shared = require("./shared");
+import fs from "fs";
+import path from "path";
+import glob from "glob";
+import babylon, { BabylonOptions, PluginName } from "babylon";
+import fork from "../fork";
+import typescriptDef from "../def/typescript";
+import jsxDef from "../def/jsx";
+
 var pkgRootDir = path.resolve(__dirname, "..");
-var tsTypes = require("../fork")([
-  require("../def/typescript"),
-  require("../def/jsx"),
+var tsTypes = fork([
+  typescriptDef,
+  jsxDef,
 ]);
 
 const babylonDir = path.resolve(__dirname, "data", "babylon");
@@ -15,7 +19,7 @@ const babylonDir = path.resolve(__dirname, "data", "babylon");
 const babylonTSFixturesDir =
   path.join(babylonDir, "test", "fixtures", "typescript");
 
-require("glob")("**/input.js", {
+glob("**/input.js", {
   cwd: babylonTSFixturesDir,
 }, (error: any, files: any) => {
   if (error) {
@@ -52,14 +56,14 @@ require("glob")("**/input.js", {
     var parseOptions = getOptions(fullPath);
 
     try {
-      return require("babylon").parse(code, parseOptions).program;
+      return babylon.parse(code, parseOptions).program;
 
     } catch (error) {
       // If parsing fails, check options.json to see if the failure was
       // expected.
       try {
         var options = JSON.parse(fs.readFileSync(
-          path.join(path.dirname(fullPath), "options.json")));
+          path.join(path.dirname(fullPath), "options.json")).toString());
       } catch (optionsError) {
         console.error(optionsError.message);
       }
@@ -73,7 +77,7 @@ require("glob")("**/input.js", {
     }
   }
 
-  function getOptions(fullPath: string) {
+  function getOptions(fullPath: string): BabylonOptions {
     var plugins = getPlugins(path.dirname(fullPath));
     return {
       sourceType: "module",
@@ -81,11 +85,11 @@ require("glob")("**/input.js", {
     };
   }
 
-  function getPlugins(dir: string): string[] {
+  function getPlugins(dir: string): PluginName[] {
     try {
       var options = JSON.parse(fs.readFileSync(
         path.join(dir, "options.json")
-      ));
+      ).toString());
     } catch (ignored) {
       options = {};
     }
@@ -107,7 +111,7 @@ require("glob")("**/input.js", {
 var tsCompilerDir =
   path.resolve( __dirname, "data", "typescript-compiler");
 
-require("glob")("**/*.ts", {
+glob("**/*.ts", {
   cwd: tsCompilerDir,
 }, (error: any, files: any) => {
   if (error) {
@@ -130,13 +134,14 @@ require("glob")("**/*.ts", {
             throw error;
           }
 
-          var program = require("babylon").parse(code, {
+          var program = babylon.parse(code, {
             sourceType: "module",
             plugins: [
               "typescript",
               "objectRestSpread",
               "classProperties",
-              "optionalCatchBinding",
+              // TODO: Add "optionalCatchBinding" to @types/babylon
+              "optionalCatchBinding" as PluginName,
             ]
           }).program;
 

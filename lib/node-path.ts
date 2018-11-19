@@ -1,13 +1,18 @@
-export = function (fork: any) {
-    var types = fork.use(require("./types"));
+import { Fork } from "../types";
+import typesPlugin from "./types";
+import pathPlugin from "./path";
+import scopePlugin from "./scope";
+
+export = function (fork: Fork) {
+    var types = fork.use(typesPlugin);
     var n = types.namedTypes;
     var b = types.builders;
     var isNumber = types.builtInTypes.number;
     var isArray = types.builtInTypes.array;
-    var Path = fork.use(require("./path"));
-    var Scope = fork.use(require("./scope"));
+    var Path = fork.use(pathPlugin);
+    var Scope = fork.use(scopePlugin);
 
-    function NodePath(this: any, value: any, parentPath: any, name: any) {
+    function NodePath(this: any, value: any, parentPath?: any, name?: any) {
         if (!(this instanceof NodePath)) {
             throw new Error("NodePath constructor cannot be invoked without 'new'");
         }
@@ -114,6 +119,7 @@ export = function (fork: any) {
 
         if (n.Node.check(value) &&
           Scope.isEstablishedBy(value)) {
+            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             scope = new Scope(this, scope);
         }
 
