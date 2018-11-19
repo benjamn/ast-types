@@ -8,14 +8,88 @@ var funObjStr = objToStr.call(function(){});
 var strObjStr = objToStr.call("");
 var hasOwn = Op.hasOwnProperty;
 
-export = function (_fork: Fork) {
+// We have to use a namespace to export types along with `export =`
+// See https://github.com/Microsoft/TypeScript/issues/2719
+namespace typesPlugin {
+    export type CheckFn = (value: any, deep: any) => any;
+    export type NameType = string | (() => string);
+
+    export interface TypeType {
+        name: NameType;
+        check(value: any, deep?: any): boolean;
+        assert(value: any, deep?: any): boolean;
+        arrayOf(): TypeType;
+        toString(): string;
+    }
+
+    export interface TypeConstructor {
+        new(check: CheckFn, name: NameType): TypeType;
+        fromArray(...args: any[]): TypeType;
+        fromObject(obj: object): TypeType;
+        or(...types: any[]): TypeType;
+        def(typeName: any): any;
+    }
+
+    export interface DefType {
+        typeName: string;
+        baseNames: any[];
+        ownFields: any;
+        allSupertypes: any;
+        supertypeList: any[];
+        allFields: any;
+        fieldNames: any;
+        type: TypeType;
+        isSupertypeOf(that: any): any;
+        checkAllFields(value: any, deep?: any): boolean;
+        check(value: any, deep?: any): boolean;
+        bases(...args: any[]): this;
+        buildable: boolean;
+        buildParams: any;
+        build(...args: any[]): this;
+        field(name: string, type: any, defaultFn?: Function, hidden?: boolean): this;
+        finalized: boolean;
+        finalize(): void;
+    }
+
+    export interface DefConstructor {
+        new(typeName: string): DefType;
+        fromValue(value: any): any;
+    }
+
+    export interface FieldType {
+        name: string;
+        type: any;
+        hidden: boolean;
+        defaultFn?: Function;
+        toString(): string;
+        getValue(obj: { [name: string]: unknown }): any;
+    }
+
+    export interface FieldConstructor {
+        new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
+    }
+}
+
+import CheckFn = typesPlugin.CheckFn;
+import NameType = typesPlugin.NameType;
+import TypeType = typesPlugin.TypeType;
+import TypeConstructor = typesPlugin.TypeConstructor;
+import DefType = typesPlugin.DefType;
+import DefConstructor = typesPlugin.DefConstructor;
+import FieldType = typesPlugin.FieldType;
+import FieldConstructor = typesPlugin.FieldConstructor;
+
+type NameStringCheck = (name: NameType) => name is string;
+type NameFnCheck = (name: NameType) => name is (() => string);
+
+function typesPlugin(_fork: Fork) {
 
     var exports: { [name: string]: any } = {};
 
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
-    function Type(this: any, check: any, name: any) {
+    const Type = function Type(this: TypeType, check: CheckFn, name: NameType) {
         var self = this;
         if (!(self instanceof Type)) {
             throw new Error("Type constructor cannot be invoked without 'new'");
@@ -34,27 +108,27 @@ export = function (_fork: Fork) {
             throw new Error(name + " is neither a function nor a string");
         }
 
+        const checkValue: CheckFn = function (value, deep) {
+            var result = check.call(self, value, deep);
+            if (!result && deep && objToStr.call(deep) === funObjStr)
+                deep(self, value);
+            return result;
+        };
+
         Object.defineProperties(self, {
             name: {value: name},
-            check: {
-                value: function (value: any, deep: any) {
-                    var result = check.call(self, value, deep);
-                    if (!result && deep && objToStr.call(deep) === funObjStr)
-                        deep(self, value);
-                    return result;
-                }
-            }
+            check: { value: checkValue }
         });
-    }
+    } as any as TypeConstructor;
 
-    var Tp = Type.prototype;
+    var Tp: TypeType = Type.prototype;
 
     // Throughout this file we use Object.defineProperty to prevent
     // redefinition of exported properties.
     exports.Type = Type;
 
     // Like .check, except that failure triggers an AssertionError.
-    Tp.assert = function (value: any, deep: any) {
+    Tp.assert = function (value, deep) {
         if (!this.check(value, deep)) {
             var str = shallowStringify(value);
             throw new Error(str + " does not match type " + this);
@@ -77,10 +151,10 @@ export = function (_fork: Fork) {
     Tp.toString = function () {
         var name = this.name;
 
-        if (isString.check(name))
+        if ((isString.check as NameStringCheck)(name))
             return name;
 
-        if (isFunction.check(name))
+        if ((isFunction.check as NameFnCheck)(name))
             return name.call(this) + "";
 
         return name + " type";
@@ -94,7 +168,6 @@ export = function (_fork: Fork) {
     function defBuiltInType(example: {} | null | undefined, name: string) {
         var objStr = objToStr.call(example);
 
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         var type = new Type(function (value) {
             return objToStr.call(value) === objStr;
         }, name);
@@ -132,7 +205,7 @@ export = function (_fork: Fork) {
     // There are a number of idiomatic ways of expressing types, so this
     // function serves to coerce them all to actual Type objects. Note that
     // providing the name argument is not necessary in most cases.
-    function toType(from: any, name?: any): any {
+    function toType(from: any, name?: any): TypeType {
         // The toType function should of course be idempotent.
         if (from instanceof Type)
             return from;
@@ -159,7 +232,6 @@ export = function (_fork: Fork) {
             // If isFunction.check(from), and from is not a built-in
             // constructor, assume from is a binary predicate function we can
             // use to define the type.
-            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             return new Type(from, name);
         }
 
@@ -167,7 +239,6 @@ export = function (_fork: Fork) {
         // is === from. This is primarily useful for literal values like
         // toType(null), but it has the additional advantage of allowing
         // toType to be a total function.
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value) {
             return value === from;
         }, isUndefined.check(name) ? function () {
@@ -183,7 +254,6 @@ export = function (_fork: Fork) {
         for (var i = 0; i < len; ++i)
             types.push(toType(arguments[i]));
 
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
             for (var i = 0; i < len; ++i)
                 if (types[i].check(value, deep))
@@ -206,7 +276,6 @@ export = function (_fork: Fork) {
 
     Tp.arrayOf = function () {
         var elemType = this;
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
             return isArray.check(value) && value.every(function (elem: any) {
                   return elemType.check(elem, deep);
@@ -218,11 +287,9 @@ export = function (_fork: Fork) {
 
     Type.fromObject = function (obj: any) {
         var fields = Object.keys(obj).map(function (name) {
-            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             return new Field(name, obj[name]);
         });
 
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         return new Type(function (value, deep) {
             return isObject.check(value) && fields.every(function (field) {
                   return field.type.check(value[field.name], deep);
@@ -232,7 +299,7 @@ export = function (_fork: Fork) {
         });
     };
 
-    function Field(this: any, name: any, type?: any, defaultFn?: any, hidden?: any) {
+    const Field = function Field(this: FieldType, name: string, type: any, defaultFn?: Function, hidden?: boolean) {
         var self = this;
 
         if (!(self instanceof Field)) {
@@ -253,15 +320,15 @@ export = function (_fork: Fork) {
         }
 
         Object.defineProperties(self, properties);
-    }
+    } as any as FieldConstructor;
 
-    var Fp = Field.prototype;
+    var Fp: FieldType = Field.prototype;
 
     Fp.toString = function () {
         return JSON.stringify(this.name) + ": " + this.type;
     };
 
-    Fp.getValue = function (obj: any) {
+    Fp.getValue = function (obj) {
         var value = obj[this.name];
 
         if (!isUndefined.check(value))
@@ -278,11 +345,10 @@ export = function (_fork: Fork) {
     // In particular, this system allows for circular and forward definitions.
     // The Def object d returned from Type.def may be used to configure the
     // type d.type by calling methods such as d.bases, d.build, and d.field.
-    Type.def = function (typeName: any) {
+    Type.def = function (typeName) {
         isString.assert(typeName);
         return hasOwn.call(defCache, typeName)
           ? defCache[typeName]
-          // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
           : defCache[typeName] = new Def(typeName);
     };
 
@@ -290,7 +356,7 @@ export = function (_fork: Fork) {
     // with a particular name, those instances need to be stored in a cache.
     var defCache = Object.create(null);
 
-    function Def(this: any, typeName: any) {
+    const Def = function Def(this: any, typeName: string) {
         var self = this;
         if (!(self instanceof Def)) {
             throw new Error("Def constructor cannot be invoked without 'new'");
@@ -308,15 +374,14 @@ export = function (_fork: Fork) {
             fieldNames: {value: []}, // Non-hidden keys of allFields.
 
             type: {
-                // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
                 value: new Type(function (value, deep) {
                     return self.check(value, deep);
                 }, typeName)
             }
         });
-    }
+    } as any as DefConstructor;
 
-    Def.fromValue = function (value: any) {
+    Def.fromValue = function (value) {
         if (value && typeof value === "object") {
             var type = value.type;
             if (typeof type === "string" &&
@@ -331,9 +396,9 @@ export = function (_fork: Fork) {
         return null;
     };
 
-    var Dp = Def.prototype;
+    var Dp: DefType = Def.prototype;
 
-    Dp.isSupertypeOf = function (that: any) {
+    Dp.isSupertypeOf = function (that) {
         if (that instanceof Def) {
             if (this.finalized !== true ||
               that.finalized !== true) {
@@ -384,7 +449,7 @@ export = function (_fork: Fork) {
         return table;
     };
 
-    Dp.checkAllFields = function (value: any, deep: any) {
+    Dp.checkAllFields = function (value, deep) {
         var allFields = this.allFields;
         if (this.finalized !== true) {
             throw new Error("" + this.typeName);
@@ -401,7 +466,7 @@ export = function (_fork: Fork) {
           && Object.keys(allFields).every(checkFieldByName);
     };
 
-    Dp.check = function (value: any, deep: any) {
+    Dp.check = function (value, deep) {
         if (this.finalized !== true) {
             throw new Error(
               "prematurely checking unfinalized type " + this.typeName
@@ -593,7 +658,7 @@ export = function (_fork: Fork) {
         function builder() {
             var args = arguments;
             var argc = args.length;
-            
+
             if (!self.finalized) {
                 throw new Error(
                     "attempting to instantiate unfinalized type " +
@@ -634,7 +699,7 @@ export = function (_fork: Fork) {
                     self.typeName
                 );
             }
-            
+
             var built = Object.create(nodePrototype);
 
             Object.keys(self.allFields).forEach(function (param) {
@@ -690,14 +755,13 @@ export = function (_fork: Fork) {
     // literal syntax is somewhat subtle: the object literal syntax would
     // support only one key and one value, but with .field(...) we can pass
     // any number of arguments to specify the field.
-    Dp.field = function (name: any, type: any, defaultFn: any, hidden: any) {
+    Dp.field = function (name, type, defaultFn, hidden) {
         if (this.finalized) {
             console.error("Ignoring attempt to redefine field " +
               JSON.stringify(name) + " of finalized type " +
               JSON.stringify(this.typeName));
             return this;
         }
-        // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
         this.ownFields[name] = new Field(name, type, defaultFn, hidden);
         return this; // For chaining.
     };
@@ -886,3 +950,5 @@ export = function (_fork: Fork) {
 
     return exports;
 };
+
+export = typesPlugin;
