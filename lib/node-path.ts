@@ -119,7 +119,6 @@ export = function (fork: Fork) {
 
         if (n.Node.check(value) &&
           Scope.isEstablishedBy(value)) {
-            // @ts-ignore 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type. [7009]
             scope = new Scope(this, scope);
         }
 
