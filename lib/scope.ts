@@ -3,7 +3,40 @@ import typesPlugin from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-export = function (fork: Fork) {
+// We have to use a namespace to export types along with `export =`
+// See https://github.com/Microsoft/TypeScript/issues/2719
+namespace scopePlugin {
+  export interface ScopeType {
+    path: any;
+    node: any;
+    isGlobal: boolean;
+    depth: number;
+    parent: any;
+    bindings: any;
+    types: any;
+    didScan: boolean;
+    declares(name: any): any
+    declaresType(name: any): any
+    declareTemporary(prefix?: any): any;
+    injectTemporary(identifier: any, init: any): any;
+    scan(force?: any): any;
+    getBindings(): any;
+    getTypes(): any;
+    lookup(name: any): any;
+    lookupType(name: any): any;
+    getGlobalScope(): ScopeType;
+  }
+
+  export interface ScopeConstructor {
+    new(path: any, parentScope: any): ScopeType;
+    isEstablishedBy(node: any): any;
+  }
+}
+
+import ScopeType = scopePlugin.ScopeType;
+import ScopeConstructor = scopePlugin.ScopeConstructor;
+
+function scopePlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var Type = types.Type;
   var namedTypes = types.namedTypes;
@@ -12,7 +45,7 @@ export = function (fork: Fork) {
   var isArray = types.builtInTypes.array;
   var b = types.builders;
 
-  function Scope(this: any, path: any, parentScope: any) {
+  const Scope = function Scope(this: ScopeType, path: any, parentScope: any) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
@@ -22,7 +55,7 @@ export = function (fork: Fork) {
     }
     ScopeType.assert(path.value);
 
-    var depth;
+    var depth: number;
 
     if (parentScope) {
       if (!(parentScope instanceof Scope)) {
@@ -43,7 +76,7 @@ export = function (fork: Fork) {
       bindings: { value: {} },
       types: { value: {} },
     });
-  }
+  } as any as ScopeConstructor;
 
   var scopeTypes = [
     // Program nodes introduce global scopes.
@@ -60,26 +93,26 @@ export = function (fork: Fork) {
 
   var ScopeType = Type.or.apply(Type, scopeTypes);
 
-  Scope.isEstablishedBy = function(node: any) {
+  Scope.isEstablishedBy = function(node) {
     return ScopeType.check(node);
   };
 
-  var Sp = Scope.prototype;
+  var Sp: ScopeType = Scope.prototype;
 
 // Will be overridden after an instance lazily calls scanScope.
   Sp.didScan = false;
 
-  Sp.declares = function(name: any) {
+  Sp.declares = function(name) {
     this.scan();
     return hasOwn.call(this.bindings, name);
   };
 
-  Sp.declaresType = function(name: any) {
+  Sp.declaresType = function(name) {
     this.scan();
     return hasOwn.call(this.types, name);
   };
 
-  Sp.declareTemporary = function(prefix: any) {
+  Sp.declareTemporary = function(prefix) {
     if (prefix) {
       if (!/^[a-z$_]/i.test(prefix)) {
         throw new Error("");
@@ -103,7 +136,7 @@ export = function (fork: Fork) {
     return this.bindings[name] = types.builders.identifier(name);
   };
 
-  Sp.injectTemporary = function(identifier: any, init: any) {
+  Sp.injectTemporary = function(identifier, init) {
     identifier || (identifier = this.declareTemporary());
 
     var bodyPath = this.path.get("body");
@@ -121,7 +154,7 @@ export = function (fork: Fork) {
     return identifier;
   };
 
-  Sp.scan = function(force: any) {
+  Sp.scan = function(force) {
     if (force || !this.didScan) {
       for (var name in this.bindings) {
         // Empty out this.bindings, just in cases.
@@ -334,14 +367,14 @@ export = function (fork: Fork) {
     }
   }
 
-  Sp.lookup = function(name: any) {
+  Sp.lookup = function(name) {
     for (var scope = this; scope; scope = scope.parent)
       if (scope.declares(name))
         break;
     return scope;
   };
 
-  Sp.lookupType = function(name: any) {
+  Sp.lookupType = function(name) {
     for (var scope = this; scope; scope = scope.parent)
       if (scope.declaresType(name))
         break;
@@ -357,3 +390,5 @@ export = function (fork: Fork) {
 
   return Scope;
 };
+
+export = scopePlugin;
