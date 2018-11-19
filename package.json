@@ -27,11 +27,11 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
+    "gen": "ts-node -T script/gen-types.ts",
     "tsc": "tsc --noEmit",
     "mocha": "test/run.sh",
-    "test": "npm run tsc && npm run mocha",
+    "test": "npm run gen && npm run tsc && npm run mocha",
     "clean": "ts-node -T script/clean.ts",
-    "gen": "ts-node -T script/gen-types.ts",
     "prepack": "npm run clean && npm run gen && tsc",
     "postpack": "npm run clean"
   },
