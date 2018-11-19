@@ -1,4 +1,5 @@
 import { Fork } from "../types";
+import { NamedTypes } from "./namedTypes";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -13,10 +14,12 @@ var hasOwn = Op.hasOwnProperty;
 namespace typesPlugin {
     export type CheckFn = (value: any, deep: any) => any;
     export type NameType = string | (() => string);
+    export type NodeValue = object | string | number | boolean | null | undefined;
 
-    export interface TypeType<T = any> {
+    export interface TypeType<T extends NodeValue = any> {
         name: NameType;
-        check(value: any, deep?: any): value is T;
+        check(value: NodeValue, deep?: any): value is T;
+        check(value: any, deep?: any): boolean;
         assert(value: any, deep?: any): boolean;
         arrayOf(): TypeType;
         toString(): string;
@@ -27,7 +30,7 @@ namespace typesPlugin {
         fromArray(...args: any[]): TypeType;
         fromObject(obj: object): TypeType;
         or(...types: any[]): TypeType;
-        def(typeName: any): any;
+        def(typeName: any): DefType;
     }
 
     export interface DefType {
@@ -35,16 +38,16 @@ namespace typesPlugin {
         baseNames: any[];
         ownFields: any;
         allSupertypes: any;
-        supertypeList: any[];
+        supertypeList: string[];
         allFields: any;
-        fieldNames: any;
+        fieldNames: string[];
         type: TypeType;
         isSupertypeOf(that: any): any;
         checkAllFields(value: any, deep?: any): boolean;
         check(value: any, deep?: any): boolean;
         bases(...args: any[]): this;
         buildable: boolean;
-        buildParams: any;
+        buildParams: string[];
         build(...args: any[]): this;
         field(name: string, type: any, defaultFn?: Function, hidden?: boolean): this;
         finalized: boolean;
@@ -78,8 +81,9 @@ import DefType = typesPlugin.DefType;
 import DefConstructor = typesPlugin.DefConstructor;
 import FieldType = typesPlugin.FieldType;
 import FieldConstructor = typesPlugin.FieldConstructor;
+import NodeValue = typesPlugin.NodeValue;
 
-function typesPlugin(_fork: Fork) {
+function typesPlugin(_fork?: Fork) {
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
@@ -154,7 +158,7 @@ function typesPlugin(_fork: Fork) {
     var builtInCtorTypes: TypeType[] = [];
     var builtInTypes: { [name: string]: TypeType } = {};
 
-    function defBuiltInType<T>(example: T, name: string): TypeType<T> {
+    function defBuiltInType<T extends NodeValue>(example: T, name: string): TypeType<T> {
         var objStr = objToStr.call(example);
 
         var type = new Type(function (value) {
@@ -179,16 +183,11 @@ function typesPlugin(_fork: Fork) {
     var isFunction = defBuiltInType<Function>(function () {}, "function");
     var isArray = defBuiltInType<any[]>([], "array");
     var isObject = defBuiltInType<{ [key: string]: any }>({}, "object");
-    // @ts-ignore 'isRegExp' is declared but its value is never read. [6133]
-    var isRegExp = defBuiltInType<RegExp>(/./, "RegExp");
-    // @ts-ignore 'isDate' is declared but its value is never read. [6133]
-    var isDate = defBuiltInType<Date>(new Date, "Date");
-    // @ts-ignore 'isNumber' is declared but its value is never read. [6133]
-    var isNumber = defBuiltInType<number>(3, "number");
-    // @ts-ignore 'isBoolean' is declared but its value is never read. [6133]
-    var isBoolean = defBuiltInType<boolean>(true, "boolean");
-    // @ts-ignore 'isNull' is declared but its value is never read. [6133]
-    var isNull = defBuiltInType<null>(null, "null");
+    /*var isRegExp = */defBuiltInType<RegExp>(/./, "RegExp");
+    /*var isDate = */defBuiltInType<Date>(new Date, "Date");
+    /*var isNumber = */defBuiltInType<number>(3, "number");
+    /*var isBoolean = */defBuiltInType<boolean>(true, "boolean");
+    /*var isNull = */defBuiltInType<null>(null, "null");
     var isUndefined = defBuiltInType<undefined>(void 0, "undefined");
 
     // There are a number of idiomatic ways of expressing types, so this
@@ -622,7 +621,7 @@ function typesPlugin(_fork: Fork) {
             } else {
                 var message = "no value or default function given for field " +
                   JSON.stringify(param) + " of " + self.typeName + "(" +
-                  self.buildParams.map(function (name: any) {
+                  self.buildParams.map(function (name) {
                       return all[name];
                   }).join(", ") + ")";
                 throw new Error(message);
@@ -752,7 +751,7 @@ function typesPlugin(_fork: Fork) {
         return this; // For chaining.
     };
 
-    var namedTypes: any = {};
+    var namedTypes: NamedTypes = {};
 
     // Like Object.keys, but aware of what fields each AST type should have.
     function getFieldNames(object: any) {

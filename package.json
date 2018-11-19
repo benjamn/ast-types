@@ -30,8 +30,9 @@
     "tsc": "tsc --noEmit",
     "mocha": "test/run.sh",
     "test": "npm run tsc && npm run mocha",
-    "clean": "node script/clean.js",
-    "prepack": "npm run clean && tsc",
+    "clean": "ts-node -T script/clean.ts",
+    "gen": "ts-node -T script/gen-types.ts",
+    "prepack": "npm run clean && npm run gen && tsc",
     "postpack": "npm run clean"
   },
   "dependencies": {},
@@ -50,6 +51,7 @@
     "flow-parser": "^0.83.0",
     "glob": "^7.1.2",
     "mocha": "^5.0.0",
+    "recast": "^0.16.1",
     "reify": "^0.18.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.6"

@@ -16,7 +16,9 @@
   },
   "include": [
     "def",
+    "gen",
     "lib",
+    "script",
     "test",
     "types",
     "types.ts",

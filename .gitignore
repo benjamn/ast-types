@@ -17,3 +17,6 @@ types.js
 types.d.ts
 main.js
 main.d.ts
+
+# Ignore generated files
+/gen
