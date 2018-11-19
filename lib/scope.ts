@@ -1,6 +1,5 @@
 import { Fork } from "../types";
 import typesPlugin from "./types";
-import nodePathPlugin from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -17,7 +16,8 @@ export = function (fork: Fork) {
         if (!(this instanceof Scope)) {
             throw new Error("Scope constructor cannot be invoked without 'new'");
         }
-        if (!(path instanceof fork.use(nodePathPlugin))) {
+        // Use `require` to avoid circular dependency
+        if (!(path instanceof fork.use<any>(require("./node-path")))) {
             throw new Error("");
         }
         ScopeType.assert(path.value);

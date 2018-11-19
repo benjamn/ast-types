@@ -2216,7 +2216,7 @@ describe("types.astNodesAreEquivalent", function() {
 });
 
 describe("RegExpLiteral nodes", function() {
-  it.only("should have a default-computable .regex field", function() {
+  it("should have a default-computable .regex field", function() {
     var ast = parse('/x*/gmi.test("xxx")');
     var regExp: Literal | undefined;
     var statement = ast.body[0];

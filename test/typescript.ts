@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import babylon, { BabylonOptions, PluginName } from "babylon";
+import { parse as babylonParse, BabylonOptions, PluginName } from "babylon";
 import fork from "../fork";
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
@@ -56,7 +56,7 @@ glob("**/input.js", {
     var parseOptions = getOptions(fullPath);
 
     try {
-      return babylon.parse(code, parseOptions).program;
+      return babylonParse(code, parseOptions).program;
 
     } catch (error) {
       // If parsing fails, check options.json to see if the failure was
@@ -134,7 +134,7 @@ glob("**/*.ts", {
             throw error;
           }
 
-          var program = babylon.parse(code, {
+          var program = babylonParse(code, {
             sourceType: "module",
             plugins: [
               "typescript",
