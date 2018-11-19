@@ -2250,12 +2250,12 @@ export interface DirectiveBuilder {
 }
 
 export interface DirectiveLiteralBuilder {
-  (value: string): N.DirectiveLiteral;
+  (value?: string): N.DirectiveLiteral;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      value: string
+      value?: string
     }
   ): N.DirectiveLiteral;
 }

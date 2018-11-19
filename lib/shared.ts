@@ -2,7 +2,6 @@ import { Fork } from "../types";
 import typesPlugin from "./types";
 
 export = function (fork: Fork) {
-    var exports: { [name: string]: any } = {};
     var types = fork.use(typesPlugin);
     var Type = types.Type;
     var builtin = types.builtInTypes;
@@ -10,7 +9,7 @@ export = function (fork: Fork) {
 
     // An example of constructing a new type with arbitrary constraints from
     // an existing type.
-    exports.geq = function (than: any) {
+    function geq(than: any) {
         return new Type(function (value: any) {
             return isNumber.check(value) && value >= than;
         }, isNumber + " >= " + than);
@@ -18,7 +17,7 @@ export = function (fork: Fork) {
 
     // Default value-returning functions that may optionally be passed as a
     // third argument to Def.prototype.field.
-    exports.defaults = {
+    const defaults = {
         // Functions were used because (among other reasons) that's the most
         // elegant way to allow for the emptyArray one always to give a new
         // array instance.
@@ -26,7 +25,8 @@ export = function (fork: Fork) {
         "emptyArray": function () { return [] },
         "false": function () { return false },
         "true": function () { return true },
-        "undefined": function () {}
+        "undefined": function () {},
+        "use strict": function () { return "use strict"; }
     };
 
     var naiveIsPrimitive = Type.or(
@@ -37,7 +37,7 @@ export = function (fork: Fork) {
       builtin.undefined
     );
 
-    exports.isPrimitive = new Type(function (value: any) {
+    const isPrimitive = new Type(function (value: any) {
         if (value === null)
             return true;
         var type = typeof value;
@@ -45,5 +45,9 @@ export = function (fork: Fork) {
         type === "function");
     }, naiveIsPrimitive.toString());
 
-    return exports;
+    return {
+        geq,
+        defaults,
+        isPrimitive,
+    };
 };
