@@ -187,6 +187,19 @@ const out = [
           })
         );
       }),
+      b.exportNamedDeclaration(
+        b.tsTypeAliasDeclaration.from({
+          id: b.identifier("ASTNode"),
+          typeAnnotation: b.tsUnionType(
+            Object.keys(astTypes.namedTypes)
+              .filter(typeName => {
+                const typeDef = astTypes.Type.def(typeName);
+                return !!typeDef.allFields["type"];
+              })
+              .map(typeName => b.tsTypeReference(b.identifier(typeName)))
+          ),
+        })
+      ),
     ]),
   },
   {
