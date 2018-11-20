@@ -7,7 +7,7 @@ export interface NodePathType extends PathType {
     node: any;
     parent: any;
     scope: any;
-    replace(...args: any[]): any;
+    replace: PathType['replace'];
     prune(...args: any[]): any;
     _computeNode(): any;
     _computeParent(): any;

@@ -1,4 +1,4 @@
-import { Fork } from "../types";
+import { Fork, ASTNode } from "../types";
 import typesPlugin from "./types";
 
 var Op = Object.prototype;
@@ -21,7 +21,7 @@ export interface PathType {
   insertAt(index: number, ...args: any[]): any;
   insertBefore(...args: any[]): any;
   insertAfter(...args: any[]): any;
-  replace(replacement: any, ...args: any[]): any;
+  replace(replacement?: ASTNode, ...args: ASTNode[]): any;
 }
 
 export interface PathConstructor {
