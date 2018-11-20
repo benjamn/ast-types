@@ -163,12 +163,17 @@ const out = [
   {
     file: "nodes.ts",
     ast: createModule([
+      b.importDeclaration.from({
+        specifiers: [b.importSpecifier(b.identifier("ASTNode"))],
+        source: b.stringLiteral("../types"),
+      }),
       importFromKinds(),
       ...Object.keys(astTypes.namedTypes).map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
         return b.exportNamedDeclaration(
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
+            extends: [b.tsExpressionWithTypeArguments(b.identifier("ASTNode"))],
             body: b.tsInterfaceBody.from({
               body: Object.keys(typeDef.allFields).map(fieldName => {
                 const field = typeDef.allFields[fieldName];
@@ -187,19 +192,6 @@ const out = [
           })
         );
       }),
-      b.exportNamedDeclaration(
-        b.tsTypeAliasDeclaration.from({
-          id: b.identifier("ASTNode"),
-          typeAnnotation: b.tsUnionType(
-            Object.keys(astTypes.namedTypes)
-              .filter(typeName => {
-                const typeDef = astTypes.Type.def(typeName);
-                return !!typeDef.allFields["type"];
-              })
-              .map(typeName => b.tsTypeReference(b.identifier(typeName)))
-          ),
-        })
-      ),
     ]),
   },
   {
