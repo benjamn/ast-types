@@ -26,6 +26,7 @@
   },
   "license": "MIT",
   "main": "main.js",
+  "types": "main.d.ts",
   "scripts": {
     "gen": "script/run.sh gen-types",
     "tsc": "tsc --noEmit",
