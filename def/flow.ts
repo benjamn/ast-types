@@ -133,7 +133,8 @@ export default function (fork: Fork) {
     .field("callProperties",
            [def("ObjectTypeCallProperty")],
            defaults.emptyArray)
-    .field("exact", Boolean, defaults["false"]);
+    .field("exact", Boolean, defaults["false"])
+    .field("internalSlots", [def("ObjectTypeInternalSlot")]);
 
   def("Variance")
     .bases("Node")
@@ -211,6 +212,14 @@ export default function (fork: Fork) {
     .build("argument")
     .field("argument", def("FlowType"));
 
+  def("ObjectTypeInternalSlot")
+    .bases("Node")
+    .build("id", "static", "method")
+    .field("id", def("Identifier"))
+    .field("static", Boolean)
+    .field("method", Boolean)
+    .field("value", def("Type"));
+
   def("Identifier")
     .field("typeAnnotation",
            // TODO: Remove in favor of https://github.com/benjamn/ast-types/pull/299
@@ -254,6 +263,16 @@ export default function (fork: Fork) {
     .field("static", Boolean, defaults["false"])
     .field("variance", LegacyVariance, defaults["null"]);
 
+  def("PrivateName")
+    .bases("Expression")
+    .build("name")
+    .field("name", def("Identifier"));
+
+  def("ClassPrivateProperty")
+    .bases("ClassProperty")
+    .build("key")
+    .field("key", def("Identifier"));
+
   ["ClassDeclaration",
    "ClassExpression",
   ].forEach(typeName => {
@@ -281,6 +300,12 @@ export default function (fork: Fork) {
     def(typeName)
       .field("implements", [def("ClassImplements")], defaults.emptyArray);
   });
+
+  def("InterfaceTypeAnnotation")
+    .bases("FlowType")
+    .build("body", "extends")
+    .field("body", def("ObjectTypeAnnotation"))
+    .field("extends", [def("InterfaceExtends")]);
 
   def("InterfaceDeclaration")
     .bases("Declaration")
