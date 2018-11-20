@@ -15,6 +15,7 @@
     "stripInternal": true
   },
   "exclude": [
+    "node_modules",
     "test/data"
   ]
 }
