@@ -168,7 +168,7 @@ const out = [
     ast: createModule([
       b.importDeclaration.from({
         specifiers: [b.importSpecifier(b.identifier("ASTNode"))],
-        source: b.stringLiteral("../types"),
+        source: b.stringLiteral("../lib/types"),
       }),
       importFromKinds(),
       ...Object.keys(astTypes.namedTypes).map(typeName => {

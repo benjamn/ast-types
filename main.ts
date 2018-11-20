@@ -11,6 +11,7 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
+import { ASTNode } from "./lib/types";
 import { NamedTypes } from "./gen/namedTypes";
 import { Builders } from "./gen/builders";
 import { Visitor } from "./gen/visitor";
@@ -18,7 +19,7 @@ import { Visitor } from "./gen/visitor";
 type GenTypes = {
   namedTypes: NamedTypes;
   builders: Builders;
-  visit<M = {}>(node: any, methods?: Visitor<M> & M): any;
+  visit<M = {}>(node: ASTNode, methods?: Visitor<M> & M): any;
 };
 
 type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;
@@ -47,4 +48,5 @@ export {
   NamedTypes,
   Builders,
   Visitor,
+  ASTNode,
 };

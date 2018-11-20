@@ -1,4 +1,4 @@
-import { Fork, Omit, ASTNode } from "../types";
+import { Fork, Omit } from "../types";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -69,6 +69,10 @@ export interface FieldType {
 
 export interface FieldConstructor {
     new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
+}
+
+export interface ASTNode {
+    type: string;
 }
 
 export interface Builder {
