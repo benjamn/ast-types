@@ -120,6 +120,11 @@ export default function (fork: Fork) {
     .build("value")
     .field("value", String, defaults["use strict"]);
 
+  def("InterpreterDirective")
+    .bases("Node")
+    .build("value")
+    .field("value", String);
+
   def("BlockStatement")
     .bases("Statement")
     .build("body")
@@ -130,7 +135,8 @@ export default function (fork: Fork) {
     .bases("Node")
     .build("body")
     .field("body", [def("Statement")])
-    .field("directives", [def("Directive")], defaults.emptyArray);
+    .field("directives", [def("Directive")], defaults.emptyArray)
+    .field("interpreter", or(def("InterpreterDirective"), null), defaults["null"]);
 
   // Split Literal
   def("StringLiteral")
