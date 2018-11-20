@@ -134,7 +134,7 @@ export default function (fork: Fork) {
            [def("ObjectTypeCallProperty")],
            defaults.emptyArray)
     .field("exact", Boolean, defaults["false"])
-    .field("internalSlots", [def("ObjectTypeInternalSlot")]);
+    .field("internalSlots", [def("ObjectTypeInternalSlot")], defaults.emptyArray);
 
   def("Variance")
     .bases("Node")
