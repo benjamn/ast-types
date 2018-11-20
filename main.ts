@@ -43,3 +43,8 @@ const main = fork([
 ]) as any as Main;
 
 export default main;
+export {
+  NamedTypes,
+  Builders,
+  Visitor,
+};
