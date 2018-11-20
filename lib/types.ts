@@ -1,4 +1,4 @@
-import { Fork } from "../types";
+import { Fork, Omit } from "../types";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -12,23 +12,23 @@ declare const __typeBrand: unique symbol;
 
 export type CheckFn = (value: any, deep: any) => any;
 export type NameType = string | (() => string);
-export type ValueType = object | string | number | boolean | null | undefined;
 
-export interface TypeType<T extends ValueType = any> {
+export interface TypeType<T> {
     name: NameType;
-    check(value: ValueType, deep?: any): value is T;
-    check(value: any, deep?: any): boolean;
+    check(value: any, deep?: any): value is T;
     assert(value: any, deep?: any): boolean;
-    arrayOf(): TypeType;
+    arrayOf(): AnyType;
     toString(): string;
     [__typeBrand]?: T;
 }
 
+export type AnyType = Omit<TypeType<any>, "check"> & { check(value: any, deep?: any): boolean };
+
 export interface TypeConstructor {
-    new(check: CheckFn, name: NameType): TypeType;
-    fromArray(...args: any[]): TypeType;
-    fromObject(obj: object): TypeType;
-    or(...types: any[]): TypeType;
+    new<T>(check: CheckFn, name: NameType): TypeType<T>;
+    fromArray(...args: any[]): AnyType;
+    fromObject(obj: object): AnyType;
+    or(...types: any[]): AnyType;
     def(typeName: any): DefType;
 }
 
@@ -40,7 +40,7 @@ export interface DefType {
     supertypeList: string[];
     allFields: { [fieldName: string]: FieldType; };
     fieldNames: string[];
-    type: TypeType;
+    type: AnyType;
     isSupertypeOf(that: any): any;
     checkAllFields(value: any, deep?: any): boolean;
     check(value: any, deep?: any): boolean;
@@ -75,7 +75,7 @@ export default function typesPlugin(_fork?: Fork) {
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
-    const Type = function Type(this: TypeType, check: CheckFn, name: NameType) {
+    const Type = function Type<T>(this: TypeType<T>, check: CheckFn, name: NameType) {
         var self = this;
         if (!(self instanceof Type)) {
             throw new Error("Type constructor cannot be invoked without 'new'");
@@ -107,7 +107,7 @@ export default function typesPlugin(_fork?: Fork) {
         });
     } as any as TypeConstructor;
 
-    var Tp: TypeType = Type.prototype;
+    var Tp: TypeType<{}> = Type.prototype;
 
     // Like .check, except that failure triggers an AssertionError.
     Tp.assert = function (value, deep) {
@@ -143,7 +143,7 @@ export default function typesPlugin(_fork?: Fork) {
     };
 
     var builtInCtorFns: Function[] = [];
-    var builtInCtorTypes: TypeType[] = [];
+    var builtInCtorTypes: AnyType[] = [];
 
     type BuiltInTypes = {
         string: typeof isString;
@@ -159,10 +159,10 @@ export default function typesPlugin(_fork?: Fork) {
     };
     var builtInTypes = {} as BuiltInTypes;
 
-    function defBuiltInType<T extends ValueType>(example: T, name: keyof BuiltInTypes): TypeType<T> {
+    function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): TypeType<T> {
         var objStr = objToStr.call(example);
 
-        var type = new Type(function (value) {
+        var type = new Type<T>(function (value) {
             return objToStr.call(value) === objStr;
         }, name);
 
@@ -194,7 +194,7 @@ export default function typesPlugin(_fork?: Fork) {
     // There are a number of idiomatic ways of expressing types, so this
     // function serves to coerce them all to actual Type objects. Note that
     // providing the name argument is not necessary in most cases.
-    function toType(from: any, name?: any): TypeType {
+    function toType(from: any, name?: any): AnyType {
         // The toType function should of course be idempotent.
         if (from instanceof Type)
             return from;
@@ -752,7 +752,7 @@ export default function typesPlugin(_fork?: Fork) {
         return this; // For chaining.
     };
 
-    var namedTypes: { [name: string]: TypeType } = {};
+    var namedTypes: { [name: string]: AnyType } = {};
 
     // Like Object.keys, but aware of what fields each AST type should have.
     function getFieldNames(object: any) {

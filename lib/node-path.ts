@@ -349,7 +349,7 @@ export default function nodePathPlugin(fork: Fork) {
         });
     });
 
-    function containsCallExpression(node: any) {
+    function containsCallExpression(node: any): any {
         if (n.CallExpression.check(node)) {
             return true;
         }
