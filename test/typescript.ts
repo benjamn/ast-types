@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { parse as babylonParse, ParserOptions, ParserPlugin } from "@babel/parser";
+import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser";
 import fork from "../fork";
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
@@ -12,25 +12,25 @@ var tsTypes = fork([
   jsxDef,
 ]);
 
-const babylonDir = path.resolve(__dirname, "data", "babylon");
+const babelParserDir = path.resolve(__dirname, "data", "babel-parser");
 
-const babylonTSFixturesDir =
-  path.join(babylonDir, "test", "fixtures", "typescript");
+const babelTSFixturesDir =
+  path.join(babelParserDir, "test", "fixtures", "typescript");
 
 glob("**/input.js", {
-  cwd: babylonTSFixturesDir,
+  cwd: babelTSFixturesDir,
 }, (error, files) => {
   if (error) {
     throw error;
   }
 
-  describe("Whole-program validation for Babylon TypeScript tests", function () {
+  describe("Whole-program validation for Babel TypeScript tests", function () {
     if (error) {
       throw error;
     }
 
     files.forEach((tsPath: any) => {
-      var fullPath = path.join(babylonTSFixturesDir, tsPath);
+      var fullPath = path.join(babelTSFixturesDir, tsPath);
       // Until https://github.com/babel/babel/pull/7967 is released:
       var shouldSkip = tsPath.endsWith("conditional-infer/input.js");
 
@@ -54,7 +54,7 @@ glob("**/input.js", {
     var parseOptions = getOptions(fullPath);
 
     try {
-      return babylonParse(code, parseOptions).program;
+      return babelParse(code, parseOptions).program;
 
     } catch (error) {
       // If parsing fails, check options.json to see if the failure was
@@ -96,7 +96,7 @@ glob("**/input.js", {
       return options.plugins;
     }
 
-    if (dir !== babylonTSFixturesDir) {
+    if (dir !== babelTSFixturesDir) {
       return getPlugins(path.dirname(dir));
     }
 
@@ -132,7 +132,7 @@ glob("**/*.ts", {
             throw error;
           }
 
-          var program = babylonParse(code, {
+          var program = babelParse(code, {
             sourceType: "module",
             plugins: [
               "typescript",

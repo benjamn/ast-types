@@ -1,5 +1,5 @@
 node_modules
-test/data/babylon
+test/data/babel-parser
 test/data/typescript-compiler
 
 # Ignore TypeScript-emitted files
@@ -7,6 +7,6 @@ test/data/typescript-compiler
 *.js.map
 *.d.ts
 *.d.ts.map
-
-# Don't apply the d.ts ignore to /types
+# Except...
 !/types/**/*.d.ts
+!babel-register.js
