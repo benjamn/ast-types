@@ -153,6 +153,7 @@ export interface Visitor {
   visitObjectTypeSpreadProperty?(this: Context, path: NodePath): any;
   visitObjectTypeIndexer?(this: Context, path: NodePath): any;
   visitObjectTypeCallProperty?(this: Context, path: NodePath): any;
+  visitObjectTypeInternalSlot?(this: Context, path: NodePath): any;
   visitVariance?(this: Context, path: NodePath): any;
   visitQualifiedTypeIdentifier?(this: Context, path: NodePath): any;
   visitGenericTypeAnnotation?(this: Context, path: NodePath): any;
@@ -161,10 +162,14 @@ export interface Visitor {
   visitUnionTypeAnnotation?(this: Context, path: NodePath): any;
   visitIntersectionTypeAnnotation?(this: Context, path: NodePath): any;
   visitTypeofTypeAnnotation?(this: Context, path: NodePath): any;
+  visitType?(this: Context, path: NodePath): any;
   visitTypeParameter?(this: Context, path: NodePath): any;
+  visitPrivateName?(this: Context, path: NodePath): any;
+  visitClassPrivateProperty?(this: Context, path: NodePath): any;
   visitClassImplements?(this: Context, path: NodePath): any;
-  visitInterfaceDeclaration?(this: Context, path: NodePath): any;
+  visitInterfaceTypeAnnotation?(this: Context, path: NodePath): any;
   visitInterfaceExtends?(this: Context, path: NodePath): any;
+  visitInterfaceDeclaration?(this: Context, path: NodePath): any;
   visitDeclareInterface?(this: Context, path: NodePath): any;
   visitTypeAlias?(this: Context, path: NodePath): any;
   visitOpaqueType?(this: Context, path: NodePath): any;
@@ -203,6 +208,7 @@ export interface Visitor {
   visitCommentLine?(this: Context, path: NodePath): any;
   visitDirective?(this: Context, path: NodePath): any;
   visitDirectiveLiteral?(this: Context, path: NodePath): any;
+  visitInterpreterDirective?(this: Context, path: NodePath): any;
   visitStringLiteral?(this: Context, path: NodePath): any;
   visitNumericLiteral?(this: Context, path: NodePath): any;
   visitBigIntLiteral?(this: Context, path: NodePath): any;

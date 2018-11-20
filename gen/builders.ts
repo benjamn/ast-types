@@ -42,6 +42,7 @@ export interface ProgramBuilder {
       body: K.StatementKind[],
       comments?: K.CommentKind[] | null,
       directives?: K.DirectiveKind[],
+      interpreter?: K.InterpreterDirectiveKind | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.Program;
@@ -1569,6 +1570,7 @@ export interface ObjectTypeAnnotationBuilder {
       comments?: K.CommentKind[] | null,
       exact?: boolean,
       indexers?: K.ObjectTypeIndexerKind[],
+      internalSlots: K.ObjectTypeInternalSlotKind[],
       loc?: K.SourceLocationKind | null,
       properties: (K.ObjectTypePropertyKind | K.ObjectTypeSpreadPropertyKind)[]
     }
@@ -1628,6 +1630,20 @@ export interface ObjectTypeCallPropertyBuilder {
       value: K.FunctionTypeAnnotationKind
     }
   ): N.ObjectTypeCallProperty;
+}
+
+export interface ObjectTypeInternalSlotBuilder {
+  (id: K.IdentifierKind, staticParam: boolean, method: boolean): N.ObjectTypeInternalSlot;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      method: boolean,
+      static: boolean,
+      value: K.TypeKind
+    }
+  ): N.ObjectTypeInternalSlot;
 }
 
 export interface VarianceBuilder {
@@ -1747,6 +1763,33 @@ export interface TypeParameterBuilder {
   ): N.TypeParameter;
 }
 
+export interface PrivateNameBuilder {
+  (name: K.IdentifierKind): N.PrivateName;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      name: K.IdentifierKind
+    }
+  ): N.PrivateName;
+}
+
+export interface ClassPrivatePropertyBuilder {
+  (key: K.IdentifierKind): N.ClassPrivateProperty;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | null,
+      value?: K.ExpressionKind | null,
+      variance?: K.VarianceKind | "plus" | "minus" | null
+    }
+  ): N.ClassPrivateProperty;
+}
+
 export interface ClassImplementsBuilder {
   (id: K.IdentifierKind): N.ClassImplements;
   from(
@@ -1758,6 +1801,30 @@ export interface ClassImplementsBuilder {
       typeParameters?: K.TypeParameterInstantiationKind | null
     }
   ): N.ClassImplements;
+}
+
+export interface InterfaceTypeAnnotationBuilder {
+  (body: K.ObjectTypeAnnotationKind, extendsParam: K.InterfaceExtendsKind[]): N.InterfaceTypeAnnotation;
+  from(
+    params: {
+      body: K.ObjectTypeAnnotationKind,
+      comments?: K.CommentKind[] | null,
+      extends: K.InterfaceExtendsKind[],
+      loc?: K.SourceLocationKind | null
+    }
+  ): N.InterfaceTypeAnnotation;
+}
+
+export interface InterfaceExtendsBuilder {
+  (id: K.IdentifierKind): N.InterfaceExtends;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      typeParameters?: K.TypeParameterInstantiationKind | null
+    }
+  ): N.InterfaceExtends;
 }
 
 export interface InterfaceDeclarationBuilder {
@@ -1776,18 +1843,6 @@ export interface InterfaceDeclarationBuilder {
       typeParameters?: K.TypeParameterDeclarationKind | null
     }
   ): N.InterfaceDeclaration;
-}
-
-export interface InterfaceExtendsBuilder {
-  (id: K.IdentifierKind): N.InterfaceExtends;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TypeParameterInstantiationKind | null
-    }
-  ): N.InterfaceExtends;
 }
 
 export interface DeclareInterfaceBuilder {
@@ -2258,6 +2313,17 @@ export interface DirectiveLiteralBuilder {
       value?: string
     }
   ): N.DirectiveLiteral;
+}
+
+export interface InterpreterDirectiveBuilder {
+  (value: string): N.InterpreterDirective;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      value: string
+    }
+  ): N.InterpreterDirective;
 }
 
 export interface StringLiteralBuilder {
@@ -3385,6 +3451,7 @@ export interface Builders {
   objectTypeSpreadProperty: ObjectTypeSpreadPropertyBuilder;
   objectTypeIndexer: ObjectTypeIndexerBuilder;
   objectTypeCallProperty: ObjectTypeCallPropertyBuilder;
+  objectTypeInternalSlot: ObjectTypeInternalSlotBuilder;
   variance: VarianceBuilder;
   qualifiedTypeIdentifier: QualifiedTypeIdentifierBuilder;
   genericTypeAnnotation: GenericTypeAnnotationBuilder;
@@ -3394,9 +3461,12 @@ export interface Builders {
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
   typeofTypeAnnotation: TypeofTypeAnnotationBuilder;
   typeParameter: TypeParameterBuilder;
+  privateName: PrivateNameBuilder;
+  classPrivateProperty: ClassPrivatePropertyBuilder;
   classImplements: ClassImplementsBuilder;
-  interfaceDeclaration: InterfaceDeclarationBuilder;
+  interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
+  interfaceDeclaration: InterfaceDeclarationBuilder;
   declareInterface: DeclareInterfaceBuilder;
   typeAlias: TypeAliasBuilder;
   opaqueType: OpaqueTypeBuilder;
@@ -3434,6 +3504,7 @@ export interface Builders {
   commentLine: CommentLineBuilder;
   directive: DirectiveBuilder;
   directiveLiteral: DirectiveLiteralBuilder;
+  interpreterDirective: InterpreterDirectiveBuilder;
   stringLiteral: StringLiteralBuilder;
   numericLiteral: NumericLiteralBuilder;
   bigIntLiteral: BigIntLiteralBuilder;

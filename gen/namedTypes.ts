@@ -153,6 +153,7 @@ export interface NamedTypes {
   ObjectTypeSpreadProperty: Type<N.ObjectTypeSpreadProperty>;
   ObjectTypeIndexer: Type<N.ObjectTypeIndexer>;
   ObjectTypeCallProperty: Type<N.ObjectTypeCallProperty>;
+  ObjectTypeInternalSlot: Type<N.ObjectTypeInternalSlot>;
   Variance: Type<N.Variance>;
   QualifiedTypeIdentifier: Type<N.QualifiedTypeIdentifier>;
   GenericTypeAnnotation: Type<N.GenericTypeAnnotation>;
@@ -161,10 +162,14 @@ export interface NamedTypes {
   UnionTypeAnnotation: Type<N.UnionTypeAnnotation>;
   IntersectionTypeAnnotation: Type<N.IntersectionTypeAnnotation>;
   TypeofTypeAnnotation: Type<N.TypeofTypeAnnotation>;
+  Type: Type<N.Type>;
   TypeParameter: Type<N.TypeParameter>;
+  PrivateName: Type<N.PrivateName>;
+  ClassPrivateProperty: Type<N.ClassPrivateProperty>;
   ClassImplements: Type<N.ClassImplements>;
-  InterfaceDeclaration: Type<N.InterfaceDeclaration>;
+  InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
   InterfaceExtends: Type<N.InterfaceExtends>;
+  InterfaceDeclaration: Type<N.InterfaceDeclaration>;
   DeclareInterface: Type<N.DeclareInterface>;
   TypeAlias: Type<N.TypeAlias>;
   OpaqueType: Type<N.OpaqueType>;
@@ -203,6 +208,7 @@ export interface NamedTypes {
   CommentLine: Type<N.CommentLine>;
   Directive: Type<N.Directive>;
   DirectiveLiteral: Type<N.DirectiveLiteral>;
+  InterpreterDirective: Type<N.InterpreterDirective>;
   StringLiteral: Type<N.StringLiteral>;
   NumericLiteral: Type<N.NumericLiteral>;
   BigIntLiteral: Type<N.BigIntLiteral>;
