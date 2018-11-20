@@ -3,21 +3,10 @@ test/data/babylon
 test/data/typescript-compiler
 
 # Ignore TypeScript-emitted files
+*.js
 *.js.map
+*.d.ts
 *.d.ts.map
-def/**/*.js
-def/**/*.d.ts
-gen/**/*.js
-gen/**/*.d.ts
-lib/**/*.js
-lib/**/*.d.ts
-script/**/*.js
-script/**/*.d.ts
-test/**/*.js
-test/**/*.d.ts
-fork.js
-fork.d.ts
-types.js
-types.d.ts
-main.js
-main.d.ts
+
+# Don't apply the d.ts ignore to /types
+!/types/**/*.d.ts
