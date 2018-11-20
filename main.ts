@@ -18,7 +18,7 @@ import { Visitor } from "./gen/visitor";
 type GenTypes = {
   namedTypes: NamedTypes;
   builders: Builders;
-  visit: (node: any, methods?: Visitor) => any;
+  visit<M = {}>(node: any, methods?: Visitor<M> & M): any;
 };
 
 type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;

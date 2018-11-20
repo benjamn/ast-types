@@ -459,7 +459,7 @@ describe("types.visit", function() {
     var literalCount = 0;
 
     n.TryStatement.assert(types.visit(ts, {
-      visitLiteral: function(path: any) {
+      visitLiteral: function(path) {
         var node = path.node;
         literalCount += 1;
         assert.strictEqual(node.value, "baz");
@@ -483,7 +483,7 @@ describe("types.visit", function() {
         return false;
       },
 
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         ids[path.node.name] = true;
         this.traverse(path);
       }
@@ -495,7 +495,7 @@ describe("types.visit", function() {
     ids = {};
 
     types.visit(ts, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         ids[path.node.name] = true;
         this.traverse(path);
       }
@@ -513,18 +513,18 @@ describe("types.visit", function() {
     var literal = "not visited";
     var unvisitedTypes: any[] = [];
     var root = types.visit(call, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           this.abort();
         }
       },
 
-      visitLiteral: function(path: any) {
+      visitLiteral: function(path) {
         literal = path.value;
         this.traverse(path);
       },
 
-      visitNode: function(path: any) {
+      visitNode: function(path) {
         unvisitedTypes.push(path.value.type);
         this.traverse(path);
       }
@@ -543,13 +543,13 @@ describe("types.visit", function() {
     var literal: any = "not visited";
     var unvisitedTypes: any[] = [];
     var root = types.visit(call, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           this.abort();
         }
       },
 
-      visitMemberExpression: function(path: any) {
+      visitMemberExpression: function(path) {
         try {
           this.traverse(path);
         } catch (err) {
@@ -558,12 +558,12 @@ describe("types.visit", function() {
         }
       },
 
-      visitLiteral: function(path: any) {
+      visitLiteral: function(path) {
         literal = path.value;
         this.traverse(path);
       },
 
-      visitNode: function(path: any) {
+      visitNode: function(path) {
         unvisitedTypes.push(path.value.type);
         this.traverse(path);
       }
@@ -602,7 +602,7 @@ describe("types.visit", function() {
     var lineComments: any[] = [];
 
     types.visit(ast, {
-      visitComment: function(path: any) {
+      visitComment: function(path) {
         this.traverse(path);
         if (n.Block.check(path.value)) {
           blockComments.push(path.value);
@@ -625,7 +625,7 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitBlock: function(path: any) {
+      visitBlock: function(path) {
         blockComments.push(path.value);
         this.traverse(path);
       }
@@ -640,7 +640,7 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitLine: function(path: any) {
+      visitLine: function(path) {
         lineComments.push(path.value);
         this.traverse(path);
       }
@@ -658,12 +658,12 @@ describe("types.visit", function() {
     lineComments.length = 0;
 
     types.visit(ast, {
-      visitBlock: function(path: any) {
+      visitBlock: function(path) {
         blockComments.push(path.value);
         this.traverse(path);
       },
 
-      visitLine: function(path: any) {
+      visitLine: function(path) {
         lineComments.push(path.value);
         this.traverse(path);
       }
@@ -699,7 +699,7 @@ describe("path traversal", function() {
     // Note that we're passing a path instead of a node as the first
     // argument to types.traverse.
     types.visit(path, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         var node = path.node;
         ++idCount;
 
@@ -728,7 +728,7 @@ describe("replacing the root", function() {
 
   it("should be possible", function() {
     var callExp = types.visit(ast, {
-      visitExpressionStatement: function(path: any) {
+      visitExpressionStatement: function(path) {
         path.replace(b.callExpression(b.identifier("f"), [
           path.node.expression
         ]));
@@ -917,7 +917,7 @@ describe("path.replace", function() {
 
   it("should support replacement with a single node", function() {
     types.visit(ast, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.node.name === "a") {
           path.replace(b.identifier("b"));
         }
@@ -930,7 +930,7 @@ describe("path.replace", function() {
 
   it("should support replacement in an array with a single node", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path: any) {
+      visitVariableDeclaration: function(path) {
         path.replace(b.returnStatement(null));
         this.traverse(path);
       }
@@ -942,7 +942,7 @@ describe("path.replace", function() {
 
   it("should support replacement with nothing", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path: any) {
+      visitVariableDeclaration: function(path) {
         path.replace();
         this.traverse(path);
       }
@@ -953,7 +953,7 @@ describe("path.replace", function() {
 
   it("should support replacement with itself plus more in an array", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path: any) {
+      visitVariableDeclaration: function(path) {
         var scopeBody = path.scope.path.get("body", "body");
 
         // This is contrived such that we just happen to be replacing
@@ -1007,7 +1007,7 @@ describe("path.replace", function() {
 
   it("should not throw when replacing the same node twice", function() {
     types.visit(ast, {
-      visitVariableDeclaration: function(path: any) {
+      visitVariableDeclaration: function(path) {
         path.replace(b.expressionStatement(b.literal(null)));
         n.ExpressionStatement.assert(path.value);
         n.Literal.assert(path.value.expression);
@@ -1042,13 +1042,13 @@ describe("global scope", function() {
     var globalScope: any;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path: any) {
+      visitFunctionDeclaration: function(path) {
         var node = path.node;
         assert.strictEqual(path.scope.isGlobal, false);
 
@@ -1068,13 +1068,13 @@ describe("global scope", function() {
     var globalScope: any;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path: any) {
+      visitFunctionDeclaration: function(path) {
         assert.ok(globalScope.declares("foo"));
         assert.ok(globalScope.declares("bar"));
         assert.strictEqual(path.scope.lookup("foo"), globalScope);
@@ -1109,7 +1109,7 @@ describe("scope methods", function () {
     var checked: any[] = [];
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         var bindings = path.scope.getBindings();
         assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
         assert.equal(1, bindings.foo.length);
@@ -1118,7 +1118,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path: any) {
+      visitFunctionDeclaration: function(path) {
         var bindings = path.scope.getBindings();
         assert.deepEqual(["baz"], Object.keys(bindings));
         assert.equal(1, bindings.baz.length);
@@ -1126,7 +1126,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitReturnStatement: function(path: any) {
+      visitReturnStatement: function(path) {
         var node = path.node;
         if (n.CallExpression.check(node.argument) &&
             node.argument.callee.name === "rom") {
@@ -1157,7 +1157,7 @@ describe("scope methods", function () {
     var names;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
       }
@@ -1179,7 +1179,7 @@ describe("scope methods", function () {
     var names;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
       }
@@ -1203,7 +1203,7 @@ describe("scope methods", function () {
     });
 
     types.visit(ast, {
-      visitFunctionDeclaration: function(path: any) {
+      visitFunctionDeclaration: function(path) {
         names = Object.keys(path.scope.lookup("zap").getBindings()).sort();
         assert.deepEqual(names, ["zap"]);
         this.traverse(path);
@@ -1216,14 +1216,14 @@ describe("scope methods", function () {
     var bindings;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         path.scope.injectTemporary();
         bindings = path.scope.getBindings();
         assert.deepEqual(["bar", "foo", "nom", "t$0$0"], Object.keys(bindings).sort());
         this.traverse(path);
       },
 
-      visitFunctionDeclaration: function(path: any) {
+      visitFunctionDeclaration: function(path) {
         path.scope.injectTemporary(
           path.scope.declareTemporary("t$")
         )
@@ -1241,7 +1241,7 @@ describe("scope methods", function () {
     var romVarDecl: any;
 
     types.visit(ast, {
-      visitProgram: function(path: any) {
+      visitProgram: function(path) {
         path.get("body").unshift(
           globalVarDecl = b.variableDeclaration("var", [
             b.variableDeclarator(
@@ -1258,7 +1258,7 @@ describe("scope methods", function () {
         this.traverse(path);
       },
 
-      visitFunction: function(path: any) {
+      visitFunction: function(path) {
         var funcId = path.value.id;
 
         var varDecl = b.variableDeclaration("var", [
@@ -1535,7 +1535,7 @@ describe("types.visit", function() {
 
   it("should allow simple tree modifications", function() {
     var bar = types.visit(b.identifier("foo"), {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         assert.ok(path instanceof NodePath);
         path.value.name = "bar";
         return false;
@@ -1568,9 +1568,9 @@ describe("types.visit", function() {
     var idNames: any[] = [];
 
     types.visit(objProp, {
-      visitMemberExpression: function(path: any) {
+      visitMemberExpression: function(path) {
         this.traverse(path, {
-          visitIdentifier: function(path: any) {
+          visitIdentifier: function(path) {
             idNames.push("*" + path.value.name + "*");
             return false;
           }
@@ -1582,7 +1582,7 @@ describe("types.visit", function() {
         this.visit(path.get("property"));
       },
 
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         idNames.push(path.value.name);
         return false;
       }
@@ -1593,11 +1593,11 @@ describe("types.visit", function() {
     idNames.length = 0;
 
     types.visit(objProp, {
-      visitMemberExpression: function(path: any) {
+      visitMemberExpression: function(path) {
         path.get("object", "name").replace("asdfasdf");
         path.get("property", "name").replace("zxcvzxcv");
         this.traverse(path, {
-          visitIdentifier: function(path: any) {
+          visitIdentifier: function(path) {
             idNames.push(path.value.name);
             return false;
           }
@@ -1616,7 +1616,7 @@ describe("types.visit", function() {
     ]);
 
     types.visit(seqExpr, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         assert.strictEqual(path.value.name, "zxcv");
         path.replace(
           b.identifier("foo"),
@@ -1637,7 +1637,7 @@ describe("types.visit", function() {
     assert.strictEqual(bar.name, "bar");
 
     types.visit(seqExpr, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           path.replace(path.value, path.value);
         }
@@ -1661,12 +1661,12 @@ describe("types.visit", function() {
     assert.strictEqual(bar.name, "bar");
 
     types.visit(seqExpr, {
-      visitLiteral: function(path: any) {
+      visitLiteral: function(path) {
         path.replace();
         return false;
       },
 
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.value.name === "bar") {
           path.replace();
         }
@@ -1693,7 +1693,7 @@ describe("types.visit", function() {
     var propertyContext;
 
     types.visit(objProp, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         assert.strictEqual(this.needToCallTraverse, true);
         this.traverse(path);
         assert.strictEqual(path.name, path.value.name);
@@ -1790,7 +1790,7 @@ describe("types.visit", function() {
     assert.strictEqual(objProp.computed, false);
 
     types.visit(objProp, {
-      visitIdentifier: function(path: any) {
+      visitIdentifier: function(path) {
         if (path.value.name === "property") {
           path.parent.get("computed").replace(true);
           return b.callExpression(

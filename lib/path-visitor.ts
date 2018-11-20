@@ -1,6 +1,6 @@
 import { Fork, Omit } from "../types";
 import typesPlugin from "./types";
-import nodePathPlugin from "./node-path";
+import nodePathPlugin, { NodePathType } from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -25,8 +25,7 @@ export interface PathVisitorType {
 }
 
 export interface PathVisitorStatics {
-  fromMethodsObject(): VisitorType;
-  fromMethodsObject<M>(methods: M): VisitorType & M;
+  fromMethodsObject(methods?: any): VisitorType;
   visit(node: any, methods?: any): any;
 }
 
@@ -40,6 +39,10 @@ export interface VisitorConstructor extends PathVisitorStatics {
   new(): VisitorType;
 }
 
+export interface VisitorMethods {
+  [visitorMethod: string]: (path: NodePathType) => any;
+}
+
 export interface SharedContextMethods {
   currentPath: any;
   needToCallTraverse: boolean;
@@ -47,8 +50,8 @@ export interface SharedContextMethods {
   visitor: any;
   reset(path: any, ...args: any[]): any;
   invokeVisitorMethod(methodName: string): any;
-  traverse(path: any, newVisitor?: any): any;
-  visit(path: any, newVisitor?: any): any;
+  traverse(path: any, newVisitor?: VisitorMethods): any;
+  visit(path: any, newVisitor?: VisitorMethods): any;
   reportChanged(): void;
   abort(): void;
 }
@@ -110,7 +113,7 @@ export default function pathVisitorPlugin(fork: Fork) {
     return methodNameTable;
   }
 
-  PathVisitor.fromMethodsObject = function fromMethodsObject(methods?: any) {
+  PathVisitor.fromMethodsObject = function fromMethodsObject(methods) {
     if (methods instanceof PathVisitor) {
       return methods;
     }

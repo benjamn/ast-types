@@ -364,16 +364,24 @@ const out = [
         b.stringLiteral("../lib/path-visitor")
       ),
       b.exportNamedDeclaration(
-        b.tsInterfaceDeclaration(
-          b.identifier("Visitor"),
-          b.tsInterfaceBody([
+        b.tsInterfaceDeclaration.from({
+          id: b.identifier("Visitor"),
+          typeParameters: b.tsTypeParameterDeclaration([
+            b.tsTypeParameter("M", undefined, b.tsTypeLiteral([])),
+          ]),
+          body: b.tsInterfaceBody([
             ...Object.keys(astTypes.namedTypes).map(typeName => {
               return b.tsMethodSignature.from({
                 key: b.identifier(`visit${typeName}`),
                 parameters: [
                   b.identifier.from({
                     name: "this",
-                    typeAnnotation: b.tsTypeAnnotation(b.tsTypeReference(b.identifier("Context"))),
+                    typeAnnotation: b.tsTypeAnnotation(
+                      b.tsIntersectionType([
+                        b.tsTypeReference(b.identifier("Context")),
+                        b.tsTypeReference(b.identifier("M")),
+                      ])
+                    ),
                   }),
                   b.identifier.from({
                     name: "path",
@@ -384,8 +392,8 @@ const out = [
                 typeAnnotation: b.tsTypeAnnotation(b.tsAnyKeyword()),
               });
             }),
-          ])
-        )
+          ]),
+        })
       ),
     ]),
   },
