@@ -7,8 +7,12 @@ test/data/typescript-compiler
 *.d.ts.map
 def/**/*.js
 def/**/*.d.ts
+gen/**/*.js
+gen/**/*.d.ts
 lib/**/*.js
 lib/**/*.d.ts
+script/**/*.js
+script/**/*.d.ts
 test/**/*.js
 test/**/*.d.ts
 fork.js
