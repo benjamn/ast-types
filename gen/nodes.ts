@@ -2036,13 +2036,13 @@ export interface TSDeclareMethod extends ASTNode {
   generator: boolean;
   params: K.PatternKind[];
   abstract: boolean;
-  accessibility: "public" | "private" | "protected" | "undefined";
+  accessibility: "public" | "private" | "protected" | undefined;
   static: boolean;
   computed: boolean;
   optional: boolean;
   key: K.IdentifierKind | K.StringLiteralKind | K.NumericLiteralKind | K.ExpressionKind;
   kind: "get" | "set" | "method" | "constructor";
-  access: "public" | "private" | "protected" | "undefined";
+  access: "public" | "private" | "protected" | undefined;
   decorators?: K.DecoratorKind[] | null;
   returnType?: K.TSTypeAnnotationKind | K.NoopKind | null;
 }
@@ -2284,7 +2284,7 @@ export interface TSParameterProperty extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "TSParameterProperty";
   comments?: K.CommentKind[] | null;
-  accessibility: "public" | "private" | "protected" | "undefined";
+  accessibility: "public" | "private" | "protected" | undefined;
   readonly: boolean;
   parameter: K.IdentifierKind | K.AssignmentPatternKind;
 }

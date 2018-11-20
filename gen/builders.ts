@@ -2903,8 +2903,8 @@ export interface TSDeclareMethodBuilder {
   from(
     params: {
       abstract?: boolean,
-      access?: "public" | "private" | "protected" | "undefined",
-      accessibility?: "public" | "private" | "protected" | "undefined",
+      access?: "public" | "private" | "protected" | undefined,
+      accessibility?: "public" | "private" | "protected" | undefined,
       async?: boolean,
       comments?: K.CommentKind[] | null,
       computed?: boolean,
@@ -3286,7 +3286,7 @@ export interface TSParameterPropertyBuilder {
   (parameter: K.IdentifierKind | K.AssignmentPatternKind): N.TSParameterProperty;
   from(
     params: {
-      accessibility?: "public" | "private" | "protected" | "undefined",
+      accessibility?: "public" | "private" | "protected" | undefined,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       parameter: K.IdentifierKind | K.AssignmentPatternKind,

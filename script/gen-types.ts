@@ -34,6 +34,9 @@ function resolveName(name: NameType): string {
 }
 
 function getTypeAnnotation(type: string): any {
+  if (type === "undefined") {
+    return b.tsUndefinedKeyword();
+  }
   if (type === "null") {
     return b.tsNullKeyword();
   }
