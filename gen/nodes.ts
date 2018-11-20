@@ -1985,8 +1985,8 @@ export interface TSTypeParameter extends ASTNode {
   name: string;
   optional: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
-  constraint?: K.TSTypeKind | null;
-  default?: K.TSTypeKind | null;
+  constraint: K.TSTypeKind | undefined;
+  default: K.TSTypeKind | undefined;
 }
 
 export interface TSParenthesizedType extends ASTNode {

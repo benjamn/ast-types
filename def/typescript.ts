@@ -325,8 +325,8 @@ export default function (fork: Fork) {
     .bases("Identifier")
     .build("name", "constraint", "default")
     .field("name", String)
-    .field("constraint", or(def("TSType"), null), defaults["null"])
-    .field("default", or(def("TSType"), null), defaults["null"]);
+    .field("constraint", or(def("TSType"), void 0), defaults["undefined"])
+    .field("default", or(def("TSType"), void 0), defaults["undefined"]);
 
   def("TSTypeAssertion")
     .bases("Expression")

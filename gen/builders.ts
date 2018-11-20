@@ -2820,14 +2820,14 @@ export interface TSInferTypeBuilder {
 export interface TSTypeParameterBuilder {
   (
     name: string,
-    constraint?: K.TSTypeKind | null,
-    defaultParam?: K.TSTypeKind | null
+    constraint?: K.TSTypeKind | undefined,
+    defaultParam?: K.TSTypeKind | undefined
   ): N.TSTypeParameter;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      constraint?: K.TSTypeKind | null,
-      default?: K.TSTypeKind | null,
+      constraint?: K.TSTypeKind | undefined,
+      default?: K.TSTypeKind | undefined,
       loc?: K.SourceLocationKind | null,
       name: string,
       optional?: boolean,
