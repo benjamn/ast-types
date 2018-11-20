@@ -2,4 +2,4 @@
 
 set -ex
 
-exec ./node_modules/.bin/babel-node --extensions ".ts" script/$@.ts
+exec babel-node --extensions ".ts" script/$@.ts
