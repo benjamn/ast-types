@@ -11,10 +11,16 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
-import { ASTNode } from "./lib/types";
-import { NamedTypes } from "./gen/namedTypes";
-import { Builders } from "./gen/builders";
-import { Visitor } from "./gen/visitor";
+import { ASTNode as _ASTNode } from "./lib/types";
+import { NamedTypes as _NamedTypes } from "./gen/namedTypes";
+import { Builders as _Builders } from "./gen/builders";
+import { Visitor as _Visitor } from "./gen/visitor";
+
+// Must use `export type` to ensure `module.exports =` in babel-transpiled code.
+export type ASTNode = _ASTNode;
+export type NamedTypes = _NamedTypes;
+export type Builders = _Builders;
+export type Visitor<M = {}> = _Visitor<M>;
 
 type GenTypes = {
   namedTypes: NamedTypes;
@@ -44,9 +50,3 @@ const main = fork([
 ]) as any as Main;
 
 export default main;
-export {
-  NamedTypes,
-  Builders,
-  Visitor,
-  ASTNode,
-};
