@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { parse as babylonParse, BabylonOptions, PluginName } from "babylon";
+import { parse as babylonParse, ParserOptions, ParserPlugin } from "@babel/parser";
 import fork from "../fork";
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
@@ -75,7 +75,7 @@ glob("**/input.js", {
     }
   }
 
-  function getOptions(fullPath: string): BabylonOptions {
+  function getOptions(fullPath: string): ParserOptions {
     var plugins = getPlugins(path.dirname(fullPath));
     return {
       sourceType: "module",
@@ -83,7 +83,7 @@ glob("**/input.js", {
     };
   }
 
-  function getPlugins(dir: string): PluginName[] {
+  function getPlugins(dir: string): ParserPlugin[] {
     try {
       var options = JSON.parse(fs.readFileSync(
         path.join(dir, "options.json")
@@ -138,8 +138,7 @@ glob("**/*.ts", {
               "typescript",
               "objectRestSpread",
               "classProperties",
-              // TODO: Add "optionalCatchBinding" to @types/babylon
-              "optionalCatchBinding" as PluginName,
+              "optionalCatchBinding",
             ]
           }).program;
 

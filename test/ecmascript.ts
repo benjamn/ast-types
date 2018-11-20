@@ -3,7 +3,7 @@ import { parse, Syntax } from "esprima";
 import * as espree from "espree";
 import * as esprimaFb from "esprima-fb";
 import { Literal } from "estree";
-import * as babelTypes from "babel-types";
+import * as babelTypes from "@babel/types";
 import fork from "../fork";
 import types from "../main";
 import shared from "./shared";
