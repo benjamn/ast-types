@@ -1,4 +1,4 @@
-import { Fork, Omit } from "../types";
+import { Fork, Omit, ASTNode } from "../types";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -69,6 +69,11 @@ export interface FieldType {
 
 export interface FieldConstructor {
     new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
+}
+
+export interface Builder {
+    (...args: any[]): ASTNode;
+    from(obj: { [param: string]: any }): ASTNode;
 }
 
 export default function typesPlugin(_fork?: Fork) {
@@ -538,15 +543,15 @@ export default function typesPlugin(_fork?: Fork) {
     // False by default until .build(...) is called on an instance.
     Object.defineProperty(Dp, "buildable", {value: false});
 
-    var builders: { [name: string]: any } = {};
+    var builders: { [name: string]: Builder } = {};
 
     // This object is used as prototype for any node created by a builder.
-    var nodePrototype: any = {};
+    var nodePrototype: { [definedMethod: string]: Function } = {};
 
     // Call this function to define a new method to be shared by all AST
      // nodes. The replaced method (if any) is returned for easy wrapping.
-    function defineMethod(name: any, func?: any) {
-        var old: any = nodePrototype[name];
+    function defineMethod(name: any, func?: Function) {
+        var old = nodePrototype[name];
 
         // Pass undefined as func to delete nodePrototype[name].
         if (isUndefined.check(func)) {
@@ -643,7 +648,7 @@ export default function typesPlugin(_fork?: Fork) {
         // with positional arguments mapped to the fields original passed to .build.
         // If not enough arguments are provided, the default value for the remaining fields
         // will be used.
-        function builder() {
+        const builder: Builder = function builder() {
             var args = arguments;
             var argc = args.length;
 
@@ -654,7 +659,7 @@ export default function typesPlugin(_fork?: Fork) {
                 );
             }
 
-            var built = Object.create(nodePrototype);
+            var built: ASTNode = Object.create(nodePrototype);
 
             self.buildParams.forEach(function (param, i) {
                 if (i < argc) {
@@ -680,7 +685,7 @@ export default function typesPlugin(_fork?: Fork) {
         // Calling .from on the builder function will construct an instance of the Def,
         // using field values from the passed object. For fields missing from the passed object,
         // their default value will be used.
-        builder.from = function (obj: any) {
+        builder.from = function (obj) {
             if (!self.finalized) {
                 throw new Error(
                     "attempting to instantiate unfinalized type " +
@@ -688,7 +693,7 @@ export default function typesPlugin(_fork?: Fork) {
                 );
             }
 
-            var built = Object.create(nodePrototype);
+            var built: ASTNode = Object.create(nodePrototype);
 
             Object.keys(self.allFields).forEach(function (param) {
                 if (hasOwn.call(obj, param)) {
@@ -864,7 +869,7 @@ export default function typesPlugin(_fork?: Fork) {
 
     // Adds an additional builder for Expression subtypes
     // that wraps the built Expression in an ExpressionStatements.
-    function wrapExpressionBuilderWithStatement(typeName: any) {
+    function wrapExpressionBuilderWithStatement(typeName: string) {
         var wrapperName = getStatementBuilderName(typeName);
 
         // skip if the builder already exists
@@ -876,9 +881,14 @@ export default function typesPlugin(_fork?: Fork) {
         // skip if there is nothing to wrap
         if (!wrapped) return;
 
-        builders[wrapperName] = function () {
+        const builder: Builder = function () {
             return builders.expressionStatement(wrapped.apply(builders, arguments));
         };
+        builder.from = function () {
+            return builders.expressionStatement(wrapped.from.apply(builders, arguments));
+        }
+
+        builders[wrapperName] = builder;
     }
 
     function populateSupertypeList(typeName: any, list: any) {
