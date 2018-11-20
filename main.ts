@@ -11,22 +11,14 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
-import { NamedTypes as _NamedTypes } from "./gen/namedTypes";
-import { Builders as _Builders } from "./gen/builders";
-import { Visitor as _Visitor } from "./gen/visitor";
-
-// We have to use a namespace to export types along with `export =`
-// See https://github.com/Microsoft/TypeScript/issues/2719
-namespace main {
-  export type NamedTypes = _NamedTypes;
-  export type Builders = _Builders;
-  export type Visitor = _Visitor;
-}
+import { NamedTypes } from "./gen/namedTypes";
+import { Builders } from "./gen/builders";
+import { Visitor } from "./gen/visitor";
 
 type GenTypes = {
-  namedTypes: main.NamedTypes;
-  builders: main.Builders;
-  visit: (node: any, methods?: main.Visitor) => any;
+  namedTypes: NamedTypes;
+  builders: Builders;
+  visit: (node: any, methods?: Visitor) => any;
 };
 
 type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;
@@ -50,4 +42,4 @@ const main = fork([
   esProposalsDef,
 ]) as any as Main;
 
-export = main;
+export default main;

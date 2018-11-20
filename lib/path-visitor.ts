@@ -4,68 +4,58 @@ import nodePathPlugin from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-// We have to use a namespace to export types along with `export =`
-// See https://github.com/Microsoft/TypeScript/issues/2719
-namespace pathVisitorPlugin {
-  export interface PathVisitorType {
-    _reusableContextStack: any;
-    _methodNameTable: any;
-    _shouldVisitComments: any;
-    Context: any;
-    _visiting: any;
-    _changeReported: any;
-    _abortRequested: boolean;
-    visit(...args: any[]): any;
-    reset(path: any, ...args: any[]): any;
-    visitWithoutReset(path: any): any;
-    AbortRequest: any;
-    abort(): void;
-    visitor: any;
-    acquireContext(path: any): any;
-    releaseContext(context: any): void;
-    reportChanged(): void;
-    wasChangeReported(): any;
-  }
-
-  export interface PathVisitorStatics {
-    fromMethodsObject(): VisitorType;
-    fromMethodsObject<M>(methods: M): VisitorType & M;
-    visit(node: any, methods?: any): any;
-  }
-
-  export interface PathVisitorConstructor extends PathVisitorStatics {
-    new(): PathVisitorType;
-  }
-
-  export interface VisitorType extends PathVisitorType {}
-
-  export interface VisitorConstructor extends PathVisitorStatics {
-    new(): VisitorType;
-  }
-
-  export interface SharedContextMethods {
-    currentPath: any;
-    needToCallTraverse: boolean;
-    Context: any;
-    visitor: any;
-    reset(path: any, ...args: any[]): any;
-    invokeVisitorMethod(methodName: string): any;
-    traverse(path: any, newVisitor?: any): any;
-    visit(path: any, newVisitor?: any): any;
-    reportChanged(): void;
-    abort(): void;
-  }
-
-  export interface ContextType extends Omit<PathVisitorType, "visit">, SharedContextMethods {}
+export interface PathVisitorType {
+  _reusableContextStack: any;
+  _methodNameTable: any;
+  _shouldVisitComments: any;
+  Context: any;
+  _visiting: any;
+  _changeReported: any;
+  _abortRequested: boolean;
+  visit(...args: any[]): any;
+  reset(path: any, ...args: any[]): any;
+  visitWithoutReset(path: any): any;
+  AbortRequest: any;
+  abort(): void;
+  visitor: any;
+  acquireContext(path: any): any;
+  releaseContext(context: any): void;
+  reportChanged(): void;
+  wasChangeReported(): any;
 }
 
-import PathVisitorType = pathVisitorPlugin.PathVisitorType;
-import PathVisitorConstructor = pathVisitorPlugin.PathVisitorConstructor;
-import VisitorConstructor = pathVisitorPlugin.VisitorConstructor;
-import ContextType = pathVisitorPlugin.ContextType;
-import SharedContextMethods = pathVisitorPlugin.SharedContextMethods;
+export interface PathVisitorStatics {
+  fromMethodsObject(): VisitorType;
+  fromMethodsObject<M>(methods: M): VisitorType & M;
+  visit(node: any, methods?: any): any;
+}
 
-function pathVisitorPlugin(fork: Fork) {
+export interface PathVisitorConstructor extends PathVisitorStatics {
+  new(): PathVisitorType;
+}
+
+export interface VisitorType extends PathVisitorType {}
+
+export interface VisitorConstructor extends PathVisitorStatics {
+  new(): VisitorType;
+}
+
+export interface SharedContextMethods {
+  currentPath: any;
+  needToCallTraverse: boolean;
+  Context: any;
+  visitor: any;
+  reset(path: any, ...args: any[]): any;
+  invokeVisitorMethod(methodName: string): any;
+  traverse(path: any, newVisitor?: any): any;
+  visit(path: any, newVisitor?: any): any;
+  reportChanged(): void;
+  abort(): void;
+}
+
+export interface ContextType extends Omit<PathVisitorType, "visit">, SharedContextMethods {}
+
+export default function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var NodePath = fork.use(nodePathPlugin);
   var isArray = types.builtInTypes.array;
@@ -485,5 +475,3 @@ function pathVisitorPlugin(fork: Fork) {
 
   return PathVisitor;
 };
-
-export = pathVisitorPlugin;

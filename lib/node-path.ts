@@ -3,33 +3,26 @@ import typesPlugin from "./types";
 import pathPlugin, { PathType } from "./path";
 import scopePlugin, { ScopeType } from "./scope";
 
-// We have to use a namespace to export types along with `export =`
-// See https://github.com/Microsoft/TypeScript/issues/2719
-namespace nodePathPlugin {
-    export interface NodePathType extends PathType {
-        node: any;
-        parent: any;
-        scope: any;
-        replace(...args: any[]): any;
-        prune(...args: any[]): any;
-        _computeNode(): any;
-        _computeParent(): any;
-        _computeScope(): ScopeType | null;
-        getValueProperty(name: any): any;
-        needsParens(assumeExpressionContext?: boolean): boolean;
-        canBeFirstInStatement(): boolean;
-        firstInStatement(): boolean;
-    }
-
-    export interface NodePathConstructor {
-        new(value: any, parentPath?: any, name?: any): NodePathType;
-    }
+export interface NodePathType extends PathType {
+    node: any;
+    parent: any;
+    scope: any;
+    replace(...args: any[]): any;
+    prune(...args: any[]): any;
+    _computeNode(): any;
+    _computeParent(): any;
+    _computeScope(): ScopeType | null;
+    getValueProperty(name: any): any;
+    needsParens(assumeExpressionContext?: boolean): boolean;
+    canBeFirstInStatement(): boolean;
+    firstInStatement(): boolean;
 }
 
-type NodePathType = nodePathPlugin.NodePathType;
-type NodePathConstructor = nodePathPlugin.NodePathConstructor;
+export interface NodePathConstructor {
+    new(value: any, parentPath?: any, name?: any): NodePathType;
+}
 
-function nodePathPlugin(fork: Fork) {
+export default function nodePathPlugin(fork: Fork) {
     var types = fork.use(typesPlugin);
     var n = types.namedTypes;
     var b = types.builders;
@@ -506,5 +499,3 @@ function nodePathPlugin(fork: Fork) {
 
     return NodePath;
 };
-
-export = nodePathPlugin;

@@ -10,82 +10,68 @@ var hasOwn = Op.hasOwnProperty;
 
 declare const __typeBrand: unique symbol;
 
-// We have to use a namespace to export types along with `export =`
-// See https://github.com/Microsoft/TypeScript/issues/2719
-namespace typesPlugin {
-    export type CheckFn = (value: any, deep: any) => any;
-    export type NameType = string | (() => string);
-    export type ValueType = object | string | number | boolean | null | undefined;
+export type CheckFn = (value: any, deep: any) => any;
+export type NameType = string | (() => string);
+export type ValueType = object | string | number | boolean | null | undefined;
 
-    export interface TypeType<T extends ValueType = any> {
-        name: NameType;
-        check(value: ValueType, deep?: any): value is T;
-        check(value: any, deep?: any): boolean;
-        assert(value: any, deep?: any): boolean;
-        arrayOf(): TypeType;
-        toString(): string;
-        [__typeBrand]?: T;
-    }
-
-    export interface TypeConstructor {
-        new(check: CheckFn, name: NameType): TypeType;
-        fromArray(...args: any[]): TypeType;
-        fromObject(obj: object): TypeType;
-        or(...types: any[]): TypeType;
-        def(typeName: any): DefType;
-    }
-
-    export interface DefType {
-        typeName: string;
-        baseNames: any[];
-        ownFields: any;
-        allSupertypes: any;
-        supertypeList: string[];
-        allFields: { [fieldName: string]: FieldType; };
-        fieldNames: string[];
-        type: TypeType;
-        isSupertypeOf(that: any): any;
-        checkAllFields(value: any, deep?: any): boolean;
-        check(value: any, deep?: any): boolean;
-        bases(...args: any[]): this;
-        buildable: boolean;
-        buildParams: string[];
-        build(...args: any[]): this;
-        field(name: string, type: any, defaultFn?: Function, hidden?: boolean): this;
-        finalized: boolean;
-        finalize(): void;
-    }
-
-    export interface DefConstructor {
-        new(typeName: string): DefType;
-        fromValue(value: any): any;
-    }
-
-    export interface FieldType {
-        name: string;
-        type: any;
-        hidden: boolean;
-        defaultFn?: Function;
-        toString(): string;
-        getValue(obj: { [name: string]: unknown }): any;
-    }
-
-    export interface FieldConstructor {
-        new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
-    }
+export interface TypeType<T extends ValueType = any> {
+    name: NameType;
+    check(value: ValueType, deep?: any): value is T;
+    check(value: any, deep?: any): boolean;
+    assert(value: any, deep?: any): boolean;
+    arrayOf(): TypeType;
+    toString(): string;
+    [__typeBrand]?: T;
 }
 
-import CheckFn = typesPlugin.CheckFn;
-import NameType = typesPlugin.NameType;
-import TypeType = typesPlugin.TypeType;
-import TypeConstructor = typesPlugin.TypeConstructor;
-import DefType = typesPlugin.DefType;
-import DefConstructor = typesPlugin.DefConstructor;
-import FieldType = typesPlugin.FieldType;
-import FieldConstructor = typesPlugin.FieldConstructor;
-import ValueType = typesPlugin.ValueType;
+export interface TypeConstructor {
+    new(check: CheckFn, name: NameType): TypeType;
+    fromArray(...args: any[]): TypeType;
+    fromObject(obj: object): TypeType;
+    or(...types: any[]): TypeType;
+    def(typeName: any): DefType;
+}
 
-function typesPlugin(_fork?: Fork) {
+export interface DefType {
+    typeName: string;
+    baseNames: any[];
+    ownFields: any;
+    allSupertypes: any;
+    supertypeList: string[];
+    allFields: { [fieldName: string]: FieldType; };
+    fieldNames: string[];
+    type: TypeType;
+    isSupertypeOf(that: any): any;
+    checkAllFields(value: any, deep?: any): boolean;
+    check(value: any, deep?: any): boolean;
+    bases(...args: any[]): this;
+    buildable: boolean;
+    buildParams: string[];
+    build(...args: any[]): this;
+    field(name: string, type: any, defaultFn?: Function, hidden?: boolean): this;
+    finalized: boolean;
+    finalize(): void;
+}
+
+export interface DefConstructor {
+    new(typeName: string): DefType;
+    fromValue(value: any): any;
+}
+
+export interface FieldType {
+    name: string;
+    type: any;
+    hidden: boolean;
+    defaultFn?: Function;
+    toString(): string;
+    getValue(obj: { [name: string]: unknown }): any;
+}
+
+export interface FieldConstructor {
+    new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
+}
+
+export default function typesPlugin(_fork?: Fork) {
     // A type is an object with a .check method that takes a value and returns
     // true or false according to whether the value matches the type.
 
@@ -965,5 +951,3 @@ function typesPlugin(_fork?: Fork) {
         finalize,
     };
 };
-
-export = typesPlugin;

@@ -6,7 +6,7 @@ import types from "../main";
 
 var n = types.namedTypes;
 
-function validateECMAScript(file: any) {
+export function validateECMAScript(file: any) {
   var fullPath = path.join(__dirname, "..", file);
 
   it("should validate " + file + " with Esprima", function (done) {
@@ -36,14 +36,10 @@ function validateECMAScript(file: any) {
   });
 };
 
-function babylonParse(source: any, options?: any) {
+export function babylonParse(source: any, options?: any) {
   var ast = reifyBabylonParse(source, options);
   if (ast.type === "File") ast = ast.program;
   return ast;
 }
 
-export = {
-  esprimaParse,
-  validateECMAScript,
-  babylonParse,
-};
+export { esprimaParse };

@@ -6,7 +6,7 @@ import { Literal } from "estree";
 import * as babelTypes from "@babel/types";
 import fork from "../fork";
 import types from "../main";
-import shared from "./shared";
+import * as shared from "./shared";
 import typesPlugin from "../lib/types";
 import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";

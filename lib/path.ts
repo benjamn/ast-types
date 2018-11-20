@@ -4,36 +4,31 @@ import typesPlugin from "./types";
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-namespace pathPlugin {
-  export interface PathType {
-    value: any;
-    parentPath: any;
-    name: any;
-    __childCache: object | null;
-    getValueProperty(name: any): any;
-    get(...names: any[]): any;
-    each(callback: any, context: any): any;
-    map(callback: any, context: any): any;
-    filter(callback: any, context: any): any;
-    shift(): any;
-    unshift(...args: any[]): any;
-    push(...args: any[]): any;
-    pop(): any;
-    insertAt(index: number, ...args: any[]): any;
-    insertBefore(...args: any[]): any;
-    insertAfter(...args: any[]): any;
-    replace(replacement: any, ...args: any[]): any;
-  }
-
-  export interface PathConstructor {
-    new(value: any, parentPath?: any, name?: any): PathType;
-  }
+export interface PathType {
+  value: any;
+  parentPath: any;
+  name: any;
+  __childCache: object | null;
+  getValueProperty(name: any): any;
+  get(...names: any[]): any;
+  each(callback: any, context: any): any;
+  map(callback: any, context: any): any;
+  filter(callback: any, context: any): any;
+  shift(): any;
+  unshift(...args: any[]): any;
+  push(...args: any[]): any;
+  pop(): any;
+  insertAt(index: number, ...args: any[]): any;
+  insertBefore(...args: any[]): any;
+  insertAfter(...args: any[]): any;
+  replace(replacement: any, ...args: any[]): any;
 }
 
-import PathType = pathPlugin.PathType;
-import PathConstructor = pathPlugin.PathConstructor;
+export interface PathConstructor {
+  new(value: any, parentPath?: any, name?: any): PathType;
+}
 
-function pathPlugin(fork: Fork) {
+export default function pathPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var isArray = types.builtInTypes.array;
   var isNumber = types.builtInTypes.number;
@@ -395,5 +390,3 @@ function pathPlugin(fork: Fork) {
 
   return Path;
 };
-
-export = pathPlugin;

@@ -2,7 +2,7 @@ import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
-export = function (fork: Fork) {
+export default function (fork: Fork) {
     var types = fork.use(typesPlugin);
     var Type = types.Type;
     var def = Type.def;

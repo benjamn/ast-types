@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import typesPlugin from "./types";
 
-export = function (fork: Fork) {
+export default function (fork: Fork) {
     var types = fork.use(typesPlugin);
     var Type = types.Type;
     var builtin = types.builtInTypes;

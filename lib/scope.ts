@@ -3,40 +3,33 @@ import typesPlugin from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-// We have to use a namespace to export types along with `export =`
-// See https://github.com/Microsoft/TypeScript/issues/2719
-namespace scopePlugin {
-  export interface ScopeType {
-    path: any;
-    node: any;
-    isGlobal: boolean;
-    depth: number;
-    parent: any;
-    bindings: any;
-    types: any;
-    didScan: boolean;
-    declares(name: any): any
-    declaresType(name: any): any
-    declareTemporary(prefix?: any): any;
-    injectTemporary(identifier: any, init: any): any;
-    scan(force?: any): any;
-    getBindings(): any;
-    getTypes(): any;
-    lookup(name: any): any;
-    lookupType(name: any): any;
-    getGlobalScope(): ScopeType;
-  }
-
-  export interface ScopeConstructor {
-    new(path: any, parentScope: any): ScopeType;
-    isEstablishedBy(node: any): any;
-  }
+export interface ScopeType {
+  path: any;
+  node: any;
+  isGlobal: boolean;
+  depth: number;
+  parent: any;
+  bindings: any;
+  types: any;
+  didScan: boolean;
+  declares(name: any): any
+  declaresType(name: any): any
+  declareTemporary(prefix?: any): any;
+  injectTemporary(identifier: any, init: any): any;
+  scan(force?: any): any;
+  getBindings(): any;
+  getTypes(): any;
+  lookup(name: any): any;
+  lookupType(name: any): any;
+  getGlobalScope(): ScopeType;
 }
 
-import ScopeType = scopePlugin.ScopeType;
-import ScopeConstructor = scopePlugin.ScopeConstructor;
+export interface ScopeConstructor {
+  new(path: any, parentScope: any): ScopeType;
+  isEstablishedBy(node: any): any;
+}
 
-function scopePlugin(fork: Fork) {
+export default function scopePlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
   var Type = types.Type;
   var namedTypes = types.namedTypes;
@@ -390,5 +383,3 @@ function scopePlugin(fork: Fork) {
 
   return Scope;
 };
-
-export = scopePlugin;

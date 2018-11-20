@@ -3,7 +3,7 @@ import babelCoreDef from "./babel-core";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
-export = function (fork: Fork) {
+export default function (fork: Fork) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
   fork.use(babelCoreDef);

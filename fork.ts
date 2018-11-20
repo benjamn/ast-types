@@ -5,7 +5,7 @@ import pathPlugin from "./lib/path";
 import nodePathPlugin from "./lib/node-path";
 import { Def, Fork, Plugin } from "./types";
 
-export = function (defs: Def[]) {
+export default function (defs: Def[]) {
   var used: Plugin<unknown>[] = [];
   var usedResult: unknown[] = [];
 

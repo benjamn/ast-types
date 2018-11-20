@@ -3,7 +3,7 @@ import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import coreDef from "./core";
 
-export = function (fork: Fork) {
+export default function (fork: Fork) {
   fork.use(coreDef);
 
   var types = fork.use(typesPlugin);
