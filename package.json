@@ -35,7 +35,7 @@
     "clean": "script/run.sh clean",
     "build": "npm run build:dts && npm run build:js",
     "build:dts": "tsc --emitDeclarationOnly",
-    "build:js": "babel . --out-dir \".\" --extensions \".ts\" --ignore \"**/*.d.ts\",\"node_modules\",\"test/data\" --source-maps true",
+    "build:js": "babel . --out-dir \".\" --extensions \".ts\" --ignore \"**/*.d.ts\",\"node_modules\",\"test/data\"",
     "prepack": "npm run clean && npm run gen && npm run build",
     "postpack": "npm run clean"
   },

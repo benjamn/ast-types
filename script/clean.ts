@@ -1,7 +1,7 @@
 import fs from "fs";
 import glob from "glob";
 
-const ext = "{js,js.map,d.ts,d.ts.map}";
+const ext = "{js,d.ts}";
 
 glob.sync("{def,lib,script,gen}/**/*." + ext)
   .concat(glob.sync("test{*,/!(data)/**}/*." + ext))
