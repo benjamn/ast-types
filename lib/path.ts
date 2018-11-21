@@ -4,8 +4,8 @@ import typesPlugin, { ASTNode } from "./types";
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-export interface PathType {
-  value: any;
+export interface PathType<V = any> {
+  value: V;
   parentPath: any;
   name: any;
   __childCache: object | null;

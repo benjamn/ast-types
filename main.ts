@@ -11,13 +11,16 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
-import { ASTNode as _ASTNode } from "./lib/types";
+import { ASTNode as _ASTNode, TypeType } from "./lib/types";
+import { NodePathType } from "./lib/node-path";
 import { NamedTypes as _NamedTypes } from "./gen/namedTypes";
 import { Builders as _Builders } from "./gen/builders";
 import { Visitor as _Visitor } from "./gen/visitor";
 
 // Must use `export type` to ensure `module.exports =` in babel-transpiled code.
 export type ASTNode = _ASTNode;
+export type Type<T> = TypeType<T>;
+export type NodePath<N extends ASTNode = any, V = any> = NodePathType<N, V>;
 export type NamedTypes = _NamedTypes;
 export type Builders = _Builders;
 export type Visitor<M = {}> = _Visitor<M>;

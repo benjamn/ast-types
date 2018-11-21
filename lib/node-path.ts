@@ -1,10 +1,10 @@
 import { Fork } from "../types";
-import typesPlugin from "./types";
+import typesPlugin, { ASTNode } from "./types";
 import pathPlugin, { PathType } from "./path";
 import scopePlugin, { ScopeType } from "./scope";
 
-export interface NodePathType extends PathType {
-    node: any;
+export interface NodePathType<N extends ASTNode = any, V = any> extends PathType<V> {
+    node: N;
     parent: any;
     scope: any;
     replace: PathType['replace'];

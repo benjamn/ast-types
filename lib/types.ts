@@ -22,7 +22,7 @@ export interface TypeType<T> {
     [__typeBrand]?: T;
 }
 
-export type AnyType = Omit<TypeType<any>, "check"> & { check(value: any, deep?: any): boolean };
+export type AnyType = Omit<TypeType<any>, "check" | typeof __typeBrand> & { check(value: any, deep?: any): boolean };
 
 export interface TypeConstructor {
     new<T>(check: CheckFn, name: NameType): TypeType<T>;
