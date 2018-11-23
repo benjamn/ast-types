@@ -9,41 +9,43 @@ module.exports = function (fork) {
   var or = types.Type.or;
   var defaults = fork.use(require("../lib/shared")).defaults;
 
+  var TypeAnnotation = or(
+    def("TypeAnnotation"),
+    def("TSTypeAnnotation"),
+    null
+  );
+
+  var TypeParamDecl = or(
+    def("TypeParameterDeclaration"),
+    def("TSTypeParameterDeclaration"),
+    null
+  );
+
   def("Identifier")
-    .field("typeAnnotation",
-           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
-           defaults["null"]);
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
   def("ObjectPattern")
-    .field("typeAnnotation",
-           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
-           defaults["null"]);
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
   def("Function")
-    .field("returnType",
-           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
-           defaults["null"])
-    .field("typeParameters",
-           or(def("TypeParameterDeclaration"), def("TSTypeParameterDeclaration"), null),
-           defaults["null"]);
+    .field("returnType", TypeAnnotation, defaults["null"])
+    .field("typeParameters", TypeParamDecl, defaults["null"]);
 
   def("ClassProperty")
     .build("key", "value", "typeAnnotation", "static")
     .field("value", or(def("Expression"), null))
     .field("static", Boolean, defaults["false"])
-    .field("typeAnnotation",
-           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
-           defaults["null"]);
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
   ["ClassDeclaration",
     "ClassExpression",
   ].forEach(typeName => {
     def(typeName)
-      .field("typeParameters",
-             or(def("TypeParameterDeclaration"), def("TSTypeParameterDeclaration"), null),
-             defaults["null"])
+      .field("typeParameters", TypeParamDecl, defaults["null"])
       .field("superTypeParameters",
-             or(def("TypeParameterInstantiation"), def("TSTypeParameterInstantiation"), null),
+             or(def("TypeParameterInstantiation"),
+                def("TSTypeParameterInstantiation"),
+                null),
              defaults["null"]);
   });
 
@@ -52,7 +54,8 @@ module.exports = function (fork) {
   ].forEach(typeName => {
     def(typeName)
       .field("implements",
-             or([def("ClassImplements")], [def("TSExpressionWithTypeArguments")]),
+             or([def("ClassImplements")],
+                [def("TSExpressionWithTypeArguments")]),
              defaults.emptyArray);
   });
 };
