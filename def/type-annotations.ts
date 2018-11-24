@@ -52,9 +52,9 @@ export default function (fork: Fork) {
                 def("TSTypeParameterInstantiation"),
                 null),
              defaults["null"])
-      .field("implements",
-             or([def("ClassImplements")],
-                [def("TSExpressionWithTypeArguments")]),
-             defaults.emptyArray);
+      // .field("implements",
+      //        or([def("ClassImplements")],
+      //           [def("TSExpressionWithTypeArguments")]),
+      //        defaults.emptyArray);
   });
 };

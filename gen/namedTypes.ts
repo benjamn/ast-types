@@ -130,9 +130,6 @@ export interface NamedTypes {
   TSTypeParameterDeclaration: Type<N.TSTypeParameterDeclaration>;
   TypeParameterInstantiation: Type<N.TypeParameterInstantiation>;
   TSTypeParameterInstantiation: Type<N.TSTypeParameterInstantiation>;
-  ClassImplements: Type<N.ClassImplements>;
-  TSType: Type<N.TSType>;
-  TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   Flow: Type<N.Flow>;
   FlowType: Type<N.FlowType>;
   AnyTypeAnnotation: Type<N.AnyTypeAnnotation>;
@@ -172,6 +169,7 @@ export interface NamedTypes {
   TypeParameter: Type<N.TypeParameter>;
   PrivateName: Type<N.PrivateName>;
   ClassPrivateProperty: Type<N.ClassPrivateProperty>;
+  ClassImplements: Type<N.ClassImplements>;
   InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
   InterfaceExtends: Type<N.InterfaceExtends>;
   InterfaceDeclaration: Type<N.InterfaceDeclaration>;
@@ -225,6 +223,7 @@ export interface NamedTypes {
   RestProperty: Type<N.RestProperty>;
   ForAwaitStatement: Type<N.ForAwaitStatement>;
   Import: Type<N.Import>;
+  TSType: Type<N.TSType>;
   TSQualifiedName: Type<N.TSQualifiedName>;
   TSTypeReference: Type<N.TSTypeReference>;
   TSHasOptionalTypeParameters: Type<N.TSHasOptionalTypeParameters>;
@@ -280,6 +279,7 @@ export interface NamedTypes {
   TSExportAssignment: Type<N.TSExportAssignment>;
   TSNamespaceExportDeclaration: Type<N.TSNamespaceExportDeclaration>;
   TSInterfaceBody: Type<N.TSInterfaceBody>;
+  TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   TSInterfaceDeclaration: Type<N.TSInterfaceDeclaration>;
   TSParameterProperty: Type<N.TSParameterProperty>;
   OptionalMemberExpression: Type<N.OptionalMemberExpression>;

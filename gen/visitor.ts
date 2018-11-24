@@ -130,9 +130,6 @@ export interface Visitor<M = {}> {
   visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath): any;
   visitTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
   visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
-  visitClassImplements?(this: Context & M, path: NodePath): any;
-  visitTSType?(this: Context & M, path: NodePath): any;
-  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath): any;
   visitFlow?(this: Context & M, path: NodePath): any;
   visitFlowType?(this: Context & M, path: NodePath): any;
   visitAnyTypeAnnotation?(this: Context & M, path: NodePath): any;
@@ -172,6 +169,7 @@ export interface Visitor<M = {}> {
   visitTypeParameter?(this: Context & M, path: NodePath): any;
   visitPrivateName?(this: Context & M, path: NodePath): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath): any;
+  visitClassImplements?(this: Context & M, path: NodePath): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath): any;
   visitInterfaceDeclaration?(this: Context & M, path: NodePath): any;
@@ -225,6 +223,7 @@ export interface Visitor<M = {}> {
   visitRestProperty?(this: Context & M, path: NodePath): any;
   visitForAwaitStatement?(this: Context & M, path: NodePath): any;
   visitImport?(this: Context & M, path: NodePath): any;
+  visitTSType?(this: Context & M, path: NodePath): any;
   visitTSQualifiedName?(this: Context & M, path: NodePath): any;
   visitTSTypeReference?(this: Context & M, path: NodePath): any;
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath): any;
@@ -280,6 +279,7 @@ export interface Visitor<M = {}> {
   visitTSExportAssignment?(this: Context & M, path: NodePath): any;
   visitTSNamespaceExportDeclaration?(this: Context & M, path: NodePath): any;
   visitTSInterfaceBody?(this: Context & M, path: NodePath): any;
+  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath): any;
   visitTSInterfaceDeclaration?(this: Context & M, path: NodePath): any;
   visitTSParameterProperty?(this: Context & M, path: NodePath): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath): any;

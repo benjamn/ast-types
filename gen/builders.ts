@@ -930,7 +930,6 @@ export interface ClassDeclarationBuilder {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
-      implements?: (ClassImplements] | "[TSExpressionWithTypeArguments")[],
       loc?: K.SourceLocationKind | null,
       superClass?: K.ExpressionKind | null,
       superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null,
@@ -950,7 +949,6 @@ export interface ClassExpressionBuilder {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
-      implements?: (ClassImplements] | "[TSExpressionWithTypeArguments")[],
       loc?: K.SourceLocationKind | null,
       superClass?: K.ExpressionKind | null,
       superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null,
@@ -1385,34 +1383,6 @@ export interface TSTypeParameterInstantiationBuilder {
       params: K.TSTypeKind[]
     }
   ): N.TSTypeParameterInstantiation;
-}
-
-export interface ClassImplementsBuilder {
-  (id: K.IdentifierKind): N.ClassImplements;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null,
-      superClass?: K.ExpressionKind | null,
-      typeParameters?: K.TypeParameterInstantiationKind | null
-    }
-  ): N.ClassImplements;
-}
-
-export interface TSExpressionWithTypeArgumentsBuilder {
-  (
-    expression: K.IdentifierKind | K.TSQualifiedNameKind,
-    typeParameters?: K.TSTypeParameterInstantiationKind | null
-  ): N.TSExpressionWithTypeArguments;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.IdentifierKind | K.TSQualifiedNameKind,
-      loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TSTypeParameterInstantiationKind | null
-    }
-  ): N.TSExpressionWithTypeArguments;
 }
 
 export interface AnyTypeAnnotationBuilder {
@@ -1856,6 +1826,19 @@ export interface ClassPrivatePropertyBuilder {
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
   ): N.ClassPrivateProperty;
+}
+
+export interface ClassImplementsBuilder {
+  (id: K.IdentifierKind): N.ClassImplements;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      superClass?: K.ExpressionKind | null,
+      typeParameters?: K.TypeParameterInstantiationKind | null
+    }
+  ): N.ClassImplements;
 }
 
 export interface InterfaceTypeAnnotationBuilder {
@@ -3268,6 +3251,21 @@ export interface TSInterfaceBodyBuilder {
   ): N.TSInterfaceBody;
 }
 
+export interface TSExpressionWithTypeArgumentsBuilder {
+  (
+    expression: K.IdentifierKind | K.TSQualifiedNameKind,
+    typeParameters?: K.TSTypeParameterInstantiationKind | null
+  ): N.TSExpressionWithTypeArguments;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.IdentifierKind | K.TSQualifiedNameKind,
+      loc?: K.SourceLocationKind | null,
+      typeParameters?: K.TSTypeParameterInstantiationKind | null
+    }
+  ): N.TSExpressionWithTypeArguments;
+}
+
 export interface TSInterfaceDeclarationBuilder {
   (id: K.IdentifierKind | K.TSQualifiedNameKind, body: K.TSInterfaceBodyKind): N.TSInterfaceDeclaration;
   from(
@@ -3431,8 +3429,6 @@ export interface Builders {
   tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
   typeParameterInstantiation: TypeParameterInstantiationBuilder;
   tsTypeParameterInstantiation: TSTypeParameterInstantiationBuilder;
-  classImplements: ClassImplementsBuilder;
-  tsExpressionWithTypeArguments: TSExpressionWithTypeArgumentsBuilder;
   anyTypeAnnotation: AnyTypeAnnotationBuilder;
   emptyTypeAnnotation: EmptyTypeAnnotationBuilder;
   mixedTypeAnnotation: MixedTypeAnnotationBuilder;
@@ -3469,6 +3465,7 @@ export interface Builders {
   typeParameter: TypeParameterBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
+  classImplements: ClassImplementsBuilder;
   interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
   interfaceDeclaration: InterfaceDeclarationBuilder;
@@ -3574,6 +3571,7 @@ export interface Builders {
   tsExportAssignment: TSExportAssignmentBuilder;
   tsNamespaceExportDeclaration: TSNamespaceExportDeclarationBuilder;
   tsInterfaceBody: TSInterfaceBodyBuilder;
+  tsExpressionWithTypeArguments: TSExpressionWithTypeArgumentsBuilder;
   tsInterfaceDeclaration: TSInterfaceDeclarationBuilder;
   tsParameterProperty: TSParameterPropertyBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;

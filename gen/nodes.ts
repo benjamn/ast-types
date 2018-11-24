@@ -616,7 +616,6 @@ export interface ClassDeclaration extends ASTNode {
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements: (ClassImplements] | "[TSExpressionWithTypeArguments")[];
 }
 
 export interface ClassExpression extends ASTNode {
@@ -628,7 +627,6 @@ export interface ClassExpression extends ASTNode {
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements: (ClassImplements] | "[TSExpressionWithTypeArguments")[];
 }
 
 export interface Specifier extends ASTNode {
@@ -1048,29 +1046,6 @@ export interface TSTypeParameterInstantiation extends ASTNode {
   params: K.TSTypeKind[];
 }
 
-export interface ClassImplements extends ASTNode {
-  loc?: K.SourceLocationKind | null;
-  type: "ClassImplements";
-  comments?: K.CommentKind[] | null;
-  id: K.IdentifierKind;
-  superClass?: K.ExpressionKind | null;
-  typeParameters?: K.TypeParameterInstantiationKind | null;
-}
-
-export interface TSType extends ASTNode {
-  loc?: K.SourceLocationKind | null;
-  type: "TSType";
-  comments?: K.CommentKind[] | null;
-}
-
-export interface TSExpressionWithTypeArguments extends ASTNode {
-  loc?: K.SourceLocationKind | null;
-  type: "TSExpressionWithTypeArguments";
-  comments?: K.CommentKind[] | null;
-  expression: K.IdentifierKind | K.TSQualifiedNameKind;
-  typeParameters?: K.TSTypeParameterInstantiationKind | null;
-}
-
 export interface Flow extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "Flow";
@@ -1356,6 +1331,15 @@ export interface ClassPrivateProperty extends ASTNode {
   static: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   variance?: K.VarianceKind | "plus" | "minus" | null;
+}
+
+export interface ClassImplements extends ASTNode {
+  loc?: K.SourceLocationKind | null;
+  type: "ClassImplements";
+  comments?: K.CommentKind[] | null;
+  id: K.IdentifierKind;
+  superClass?: K.ExpressionKind | null;
+  typeParameters?: K.TypeParameterInstantiationKind | null;
 }
 
 export interface InterfaceTypeAnnotation extends ASTNode {
@@ -1828,6 +1812,12 @@ export interface Import extends ASTNode {
   comments?: K.CommentKind[] | null;
 }
 
+export interface TSType extends ASTNode {
+  loc?: K.SourceLocationKind | null;
+  type: "TSType";
+  comments?: K.CommentKind[] | null;
+}
+
 export interface TSQualifiedName extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "TSQualifiedName";
@@ -2268,6 +2258,14 @@ export interface TSInterfaceBody extends ASTNode {
   type: "TSInterfaceBody";
   comments?: K.CommentKind[] | null;
   body: (K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
+}
+
+export interface TSExpressionWithTypeArguments extends ASTNode {
+  loc?: K.SourceLocationKind | null;
+  type: "TSExpressionWithTypeArguments";
+  comments?: K.CommentKind[] | null;
+  expression: K.IdentifierKind | K.TSQualifiedNameKind;
+  typeParameters?: K.TSTypeParameterInstantiationKind | null;
 }
 
 export interface TSInterfaceDeclaration extends ASTNode {
