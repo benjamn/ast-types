@@ -1,6 +1,7 @@
 import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
+import * as N from "../gen/nodes";
 
 export default function (fork: Fork) {
     var types = fork.use(typesPlugin);
@@ -123,10 +124,10 @@ export default function (fork: Fork) {
         .bases("Statement")
         .build("block", "handler", "finalizer")
         .field("block", def("BlockStatement"))
-        .field("handler", or(def("CatchClause"), null), function (this: any) {
+        .field("handler", or(def("CatchClause"), null), function (this: N.TryStatement) {
             return this.handlers && this.handlers[0] || null;
         })
-        .field("handlers", [def("CatchClause")], function (this: any) {
+        .field("handlers", [def("CatchClause")], function (this: N.TryStatement) {
             return this.handler ? [this.handler] : [];
         }, true) // Indicates this field is hidden from eachField iteration.
         .field("guardedHandlers", [def("CatchClause")], defaults.emptyArray)
@@ -312,7 +313,7 @@ export default function (fork: Fork) {
         .build("object", "property", "computed")
         .field("object", def("Expression"))
         .field("property", or(def("Identifier"), def("Expression")))
-        .field("computed", Boolean, function (this: any) {
+        .field("computed", Boolean, function (this: N.MemberExpression) {
             var type = this.property.type;
             if (type === 'Literal' ||
                 type === 'MemberExpression' ||
@@ -345,7 +346,7 @@ export default function (fork: Fork) {
         .field("regex", or({
             pattern: String,
             flags: String
-        }, null), function (this: any) {
+        }, null), function (this: N.Literal) {
             if (this.value instanceof RegExp) {
                 var flags = "";
 

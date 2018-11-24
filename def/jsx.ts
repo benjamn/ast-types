@@ -2,6 +2,7 @@ import { Fork } from "../types";
 import es7Def from "./es7";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
+import * as N from "../gen/nodes";
 
 export default function (fork: Fork) {
   fork.use(es7Def);
@@ -72,7 +73,7 @@ export default function (fork: Fork) {
       def("JSXText"),
       def("Literal") // TODO Esprima should return JSXText instead.
     )], defaults.emptyArray)
-    .field("name", JSXElementName, function (this: any) {
+    .field("name", JSXElementName, function (this: N.JSXElement) {
       // Little-known fact: the `this` object inside a default function
       // is none other than the partially-built object itself, and any
       // fields initialized directly from builder function arguments
@@ -80,10 +81,10 @@ export default function (fork: Fork) {
       // guaranteed to be available.
       return this.openingElement.name;
     }, true) // hidden from traversal
-    .field("selfClosing", Boolean, function (this: any) {
+    .field("selfClosing", Boolean, function (this: N.JSXElement) {
       return this.openingElement.selfClosing;
     }, true) // hidden from traversal
-    .field("attributes", JSXAttributes, function (this: any) {
+    .field("attributes", JSXAttributes, function (this: N.JSXElement) {
       return this.openingElement.attributes;
     }, true); // hidden from traversal
 

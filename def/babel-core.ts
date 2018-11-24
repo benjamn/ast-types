@@ -2,6 +2,7 @@ import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import es7Def from "./es7";
+import * as N from "../gen/nodes";
 
 export default function (fork: Fork) {
   fork.use(es7Def);
@@ -152,7 +153,7 @@ export default function (fork: Fork) {
     .field("extra", {
       rawValue: Number,
       raw: String
-    }, function getDefault(this: any) {
+    }, function getDefault(this: N.NumericLiteral) {
       return {
         rawValue: this.value,
         raw: this.value + ""
@@ -168,7 +169,7 @@ export default function (fork: Fork) {
     .field("extra", {
       rawValue: String,
       raw: String
-    }, function getDefault(this: any) {
+    }, function getDefault(this: N.BigIntLiteral) {
       return {
         rawValue: String(this.value),
         raw: this.value + "n"
@@ -190,7 +191,7 @@ export default function (fork: Fork) {
     .build("pattern", "flags")
     .field("pattern", String)
     .field("flags", String)
-    .field("value", RegExp, function (this: any) {
+    .field("value", RegExp, function (this: N.RegExpLiteral) {
       return new RegExp(this.pattern, this.flags);
     });
 
