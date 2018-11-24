@@ -351,8 +351,8 @@ export interface FunctionDeclarationBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.FunctionDeclaration;
 }
@@ -377,8 +377,8 @@ export interface FunctionExpressionBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.FunctionExpression;
 }
@@ -686,8 +686,8 @@ export interface ArrowFunctionExpressionBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ArrowFunctionExpression;
 }
@@ -768,6 +768,24 @@ export interface ComprehensionExpressionBuilder {
   ): N.ComprehensionExpression;
 }
 
+export interface ObjectPropertyBuilder {
+  (
+    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+    value: K.ExpressionKind | K.PatternKind
+  ): N.ObjectProperty;
+  from(
+    params: {
+      accessibility?: K.LiteralKind | null,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+      loc?: K.SourceLocationKind | null,
+      shorthand?: boolean,
+      value: K.ExpressionKind | K.PatternKind
+    }
+  ): N.ObjectProperty;
+}
+
 export interface PropertyPatternBuilder {
   (
     key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
@@ -794,7 +812,7 @@ export interface ObjectPatternBuilder {
       decorators?: K.DecoratorKind[] | null,
       loc?: K.SourceLocationKind | null,
       properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind)[],
-      typeAnnotation?: K.TypeAnnotationKind | null
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null
     }
   ): N.ObjectPattern;
 }
@@ -871,7 +889,7 @@ export interface ClassPropertyBuilder {
   (
     key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
     value: K.ExpressionKind | null,
-    typeAnnotation: K.TypeAnnotationKind | null,
+    typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
     staticParam?: boolean
   ): N.ClassProperty;
   from(
@@ -881,7 +899,7 @@ export interface ClassPropertyBuilder {
       key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
       loc?: K.SourceLocationKind | null,
       static?: boolean,
-      typeAnnotation?: K.TypeAnnotationKind | null,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       value?: K.ExpressionKind | null,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
@@ -912,11 +930,11 @@ export interface ClassDeclarationBuilder {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
-      implements?: K.TSExpressionWithTypeArgumentsKind[],
+      implements?: (ClassImplements] | "[TSExpressionWithTypeArguments")[],
       loc?: K.SourceLocationKind | null,
       superClass?: K.ExpressionKind | null,
-      superTypeParameters?: K.GenericTypeAnnotationKind[] | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ClassDeclaration;
 }
@@ -932,11 +950,11 @@ export interface ClassExpressionBuilder {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
-      implements?: K.TSExpressionWithTypeArgumentsKind[],
+      implements?: (ClassImplements] | "[TSExpressionWithTypeArguments")[],
       loc?: K.SourceLocationKind | null,
       superClass?: K.ExpressionKind | null,
-      superTypeParameters?: K.GenericTypeAnnotationKind[] | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ClassExpression;
 }
@@ -1325,6 +1343,78 @@ export interface JSXSpreadChildBuilder {
   ): N.JSXSpreadChild;
 }
 
+export interface TypeParameterDeclarationBuilder {
+  (params: K.TypeParameterKind[]): N.TypeParameterDeclaration;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      params: K.TypeParameterKind[]
+    }
+  ): N.TypeParameterDeclaration;
+}
+
+export interface TSTypeParameterDeclarationBuilder {
+  (params: K.TSTypeParameterKind[]): N.TSTypeParameterDeclaration;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      params: K.TSTypeParameterKind[]
+    }
+  ): N.TSTypeParameterDeclaration;
+}
+
+export interface TypeParameterInstantiationBuilder {
+  (params: K.FlowTypeKind[]): N.TypeParameterInstantiation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      params: K.FlowTypeKind[]
+    }
+  ): N.TypeParameterInstantiation;
+}
+
+export interface TSTypeParameterInstantiationBuilder {
+  (params: K.TSTypeKind[]): N.TSTypeParameterInstantiation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      params: K.TSTypeKind[]
+    }
+  ): N.TSTypeParameterInstantiation;
+}
+
+export interface ClassImplementsBuilder {
+  (id: K.IdentifierKind): N.ClassImplements;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      superClass?: K.ExpressionKind | null,
+      typeParameters?: K.TypeParameterInstantiationKind | null
+    }
+  ): N.ClassImplements;
+}
+
+export interface TSExpressionWithTypeArgumentsBuilder {
+  (
+    expression: K.IdentifierKind | K.TSQualifiedNameKind,
+    typeParameters?: K.TSTypeParameterInstantiationKind | null
+  ): N.TSExpressionWithTypeArguments;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.IdentifierKind | K.TSQualifiedNameKind,
+      loc?: K.SourceLocationKind | null,
+      typeParameters?: K.TSTypeParameterInstantiationKind | null
+    }
+  ): N.TSExpressionWithTypeArguments;
+}
+
 export interface AnyTypeAnnotationBuilder {
   (): N.AnyTypeAnnotation;
   from(
@@ -1536,17 +1626,6 @@ export interface FunctionTypeParamBuilder {
   ): N.FunctionTypeParam;
 }
 
-export interface TypeParameterDeclarationBuilder {
-  (params: K.TypeParameterKind[]): N.TypeParameterDeclaration;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      params: K.TypeParameterKind[]
-    }
-  ): N.TypeParameterDeclaration;
-}
-
 export interface ArrayTypeAnnotationBuilder {
   (elementType: K.FlowTypeKind): N.ArrayTypeAnnotation;
   from(
@@ -1687,17 +1766,6 @@ export interface GenericTypeAnnotationBuilder {
   ): N.GenericTypeAnnotation;
 }
 
-export interface TypeParameterInstantiationBuilder {
-  (params: K.FlowTypeKind[]): N.TypeParameterInstantiation;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      params: K.FlowTypeKind[]
-    }
-  ): N.TypeParameterInstantiation;
-}
-
 export interface MemberTypeAnnotationBuilder {
   (
     object: K.IdentifierKind,
@@ -1783,24 +1851,11 @@ export interface ClassPrivatePropertyBuilder {
       key: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       static?: boolean,
-      typeAnnotation?: K.TypeAnnotationKind | null,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       value?: K.ExpressionKind | null,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
   ): N.ClassPrivateProperty;
-}
-
-export interface ClassImplementsBuilder {
-  (id: K.IdentifierKind): N.ClassImplements;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null,
-      superClass?: K.ExpressionKind | null,
-      typeParameters?: K.TypeParameterInstantiationKind | null
-    }
-  ): N.ClassImplements;
 }
 
 export interface InterfaceTypeAnnotationBuilder {
@@ -2452,27 +2507,10 @@ export interface ObjectMethodBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ObjectMethod;
-}
-
-export interface ObjectPropertyBuilder {
-  (
-    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-    value: K.ExpressionKind | K.PatternKind
-  ): N.ObjectProperty;
-  from(
-    params: {
-      accessibility?: K.LiteralKind | null,
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-      loc?: K.SourceLocationKind | null,
-      value: K.ExpressionKind | K.PatternKind
-    }
-  ): N.ObjectProperty;
 }
 
 export interface ClassMethodBuilder {
@@ -2500,9 +2538,9 @@ export interface ClassMethodBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | null,
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       static?: boolean,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ClassMethod;
 }
@@ -2573,28 +2611,6 @@ export interface TSTypeReferenceBuilder {
       typeParameters?: K.TSTypeParameterInstantiationKind | null
     }
   ): N.TSTypeReference;
-}
-
-export interface TSTypeParameterInstantiationBuilder {
-  (params: K.TSTypeKind[]): N.TSTypeParameterInstantiation;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      params: K.TSTypeKind[]
-    }
-  ): N.TSTypeParameterInstantiation;
-}
-
-export interface TSTypeParameterDeclarationBuilder {
-  (params: K.TSTypeParameterKind[]): N.TSTypeParameterDeclaration;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      params: K.TSTypeParameterKind[]
-    }
-  ): N.TSTypeParameterDeclaration;
 }
 
 export interface TSAsExpressionBuilder {
@@ -2928,8 +2944,8 @@ export interface TSMappedTypeBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      optional?: boolean,
-      readonly?: boolean,
+      optional?: boolean | "+" | "-",
+      readonly?: boolean | "+" | "-",
       typeAnnotation?: K.TSTypeKind | null,
       typeParameter: K.TSTypeParameterKind
     }
@@ -3095,11 +3111,11 @@ export interface TSEnumMemberBuilder {
 }
 
 export interface TSTypeQueryBuilder {
-  (exprName: K.IdentifierKind): N.TSTypeQuery;
+  (exprName: K.IdentifierKind | K.TSQualifiedNameKind): N.TSTypeQuery;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      exprName: K.IdentifierKind,
+      exprName: K.IdentifierKind | K.TSQualifiedNameKind,
       loc?: K.SourceLocationKind | null
     }
   ): N.TSTypeQuery;
@@ -3252,21 +3268,6 @@ export interface TSInterfaceBodyBuilder {
   ): N.TSInterfaceBody;
 }
 
-export interface TSExpressionWithTypeArgumentsBuilder {
-  (
-    expression: K.IdentifierKind | K.TSQualifiedNameKind,
-    typeParameters?: K.TSTypeParameterInstantiationKind | null
-  ): N.TSExpressionWithTypeArguments;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.IdentifierKind | K.TSQualifiedNameKind,
-      loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TSTypeParameterInstantiationKind | null
-    }
-  ): N.TSExpressionWithTypeArguments;
-}
-
 export interface TSInterfaceDeclarationBuilder {
   (id: K.IdentifierKind | K.TSQualifiedNameKind, body: K.TSInterfaceBodyKind): N.TSInterfaceDeclaration;
   from(
@@ -3385,6 +3386,7 @@ export interface Builders {
   generatorExpression: GeneratorExpressionBuilder;
   comprehensionBlock: ComprehensionBlockBuilder;
   comprehensionExpression: ComprehensionExpressionBuilder;
+  objectProperty: ObjectPropertyBuilder;
   propertyPattern: PropertyPatternBuilder;
   objectPattern: ObjectPatternBuilder;
   arrayPattern: ArrayPatternBuilder;
@@ -3425,6 +3427,12 @@ export interface Builders {
   jsxClosingFragment: JSXClosingFragmentBuilder;
   jsxEmptyExpression: JSXEmptyExpressionBuilder;
   jsxSpreadChild: JSXSpreadChildBuilder;
+  typeParameterDeclaration: TypeParameterDeclarationBuilder;
+  tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
+  typeParameterInstantiation: TypeParameterInstantiationBuilder;
+  tsTypeParameterInstantiation: TSTypeParameterInstantiationBuilder;
+  classImplements: ClassImplementsBuilder;
+  tsExpressionWithTypeArguments: TSExpressionWithTypeArgumentsBuilder;
   anyTypeAnnotation: AnyTypeAnnotationBuilder;
   emptyTypeAnnotation: EmptyTypeAnnotationBuilder;
   mixedTypeAnnotation: MixedTypeAnnotationBuilder;
@@ -3444,7 +3452,6 @@ export interface Builders {
   existentialTypeParam: ExistentialTypeParamBuilder;
   functionTypeAnnotation: FunctionTypeAnnotationBuilder;
   functionTypeParam: FunctionTypeParamBuilder;
-  typeParameterDeclaration: TypeParameterDeclarationBuilder;
   arrayTypeAnnotation: ArrayTypeAnnotationBuilder;
   objectTypeAnnotation: ObjectTypeAnnotationBuilder;
   objectTypeProperty: ObjectTypePropertyBuilder;
@@ -3455,7 +3462,6 @@ export interface Builders {
   variance: VarianceBuilder;
   qualifiedTypeIdentifier: QualifiedTypeIdentifierBuilder;
   genericTypeAnnotation: GenericTypeAnnotationBuilder;
-  typeParameterInstantiation: TypeParameterInstantiationBuilder;
   memberTypeAnnotation: MemberTypeAnnotationBuilder;
   unionTypeAnnotation: UnionTypeAnnotationBuilder;
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
@@ -3463,7 +3469,6 @@ export interface Builders {
   typeParameter: TypeParameterBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
-  classImplements: ClassImplementsBuilder;
   interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
   interfaceDeclaration: InterfaceDeclarationBuilder;
@@ -3512,15 +3517,12 @@ export interface Builders {
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
   objectMethod: ObjectMethodBuilder;
-  objectProperty: ObjectPropertyBuilder;
   classMethod: ClassMethodBuilder;
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;
   tsQualifiedName: TSQualifiedNameBuilder;
   tsTypeReference: TSTypeReferenceBuilder;
-  tsTypeParameterInstantiation: TSTypeParameterInstantiationBuilder;
-  tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
   tsAsExpression: TSAsExpressionBuilder;
   tsNonNullExpression: TSNonNullExpressionBuilder;
   tsAnyKeyword: TSAnyKeywordBuilder;
@@ -3572,7 +3574,6 @@ export interface Builders {
   tsExportAssignment: TSExportAssignmentBuilder;
   tsNamespaceExportDeclaration: TSNamespaceExportDeclarationBuilder;
   tsInterfaceBody: TSInterfaceBodyBuilder;
-  tsExpressionWithTypeArguments: TSExpressionWithTypeArgumentsBuilder;
   tsInterfaceDeclaration: TSInterfaceDeclarationBuilder;
   tsParameterProperty: TSParameterPropertyBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;

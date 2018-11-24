@@ -64,6 +64,7 @@ export interface NamedTypes {
   GeneratorExpression: Type<N.GeneratorExpression>;
   ComprehensionBlock: Type<N.ComprehensionBlock>;
   ComprehensionExpression: Type<N.ComprehensionExpression>;
+  ObjectProperty: Type<N.ObjectProperty>;
   PropertyPattern: Type<N.PropertyPattern>;
   ObjectPattern: Type<N.ObjectPattern>;
   ArrayPattern: Type<N.ArrayPattern>;
@@ -125,6 +126,13 @@ export interface NamedTypes {
   JSXClosingFragment: Type<N.JSXClosingFragment>;
   JSXEmptyExpression: Type<N.JSXEmptyExpression>;
   JSXSpreadChild: Type<N.JSXSpreadChild>;
+  TypeParameterDeclaration: Type<N.TypeParameterDeclaration>;
+  TSTypeParameterDeclaration: Type<N.TSTypeParameterDeclaration>;
+  TypeParameterInstantiation: Type<N.TypeParameterInstantiation>;
+  TSTypeParameterInstantiation: Type<N.TSTypeParameterInstantiation>;
+  ClassImplements: Type<N.ClassImplements>;
+  TSType: Type<N.TSType>;
+  TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   Flow: Type<N.Flow>;
   FlowType: Type<N.FlowType>;
   AnyTypeAnnotation: Type<N.AnyTypeAnnotation>;
@@ -146,7 +154,6 @@ export interface NamedTypes {
   ExistentialTypeParam: Type<N.ExistentialTypeParam>;
   FunctionTypeAnnotation: Type<N.FunctionTypeAnnotation>;
   FunctionTypeParam: Type<N.FunctionTypeParam>;
-  TypeParameterDeclaration: Type<N.TypeParameterDeclaration>;
   ArrayTypeAnnotation: Type<N.ArrayTypeAnnotation>;
   ObjectTypeAnnotation: Type<N.ObjectTypeAnnotation>;
   ObjectTypeProperty: Type<N.ObjectTypeProperty>;
@@ -157,7 +164,6 @@ export interface NamedTypes {
   Variance: Type<N.Variance>;
   QualifiedTypeIdentifier: Type<N.QualifiedTypeIdentifier>;
   GenericTypeAnnotation: Type<N.GenericTypeAnnotation>;
-  TypeParameterInstantiation: Type<N.TypeParameterInstantiation>;
   MemberTypeAnnotation: Type<N.MemberTypeAnnotation>;
   UnionTypeAnnotation: Type<N.UnionTypeAnnotation>;
   IntersectionTypeAnnotation: Type<N.IntersectionTypeAnnotation>;
@@ -166,7 +172,6 @@ export interface NamedTypes {
   TypeParameter: Type<N.TypeParameter>;
   PrivateName: Type<N.PrivateName>;
   ClassPrivateProperty: Type<N.ClassPrivateProperty>;
-  ClassImplements: Type<N.ClassImplements>;
   InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
   InterfaceExtends: Type<N.InterfaceExtends>;
   InterfaceDeclaration: Type<N.InterfaceDeclaration>;
@@ -216,17 +221,13 @@ export interface NamedTypes {
   BooleanLiteral: Type<N.BooleanLiteral>;
   RegExpLiteral: Type<N.RegExpLiteral>;
   ObjectMethod: Type<N.ObjectMethod>;
-  ObjectProperty: Type<N.ObjectProperty>;
   ClassMethod: Type<N.ClassMethod>;
   RestProperty: Type<N.RestProperty>;
   ForAwaitStatement: Type<N.ForAwaitStatement>;
   Import: Type<N.Import>;
-  TSType: Type<N.TSType>;
   TSQualifiedName: Type<N.TSQualifiedName>;
   TSTypeReference: Type<N.TSTypeReference>;
-  TSTypeParameterInstantiation: Type<N.TSTypeParameterInstantiation>;
   TSHasOptionalTypeParameters: Type<N.TSHasOptionalTypeParameters>;
-  TSTypeParameterDeclaration: Type<N.TSTypeParameterDeclaration>;
   TSHasOptionalTypeAnnotation: Type<N.TSHasOptionalTypeAnnotation>;
   TSAsExpression: Type<N.TSAsExpression>;
   TSNonNullExpression: Type<N.TSNonNullExpression>;
@@ -279,7 +280,6 @@ export interface NamedTypes {
   TSExportAssignment: Type<N.TSExportAssignment>;
   TSNamespaceExportDeclaration: Type<N.TSNamespaceExportDeclaration>;
   TSInterfaceBody: Type<N.TSInterfaceBody>;
-  TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   TSInterfaceDeclaration: Type<N.TSInterfaceDeclaration>;
   TSParameterProperty: Type<N.TSParameterProperty>;
   OptionalMemberExpression: Type<N.OptionalMemberExpression>;

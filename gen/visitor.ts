@@ -64,6 +64,7 @@ export interface Visitor<M = {}> {
   visitGeneratorExpression?(this: Context & M, path: NodePath): any;
   visitComprehensionBlock?(this: Context & M, path: NodePath): any;
   visitComprehensionExpression?(this: Context & M, path: NodePath): any;
+  visitObjectProperty?(this: Context & M, path: NodePath): any;
   visitPropertyPattern?(this: Context & M, path: NodePath): any;
   visitObjectPattern?(this: Context & M, path: NodePath): any;
   visitArrayPattern?(this: Context & M, path: NodePath): any;
@@ -125,6 +126,13 @@ export interface Visitor<M = {}> {
   visitJSXClosingFragment?(this: Context & M, path: NodePath): any;
   visitJSXEmptyExpression?(this: Context & M, path: NodePath): any;
   visitJSXSpreadChild?(this: Context & M, path: NodePath): any;
+  visitTypeParameterDeclaration?(this: Context & M, path: NodePath): any;
+  visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath): any;
+  visitTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
+  visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
+  visitClassImplements?(this: Context & M, path: NodePath): any;
+  visitTSType?(this: Context & M, path: NodePath): any;
+  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath): any;
   visitFlow?(this: Context & M, path: NodePath): any;
   visitFlowType?(this: Context & M, path: NodePath): any;
   visitAnyTypeAnnotation?(this: Context & M, path: NodePath): any;
@@ -146,7 +154,6 @@ export interface Visitor<M = {}> {
   visitExistentialTypeParam?(this: Context & M, path: NodePath): any;
   visitFunctionTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitFunctionTypeParam?(this: Context & M, path: NodePath): any;
-  visitTypeParameterDeclaration?(this: Context & M, path: NodePath): any;
   visitArrayTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitObjectTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitObjectTypeProperty?(this: Context & M, path: NodePath): any;
@@ -157,7 +164,6 @@ export interface Visitor<M = {}> {
   visitVariance?(this: Context & M, path: NodePath): any;
   visitQualifiedTypeIdentifier?(this: Context & M, path: NodePath): any;
   visitGenericTypeAnnotation?(this: Context & M, path: NodePath): any;
-  visitTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
   visitMemberTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitUnionTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitIntersectionTypeAnnotation?(this: Context & M, path: NodePath): any;
@@ -166,7 +172,6 @@ export interface Visitor<M = {}> {
   visitTypeParameter?(this: Context & M, path: NodePath): any;
   visitPrivateName?(this: Context & M, path: NodePath): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath): any;
-  visitClassImplements?(this: Context & M, path: NodePath): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath): any;
   visitInterfaceDeclaration?(this: Context & M, path: NodePath): any;
@@ -216,17 +221,13 @@ export interface Visitor<M = {}> {
   visitBooleanLiteral?(this: Context & M, path: NodePath): any;
   visitRegExpLiteral?(this: Context & M, path: NodePath): any;
   visitObjectMethod?(this: Context & M, path: NodePath): any;
-  visitObjectProperty?(this: Context & M, path: NodePath): any;
   visitClassMethod?(this: Context & M, path: NodePath): any;
   visitRestProperty?(this: Context & M, path: NodePath): any;
   visitForAwaitStatement?(this: Context & M, path: NodePath): any;
   visitImport?(this: Context & M, path: NodePath): any;
-  visitTSType?(this: Context & M, path: NodePath): any;
   visitTSQualifiedName?(this: Context & M, path: NodePath): any;
   visitTSTypeReference?(this: Context & M, path: NodePath): any;
-  visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath): any;
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath): any;
-  visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath): any;
   visitTSHasOptionalTypeAnnotation?(this: Context & M, path: NodePath): any;
   visitTSAsExpression?(this: Context & M, path: NodePath): any;
   visitTSNonNullExpression?(this: Context & M, path: NodePath): any;
@@ -279,7 +280,6 @@ export interface Visitor<M = {}> {
   visitTSExportAssignment?(this: Context & M, path: NodePath): any;
   visitTSNamespaceExportDeclaration?(this: Context & M, path: NodePath): any;
   visitTSInterfaceBody?(this: Context & M, path: NodePath): any;
-  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath): any;
   visitTSInterfaceDeclaration?(this: Context & M, path: NodePath): any;
   visitTSParameterProperty?(this: Context & M, path: NodePath): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath): any;
