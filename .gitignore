@@ -7,4 +7,3 @@ test/data/typescript-compiler
 *.d.ts
 # Except...
 !/types/**/*.d.ts
-!babel-register.js
