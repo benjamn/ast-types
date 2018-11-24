@@ -1,10 +1,12 @@
 import { Fork } from "../types";
 import es7Def from "./es7";
+import typeAnnotationsDef from "./type-annotations";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
 export default function (fork: Fork) {
   fork.use(es7Def);
+  fork.use(typeAnnotationsDef);
 
   var types = fork.use(typesPlugin);
   var def = types.Type.def;
@@ -220,15 +222,6 @@ export default function (fork: Fork) {
     .field("method", Boolean)
     .field("value", def("Type"));
 
-  def("Identifier")
-    .field("typeAnnotation",
-           // TODO: Remove in favor of https://github.com/benjamn/ast-types/pull/299
-           or(def("TypeAnnotation"), def("TSTypeAnnotation"), null),
-           defaults["null"]);
-
-  def("ObjectPattern")
-    .field("typeAnnotation", or(def("TypeAnnotation"), null), defaults["null"]);
-
   def("TypeParameterDeclaration")
     .bases("Node")
     .build("params")
@@ -248,19 +241,7 @@ export default function (fork: Fork) {
            or(def("TypeAnnotation"), null),
            defaults["null"]);
 
-  def("Function")
-    .field("returnType",
-           or(def("TypeAnnotation"), null),
-           defaults["null"])
-    .field("typeParameters",
-           or(def("TypeParameterDeclaration"), null),
-           defaults["null"]);
-
   def("ClassProperty")
-    .build("key", "value", "typeAnnotation", "static")
-    .field("value", or(def("Expression"), null))
-    .field("typeAnnotation", or(def("TypeAnnotation"), null))
-    .field("static", Boolean, defaults["false"])
     .field("variance", LegacyVariance, defaults["null"]);
 
   def("PrivateName")
@@ -273,18 +254,6 @@ export default function (fork: Fork) {
     .build("key")
     .field("key", def("Identifier"));
 
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("typeParameters",
-             or(def("TypeParameterDeclaration"), null),
-             defaults["null"])
-      .field("superTypeParameters",
-             or([def("GenericTypeAnnotation")], null),
-             defaults["null"]);
-  });
-
   def("ClassImplements")
     .bases("Node")
     .build("id")
@@ -293,13 +262,6 @@ export default function (fork: Fork) {
     .field("typeParameters",
            or(def("TypeParameterInstantiation"), null),
            defaults["null"]);
-
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("implements", [def("ClassImplements")], defaults.emptyArray);
-  });
 
   def("InterfaceTypeAnnotation")
     .bases("FlowType")

@@ -26,6 +26,7 @@ var isString = builtin.string;
 var rawTypes = types.use(typesPlugin);
 
 var hasOwn = Object.prototype.hasOwnProperty;
+var nodeMajorVersion = parseInt(process.versions.node, 10);
 
 // Type alias to indicate when we're intentionally passing invalid types.
 type $InvalidType = any;
@@ -1188,7 +1189,8 @@ describe("scope methods", function () {
     assert.deepEqual(names, ["x", "xyDefault", "xyNamespace", "z"]);
   });
 
-  it("should work for ES6 syntax (espree)", function() {
+  (nodeMajorVersion >= 6 ? it : xit)
+  ("should work for ES6 syntax (espree)", function() {
     var names;
 
     var ast = espree.parse([

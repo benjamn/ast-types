@@ -1,5 +1,6 @@
 import { Fork } from "../types";
 import babelCoreDef from "./babel-core";
+import typeAnnotationsDef from "./type-annotations";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
@@ -7,6 +8,7 @@ export default function (fork: Fork) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
   // but omit the Flow-related types.
   fork.use(babelCoreDef);
+  fork.use(typeAnnotationsDef);
 
   var types = fork.use(typesPlugin);
   var n = types.namedTypes;
@@ -207,9 +209,9 @@ export default function (fork: Fork) {
   def("TSMappedType")
     .bases("TSType")
     .build("typeParameter", "typeAnnotation")
-    .field("readonly", Boolean, defaults["false"])
+    .field("readonly", or(Boolean, "+", "-"), defaults["false"])
     .field("typeParameter", def("TSTypeParameter"))
-    .field("optional", Boolean, defaults["false"])
+    .field("optional", or(Boolean, "+", "-"), defaults["false"])
     .field("typeAnnotation",
            or(def("TSType"), null),
            defaults["null"]);
@@ -305,7 +307,7 @@ export default function (fork: Fork) {
   def("TSTypeQuery")
     .bases("TSType")
     .build("exprName")
-    .field("exprName", def("Identifier"));
+    .field("exprName", IdOrQualifiedName);
 
   // Inferred from Babylon's tsParseTypeMember method.
   var TSTypeMember = or(
@@ -428,15 +430,6 @@ export default function (fork: Fork) {
            or([def("TSExpressionWithTypeArguments")], null),
            defaults["null"])
     .field("body", def("TSInterfaceBody"));
-
-  ["ClassDeclaration",
-   "ClassExpression",
-  ].forEach(typeName => {
-    def(typeName)
-      .field("implements",
-             [def("TSExpressionWithTypeArguments")],
-             defaults.emptyArray);
-  });
 
   def("TSParameterProperty")
     .bases("Pattern")
