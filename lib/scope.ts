@@ -42,10 +42,7 @@ export default function scopePlugin(fork: Fork) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
-    // Use `require` to avoid circular dependency
-    if (!(path instanceof fork.use<any>(require("./node-path")))) {
-      throw new Error("");
-    }
+
     ScopeType.assert(path.value);
 
     var depth: number;
