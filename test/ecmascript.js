@@ -401,7 +401,7 @@ describe("types.eachField", function() {
   it("should complain about invalid types", function() {
     assert.throws(function() {
       check({ type: "asdf" }, ["type"]);
-    }, "did not recognize object of type " + JSON.stringify("asdf"));
+    }, "object of type " + JSON.stringify("asdf") + " should not be recognized");
   });
 
   it("should infer SourceLocation types", function() {
