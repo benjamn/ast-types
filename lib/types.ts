@@ -798,7 +798,11 @@ export default function typesPlugin(_fork?: Fork) {
     // or undefined, passing each field name and effective value (as returned
     // by getFieldValue) to the callback. If the object has no corresponding
     // Def, the callback will never be called.
-    function eachField(object: any, callback: any, context?: any) {
+    function eachField(
+        object: any,
+        callback: (name: any, value: any) => any,
+        context?: any
+    ) {
         getFieldNames(object).forEach(function (this: any, name: any) {
             callback.call(this, name, getFieldValue(object, name));
         }, context);
@@ -808,7 +812,11 @@ export default function typesPlugin(_fork?: Fork) {
     // callback returns a truthy value. Like Array.prototype.some, the final
     // result is either true or false to indicates whether the callback
     // returned true for any element or not.
-    function someField(object: any, callback: any, context?: any) {
+    function someField(
+        object: any,
+        callback: (name: any, value: any) => any,
+        context?: any
+    ) {
         return getFieldNames(object).some(function (this: any, name: any) {
             return callback.call(this, name, getFieldValue(object, name));
         }, context);
