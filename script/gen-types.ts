@@ -363,6 +363,7 @@ const out = [
         [b.importSpecifier(b.identifier("ContextType"), b.identifier("Context"))],
         b.stringLiteral("../lib/path-visitor")
       ),
+      importFromNodes(),
       b.exportNamedDeclaration(
         b.tsInterfaceDeclaration.from({
           id: b.identifier("Visitor"),
@@ -385,7 +386,16 @@ const out = [
                   }),
                   b.identifier.from({
                     name: "path",
-                    typeAnnotation: b.tsTypeAnnotation(b.tsTypeReference(b.identifier("NodePath"))),
+                    typeAnnotation: b.tsTypeAnnotation(
+                      b.tsTypeReference(
+                        b.identifier("NodePath"),
+                        b.tsTypeParameterInstantiation([
+                          b.tsTypeReference(
+                            b.tsQualifiedName(b.identifier("N"), b.identifier(typeName))
+                          ),
+                        ])
+                      )
+                    ),
                   }),
                 ],
                 optional: true,

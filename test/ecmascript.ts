@@ -1136,6 +1136,7 @@ describe("scope methods", function () {
       visitReturnStatement: function(path) {
         var node = path.node;
         if (n.CallExpression.check(node.argument) &&
+            n.Identifier.check(node.argument.callee) &&
             node.argument.callee.name === "rom") {
           var bindings = path.scope.getBindings();
           assert.deepEqual(["pom", "rom", "zom"], Object.keys(bindings).sort());
