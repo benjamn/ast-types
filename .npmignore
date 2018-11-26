@@ -2,7 +2,6 @@
 /script
 /test
 /types
-.babelrc
 
 *.ts
 !*.d.ts
