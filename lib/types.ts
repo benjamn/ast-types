@@ -16,7 +16,7 @@ export type NameType = string | (() => string);
 export interface TypeType<T> {
     name: NameType;
     check(value: any, deep?: any): value is T;
-    assert(value: any, deep?: any): boolean;
+    assert(value: any, deep?: any): value is T;
     arrayOf(): AnyType;
     toString(): string;
     [__typeBrand]?: T;
@@ -119,7 +119,7 @@ export default function typesPlugin(_fork?: Fork) {
     var Tp: TypeType<{}> = Type.prototype;
 
     // Like .check, except that failure triggers an AssertionError.
-    Tp.assert = function (value, deep) {
+    Tp.assert = function (value, deep): value is {} {
         if (!this.check(value, deep)) {
             var str = shallowStringify(value);
             throw new Error(str + " does not match type " + this);
