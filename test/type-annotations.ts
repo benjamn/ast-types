@@ -168,41 +168,41 @@ describe("type annotations", function () {
     });
   });
 
-  // it("can build ClassDeclaration with Flow implements", function () {
-  //   assert.doesNotThrow(function () {
-  //     types.builders.classDeclaration.from({
-  //       id: types.builders.identifier("SomeClass"),
-  //       implements: [
-  //         types.builders.classImplements.from({
-  //           id: types.builders.identifier("SomeInterface"),
-  //           typeParameters: types.builders.typeParameterInstantiation([
-  //             types.builders.genericTypeAnnotation(types.builders.identifier("U"), null)
-  //           ]),
-  //         }),
-  //         types.builders.classImplements(types.builders.identifier("SomeOtherInterface"))
-  //       ],
-  //       body: types.builders.classBody([])
-  //     });
-  //   });
-  // });
+  it("can build ClassDeclaration with Flow implements", function () {
+    assert.doesNotThrow(function () {
+      types.builders.classDeclaration.from({
+        id: types.builders.identifier("SomeClass"),
+        implements: [
+          types.builders.classImplements.from({
+            id: types.builders.identifier("SomeInterface"),
+            typeParameters: types.builders.typeParameterInstantiation([
+              types.builders.genericTypeAnnotation(types.builders.identifier("U"), null)
+            ]),
+          }),
+          types.builders.classImplements(types.builders.identifier("SomeOtherInterface"))
+        ],
+        body: types.builders.classBody([])
+      });
+    });
+  });
 
-  // it("can build ClassDeclaration with TS implements", function () {
-  //   assert.doesNotThrow(function () {
-  //     types.builders.classDeclaration.from({
-  //       id: types.builders.identifier("SomeClass"),
-  //       implements: [
-  //         types.builders.tsExpressionWithTypeArguments.from({
-  //           expression: types.builders.identifier("SomeInterface"),
-  //           typeParameters: types.builders.tsTypeParameterInstantiation([
-  //             types.builders.tsTypeReference(types.builders.identifier("U"))
-  //           ]),
-  //         }),
-  //         types.builders.tsExpressionWithTypeArguments(
-  //           types.builders.identifier("SomeOtherInterface")
-  //         )
-  //       ],
-  //       body: types.builders.classBody([])
-  //     });
-  //   });
-  // });
+  it("can build ClassDeclaration with TS implements", function () {
+    assert.doesNotThrow(function () {
+      types.builders.classDeclaration.from({
+        id: types.builders.identifier("SomeClass"),
+        implements: [
+          types.builders.tsExpressionWithTypeArguments.from({
+            expression: types.builders.identifier("SomeInterface"),
+            typeParameters: types.builders.tsTypeParameterInstantiation([
+              types.builders.tsTypeReference(types.builders.identifier("U"))
+            ]),
+          }),
+          types.builders.tsExpressionWithTypeArguments(
+            types.builders.identifier("SomeOtherInterface")
+          )
+        ],
+        body: types.builders.classBody([])
+      });
+    });
+  });
 });

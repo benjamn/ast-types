@@ -131,6 +131,9 @@ export interface Visitor<M = {}> {
   visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath<N.TSTypeParameterDeclaration>): any;
   visitTypeParameterInstantiation?(this: Context & M, path: NodePath<N.TypeParameterInstantiation>): any;
   visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<N.TSTypeParameterInstantiation>): any;
+  visitClassImplements?(this: Context & M, path: NodePath<N.ClassImplements>): any;
+  visitTSType?(this: Context & M, path: NodePath<N.TSType>): any;
+  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath<N.TSExpressionWithTypeArguments>): any;
   visitFlow?(this: Context & M, path: NodePath<N.Flow>): any;
   visitFlowType?(this: Context & M, path: NodePath<N.FlowType>): any;
   visitAnyTypeAnnotation?(this: Context & M, path: NodePath<N.AnyTypeAnnotation>): any;
@@ -170,7 +173,6 @@ export interface Visitor<M = {}> {
   visitTypeParameter?(this: Context & M, path: NodePath<N.TypeParameter>): any;
   visitPrivateName?(this: Context & M, path: NodePath<N.PrivateName>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<N.ClassPrivateProperty>): any;
-  visitClassImplements?(this: Context & M, path: NodePath<N.ClassImplements>): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath<N.InterfaceTypeAnnotation>): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath<N.InterfaceExtends>): any;
   visitInterfaceDeclaration?(this: Context & M, path: NodePath<N.InterfaceDeclaration>): any;
@@ -224,7 +226,6 @@ export interface Visitor<M = {}> {
   visitRestProperty?(this: Context & M, path: NodePath<N.RestProperty>): any;
   visitForAwaitStatement?(this: Context & M, path: NodePath<N.ForAwaitStatement>): any;
   visitImport?(this: Context & M, path: NodePath<N.Import>): any;
-  visitTSType?(this: Context & M, path: NodePath<N.TSType>): any;
   visitTSQualifiedName?(this: Context & M, path: NodePath<N.TSQualifiedName>): any;
   visitTSTypeReference?(this: Context & M, path: NodePath<N.TSTypeReference>): any;
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath<N.TSHasOptionalTypeParameters>): any;
@@ -280,7 +281,6 @@ export interface Visitor<M = {}> {
   visitTSExportAssignment?(this: Context & M, path: NodePath<N.TSExportAssignment>): any;
   visitTSNamespaceExportDeclaration?(this: Context & M, path: NodePath<N.TSNamespaceExportDeclaration>): any;
   visitTSInterfaceBody?(this: Context & M, path: NodePath<N.TSInterfaceBody>): any;
-  visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath<N.TSExpressionWithTypeArguments>): any;
   visitTSInterfaceDeclaration?(this: Context & M, path: NodePath<N.TSInterfaceDeclaration>): any;
   visitTSParameterProperty?(this: Context & M, path: NodePath<N.TSParameterProperty>): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath<N.OptionalMemberExpression>): any;
