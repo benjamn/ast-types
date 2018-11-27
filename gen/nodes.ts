@@ -22,8 +22,8 @@ export interface Node extends ASTNode {
 export interface Comment extends ASTNode {
   loc?: K.SourceLocationKind | null;
   value: string;
-  leading: boolean;
-  trailing: boolean;
+  leading?: boolean;
+  trailing?: boolean;
 }
 
 export interface Position extends ASTNode {
@@ -45,7 +45,7 @@ export interface Program extends ASTNode {
   type: "Program";
   comments?: K.CommentKind[] | null;
   body: K.StatementKind[];
-  directives: K.DirectiveKind[];
+  directives?: K.DirectiveKind[];
   interpreter?: K.InterpreterDirectiveKind | null;
 }
 
@@ -62,11 +62,11 @@ export interface Function extends ASTNode {
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   body: K.BlockStatementKind | K.ExpressionKind;
-  generator: boolean;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: boolean;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
@@ -88,7 +88,7 @@ export interface Identifier extends ASTNode {
   type: "Identifier";
   comments?: K.CommentKind[] | null;
   name: string;
-  optional: boolean;
+  optional?: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
 }
 
@@ -97,7 +97,7 @@ export interface BlockStatement extends ASTNode {
   type: "BlockStatement";
   comments?: K.CommentKind[] | null;
   body: K.StatementKind[];
-  directives: K.DirectiveKind[];
+  directives?: K.DirectiveKind[];
 }
 
 export interface EmptyStatement extends ASTNode {
@@ -158,14 +158,14 @@ export interface SwitchStatement extends ASTNode {
   comments?: K.CommentKind[] | null;
   discriminant: K.ExpressionKind;
   cases: K.SwitchCaseKind[];
-  lexical: boolean;
+  lexical?: boolean;
 }
 
 export interface SwitchCase extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "SwitchCase";
   comments?: K.CommentKind[] | null;
-  test?: K.ExpressionKind | null;
+  test: K.ExpressionKind | null;
   consequent: K.StatementKind[];
 }
 
@@ -173,7 +173,7 @@ export interface ReturnStatement extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ReturnStatement";
   comments?: K.CommentKind[] | null;
-  argument?: K.ExpressionKind | null;
+  argument: K.ExpressionKind | null;
 }
 
 export interface ThrowStatement extends ASTNode {
@@ -189,8 +189,8 @@ export interface TryStatement extends ASTNode {
   comments?: K.CommentKind[] | null;
   block: K.BlockStatementKind;
   handler?: K.CatchClauseKind | null;
-  handlers: K.CatchClauseKind[];
-  guardedHandlers: K.CatchClauseKind[];
+  handlers?: K.CatchClauseKind[];
+  guardedHandlers?: K.CatchClauseKind[];
   finalizer?: K.BlockStatementKind | null;
 }
 
@@ -223,9 +223,9 @@ export interface ForStatement extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ForStatement";
   comments?: K.CommentKind[] | null;
-  init?: K.VariableDeclarationKind | K.ExpressionKind | null;
-  test?: K.ExpressionKind | null;
-  update?: K.ExpressionKind | null;
+  init: K.VariableDeclarationKind | K.ExpressionKind | null;
+  test: K.ExpressionKind | null;
+  update: K.ExpressionKind | null;
   body: K.StatementKind;
 }
 
@@ -250,7 +250,7 @@ export interface ForInStatement extends ASTNode {
   left: K.VariableDeclarationKind | K.ExpressionKind;
   right: K.ExpressionKind;
   body: K.StatementKind;
-  each: boolean;
+  each?: boolean;
 }
 
 export interface DebuggerStatement extends ASTNode {
@@ -266,11 +266,11 @@ export interface FunctionDeclaration extends ASTNode {
   id: K.IdentifierKind;
   params: K.PatternKind[];
   body: K.BlockStatementKind | K.ExpressionKind;
-  generator: boolean;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: boolean;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
@@ -282,11 +282,11 @@ export interface FunctionExpression extends ASTNode {
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   body: K.BlockStatementKind | K.ExpressionKind;
-  generator: boolean;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: boolean;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
@@ -296,7 +296,7 @@ export interface VariableDeclarator extends ASTNode {
   type: "VariableDeclarator";
   comments?: K.CommentKind[] | null;
   id: K.PatternKind;
-  init?: K.ExpressionKind | null;
+  init: K.ExpressionKind | null;
 }
 
 export interface ThisExpression extends ASTNode {
@@ -326,9 +326,9 @@ export interface Property extends ASTNode {
   kind: "init" | "get" | "set";
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
   value: K.ExpressionKind | K.PatternKind;
-  method: boolean;
-  shorthand: boolean;
-  computed: boolean;
+  method?: boolean;
+  shorthand?: boolean;
+  computed?: boolean;
   decorators?: K.DecoratorKind[] | null;
 }
 
@@ -336,7 +336,7 @@ export interface Literal extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "Literal";
   comments?: K.CommentKind[] | null;
-  value?: string | boolean | null | number | RegExp;
+  value: string | boolean | null | number | RegExp;
   regex?: {
     pattern: string,
     flags: string
@@ -356,7 +356,7 @@ export interface UnaryExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   operator: "-" | "+" | "!" | "~" | "typeof" | "void" | "delete";
   argument: K.ExpressionKind;
-  prefix: boolean;
+  prefix?: boolean;
 }
 
 export interface BinaryExpression extends ASTNode {
@@ -426,7 +426,7 @@ export interface MemberExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   object: K.ExpressionKind;
   property: K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
+  computed?: boolean;
 }
 
 export interface RestElement extends ASTNode {
@@ -465,11 +465,11 @@ export interface ArrowFunctionExpression extends ASTNode {
   id?: null;
   params: K.PatternKind[];
   body: K.BlockStatementKind | K.ExpressionKind;
-  generator: false;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: false;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
@@ -487,8 +487,8 @@ export interface YieldExpression extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "YieldExpression";
   comments?: K.CommentKind[] | null;
-  argument?: K.ExpressionKind | null;
-  delegate: boolean;
+  argument: K.ExpressionKind | null;
+  delegate?: boolean;
 }
 
 export interface GeneratorExpression extends ASTNode {
@@ -497,7 +497,7 @@ export interface GeneratorExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   body: K.ExpressionKind;
   blocks: K.ComprehensionBlockKind[];
-  filter?: K.ExpressionKind | null;
+  filter: K.ExpressionKind | null;
 }
 
 export interface ComprehensionBlock extends ASTNode {
@@ -515,18 +515,18 @@ export interface ComprehensionExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   body: K.ExpressionKind;
   blocks: K.ComprehensionBlockKind[];
-  filter?: K.ExpressionKind | null;
+  filter: K.ExpressionKind | null;
 }
 
 export interface ObjectProperty extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ObjectProperty";
   comments?: K.CommentKind[] | null;
-  shorthand: boolean;
+  shorthand?: boolean;
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
   value: K.ExpressionKind | K.PatternKind;
   accessibility?: K.LiteralKind | null;
-  computed: boolean;
+  computed?: boolean;
 }
 
 export interface PropertyPattern extends ASTNode {
@@ -535,7 +535,7 @@ export interface PropertyPattern extends ASTNode {
   comments?: K.CommentKind[] | null;
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
   pattern: K.PatternKind;
-  computed: boolean;
+  computed?: boolean;
 }
 
 export interface ObjectPattern extends ASTNode {
@@ -561,8 +561,8 @@ export interface MethodDefinition extends ASTNode {
   kind: "constructor" | "method" | "get" | "set";
   key: K.ExpressionKind;
   value: K.FunctionKind;
-  computed: boolean;
-  static: boolean;
+  computed?: boolean;
+  static?: boolean;
   decorators?: K.DecoratorKind[] | null;
 }
 
@@ -593,9 +593,9 @@ export interface ClassProperty extends ASTNode {
   type: "ClassProperty";
   comments?: K.CommentKind[] | null;
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
-  value?: K.ExpressionKind | null;
-  static: boolean;
+  computed?: boolean;
+  value: K.ExpressionKind | null;
+  static?: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   variance?: K.VarianceKind | "plus" | "minus" | null;
 }
@@ -611,12 +611,12 @@ export interface ClassDeclaration extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ClassDeclaration";
   comments?: K.CommentKind[] | null;
-  id?: K.IdentifierKind | null;
+  id: K.IdentifierKind | null;
   body: K.ClassBodyKind;
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
+  implements?: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
 }
 
 export interface ClassExpression extends ASTNode {
@@ -628,7 +628,7 @@ export interface ClassExpression extends ASTNode {
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
+  implements?: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
 }
 
 export interface Specifier extends ASTNode {
@@ -678,9 +678,9 @@ export interface ImportDeclaration extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ImportDeclaration";
   comments?: K.CommentKind[] | null;
-  specifiers: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[];
+  specifiers?: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[];
   source: K.LiteralKind;
-  importKind: "value" | "type";
+  importKind?: "value" | "type";
 }
 
 export interface TaggedTemplateExpression extends ASTNode {
@@ -728,8 +728,8 @@ export interface AwaitExpression extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "AwaitExpression";
   comments?: K.CommentKind[] | null;
-  argument?: K.ExpressionKind | null;
-  all: boolean;
+  argument: K.ExpressionKind | null;
+  all?: boolean;
 }
 
 export interface LetStatement extends ASTNode {
@@ -896,7 +896,7 @@ export interface XMLProcessingInstruction extends ASTNode {
   type: "XMLProcessingInstruction";
   comments?: K.CommentKind[] | null;
   target: string;
-  contents?: string | null;
+  contents: string | null;
 }
 
 export interface JSXAttribute extends ASTNode {
@@ -912,7 +912,7 @@ export interface JSXIdentifier extends ASTNode {
   type: "JSXIdentifier";
   comments?: K.CommentKind[] | null;
   name: string;
-  optional: boolean;
+  optional?: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
 }
 
@@ -937,7 +937,7 @@ export interface JSXMemberExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   object: K.JSXIdentifierKind | K.JSXMemberExpressionKind;
   property: K.JSXIdentifierKind;
-  computed: boolean;
+  computed?: boolean;
 }
 
 export interface JSXSpreadAttribute extends ASTNode {
@@ -953,10 +953,10 @@ export interface JSXElement extends ASTNode {
   comments?: K.CommentKind[] | null;
   openingElement: K.JSXOpeningElementKind;
   closingElement?: K.JSXClosingElementKind | null;
-  children: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
-  name: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
-  selfClosing: boolean;
-  attributes: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
+  children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
+  name?: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
+  selfClosing?: boolean;
+  attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
 }
 
 export interface JSXOpeningElement extends ASTNode {
@@ -964,8 +964,8 @@ export interface JSXOpeningElement extends ASTNode {
   type: "JSXOpeningElement";
   comments?: K.CommentKind[] | null;
   name: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
-  attributes: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
-  selfClosing: boolean;
+  attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
+  selfClosing?: boolean;
 }
 
 export interface JSXClosingElement extends ASTNode {
@@ -981,7 +981,7 @@ export interface JSXFragment extends ASTNode {
   comments?: K.CommentKind[] | null;
   openingElement: K.JSXOpeningFragmentKind;
   closingElement: K.JSXClosingFragmentKind;
-  children: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
+  children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
 }
 
 export interface JSXText extends ASTNode {
@@ -1200,8 +1200,8 @@ export interface FunctionTypeAnnotation extends ASTNode {
   comments?: K.CommentKind[] | null;
   params: K.FunctionTypeParamKind[];
   returnType: K.FlowTypeKind;
-  rest?: K.FunctionTypeParamKind | null;
-  typeParameters?: K.TypeParameterDeclarationKind | null;
+  rest: K.FunctionTypeParamKind | null;
+  typeParameters: K.TypeParameterDeclarationKind | null;
 }
 
 export interface FunctionTypeParam extends ASTNode {
@@ -1225,10 +1225,10 @@ export interface ObjectTypeAnnotation extends ASTNode {
   type: "ObjectTypeAnnotation";
   comments?: K.CommentKind[] | null;
   properties: (K.ObjectTypePropertyKind | K.ObjectTypeSpreadPropertyKind)[];
-  indexers: K.ObjectTypeIndexerKind[];
-  callProperties: K.ObjectTypeCallPropertyKind[];
-  exact: boolean;
-  internalSlots: K.ObjectTypeInternalSlotKind[];
+  indexers?: K.ObjectTypeIndexerKind[];
+  callProperties?: K.ObjectTypeCallPropertyKind[];
+  exact?: boolean;
+  internalSlots?: K.ObjectTypeInternalSlotKind[];
 }
 
 export interface ObjectTypeProperty extends ASTNode {
@@ -1263,7 +1263,7 @@ export interface ObjectTypeCallProperty extends ASTNode {
   type: "ObjectTypeCallProperty";
   comments?: K.CommentKind[] | null;
   value: K.FunctionTypeAnnotationKind;
-  static: boolean;
+  static?: boolean;
 }
 
 export interface ObjectTypeInternalSlot extends ASTNode {
@@ -1296,7 +1296,7 @@ export interface GenericTypeAnnotation extends ASTNode {
   type: "GenericTypeAnnotation";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind | K.QualifiedTypeIdentifierKind;
-  typeParameters?: K.TypeParameterInstantiationKind | null;
+  typeParameters: K.TypeParameterInstantiationKind | null;
 }
 
 export interface MemberTypeAnnotation extends ASTNode {
@@ -1351,9 +1351,9 @@ export interface ClassPrivateProperty extends ASTNode {
   type: "ClassPrivateProperty";
   comments?: K.CommentKind[] | null;
   key: K.IdentifierKind;
-  computed: boolean;
-  value?: K.ExpressionKind | null;
-  static: boolean;
+  computed?: boolean;
+  value: K.ExpressionKind | null;
+  static?: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   variance?: K.VarianceKind | "plus" | "minus" | null;
 }
@@ -1371,7 +1371,7 @@ export interface InterfaceExtends extends ASTNode {
   type: "InterfaceExtends";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  typeParameters?: K.TypeParameterInstantiationKind | null;
+  typeParameters: K.TypeParameterInstantiationKind | null;
 }
 
 export interface InterfaceDeclaration extends ASTNode {
@@ -1399,7 +1399,7 @@ export interface TypeAlias extends ASTNode {
   type: "TypeAlias";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  typeParameters?: K.TypeParameterDeclarationKind | null;
+  typeParameters: K.TypeParameterDeclarationKind | null;
   right: K.FlowTypeKind;
 }
 
@@ -1408,7 +1408,7 @@ export interface OpaqueType extends ASTNode {
   type: "OpaqueType";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  typeParameters?: K.TypeParameterDeclarationKind | null;
+  typeParameters: K.TypeParameterDeclarationKind | null;
   implType: K.FlowTypeKind;
   superType: K.FlowTypeKind;
 }
@@ -1418,7 +1418,7 @@ export interface DeclareTypeAlias extends ASTNode {
   type: "DeclareTypeAlias";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  typeParameters?: K.TypeParameterDeclarationKind | null;
+  typeParameters: K.TypeParameterDeclarationKind | null;
   right: K.FlowTypeKind;
 }
 
@@ -1427,7 +1427,7 @@ export interface DeclareOpaqueType extends ASTNode {
   type: "DeclareOpaqueType";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  typeParameters?: K.TypeParameterDeclarationKind | null;
+  typeParameters: K.TypeParameterDeclarationKind | null;
   right: K.FlowTypeKind;
 }
 
@@ -1490,8 +1490,8 @@ export interface DeclareExportDeclaration extends ASTNode {
   type: "DeclareExportDeclaration";
   comments?: K.CommentKind[] | null;
   default: boolean;
-  declaration?: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null;
-  specifiers: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[];
+  declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null;
+  specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[];
   source?: K.LiteralKind | null;
 }
 
@@ -1542,24 +1542,24 @@ export interface ExportDeclaration extends ASTNode {
   type: "ExportDeclaration";
   comments?: K.CommentKind[] | null;
   default: boolean;
-  declaration?: K.DeclarationKind | K.ExpressionKind | null;
-  specifiers: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[];
+  declaration: K.DeclarationKind | K.ExpressionKind | null;
+  specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[];
   source?: K.LiteralKind | null;
 }
 
 export interface Block extends ASTNode {
   loc?: K.SourceLocationKind | null;
   value: string;
-  leading: boolean;
-  trailing: boolean;
+  leading?: boolean;
+  trailing?: boolean;
   type: "Block";
 }
 
 export interface Line extends ASTNode {
   loc?: K.SourceLocationKind | null;
   value: string;
-  leading: boolean;
-  trailing: boolean;
+  leading?: boolean;
+  trailing?: boolean;
   type: "Line";
 }
 
@@ -1586,7 +1586,7 @@ export interface BindExpression extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "BindExpression";
   comments?: K.CommentKind[] | null;
-  object?: K.ExpressionKind | null;
+  object: K.ExpressionKind | null;
   callee: K.ExpressionKind;
 }
 
@@ -1623,8 +1623,8 @@ export interface ExportNamedDeclaration extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ExportNamedDeclaration";
   comments?: K.CommentKind[] | null;
-  declaration?: K.DeclarationKind | null;
-  specifiers: K.ExportSpecifierKind[];
+  declaration: K.DeclarationKind | null;
+  specifiers?: K.ExportSpecifierKind[];
   source?: K.LiteralKind | null;
 }
 
@@ -1646,23 +1646,23 @@ export interface ExportAllDeclaration extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "ExportAllDeclaration";
   comments?: K.CommentKind[] | null;
-  exported?: K.IdentifierKind | null;
+  exported: K.IdentifierKind | null;
   source: K.LiteralKind;
 }
 
 export interface CommentBlock extends ASTNode {
   loc?: K.SourceLocationKind | null;
   value: string;
-  leading: boolean;
-  trailing: boolean;
+  leading?: boolean;
+  trailing?: boolean;
   type: "CommentBlock";
 }
 
 export interface CommentLine extends ASTNode {
   loc?: K.SourceLocationKind | null;
   value: string;
-  leading: boolean;
-  trailing: boolean;
+  leading?: boolean;
+  trailing?: boolean;
   type: "CommentLine";
 }
 
@@ -1677,7 +1677,7 @@ export interface DirectiveLiteral extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "DirectiveLiteral";
   comments?: K.CommentKind[] | null;
-  value: string;
+  value?: string;
 }
 
 export interface InterpreterDirective extends ASTNode {
@@ -1708,7 +1708,7 @@ export interface NumericLiteral extends ASTNode {
     flags: string
   } | null;
   raw?: string | null;
-  extra: {
+  extra?: {
     rawValue: number,
     raw: string
   };
@@ -1723,7 +1723,7 @@ export interface BigIntLiteral extends ASTNode {
     pattern: string,
     flags: string
   } | null;
-  extra: {
+  extra?: {
     rawValue: string,
     raw: string
   };
@@ -1755,7 +1755,7 @@ export interface RegExpLiteral extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "RegExpLiteral";
   comments?: K.CommentKind[] | null;
-  value: RegExp;
+  value?: RegExp;
   regex?: {
     pattern: string,
     flags: string
@@ -1771,16 +1771,16 @@ export interface ObjectMethod extends ASTNode {
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   body: K.BlockStatementKind;
-  generator: boolean;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: boolean;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   kind: "method" | "get" | "set";
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
+  computed?: boolean;
   accessibility?: K.LiteralKind | null;
   decorators?: K.DecoratorKind[] | null;
 }
@@ -1792,17 +1792,17 @@ export interface ClassMethod extends ASTNode {
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   body: K.BlockStatementKind;
-  generator: boolean;
-  expression: boolean;
-  defaults: (K.ExpressionKind | null)[];
+  generator?: boolean;
+  expression?: boolean;
+  defaults?: (K.ExpressionKind | null)[];
   rest?: K.IdentifierKind | null;
-  async: boolean;
+  async?: boolean;
   returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   kind: "get" | "set" | "method" | "constructor";
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
-  static: boolean;
+  computed?: boolean;
+  static?: boolean;
   decorators?: K.DecoratorKind[] | null;
 }
 
@@ -1992,10 +1992,10 @@ export interface TSTypeParameter extends ASTNode {
   type: "TSTypeParameter";
   comments?: K.CommentKind[] | null;
   name: string;
-  optional: boolean;
+  optional?: boolean;
   typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
-  constraint: K.TSTypeKind | undefined;
-  default: K.TSTypeKind | undefined;
+  constraint?: K.TSTypeKind | undefined;
+  default?: K.TSTypeKind | undefined;
 }
 
 export interface TSParenthesizedType extends ASTNode {
@@ -2028,9 +2028,9 @@ export interface TSDeclareFunction extends ASTNode {
   type: "TSDeclareFunction";
   comments?: K.CommentKind[] | null;
   typeParameters?: K.TSTypeParameterDeclarationKind | null;
-  declare: boolean;
-  async: boolean;
-  generator: boolean;
+  declare?: boolean;
+  async?: boolean;
+  generator?: boolean;
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   returnType?: K.TSTypeAnnotationKind | K.NoopKind | null;
@@ -2041,17 +2041,17 @@ export interface TSDeclareMethod extends ASTNode {
   type: "TSDeclareMethod";
   comments?: K.CommentKind[] | null;
   typeParameters?: K.TSTypeParameterDeclarationKind | null;
-  async: boolean;
-  generator: boolean;
+  async?: boolean;
+  generator?: boolean;
   params: K.PatternKind[];
-  abstract: boolean;
-  accessibility: "public" | "private" | "protected" | undefined;
-  static: boolean;
-  computed: boolean;
-  optional: boolean;
+  abstract?: boolean;
+  accessibility?: "public" | "private" | "protected" | undefined;
+  static?: boolean;
+  computed?: boolean;
+  optional?: boolean;
   key: K.IdentifierKind | K.StringLiteralKind | K.NumericLiteralKind | K.ExpressionKind;
-  kind: "get" | "set" | "method" | "constructor";
-  access: "public" | "private" | "protected" | undefined;
+  kind?: "get" | "set" | "method" | "constructor";
+  access?: "public" | "private" | "protected" | undefined;
   decorators?: K.DecoratorKind[] | null;
   returnType?: K.TSTypeAnnotationKind | K.NoopKind | null;
 }
@@ -2060,9 +2060,9 @@ export interface TSMappedType extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "TSMappedType";
   comments?: K.CommentKind[] | null;
-  readonly: boolean | "+" | "-";
+  readonly?: boolean | "+" | "-";
   typeParameter: K.TSTypeParameterKind;
-  optional: boolean | "+" | "-";
+  optional?: boolean | "+" | "-";
   typeAnnotation?: K.TSTypeKind | null;
 }
 
@@ -2109,7 +2109,7 @@ export interface TSIndexSignature extends ASTNode {
   comments?: K.CommentKind[] | null;
   typeAnnotation?: K.TSTypeAnnotationKind | null;
   parameters: K.IdentifierKind[];
-  readonly: boolean;
+  readonly?: boolean;
 }
 
 export interface TSPropertySignature extends ASTNode {
@@ -2118,9 +2118,9 @@ export interface TSPropertySignature extends ASTNode {
   comments?: K.CommentKind[] | null;
   typeAnnotation?: K.TSTypeAnnotationKind | null;
   key: K.ExpressionKind;
-  computed: boolean;
-  readonly: boolean;
-  optional: boolean;
+  computed?: boolean;
+  readonly?: boolean;
+  optional?: boolean;
   initializer?: K.ExpressionKind | null;
 }
 
@@ -2131,8 +2131,8 @@ export interface TSMethodSignature extends ASTNode {
   typeParameters?: K.TSTypeParameterDeclarationKind | null;
   typeAnnotation?: K.TSTypeAnnotationKind | null;
   key: K.ExpressionKind;
-  computed: boolean;
-  optional: boolean;
+  computed?: boolean;
+  optional?: boolean;
   parameters: (K.IdentifierKind | K.RestElementKind)[];
 }
 
@@ -2200,8 +2200,8 @@ export interface TSEnumDeclaration extends ASTNode {
   type: "TSEnumDeclaration";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  const: boolean;
-  declare: boolean;
+  const?: boolean;
+  declare?: boolean;
   members: K.TSEnumMemberKind[];
   initializer?: K.ExpressionKind | null;
 }
@@ -2212,7 +2212,7 @@ export interface TSTypeAliasDeclaration extends ASTNode {
   comments?: K.CommentKind[] | null;
   typeParameters?: K.TSTypeParameterDeclarationKind | null;
   id: K.IdentifierKind;
-  declare: boolean;
+  declare?: boolean;
   typeAnnotation: K.TSTypeKind;
 }
 
@@ -2228,8 +2228,8 @@ export interface TSModuleDeclaration extends ASTNode {
   type: "TSModuleDeclaration";
   comments?: K.CommentKind[] | null;
   id: K.StringLiteralKind | K.IdentifierKind | K.TSQualifiedNameKind;
-  declare: boolean;
-  global: boolean;
+  declare?: boolean;
+  global?: boolean;
   body?: K.TSModuleBlockKind | K.TSModuleDeclarationKind | null;
 }
 
@@ -2238,7 +2238,7 @@ export interface TSImportEqualsDeclaration extends ASTNode {
   type: "TSImportEqualsDeclaration";
   comments?: K.CommentKind[] | null;
   id: K.IdentifierKind;
-  isExport: boolean;
+  isExport?: boolean;
   moduleReference: K.IdentifierKind | K.TSQualifiedNameKind | K.TSExternalModuleReferenceKind;
 }
 
@@ -2276,7 +2276,7 @@ export interface TSInterfaceDeclaration extends ASTNode {
   comments?: K.CommentKind[] | null;
   typeParameters?: K.TSTypeParameterDeclarationKind | null;
   id: K.IdentifierKind | K.TSQualifiedNameKind;
-  declare: boolean;
+  declare?: boolean;
   extends?: K.TSExpressionWithTypeArgumentsKind[] | null;
   body: K.TSInterfaceBodyKind;
 }
@@ -2285,8 +2285,8 @@ export interface TSParameterProperty extends ASTNode {
   loc?: K.SourceLocationKind | null;
   type: "TSParameterProperty";
   comments?: K.CommentKind[] | null;
-  accessibility: "public" | "private" | "protected" | undefined;
-  readonly: boolean;
+  accessibility?: "public" | "private" | "protected" | undefined;
+  readonly?: boolean;
   parameter: K.IdentifierKind | K.AssignmentPatternKind;
 }
 
@@ -2296,8 +2296,8 @@ export interface OptionalMemberExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   object: K.ExpressionKind;
   property: K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
-  optional: boolean;
+  computed?: boolean;
+  optional?: boolean;
 }
 
 export interface OptionalCallExpression extends ASTNode {
@@ -2306,5 +2306,5 @@ export interface OptionalCallExpression extends ASTNode {
   comments?: K.CommentKind[] | null;
   callee: K.ExpressionKind;
   arguments: (K.ExpressionKind | K.SpreadElementKind)[];
-  optional: boolean;
+  optional?: boolean;
 }

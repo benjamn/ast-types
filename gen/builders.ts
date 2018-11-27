@@ -181,7 +181,7 @@ export interface SwitchCaseBuilder {
       comments?: K.CommentKind[] | null,
       consequent: K.StatementKind[],
       loc?: K.SourceLocationKind | null,
-      test?: K.ExpressionKind | null
+      test: K.ExpressionKind | null
     }
   ): N.SwitchCase;
 }
@@ -190,7 +190,7 @@ export interface ReturnStatementBuilder {
   (argument: K.ExpressionKind | null): N.ReturnStatement;
   from(
     params: {
-      argument?: K.ExpressionKind | null,
+      argument: K.ExpressionKind | null,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null
     }
@@ -279,10 +279,10 @@ export interface ForStatementBuilder {
     params: {
       body: K.StatementKind,
       comments?: K.CommentKind[] | null,
-      init?: K.VariableDeclarationKind | K.ExpressionKind | null,
+      init: K.VariableDeclarationKind | K.ExpressionKind | null,
       loc?: K.SourceLocationKind | null,
-      test?: K.ExpressionKind | null,
-      update?: K.ExpressionKind | null
+      test: K.ExpressionKind | null,
+      update: K.ExpressionKind | null
     }
   ): N.ForStatement;
 }
@@ -389,7 +389,7 @@ export interface VariableDeclaratorBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       id: K.PatternKind,
-      init?: K.ExpressionKind | null,
+      init: K.ExpressionKind | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.VariableDeclarator;
@@ -462,7 +462,7 @@ export interface LiteralBuilder {
         pattern: string,
         flags: string
       } | null,
-      value?: string | boolean | null | number | RegExp
+      value: string | boolean | null | number | RegExp
     }
   ): N.Literal;
 }
@@ -713,7 +713,7 @@ export interface YieldExpressionBuilder {
   (argument: K.ExpressionKind | null, delegate?: boolean): N.YieldExpression;
   from(
     params: {
-      argument?: K.ExpressionKind | null,
+      argument: K.ExpressionKind | null,
       comments?: K.CommentKind[] | null,
       delegate?: boolean,
       loc?: K.SourceLocationKind | null
@@ -732,7 +732,7 @@ export interface GeneratorExpressionBuilder {
       blocks: K.ComprehensionBlockKind[],
       body: K.ExpressionKind,
       comments?: K.CommentKind[] | null,
-      filter?: K.ExpressionKind | null,
+      filter: K.ExpressionKind | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.GeneratorExpression;
@@ -762,7 +762,7 @@ export interface ComprehensionExpressionBuilder {
       blocks: K.ComprehensionBlockKind[],
       body: K.ExpressionKind,
       comments?: K.CommentKind[] | null,
-      filter?: K.ExpressionKind | null,
+      filter: K.ExpressionKind | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.ComprehensionExpression;
@@ -900,7 +900,7 @@ export interface ClassPropertyBuilder {
       loc?: K.SourceLocationKind | null,
       static?: boolean,
       typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      value?: K.ExpressionKind | null,
+      value: K.ExpressionKind | null,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
   ): N.ClassProperty;
@@ -929,7 +929,7 @@ export interface ClassDeclarationBuilder {
     params: {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
-      id?: K.IdentifierKind | null,
+      id: K.IdentifierKind | null,
       implements?: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[],
       loc?: K.SourceLocationKind | null,
       superClass?: K.ExpressionKind | null,
@@ -1088,7 +1088,7 @@ export interface AwaitExpressionBuilder {
   from(
     params: {
       all?: boolean,
-      argument?: K.ExpressionKind | null,
+      argument: K.ExpressionKind | null,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null
     }
@@ -1606,9 +1606,9 @@ export interface FunctionTypeAnnotationBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       params: K.FunctionTypeParamKind[],
-      rest?: K.FunctionTypeParamKind | null,
+      rest: K.FunctionTypeParamKind | null,
       returnType: K.FlowTypeKind,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.FunctionTypeAnnotation;
 }
@@ -1761,7 +1761,7 @@ export interface GenericTypeAnnotationBuilder {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind | K.QualifiedTypeIdentifierKind,
       loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TypeParameterInstantiationKind | null
+      typeParameters: K.TypeParameterInstantiationKind | null
     }
   ): N.GenericTypeAnnotation;
 }
@@ -1852,7 +1852,7 @@ export interface ClassPrivatePropertyBuilder {
       loc?: K.SourceLocationKind | null,
       static?: boolean,
       typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      value?: K.ExpressionKind | null,
+      value: K.ExpressionKind | null,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
   ): N.ClassPrivateProperty;
@@ -1877,7 +1877,7 @@ export interface InterfaceExtendsBuilder {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TypeParameterInstantiationKind | null
+      typeParameters: K.TypeParameterInstantiationKind | null
     }
   ): N.InterfaceExtends;
 }
@@ -1930,7 +1930,7 @@ export interface TypeAliasBuilder {
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       right: K.FlowTypeKind,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.TypeAlias;
 }
@@ -1947,7 +1947,7 @@ export interface OpaqueTypeBuilder {
       implType: K.FlowTypeKind,
       loc?: K.SourceLocationKind | null,
       superType: K.FlowTypeKind,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.OpaqueType;
 }
@@ -1964,7 +1964,7 @@ export interface DeclareTypeAliasBuilder {
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       right: K.FlowTypeKind,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.DeclareTypeAlias;
 }
@@ -1980,7 +1980,7 @@ export interface DeclareOpaqueTypeBuilder {
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       right: K.FlowTypeKind,
-      typeParameters?: K.TypeParameterDeclarationKind | null
+      typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.DeclareOpaqueType;
 }
@@ -2077,7 +2077,7 @@ export interface DeclareExportDeclarationBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      declaration?: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null,
+      declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null,
       default: boolean,
       loc?: K.SourceLocationKind | null,
       source?: K.LiteralKind | null,
@@ -2152,7 +2152,7 @@ export interface ExportDeclarationBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      declaration?: K.DeclarationKind | K.ExpressionKind | null,
+      declaration: K.DeclarationKind | K.ExpressionKind | null,
       default: boolean,
       loc?: K.SourceLocationKind | null,
       source?: K.LiteralKind | null,
@@ -2223,7 +2223,7 @@ export interface BindExpressionBuilder {
       callee: K.ExpressionKind,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      object?: K.ExpressionKind | null
+      object: K.ExpressionKind | null
     }
   ): N.BindExpression;
 }
@@ -2282,7 +2282,7 @@ export interface ExportNamedDeclarationBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      declaration?: K.DeclarationKind | null,
+      declaration: K.DeclarationKind | null,
       loc?: K.SourceLocationKind | null,
       source?: K.LiteralKind | null,
       specifiers?: K.ExportSpecifierKind[]
@@ -2317,7 +2317,7 @@ export interface ExportAllDeclarationBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      exported?: K.IdentifierKind | null,
+      exported: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
       source: K.LiteralKind
     }

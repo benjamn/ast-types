@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import typesModuleFn, { NameType, AnyType } from "../lib/types";
+import typesModuleFn, { NameType, AnyType, Field } from "../lib/types";
 import astTypes from "../main";
 import { StatementKind } from "../gen/kinds";
 
@@ -68,7 +68,7 @@ function getTypeAnnotation(type: AnyType): any {
 
   if (type instanceof Type.ObjectType) {
     return b.tsTypeLiteral.from({
-      members: type.fields.map(field => getPropertySignature(field.name, field.type)),
+      members: type.fields.map(field => getPropertySignature(field)),
     });
   }
 
@@ -79,12 +79,11 @@ function getTypeAnnotation(type: AnyType): any {
   return b.tsLiteralType(b.stringLiteral(typeName));
 }
 
-function getPropertySignature(name: string, type: AnyType, optional: boolean = false) {
+function getPropertySignature(field: Field) {
   return b.tsPropertySignature.from({
-    key: b.identifier(name),
-    typeAnnotation: b.tsTypeAnnotation(getTypeAnnotation(type)),
-    // TODO
-    optional: optional || /(^|\| )null( \||$)/.test(resolveName(type.name)),
+    key: b.identifier(field.name),
+    typeAnnotation: b.tsTypeAnnotation(getTypeAnnotation(field.type)),
+    optional: field.defaultFn != null || field.hidden,
   });
 }
 
@@ -165,7 +164,7 @@ const out = [
                   });
                 }
 
-                return getPropertySignature(fieldName, field.type);
+                return getPropertySignature(field);
               }),
             }),
           })
@@ -282,9 +281,9 @@ const out = [
                             })
                             .map(fieldName => {
                               const field = typeDef.allFields[fieldName];
-                              const optional = field.defaultFn != null;
 
-                              return getPropertySignature(fieldName, field.type, optional);
+
+                              return getPropertySignature(field);
                             }),
                         }),
                       }),
