@@ -201,7 +201,7 @@ const out = [
     file: "namedTypes.ts",
     ast: createModule([
       b.importDeclaration.from({
-        specifiers: [b.importSpecifier(b.identifier("TypeType"), b.identifier("Type"))],
+        specifiers: [b.importSpecifier(b.identifier("Type"), b.identifier("Type"))],
         source: b.stringLiteral("../lib/types"),
       }),
       importFromNodes(),
@@ -356,11 +356,11 @@ const out = [
     file: "visitor.ts",
     ast: createModule([
       b.importDeclaration(
-        [b.importSpecifier(b.identifier("NodePathType"), b.identifier("NodePath"))],
+        [b.importSpecifier(b.identifier("NodePath"), b.identifier("NodePath"))],
         b.stringLiteral("../lib/node-path")
       ),
       b.importDeclaration(
-        [b.importSpecifier(b.identifier("ContextType"), b.identifier("Context"))],
+        [b.importSpecifier(b.identifier("Context"), b.identifier("Context"))],
         b.stringLiteral("../lib/path-visitor")
       ),
       importFromNodes(),

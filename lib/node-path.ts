@@ -1,17 +1,17 @@
 import { Fork } from "../types";
 import typesPlugin, { ASTNode } from "./types";
-import pathPlugin, { PathType } from "./path";
-import scopePlugin, { ScopeType } from "./scope";
+import pathPlugin, { Path } from "./path";
+import scopePlugin, { Scope } from "./scope";
 
-export interface NodePathType<N extends ASTNode = any, V = any> extends PathType<V> {
+export interface NodePath<N extends ASTNode = any, V = any> extends Path<V> {
   node: N;
   parent: any;
   scope: any;
-  replace: PathType['replace'];
+  replace: Path['replace'];
   prune(...args: any[]): any;
   _computeNode(): any;
   _computeParent(): any;
-  _computeScope(): ScopeType | null;
+  _computeScope(): Scope | null;
   getValueProperty(name: any): any;
   needsParens(assumeExpressionContext?: boolean): boolean;
   canBeFirstInStatement(): boolean;
@@ -19,7 +19,7 @@ export interface NodePathType<N extends ASTNode = any, V = any> extends PathType
 }
 
 export interface NodePathConstructor {
-  new(value: any, parentPath?: any, name?: any): NodePathType;
+  new(value: any, parentPath?: any, name?: any): NodePath;
 }
 
 export default function nodePathPlugin(fork: Fork) {
@@ -31,14 +31,14 @@ export default function nodePathPlugin(fork: Fork) {
   var Path = fork.use(pathPlugin);
   var Scope = fork.use(scopePlugin);
 
-  const NodePath = function NodePath(this: NodePathType, value: any, parentPath?: any, name?: any) {
+  const NodePath = function NodePath(this: NodePath, value: any, parentPath?: any, name?: any) {
     if (!(this instanceof NodePath)) {
       throw new Error("NodePath constructor cannot be invoked without 'new'");
     }
     Path.call(this, value, parentPath, name);
   } as any as NodePathConstructor;
 
-  var NPp: NodePathType = NodePath.prototype = Object.create(Path.prototype, {
+  var NPp: NodePath = NodePath.prototype = Object.create(Path.prototype, {
     constructor: {
       value: NodePath,
       enumerable: false,

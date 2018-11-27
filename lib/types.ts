@@ -13,7 +13,7 @@ declare const __typeBrand: unique symbol;
 export type CheckFn = (value: any, deep: any) => any;
 export type NameType = string | (() => string);
 
-export interface TypeType<T> {
+export interface Type<T> {
   name: NameType;
   check(value: any, deep?: any): value is T;
   assert(value: any, deep?: any): value is T;
@@ -22,23 +22,23 @@ export interface TypeType<T> {
   [__typeBrand]?: T;
 }
 
-export type AnyType = Omit<TypeType<any>, "check" | typeof __typeBrand> & { check(value: any, deep?: any): boolean };
+export type AnyType = Omit<Type<any>, "check" | typeof __typeBrand> & { check(value: any, deep?: any): boolean };
 
 export interface TypeConstructor {
-  new<T>(check: CheckFn, name: NameType): TypeType<T>;
+  new<T>(check: CheckFn, name: NameType): Type<T>;
   fromArray(...args: any[]): AnyType;
   fromObject(obj: object): AnyType;
   or(...types: any[]): AnyType;
-  def(typeName: any): DefType;
+  def(typeName: any): Def;
 }
 
-export interface DefType {
+export interface Def {
   typeName: string;
   baseNames: any[];
   ownFields: any;
   allSupertypes: any;
   supertypeList: string[];
-  allFields: { [fieldName: string]: FieldType; };
+  allFields: { [fieldName: string]: Field; };
   fieldNames: string[];
   type: AnyType;
   isSupertypeOf(that: any): any;
@@ -54,11 +54,11 @@ export interface DefType {
 }
 
 export interface DefConstructor {
-  new(typeName: string): DefType;
+  new(typeName: string): Def;
   fromValue(value: any): any;
 }
 
-export interface FieldType {
+export interface Field {
   name: string;
   type: any;
   hidden: boolean;
@@ -68,7 +68,7 @@ export interface FieldType {
 }
 
 export interface FieldConstructor {
-  new(name: string, type: any, defaultFn?: Function, hidden?: boolean): FieldType;
+  new(name: string, type: any, defaultFn?: Function, hidden?: boolean): Field;
 }
 
 export interface ASTNode {
@@ -84,7 +84,7 @@ export default function typesPlugin(_fork?: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
-  const Type = function Type<T>(this: TypeType<T>, check: CheckFn, name: NameType) {
+  const Type = function Type<T>(this: Type<T>, check: CheckFn, name: NameType) {
     var self = this;
     if (!(self instanceof Type)) {
       throw new Error("Type constructor cannot be invoked without 'new'");
@@ -116,7 +116,7 @@ export default function typesPlugin(_fork?: Fork) {
     });
   } as any as TypeConstructor;
 
-  var Tp: TypeType<{}> = Type.prototype;
+  var Tp: Type<{}> = Type.prototype;
 
   // Like .check, except that failure triggers an AssertionError.
   Tp.assert = function (value, deep): value is {} {
@@ -168,7 +168,7 @@ export default function typesPlugin(_fork?: Fork) {
   };
   var builtInTypes = {} as BuiltInTypes;
 
-  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): TypeType<T> {
+  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): Type<T> {
     var objStr = objToStr.call(example);
 
     var type = new Type<T>(function (value) {
@@ -297,7 +297,7 @@ export default function typesPlugin(_fork?: Fork) {
     });
   };
 
-  const Field = function Field(this: FieldType, name: string, type: any, defaultFn?: Function, hidden?: boolean) {
+  const Field = function Field(this: Field, name: string, type: any, defaultFn?: Function, hidden?: boolean) {
     var self = this;
 
     if (!(self instanceof Field)) {
@@ -320,7 +320,7 @@ export default function typesPlugin(_fork?: Fork) {
     Object.defineProperties(self, properties);
   } as any as FieldConstructor;
 
-  var Fp: FieldType = Field.prototype;
+  var Fp: Field = Field.prototype;
 
   Fp.toString = function () {
     return JSON.stringify(this.name) + ": " + this.type;
@@ -394,7 +394,7 @@ export default function typesPlugin(_fork?: Fork) {
     return null;
   };
 
-  var Dp: DefType = Def.prototype;
+  var Dp: Def = Def.prototype;
 
   Dp.isSupertypeOf = function (that) {
     if (that instanceof Def) {

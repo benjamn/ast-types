@@ -11,8 +11,8 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
-import { ASTNode, TypeType } from "./lib/types";
-import { NodePathType } from "./lib/node-path";
+import { ASTNode, Type } from "./lib/types";
+import { NodePath } from "./lib/node-path";
 import { NamedTypes } from "./gen/namedTypes";
 import { Builders } from "./gen/builders";
 import { Visitor } from "./gen/visitor";
@@ -48,8 +48,8 @@ export default main;
 
 export {
   ASTNode,
-  TypeType as Type,
-  NodePathType as NodePath,
+  Type,
+  NodePath,
   NamedTypes,
   Builders,
   Visitor,

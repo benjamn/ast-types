@@ -4,7 +4,7 @@ import typesPlugin, { ASTNode } from "./types";
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
 
-export interface PathType<V = any> {
+export interface Path<V = any> {
   value: V;
   parentPath: any;
   name: any;
@@ -25,7 +25,7 @@ export interface PathType<V = any> {
 }
 
 export interface PathConstructor {
-  new(value: any, parentPath?: any, name?: any): PathType;
+  new(value: any, parentPath?: any, name?: any): Path;
 }
 
 export default function pathPlugin(fork: Fork) {
@@ -33,7 +33,7 @@ export default function pathPlugin(fork: Fork) {
   var isArray = types.builtInTypes.array;
   var isNumber = types.builtInTypes.number;
 
-  const Path = function Path(this: PathType, value: any, parentPath?: any, name?: any) {
+  const Path = function Path(this: Path, value: any, parentPath?: any, name?: any) {
     if (!(this instanceof Path)) {
       throw new Error("Path constructor cannot be invoked without 'new'");
     }
@@ -63,7 +63,7 @@ export default function pathPlugin(fork: Fork) {
     this.__childCache = null;
   } as any as PathConstructor;
 
-  var Pp: PathType = Path.prototype;
+  var Pp: Path = Path.prototype;
 
   function getChildCache(path: any) {
     // Lazily create the child cache. This also cheapens cache

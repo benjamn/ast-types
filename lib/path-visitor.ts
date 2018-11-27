@@ -1,10 +1,10 @@
 import { Fork, Omit } from "../types";
 import typesPlugin, { ASTNode } from "./types";
-import nodePathPlugin, { NodePathType } from "./node-path";
+import nodePathPlugin, { NodePath } from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-export interface PathVisitorType {
+export interface PathVisitor {
   _reusableContextStack: any;
   _methodNameTable: any;
   _shouldVisitComments: any;
@@ -25,22 +25,22 @@ export interface PathVisitorType {
 }
 
 export interface PathVisitorStatics {
-  fromMethodsObject(methods?: any): VisitorType;
+  fromMethodsObject(methods?: any): Visitor;
   visit(node: ASTNode, methods?: any): any;
 }
 
 export interface PathVisitorConstructor extends PathVisitorStatics {
-  new(): PathVisitorType;
+  new(): PathVisitor;
 }
 
-export interface VisitorType extends PathVisitorType {}
+export interface Visitor extends PathVisitor {}
 
 export interface VisitorConstructor extends PathVisitorStatics {
-  new(): VisitorType;
+  new(): Visitor;
 }
 
 export interface VisitorMethods {
-  [visitorMethod: string]: (path: NodePathType) => any;
+  [visitorMethod: string]: (path: NodePath) => any;
 }
 
 export interface SharedContextMethods {
@@ -56,7 +56,7 @@ export interface SharedContextMethods {
   abort(): void;
 }
 
-export interface ContextType extends Omit<PathVisitorType, "visit">, SharedContextMethods {}
+export interface Context extends Omit<PathVisitor, "visit">, SharedContextMethods {}
 
 export default function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);
@@ -66,7 +66,7 @@ export default function pathVisitorPlugin(fork: Fork) {
   var isFunction = types.builtInTypes.function;
   var undefined: any;
 
-  const PathVisitor = function PathVisitor(this: PathVisitorType) {
+  const PathVisitor = function PathVisitor(this: PathVisitor) {
     if (!(this instanceof PathVisitor)) {
       throw new Error(
         "PathVisitor constructor cannot be invoked without 'new'"
@@ -158,7 +158,7 @@ export default function pathVisitorPlugin(fork: Fork) {
     return PathVisitor.fromMethodsObject(methods).visit(node);
   };
 
-  var PVp: PathVisitorType = PathVisitor.prototype;
+  var PVp: PathVisitor = PathVisitor.prototype;
 
   PVp.visit = function () {
     if (this._visiting) {
@@ -332,7 +332,7 @@ export default function pathVisitorPlugin(fork: Fork) {
   };
 
   function makeContextConstructor(visitor: any) {
-    function Context(this: ContextType, path: any) {
+    function Context(this: Context, path: any) {
       if (!(this instanceof Context)) {
         throw new Error("");
       }

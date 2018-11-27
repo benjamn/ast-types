@@ -3,7 +3,7 @@ import typesPlugin from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-export interface ScopeType {
+export interface Scope {
   path: any;
   node: any;
   isGlobal: boolean;
@@ -21,11 +21,11 @@ export interface ScopeType {
   getTypes(): any;
   lookup(name: any): any;
   lookupType(name: any): any;
-  getGlobalScope(): ScopeType;
+  getGlobalScope(): Scope;
 }
 
 export interface ScopeConstructor {
-  new(path: any, parentScope: any): ScopeType;
+  new(path: any, parentScope: any): Scope;
   isEstablishedBy(node: any): any;
 }
 
@@ -38,7 +38,7 @@ export default function scopePlugin(fork: Fork) {
   var isArray = types.builtInTypes.array;
   var b = types.builders;
 
-  const Scope = function Scope(this: ScopeType, path: any, parentScope: any) {
+  const Scope = function Scope(this: Scope, path: any, parentScope: any) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
@@ -87,7 +87,7 @@ export default function scopePlugin(fork: Fork) {
     return ScopeType.check(node);
   };
 
-  var Sp: ScopeType = Scope.prototype;
+  var Sp: Scope = Scope.prototype;
 
 // Will be overridden after an instance lazily calls scanScope.
   Sp.didScan = false;
