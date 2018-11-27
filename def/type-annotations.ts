@@ -53,8 +53,8 @@ export default function (fork: Fork) {
                 null),
              defaults["null"])
       .field("implements",
-             [or(def("ClassImplements"),
-                 def("TSExpressionWithTypeArguments"))],
+             or([def("ClassImplements")],
+                [def("TSExpressionWithTypeArguments")]),
              defaults.emptyArray);
   });
 };

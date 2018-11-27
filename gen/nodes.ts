@@ -616,7 +616,7 @@ export interface ClassDeclaration extends ASTNode {
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements?: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
+  implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];
 }
 
 export interface ClassExpression extends ASTNode {
@@ -628,7 +628,7 @@ export interface ClassExpression extends ASTNode {
   superClass?: K.ExpressionKind | null;
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
   superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
-  implements?: (K.ClassImplementsKind | K.TSExpressionWithTypeArgumentsKind)[];
+  implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];
 }
 
 export interface Specifier extends ASTNode {
