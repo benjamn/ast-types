@@ -444,7 +444,7 @@ export default function pathVisitorPlugin(fork: Fork) {
       this.needToCallTraverse = false;
 
       return visitChildren(path, PathVisitor.fromMethodsObject(
-      newVisitor || this.visitor
+        newVisitor || this.visitor
       ));
     };
 

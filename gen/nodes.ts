@@ -338,8 +338,8 @@ export interface Literal extends ASTNode {
   comments?: K.CommentKind[] | null;
   value?: string | boolean | null | number | RegExp;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
 }
 
@@ -704,8 +704,8 @@ export interface TemplateElement extends ASTNode {
   type: "TemplateElement";
   comments?: K.CommentKind[] | null;
   value: {
-    "cooked": string,
-    "raw": string
+    cooked: string,
+    raw: string
   };
   tail: boolean;
 }
@@ -990,8 +990,8 @@ export interface JSXText extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: string;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
 }
 
@@ -1693,8 +1693,8 @@ export interface StringLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: string;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
 }
 
@@ -1704,13 +1704,13 @@ export interface NumericLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: number;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
   raw?: string | null;
   extra: {
-    "rawValue": number,
-    "raw": string
+    rawValue: number,
+    raw: string
   };
 }
 
@@ -1720,12 +1720,12 @@ export interface BigIntLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: string | number;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
   extra: {
-    "rawValue": string,
-    "raw": string
+    rawValue: string,
+    raw: string
   };
 }
 
@@ -1735,8 +1735,8 @@ export interface NullLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value?: null;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
 }
 
@@ -1746,8 +1746,8 @@ export interface BooleanLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: boolean;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
 }
 
@@ -1757,8 +1757,8 @@ export interface RegExpLiteral extends ASTNode {
   comments?: K.CommentKind[] | null;
   value: RegExp;
   regex?: {
-    "pattern": string,
-    "flags": string
+    pattern: string,
+    flags: string
   } | null;
   pattern: string;
   flags: string;
@@ -1859,7 +1859,7 @@ export interface TSAsExpression extends ASTNode {
   expression: K.ExpressionKind;
   typeAnnotation: K.TSTypeKind;
   extra?: {
-    "parenthesized": boolean
+    parenthesized: boolean
   } | null;
 }
 
@@ -2191,7 +2191,7 @@ export interface TSTypeAssertion extends ASTNode {
   typeAnnotation: K.TSTypeKind;
   expression: K.ExpressionKind;
   extra?: {
-    "parenthesized": boolean
+    parenthesized: boolean
   } | null;
 }
 

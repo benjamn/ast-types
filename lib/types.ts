@@ -24,12 +24,44 @@ export interface Type<T> {
 
 export type AnyType = Omit<Type<any>, "check" | typeof __typeBrand> & { check(value: any, deep?: any): boolean };
 
-export interface TypeConstructor {
-  new<T>(check: CheckFn, name: NameType): Type<T>;
+export interface TypeStatics {
   fromArray(...args: any[]): AnyType;
   fromObject(obj: object): AnyType;
-  or(...types: any[]): AnyType;
+  or<T>(...types: any[]): OrType<T>;
   def(typeName: any): Def;
+
+  // Type subtypes
+  OrType: OrTypeConstructor;
+  ArrayType: ArrayTypeConstructor;
+  ObjectType: ObjectTypeConstructor;
+}
+
+export interface TypeConstructor extends TypeStatics {
+  new<T>(check: CheckFn, name: NameType): Type<T>;
+}
+
+export interface OrType<T> extends Type<T> {
+  types: Type<any>[];
+}
+
+export interface OrTypeConstructor {
+  new<T>(check: CheckFn, name: NameType, types: Type<any>[]): OrType<T>;
+}
+
+export interface ArrayType<T> extends Type<T[]> {
+  elemType: Type<T>;
+}
+
+export interface ArrayTypeConstructor {
+  new<T>(check: CheckFn, name: NameType, elemType: Type<T>): ArrayType<T>;
+}
+
+export interface ObjectType<T> extends Type<T> {
+  fields: Field[];
+}
+
+export interface ObjectTypeConstructor {
+  new<T>(check: CheckFn, name: NameType, fields: Field[]): ObjectType<T>;
 }
 
 export interface Def {
@@ -244,6 +276,16 @@ export default function typesPlugin(_fork?: Fork) {
     } : name);
   }
 
+  const OrType: OrTypeConstructor = class OrType<T> extends Type<T> {
+    types: Type<any>[];
+
+    constructor(check: CheckFn, name: NameType, types: Type<any>[]) {
+      super(check, name);
+      this.types = types;
+    }
+  }
+  Type.OrType = OrType;
+
   // Returns a type that matches the given value iff any of type1, type2,
   // etc. match the value.
   Type.or = function (/* type1, type2, ... */) {
@@ -252,14 +294,14 @@ export default function typesPlugin(_fork?: Fork) {
     for (var i = 0; i < len; ++i)
       types.push(toType(arguments[i]));
 
-    return new Type(function (value, deep) {
+    return new OrType(function (value, deep) {
       for (var i = 0; i < len; ++i)
         if (types[i].check(value, deep))
           return true;
       return false;
     }, function () {
       return types.join(" | ");
-    });
+    }, types);
   };
 
   Type.fromArray = function (arr) {
@@ -272,29 +314,49 @@ export default function typesPlugin(_fork?: Fork) {
     return toType(arr[0]).arrayOf();
   };
 
+  const ArrayType: ArrayTypeConstructor = class ArrayType<T> extends Type<T[]> {
+    elemType: Type<T>;
+
+    constructor(check: CheckFn, name: NameType, elemType: Type<T>) {
+      super(check, name);
+      this.elemType = elemType;
+    }
+  }
+  Type.ArrayType = ArrayType;
+
   Tp.arrayOf = function () {
     var elemType = this;
-    return new Type(function (value, deep) {
+    return new ArrayType(function (value, deep) {
       return isArray.check(value) && value.every(function (elem: any) {
           return elemType.check(elem, deep);
         });
     }, function () {
       return "[" + elemType + "]";
-    });
+    }, elemType);
   };
+
+  const ObjectType: ObjectTypeConstructor = class ObjectType<T> extends Type<T> {
+    fields: Field[];
+
+    constructor(check: CheckFn, name: NameType, fields: Field[]){
+      super(check, name);
+      this.fields = fields;
+    }
+  }
+  Type.ObjectType = ObjectType;
 
   Type.fromObject = function (obj: any) {
     var fields = Object.keys(obj).map(function (name) {
       return new Field(name, obj[name]);
     });
 
-    return new Type(function (value, deep) {
+    return new ObjectType(function (value, deep) {
       return isObject.check(value) && fields.every(function (field) {
           return field.type.check(value[field.name], deep);
         });
     }, function () {
       return "{ " + fields.join(", ") + " }";
-    });
+    }, fields);
   };
 
   const Field = function Field(this: Field, name: string, type: any, defaultFn?: Function, hidden?: boolean) {

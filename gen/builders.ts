@@ -459,8 +459,8 @@ export interface LiteralBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value?: string | boolean | null | number | RegExp
     }
@@ -1043,8 +1043,8 @@ export interface TemplateLiteralBuilder {
 export interface TemplateElementBuilder {
   (
     value: {
-      "cooked": string,
-      "raw": string
+      cooked: string,
+      raw: string
     },
     tail: boolean
   ): N.TemplateElement;
@@ -1054,8 +1054,8 @@ export interface TemplateElementBuilder {
       loc?: K.SourceLocationKind | null,
       tail: boolean,
       value: {
-        "cooked": string,
-        "raw": string
+        cooked: string,
+        raw: string
       }
     }
   ): N.TemplateElement;
@@ -1294,8 +1294,8 @@ export interface JSXTextBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value: string
     }
@@ -2388,8 +2388,8 @@ export interface StringLiteralBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value: string
     }
@@ -2402,14 +2402,14 @@ export interface NumericLiteralBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       extra?: {
-        "rawValue": number,
-        "raw": string
+        rawValue: number,
+        raw: string
       },
       loc?: K.SourceLocationKind | null,
       raw?: string | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value: number
     }
@@ -2422,13 +2422,13 @@ export interface BigIntLiteralBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       extra?: {
-        "rawValue": string,
-        "raw": string
+        rawValue: string,
+        raw: string
       },
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value: string | number
     }
@@ -2442,8 +2442,8 @@ export interface NullLiteralBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value?: null
     }
@@ -2457,8 +2457,8 @@ export interface BooleanLiteralBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value: boolean
     }
@@ -2474,8 +2474,8 @@ export interface RegExpLiteralBuilder {
       loc?: K.SourceLocationKind | null,
       pattern: string,
       regex?: {
-        "pattern": string,
-        "flags": string
+        pattern: string,
+        flags: string
       } | null,
       value?: RegExp
     }
@@ -2620,7 +2620,7 @@ export interface TSAsExpressionBuilder {
       comments?: K.CommentKind[] | null,
       expression: K.ExpressionKind,
       extra?: {
-        "parenthesized": boolean
+        parenthesized: boolean
       } | null,
       loc?: K.SourceLocationKind | null,
       typeAnnotation: K.TSTypeKind
@@ -3141,7 +3141,7 @@ export interface TSTypeAssertionBuilder {
       comments?: K.CommentKind[] | null,
       expression: K.ExpressionKind,
       extra?: {
-        "parenthesized": boolean
+        parenthesized: boolean
       } | null,
       loc?: K.SourceLocationKind | null,
       typeAnnotation: K.TSTypeKind

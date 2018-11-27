@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import typesModuleFn, { NameType } from "../lib/types";
+import typesModuleFn, { NameType, AnyType } from "../lib/types";
 import astTypes from "../main";
 import { StatementKind } from "../gen/kinds";
 
 const { getBuilderName } = typesModuleFn();
-const { builders: b, namedTypes: n } = astTypes;
+const { builders: b, namedTypes: n, Type } = astTypes;
 
 const RESERVED: { [reserved: string]: boolean | undefined } = {
   extends: true,
@@ -33,81 +33,58 @@ function resolveName(name: NameType): string {
   return typeof name === "function" ? name() : name;
 }
 
-function getTypeAnnotation(type: string): any {
-  if (type === "undefined") {
+function getTypeAnnotation(type: AnyType): any {
+  const typeName = resolveName(type.name);
+
+  if (typeName === "undefined") {
     return b.tsUndefinedKeyword();
   }
-  if (type === "null") {
+  if (typeName === "null") {
     return b.tsNullKeyword();
   }
-  if (type === "string") {
+  if (typeName === "string") {
     return b.tsStringKeyword();
   }
-  if (type === "boolean") {
+  if (typeName === "boolean") {
     return b.tsBooleanKeyword();
   }
-  if (type === "true" || type === "false") {
-    return b.tsLiteralType.from({
-      literal: b.booleanLiteral.from({
-        value: type === "true",
-      }),
-    });
+  if (typeName === "true" || typeName === "false") {
+    return b.tsLiteralType(b.booleanLiteral(typeName === "true"));
   }
-  if (type === "number" || /^number [<>=]+ \d+$/.test(type)) {
+  if (typeName === "number" || /^number [<>=]+ \d+$/.test(typeName)) {
     return b.tsNumberKeyword();
   }
 
-  if (type[0] === "[" && type[type.length - 1] === "]") {
-    // TODO `split(', ')`?
-    const elemType = type.substring(1, type.length - 1);
-
-    const elemTypeAnnotation = getTypeAnnotation(elemType);
-    if (n.TSUnionType.check(elemTypeAnnotation)) {
-      return b.tsArrayType.from({
-        elementType: b.tsParenthesizedType.from({
-          typeAnnotation: elemTypeAnnotation,
-        }),
-      });
-    }
-
-    return b.tsArrayType(elemTypeAnnotation);
+  if (type instanceof Type.OrType) {
+    return b.tsUnionType(type.types.map(childType => getTypeAnnotation(childType)));
   }
 
-  if (type[0] === "{" && type[type.length - 1] === "}") {
+  if (type instanceof Type.ArrayType) {
+    const elemTypeAnnotation = getTypeAnnotation(type.elemType);
+    return n.TSUnionType.check(elemTypeAnnotation)
+      ? b.tsArrayType(b.tsParenthesizedType(elemTypeAnnotation))
+      : b.tsArrayType(elemTypeAnnotation);
+  }
+
+  if (type instanceof Type.ObjectType) {
     return b.tsTypeLiteral.from({
-      members: type
-        .substring(1, type.length - 1)
-        .split(", ")
-        .map(elem => {
-          const [elemName, elemType] = elem.split(": ").map(str => str.trim());
-          return getPropertySignature(elemName, elemType);
-        }),
+      members: type.fields.map(field => getPropertySignature(field.name, field.type)),
     });
   }
 
-  if (type.indexOf(" | ") !== -1) {
-    return b.tsUnionType.from({
-      // TODO unique?
-      types: type.split(" | ").map(elemType => getTypeAnnotation(elemType)),
-    });
+  if (/^[A-Z]/.test(typeName)) {
+    return b.tsTypeReference(referenceForType(typeName));
   }
 
-  if (/^[A-Z]/.test(type)) {
-    return b.tsTypeReference.from({
-      typeName: referenceForType(type),
-    });
-  }
-
-  return b.tsLiteralType(b.stringLiteral(type));
+  return b.tsLiteralType(b.stringLiteral(typeName));
 }
 
-function getPropertySignature(name: string, type: string, optional: boolean = false) {
+function getPropertySignature(name: string, type: AnyType, optional: boolean = false) {
   return b.tsPropertySignature.from({
     key: b.identifier(name),
-    typeAnnotation: b.tsTypeAnnotation.from({
-      typeAnnotation: getTypeAnnotation(type),
-    }),
-    optional: optional || /(^|\| )null( \||$)/.test(type),
+    typeAnnotation: b.tsTypeAnnotation(getTypeAnnotation(type)),
+    // TODO
+    optional: optional || /(^|\| )null( \||$)/.test(resolveName(type.name)),
   });
 }
 
@@ -180,7 +157,6 @@ const out = [
             body: b.tsInterfaceBody.from({
               body: Object.keys(typeDef.allFields).map(fieldName => {
                 const field = typeDef.allFields[fieldName];
-                const fieldType = resolveName(field.type.name);
 
                 if (fieldName === "type") {
                   return b.tsPropertySignature.from({
@@ -189,7 +165,7 @@ const out = [
                   });
                 }
 
-                return getPropertySignature(fieldName, fieldType);
+                return getPropertySignature(fieldName, field.type);
               }),
             }),
           })
@@ -273,7 +249,6 @@ const out = [
                     .filter(buildParam => !!typeDef.allFields[buildParam])
                     .map(buildParam => {
                       const field = typeDef.allFields[buildParam];
-                      const fieldTypeName = resolveName(field.type.name);
                       const name = RESERVED[buildParam] ? `${buildParam}Param` : buildParam;
 
                       return b.identifier.from({
@@ -281,10 +256,10 @@ const out = [
                         typeAnnotation: b.tsTypeAnnotation(
                           !!buildParamAllowsUndefined[buildParam]
                             ? b.tsUnionType([
-                                getTypeAnnotation(fieldTypeName),
+                                getTypeAnnotation(field.type),
                                 b.tsUndefinedKeyword(),
                               ])
-                            : getTypeAnnotation(fieldTypeName)
+                            : getTypeAnnotation(field.type)
                         ),
                         optional: !!buildParamIsOptional[buildParam],
                       });
@@ -307,10 +282,9 @@ const out = [
                             })
                             .map(fieldName => {
                               const field = typeDef.allFields[fieldName];
-                              const fieldType = resolveName(field.type.name);
                               const optional = field.defaultFn != null;
 
-                              return getPropertySignature(fieldName, fieldType, optional);
+                              return getPropertySignature(fieldName, field.type, optional);
                             }),
                         }),
                       }),
