@@ -25,10 +25,10 @@ export interface Path<V = any> {
 }
 
 export interface PathConstructor {
-  new(value: any, parentPath?: any, name?: any): Path;
+  new<V = any>(value: any, parentPath?: any, name?: any): Path<V>;
 }
 
-export default function pathPlugin(fork: Fork) {
+export default function pathPlugin(fork: Fork): PathConstructor {
   var types = fork.use(typesPlugin);
   var isArray = types.builtInTypes.array;
   var isNumber = types.builtInTypes.number;

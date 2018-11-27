@@ -19,10 +19,10 @@ export interface NodePath<N extends ASTNode = any, V = any> extends Path<V> {
 }
 
 export interface NodePathConstructor {
-  new(value: any, parentPath?: any, name?: any): NodePath;
+  new<N extends ASTNode = any, V = any>(value: any, parentPath?: any, name?: any): NodePath<N, V>;
 }
 
-export default function nodePathPlugin(fork: Fork) {
+export default function nodePathPlugin(fork: Fork): NodePathConstructor {
   var types = fork.use(typesPlugin);
   var n = types.namedTypes;
   var b = types.builders;
