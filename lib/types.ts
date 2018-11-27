@@ -10,24 +10,32 @@ var hasOwn = Op.hasOwnProperty;
 
 declare const __typeBrand: unique symbol;
 
-export type CheckFn = (value: any, deep: any) => any;
+export type CheckFn<T> = (value: any, deep?: any) => value is T;
+export type AnyCheckFn = (value: any, deep?: any) => boolean;
+
+export type AssertFn<T> = (value: any, deep?: any) => value is T;
+export type AnyAssertFn = (value: any, deep?: any) => boolean;
+
 export type NameType = string | (() => string);
 
 export interface Type<T> {
   name: NameType;
-  check(value: any, deep?: any): value is T;
-  assert(value: any, deep?: any): value is T;
-  arrayOf(): AnyType;
+  check: CheckFn<T>;
+  assert: AssertFn<T>;
+  arrayOf(): ArrayType<T>;
   toString(): string;
   [__typeBrand]?: T;
 }
 
-export type AnyType = Omit<Type<any>, "check" | typeof __typeBrand> & { check(value: any, deep?: any): boolean };
+export type AnyType = Omit<Type<any>, "check" | "assert" | typeof __typeBrand> & {
+  check: AnyCheckFn;
+  assert: AnyAssertFn;
+};
 
 export interface TypeStatics {
-  fromArray(...args: any[]): AnyType;
-  fromObject(obj: object): AnyType;
   or<T>(...types: any[]): OrType<T>;
+  fromArray<T>(...args: any[]): ArrayType<T>;
+  fromObject<T>(obj: object): ObjectType<T>;
   def(typeName: any): Def;
 
   // Type subtypes
@@ -37,7 +45,7 @@ export interface TypeStatics {
 }
 
 export interface TypeConstructor extends TypeStatics {
-  new<T>(check: CheckFn, name: NameType): Type<T>;
+  new<T>(check: AnyCheckFn, name: NameType): Type<T>;
 }
 
 export interface OrType<T> extends Type<T> {
@@ -45,7 +53,7 @@ export interface OrType<T> extends Type<T> {
 }
 
 export interface OrTypeConstructor {
-  new<T>(check: CheckFn, name: NameType, types: Type<any>[]): OrType<T>;
+  new<T>(check: AnyCheckFn, name: NameType, types: Type<any>[]): OrType<T>;
 }
 
 export interface ArrayType<T> extends Type<T[]> {
@@ -53,7 +61,7 @@ export interface ArrayType<T> extends Type<T[]> {
 }
 
 export interface ArrayTypeConstructor {
-  new<T>(check: CheckFn, name: NameType, elemType: Type<T>): ArrayType<T>;
+  new<T>(check: AnyCheckFn, name: NameType, elemType: Type<T>): ArrayType<T>;
 }
 
 export interface ObjectType<T> extends Type<T> {
@@ -61,7 +69,7 @@ export interface ObjectType<T> extends Type<T> {
 }
 
 export interface ObjectTypeConstructor {
-  new<T>(check: CheckFn, name: NameType, fields: Field[]): ObjectType<T>;
+  new<T>(check: AnyCheckFn, name: NameType, fields: Field[]): ObjectType<T>;
 }
 
 export interface Def {
@@ -116,7 +124,7 @@ export default function typesPlugin(_fork?: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
-  const Type = function Type<T>(this: Type<T>, check: CheckFn, name: NameType) {
+  const Type = function Type<T>(this: Type<T>, check: AnyCheckFn, name: NameType) {
     var self = this;
     if (!(self instanceof Type)) {
       throw new Error("Type constructor cannot be invoked without 'new'");
@@ -135,7 +143,7 @@ export default function typesPlugin(_fork?: Fork) {
       throw new Error(name + " is neither a function nor a string");
     }
 
-    const checkValue: CheckFn = function (value, deep) {
+    const checkValue: AnyCheckFn = function (value, deep) {
       var result = check.call(self, value, deep);
       if (!result && deep && objToStr.call(deep) === funObjStr)
         deep(self, value);
@@ -279,7 +287,7 @@ export default function typesPlugin(_fork?: Fork) {
   const OrType: OrTypeConstructor = class OrType<T> extends Type<T> {
     types: Type<any>[];
 
-    constructor(check: CheckFn, name: NameType, types: Type<any>[]) {
+    constructor(check: AnyCheckFn, name: NameType, types: Type<any>[]) {
       super(check, name);
       this.types = types;
     }
@@ -317,7 +325,7 @@ export default function typesPlugin(_fork?: Fork) {
   const ArrayType: ArrayTypeConstructor = class ArrayType<T> extends Type<T[]> {
     elemType: Type<T>;
 
-    constructor(check: CheckFn, name: NameType, elemType: Type<T>) {
+    constructor(check: AnyCheckFn, name: NameType, elemType: Type<T>) {
       super(check, name);
       this.elemType = elemType;
     }
@@ -338,7 +346,7 @@ export default function typesPlugin(_fork?: Fork) {
   const ObjectType: ObjectTypeConstructor = class ObjectType<T> extends Type<T> {
     fields: Field[];
 
-    constructor(check: CheckFn, name: NameType, fields: Field[]){
+    constructor(check: AnyCheckFn, name: NameType, fields: Field[]){
       super(check, name);
       this.fields = fields;
     }
