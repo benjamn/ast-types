@@ -33,6 +33,7 @@ function shallowStringify(value: any): string {
 abstract class AbstractType<T> {
   abstract toString(): string;
   abstract check(value: any, deep?: any): value is T;
+  abstract getTypeAnnotation(): any;
 
   assert(value: any, deep?: any): value is T {
     if (!this.check(value, deep)) {
@@ -114,6 +115,14 @@ export class Field<T = any> {
     }
 
     return value;
+  }
+
+  getPropertySignature(builders: { [name: string]: Builder }): any {
+    return builders.tsPropertySignature.from({
+      key: builders.identifier(this.name),
+      typeAnnotation: builders.tsTypeAnnotation(this.type.getTypeAnnotation()),
+      optional: this.defaultFn != null || this.hidden,
+    });
   }
 }
 
@@ -209,6 +218,22 @@ export default function typesPlugin(_fork?: Fork) {
     toString() {
       return String(this.value);
     }
+
+    getTypeAnnotation() {
+      if (this.value === null) {
+        return builders.tsNullKeyword();
+      }
+      switch (typeof this.value) {
+      case "undefined": return builders.tsUndefinedKeyword();
+      case "string":    return builders.tsLiteralType(builders.stringLiteral(this.value));
+      case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(this.value));
+      case "number":    return builders.tsNumberKeyword();
+      case "object":    return builders.tsObjectKeyword();
+      case "function":  return builders.tsFunctionType();
+      case "symbol":    return builders.tsSymbolKeyword();
+      default:          return builders.tsAnyKeyword();
+      }
+    }
   }
 
   class PredicateType<T> extends Type<T> {
@@ -230,6 +255,31 @@ export default function typesPlugin(_fork?: Fork) {
     toString() {
       return this.name;
     }
+
+    getTypeAnnotation() {
+      if (typeof this.name !== "string") {
+        return builders.tsAnyKeyword();
+      }
+
+      if (hasOwn.call(namedTypes, this.name)) {
+        // TODO Make this work even if TypeScript types not used?
+        return builders.tsTypeReference(builders.tsQualifiedName(
+          builders.identifier("K"), // TODO Don't hard-code this.
+          builders.identifier(this.name + "Kind")
+        ));
+      }
+
+      if (/^[$A-Z_][a-z0-9_$]*$/i.test(this.name)) {
+        return builders.tsTypeReference(builders.identifier(this.name));
+      }
+
+      if (/^number [<>=]+ \d+$/.test(this.name)) {
+        return builders.tsNumberKeyword();
+      }
+
+      // Not much else to do...
+      return builders.tsAnyKeyword();
+    }
   }
 
   class OrType<T> extends Type<T> {
@@ -246,6 +296,12 @@ export default function typesPlugin(_fork?: Fork) {
     toString() {
       return this.types.join(" | ");
     }
+
+    getTypeAnnotation() {
+      return builders.tsUnionType(
+        this.types.map(type => type.getTypeAnnotation())
+      );
+    }
   }
 
   class ArrayType<T> extends Type<T[]> {
@@ -261,6 +317,14 @@ export default function typesPlugin(_fork?: Fork) {
     toString() {
       return "[" + this.elemType + "]";
     }
+
+    getTypeAnnotation() {
+      let elemTypeAnnotation = this.elemType.getTypeAnnotation();
+      if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
+        elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
+      }
+      return builders.tsArrayType(elemTypeAnnotation);
+    }
   }
 
   class ObjectType<T> extends Type<T> {
@@ -275,6 +339,12 @@ export default function typesPlugin(_fork?: Fork) {
 
     toString() {
       return "{ " + this.fields.join(", ") + " }";
+    }
+
+    getTypeAnnotation() {
+      return builders.tsTypeLiteral.from({
+        members: this.fields.map(field => field.getPropertySignature(builders))
+      });
     }
   }
 

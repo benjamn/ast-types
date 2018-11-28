@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import typesModuleFn, { NameType, AnyType, Field } from "../lib/types";
+import typesModuleFn from "../lib/types";
 import astTypes from "../main";
 import { StatementKind } from "../gen/kinds";
 
 const { getBuilderName } = typesModuleFn();
-const { builders: b, namedTypes: n, Type } = astTypes;
+const { builders: b } = astTypes;
 
 const RESERVED: { [reserved: string]: boolean | undefined } = {
   extends: true,
@@ -22,70 +22,6 @@ Object.keys(astTypes.namedTypes).map(typeName => {
     supertypeToSubtypes[supertypeName].push(typeName);
   });
 });
-
-function referenceForType(type: string) {
-  return !supertypeToSubtypes[type] || supertypeToSubtypes[type].length === 0
-    ? b.identifier(type)
-    : b.tsQualifiedName(b.identifier("K"), b.identifier(`${type}Kind`));
-}
-
-function resolveName(name: NameType): string {
-  return typeof name === "function" ? name() : name;
-}
-
-function getTypeAnnotation(type: AnyType): any {
-  const typeName = resolveName(type.name);
-
-  if (typeName === "undefined") {
-    return b.tsUndefinedKeyword();
-  }
-  if (typeName === "null") {
-    return b.tsNullKeyword();
-  }
-  if (typeName === "string") {
-    return b.tsStringKeyword();
-  }
-  if (typeName === "boolean") {
-    return b.tsBooleanKeyword();
-  }
-  if (typeName === "true" || typeName === "false") {
-    return b.tsLiteralType(b.booleanLiteral(typeName === "true"));
-  }
-  if (typeName === "number" || /^number [<>=]+ \d+$/.test(typeName)) {
-    return b.tsNumberKeyword();
-  }
-
-  if (type instanceof Type.OrType) {
-    return b.tsUnionType(type.types.map(childType => getTypeAnnotation(childType)));
-  }
-
-  if (type instanceof Type.ArrayType) {
-    const elemTypeAnnotation = getTypeAnnotation(type.elemType);
-    return n.TSUnionType.check(elemTypeAnnotation)
-      ? b.tsArrayType(b.tsParenthesizedType(elemTypeAnnotation))
-      : b.tsArrayType(elemTypeAnnotation);
-  }
-
-  if (type instanceof Type.ObjectType) {
-    return b.tsTypeLiteral.from({
-      members: type.fields.map(field => getPropertySignature(field)),
-    });
-  }
-
-  if (/^[A-Z]/.test(typeName)) {
-    return b.tsTypeReference(referenceForType(typeName));
-  }
-
-  return b.tsLiteralType(b.stringLiteral(typeName));
-}
-
-function getPropertySignature(field: Field) {
-  return b.tsPropertySignature.from({
-    key: b.identifier(field.name),
-    typeAnnotation: b.tsTypeAnnotation(getTypeAnnotation(field.type)),
-    optional: field.defaultFn != null || field.hidden,
-  });
-}
 
 const builderTypeNames = Object.keys(astTypes.namedTypes).filter(typeName => {
   const typeDef = astTypes.Type.def(typeName);
@@ -164,7 +100,7 @@ const out = [
                   });
                 }
 
-                return getPropertySignature(field);
+                return field.getPropertySignature(b);
               }),
             }),
           })
@@ -255,10 +191,10 @@ const out = [
                         typeAnnotation: b.tsTypeAnnotation(
                           !!buildParamAllowsUndefined[buildParam]
                             ? b.tsUnionType([
-                                getTypeAnnotation(field.type),
+                                field.type.getTypeAnnotation(),
                                 b.tsUndefinedKeyword(),
                               ])
-                            : getTypeAnnotation(field.type)
+                            : field.type.getTypeAnnotation()
                         ),
                         optional: !!buildParamIsOptional[buildParam],
                       });
@@ -280,10 +216,7 @@ const out = [
                               return field1.name < field2.name ? -1 : 1;
                             })
                             .map(fieldName => {
-                              const field = typeDef.allFields[fieldName];
-
-
-                              return getPropertySignature(field);
+                              return typeDef.allFields[fieldName].getPropertySignature(b);
                             }),
                         }),
                       }),
