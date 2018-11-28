@@ -98,17 +98,33 @@ export interface DefConstructor {
   fromValue(value: any): any;
 }
 
-export interface Field {
-  name: string;
-  type: any;
-  hidden: boolean;
-  defaultFn?: Function;
-  toString(): string;
-  getValue(obj: { [name: string]: unknown }): any;
-}
+export class Field<T = any> {
+  constructor(
+    public name: string,
+    public type: AbstractType<T>,
+    private defaultFn?: Function,
+    public hidden?: boolean,
+  ) {
+    this.hidden = !!hidden;
+  }
 
-export interface FieldConstructor {
-  new(name: string, type: any, defaultFn?: Function, hidden?: boolean): Field;
+  toString() {
+    return JSON.stringify(this.name) + ": " + this.type;
+  }
+
+  getValue(obj: { [key: string]: any }) {
+    var value = obj[this.name];
+
+    if (typeof value !== "undefined") {
+      return value;
+    }
+
+    if (typeof this.defaultFn === "function") {
+      value = this.defaultFn.call(obj);
+    }
+
+    return value;
+  }
 }
 
 export interface ASTNode {
@@ -365,47 +381,6 @@ export default function typesPlugin(_fork?: Fork) {
     }, function () {
       return "{ " + fields.join(", ") + " }";
     }, fields);
-  };
-
-  const Field = function Field(this: Field, name: string, type: any, defaultFn?: Function, hidden?: boolean) {
-    var self = this;
-
-    if (!(self instanceof Field)) {
-      throw new Error("Field constructor cannot be invoked without 'new'");
-    }
-    isString.assert(name);
-
-    type = toType(type);
-
-    var properties: any = {
-      name: {value: name},
-      type: {value: type},
-      hidden: {value: !!hidden}
-    };
-
-    if (isFunction.check(defaultFn)) {
-      properties.defaultFn = {value: defaultFn};
-    }
-
-    Object.defineProperties(self, properties);
-  } as any as FieldConstructor;
-
-  var Fp: Field = Field.prototype;
-
-  Fp.toString = function () {
-    return JSON.stringify(this.name) + ": " + this.type;
-  };
-
-  Fp.getValue = function (obj) {
-    var value = obj[this.name];
-
-    if (!isUndefined.check(value))
-      return value;
-
-    if (this.defaultFn)
-      value = this.defaultFn.call(obj);
-
-    return value;
   };
 
   // Define a type whose name is registered in a namespace (the defCache) so
