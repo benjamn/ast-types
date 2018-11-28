@@ -4,8 +4,6 @@ var Ap = Array.prototype;
 var slice = Ap.slice;
 var Op = Object.prototype;
 var objToStr = Op.toString;
-var funObjStr = objToStr.call(function(){});
-var strObjStr = objToStr.call("");
 var hasOwn = Op.hasOwnProperty;
 
 declare const __typeBrand: unique symbol;
@@ -18,59 +16,51 @@ export type AnyAssertFn = (value: any, deep?: any) => boolean;
 
 export type NameType = string | (() => string);
 
-export interface Type<T> {
-  name: NameType;
-  check: CheckFn<T>;
-  assert: AssertFn<T>;
-  arrayOf(): ArrayType<T>;
-  toString(): string;
-  [__typeBrand]?: T;
+function shallowStringify(value: any): string {
+  if (Array.isArray(value)) {
+    return "[" + value.map(shallowStringify).join(", ") + "]";
+  }
+
+  if (value && typeof value === "object") {
+    return "{ " + Object.keys(value).map(function (key) {
+      return key + ": " + value[key];
+    }).join(", ") + " }";
+  }
+
+  return JSON.stringify(value);
 }
 
-export type AnyType = Omit<Type<any>, "check" | "assert" | typeof __typeBrand> & {
+abstract class AbstractType<T> {
+  abstract toString(): string;
+  abstract check(value: any, deep?: any): value is T;
+
+  assert(value: any, deep?: any): value is T {
+    if (!this.check(value, deep)) {
+      var str = shallowStringify(value);
+      throw new Error(str + " does not match type " + this);
+    }
+    return true;
+  }
+
+  static or(..._types: any[]): AbstractType<any> {
+    throw new Error("not implemented");
+  }
+
+  static from(_value: any, _name?: string): AbstractType<any> {
+    throw new Error("not implemented");
+  }
+
+  static def(_typeName: string): Def {
+    throw new Error("not implemented");
+  }
+}
+
+export { AbstractType as Type }
+
+export type AnyType = Omit<AbstractType<any>, "check" | "assert" | typeof __typeBrand> & {
   check: AnyCheckFn;
   assert: AnyAssertFn;
 };
-
-export interface TypeStatics {
-  or<T>(...types: any[]): OrType<T>;
-  fromArray<T>(...args: any[]): ArrayType<T>;
-  fromObject<T>(obj: object): ObjectType<T>;
-  def(typeName: any): Def;
-
-  // Type subtypes
-  OrType: OrTypeConstructor;
-  ArrayType: ArrayTypeConstructor;
-  ObjectType: ObjectTypeConstructor;
-}
-
-export interface TypeConstructor extends TypeStatics {
-  new<T>(check: AnyCheckFn, name: NameType): Type<T>;
-}
-
-export interface OrType<T> extends Type<T> {
-  types: Type<any>[];
-}
-
-export interface OrTypeConstructor {
-  new<T>(check: AnyCheckFn, name: NameType, types: Type<any>[]): OrType<T>;
-}
-
-export interface ArrayType<T> extends Type<T[]> {
-  elemType: Type<T>;
-}
-
-export interface ArrayTypeConstructor {
-  new<T>(check: AnyCheckFn, name: NameType, elemType: Type<T>): ArrayType<T>;
-}
-
-export interface ObjectType<T> extends Type<T> {
-  fields: Field[];
-}
-
-export interface ObjectTypeConstructor {
-  new<T>(check: AnyCheckFn, name: NameType, fields: Field[]): ObjectType<T>;
-}
 
 export interface Def {
   typeName: string;
@@ -78,9 +68,9 @@ export interface Def {
   ownFields: any;
   allSupertypes: any;
   supertypeList: string[];
-  allFields: { [fieldName: string]: Field; };
+  allFields: { [fieldName: string]: Field<any>; };
   fieldNames: string[];
-  type: AnyType;
+  type: AbstractType<any>;
   isSupertypeOf(that: any): any;
   checkAllFields(value: any, deep?: any): boolean;
   check(value: any, deep?: any): boolean;
@@ -140,75 +130,156 @@ export default function typesPlugin(_fork?: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
-  const Type = function Type<T>(this: Type<T>, check: AnyCheckFn, name: NameType) {
-    var self = this;
-    if (!(self instanceof Type)) {
-      throw new Error("Type constructor cannot be invoked without 'new'");
+  abstract class Type<T> extends AbstractType<T> {
+    static or(...types: any[]) {
+      return new OrType<any>(types.map(type => Type.from(type)));
     }
 
-    // Unfortunately we can't elegantly reuse isFunction and isString,
-    // here, because this code is executed while defining those types.
-    if (objToStr.call(check) !== funObjStr) {
-      throw new Error(check + " is not a function");
+    static from(value: any, name?: string): AbstractType<any> {
+      if (value instanceof Type) {
+        return value;
+      }
+
+      // The Def type is used as a helper for constructing compound
+      // interface types for AST nodes.
+      if (value instanceof Def) {
+        return value.type;
+      }
+
+      // Support [ElemType] syntax.
+      if (isArray.check(value)) {
+        if (value.length !== 1) {
+          throw new Error("only one element type is permitted for typed arrays");
+        }
+        return new ArrayType(Type.from(value[0]));
+      }
+
+      // Support { someField: FieldType, ... } syntax.
+      if (isObject.check(value)) {
+        return new ObjectType(Object.keys(value).map(
+          name => new Field(name, Type.from(value[name], name))
+        ));
+      }
+
+      if (typeof value === "function") {
+        var bicfIndex = builtInCtorFns.indexOf(value);
+        if (bicfIndex >= 0) {
+          return builtInCtorTypes[bicfIndex];
+        }
+
+        if (typeof name !== "string") {
+          throw new Error("missing name");
+        }
+
+        return new PredicateType(value, name);
+      }
+
+      // As a last resort, toType returns a type that matches any value that
+      // is === from. This is primarily useful for literal values like
+      // toType(null), but it has the additional advantage of allowing
+      // toType to be a total function.
+      return new IdentityType(value);
     }
 
-    // The `name` parameter can be either a function or a string.
-    var nameObjStr = objToStr.call(name);
-    if (!(nameObjStr === funObjStr ||
-      nameObjStr === strObjStr)) {
-      throw new Error(name + " is neither a function nor a string");
+    // Define a type whose name is registered in a namespace (the defCache) so
+    // that future definitions will return the same type given the same name.
+    // In particular, this system allows for circular and forward definitions.
+    // The Def object d returned from Type.def may be used to configure the
+    // type d.type by calling methods such as d.bases, d.build, and d.field.
+    static def(typeName: string): Def {
+      return hasOwn.call(defCache, typeName)
+        ? defCache[typeName]
+        : defCache[typeName] = new Def(typeName);
     }
-
-    const checkValue: AnyCheckFn = function (value, deep) {
-      var result = check.call(self, value, deep);
-      if (!result && deep && objToStr.call(deep) === funObjStr)
-        deep(self, value);
-      return result;
-    };
-
-    Object.defineProperties(self, {
-      name: {value: name},
-      check: { value: checkValue }
-    });
-  } as any as TypeConstructor;
-
-  var Tp: Type<{}> = Type.prototype;
-
-  // Like .check, except that failure triggers an AssertionError.
-  Tp.assert = function (value, deep): value is {} {
-    if (!this.check(value, deep)) {
-      var str = shallowStringify(value);
-      throw new Error(str + " does not match type " + this);
-    }
-    return true;
-  };
-
-  function shallowStringify(value: any): string {
-    if (isObject.check(value))
-      return "{" + Object.keys(value).map(function (key) {
-          return key + ": " + value[key];
-        }).join(", ") + "}";
-
-    if (isArray.check(value))
-      return "[" + value.map(shallowStringify).join(", ") + "]";
-
-    return JSON.stringify(value);
   }
 
-  Tp.toString = function () {
-    var name = this.name;
+  class IdentityType<T> extends Type<T> {
+    constructor(private value: T) {
+      super();
+    }
 
-    if (isString.check(name))
-      return name;
+    check(value: any, deep?: any): value is T {
+      const result = value === this.value;
+      if (! result && typeof deep === "function") {
+        deep(this, value);
+      }
+      return result;
+    }
 
-    if (isFunction.check(name))
-      return name.call(this) + "";
+    toString() {
+      return String(this.value);
+    }
+  }
 
-    return name + " type";
-  };
+  class PredicateType<T> extends Type<T> {
+    constructor(
+      private predicate: AnyCheckFn,
+      private name: string,
+    ) {
+      super();
+    }
+
+    check(value: any, deep?: any): value is T {
+      const result = this.predicate(value, deep);
+      if (! result && typeof deep === "function") {
+        deep(this, value);
+      }
+      return result;
+    }
+
+    toString() {
+      return this.name;
+    }
+  }
+
+  class OrType<T> extends Type<T> {
+    constructor(private types: Type<any>[]) {
+      super();
+    }
+
+    check(value: any, deep?: any): value is T {
+      return this.types.some(type => {
+        return type.check(value, deep);
+      });
+    }
+
+    toString() {
+      return this.types.join(" | ");
+    }
+  }
+
+  class ArrayType<T> extends Type<T[]> {
+    constructor(private elemType: Type<T>) {
+      super();
+    }
+
+    check(value: any, deep?: any): value is T[] {
+      return Array.isArray(value) &&
+        value.every(elem => this.elemType.check(elem, deep));
+    }
+
+    toString() {
+      return "[" + this.elemType + "]";
+    }
+  }
+
+  class ObjectType<T> extends Type<T> {
+    constructor(private fields: Field<any>[]) {
+      super();
+    }
+
+    check(value: any, deep?: any): value is T {
+      return isObject.check(value) &&
+        this.fields.every(field => field.type.check(value[field.name], deep));
+    }
+
+    toString() {
+      return "{ " + this.fields.join(", ") + " }";
+    }
+  }
 
   var builtInCtorFns: Function[] = [];
-  var builtInCtorTypes: AnyType[] = [];
+  var builtInCtorTypes: PredicateType<any>[] = [];
 
   type BuiltInTypes = {
     string: typeof isString;
@@ -224,12 +295,13 @@ export default function typesPlugin(_fork?: Fork) {
   };
   var builtInTypes = {} as BuiltInTypes;
 
-  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): Type<T> {
-    var objStr = objToStr.call(example);
+  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): AbstractType<T> {
+    const objStr = objToStr.call(example);
 
-    var type = new Type<T>(function (value) {
-      return objToStr.call(value) === objStr;
-    }, name);
+    const type = new PredicateType<T>(
+      value => objToStr.call(value) === objStr,
+      name,
+    );
 
     builtInTypes[name] = type;
 
@@ -256,151 +328,13 @@ export default function typesPlugin(_fork?: Fork) {
   var isNull = defBuiltInType<null>(null, "null");
   var isUndefined = defBuiltInType<undefined>(void 0, "undefined");
 
-  // There are a number of idiomatic ways of expressing types, so this
-  // function serves to coerce them all to actual Type objects. Note that
-  // providing the name argument is not necessary in most cases.
-  function toType(from: any, name?: any): AnyType {
-    // The toType function should of course be idempotent.
-    if (from instanceof Type)
-      return from;
-
-    // The Def type is used as a helper for constructing compound
-    // interface types for AST nodes.
-    if (from instanceof Def)
-      return from.type;
-
-    // Support [ElemType] syntax.
-    if (isArray.check(from))
-      return Type.fromArray(from);
-
-    // Support { someField: FieldType, ... } syntax.
-    if (isObject.check(from))
-      return Type.fromObject(from);
-
-    if (isFunction.check(from)) {
-      var bicfIndex = builtInCtorFns.indexOf(from);
-      if (bicfIndex >= 0) {
-        return builtInCtorTypes[bicfIndex];
-      }
-
-      // If isFunction.check(from), and from is not a built-in
-      // constructor, assume from is a binary predicate function we can
-      // use to define the type.
-      return new Type(from, name);
-    }
-
-    // As a last resort, toType returns a type that matches any value that
-    // is === from. This is primarily useful for literal values like
-    // toType(null), but it has the additional advantage of allowing
-    // toType to be a total function.
-    return new Type(function (value) {
-      return value === from;
-    }, isUndefined.check(name) ? function () {
-      return from + "";
-    } : name);
-  }
-
-  const OrType: OrTypeConstructor = class OrType<T> extends Type<T> {
-    types: Type<any>[];
-
-    constructor(check: AnyCheckFn, name: NameType, types: Type<any>[]) {
-      super(check, name);
-      this.types = types;
-    }
-  }
-  Type.OrType = OrType;
-
-  // Returns a type that matches the given value iff any of type1, type2,
-  // etc. match the value.
-  Type.or = function (/* type1, type2, ... */) {
-    var types: any[] = [];
-    var len = arguments.length;
-    for (var i = 0; i < len; ++i)
-      types.push(toType(arguments[i]));
-
-    return new OrType(function (value, deep) {
-      for (var i = 0; i < len; ++i)
-        if (types[i].check(value, deep))
-          return true;
-      return false;
-    }, function () {
-      return types.join(" | ");
-    }, types);
-  };
-
-  Type.fromArray = function (arr) {
-    if (!isArray.check(arr)) {
-      throw new Error("");
-    }
-    if (arr.length !== 1) {
-      throw new Error("only one element type is permitted for typed arrays");
-    }
-    return toType(arr[0]).arrayOf();
-  };
-
-  const ArrayType: ArrayTypeConstructor = class ArrayType<T> extends Type<T[]> {
-    elemType: Type<T>;
-
-    constructor(check: AnyCheckFn, name: NameType, elemType: Type<T>) {
-      super(check, name);
-      this.elemType = elemType;
-    }
-  }
-  Type.ArrayType = ArrayType;
-
-  Tp.arrayOf = function () {
-    var elemType = this;
-    return new ArrayType(function (value, deep) {
-      return isArray.check(value) && value.every(function (elem: any) {
-          return elemType.check(elem, deep);
-        });
-    }, function () {
-      return "[" + elemType + "]";
-    }, elemType);
-  };
-
-  const ObjectType: ObjectTypeConstructor = class ObjectType<T> extends Type<T> {
-    fields: Field[];
-
-    constructor(check: AnyCheckFn, name: NameType, fields: Field[]){
-      super(check, name);
-      this.fields = fields;
-    }
-  }
-  Type.ObjectType = ObjectType;
-
-  Type.fromObject = function (obj: any) {
-    var fields = Object.keys(obj).map(function (name) {
-      return new Field(name, obj[name]);
-    });
-
-    return new ObjectType(function (value, deep) {
-      return isObject.check(value) && fields.every(function (field) {
-          return field.type.check(value[field.name], deep);
-        });
-    }, function () {
-      return "{ " + fields.join(", ") + " }";
-    }, fields);
-  };
-
-  // Define a type whose name is registered in a namespace (the defCache) so
-  // that future definitions will return the same type given the same name.
-  // In particular, this system allows for circular and forward definitions.
-  // The Def object d returned from Type.def may be used to configure the
-  // type d.type by calling methods such as d.bases, d.build, and d.field.
-  Type.def = function (typeName) {
-    isString.assert(typeName);
-    return hasOwn.call(defCache, typeName)
-      ? defCache[typeName]
-      : defCache[typeName] = new Def(typeName);
-  };
-
   // In order to return the same Def instance every time Type.def is called
   // with a particular name, those instances need to be stored in a cache.
   var defCache = Object.create(null);
 
   const Def = function Def(this: any, typeName: string) {
-    var self = this;
+    var self: Def = this;
+
     if (!(self instanceof Def)) {
       throw new Error("Def constructor cannot be invoked without 'new'");
     }
@@ -417,9 +351,10 @@ export default function typesPlugin(_fork?: Fork) {
       fieldNames: {value: []}, // Non-hidden keys of allFields.
 
       type: {
-        value: new Type(function (value, deep) {
-          return self.check(value, deep);
-        }, typeName)
+        value: new PredicateType(
+          (value, deep) => self.check(value, deep),
+          typeName,
+        ),
       }
     });
   } as any as DefConstructor;
@@ -619,7 +554,7 @@ export default function typesPlugin(_fork?: Fork) {
     return old;
   };
 
-  var isArrayOfString = isString.arrayOf();
+  var isArrayOfString = new ArrayType(isString);
 
   // Calling the .build method of a Def simultaneously marks the type as
   // buildable (by defining builders[getBuilderName(typeName)]) and
@@ -802,7 +737,7 @@ export default function typesPlugin(_fork?: Fork) {
         JSON.stringify(this.typeName));
       return this;
     }
-    this.ownFields[name] = new Field(name, type, defaultFn, hidden);
+    this.ownFields[name] = new Field(name, Type.from(type), defaultFn, hidden);
     return this; // For chaining.
   };
 
@@ -998,11 +933,10 @@ export default function typesPlugin(_fork?: Fork) {
     });
   };
 
-  return {
-    // Throughout this file we use Object.defineProperty to prevent
-    // redefinition of exported properties.
-    Type,
+  const AbsType: typeof AbstractType = Type;
 
+  return {
+    Type: AbsType,
     builtInTypes,
     getSupertypeNames,
     computeSupertypeLookupTable,
