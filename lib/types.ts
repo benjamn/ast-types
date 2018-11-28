@@ -1003,10 +1003,8 @@ export default function typesPlugin(_fork?: Fork) {
     });
   };
 
-  const AbsType: typeof AbstractType = Type;
-
   return {
-    Type: AbsType,
+    Type: Type as typeof AbstractType,
     builtInTypes,
     getSupertypeNames,
     computeSupertypeLookupTable,
