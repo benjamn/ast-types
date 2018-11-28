@@ -15,7 +15,7 @@ export default function (fork: Fork) {
   var def = types.Type.def;
   var or = types.Type.or;
   var defaults = fork.use(sharedPlugin).defaults;
-  var StringLiteral = new types.Type(function (value, deep) {
+  var StringLiteral = types.Type.from(function (value: any, deep?: any) {
     if (n.StringLiteral &&
         n.StringLiteral.check(value, deep)) {
       return true

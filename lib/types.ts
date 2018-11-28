@@ -92,7 +92,7 @@ export class Field<T = any> {
   constructor(
     public name: string,
     public type: AbstractType<T>,
-    private defaultFn?: Function,
+    public defaultFn?: Function,
     public hidden?: boolean,
   ) {
     this.hidden = !!hidden;

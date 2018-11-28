@@ -2239,7 +2239,7 @@ describe("RegExpLiteral nodes", function() {
         flags: "gim"
       });
 
-      types.Type.fromObject({
+      types.Type.from({
         pattern: isString,
         flags: isString
       }).assert(regex);

@@ -10,9 +10,10 @@ export default function (fork: Fork) {
     // An example of constructing a new type with arbitrary constraints from
     // an existing type.
     function geq(than: any) {
-        return new Type(function (value: any) {
-            return isNumber.check(value) && value >= than;
-        }, isNumber + " >= " + than);
+        return Type.from(
+            (value: number) => isNumber.check(value) && value >= than,
+            isNumber + " >= " + than,
+        );
     };
 
     // Default value-returning functions that may optionally be passed as a
@@ -37,13 +38,19 @@ export default function (fork: Fork) {
       builtin.undefined
     );
 
-    const isPrimitive = new Type(function (value: any) {
-        if (value === null)
+    const isPrimitive = Type.from(
+        (value: any) => {
+            if (value === null)
+                return true;
+            var type = typeof value;
+            if (type === "object" ||
+                type === "function") {
+                return false;
+            }
             return true;
-        var type = typeof value;
-        return !(type === "object" ||
-        type === "function");
-    }, naiveIsPrimitive.toString());
+        },
+        naiveIsPrimitive.toString(),
+    );
 
     return {
         geq,
