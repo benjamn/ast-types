@@ -89,57 +89,53 @@ export interface DefConstructor {
   fromValue(value: any): any;
 }
 
-export interface Field<T> {
-  name: string;
-  type: AbstractType<T>;
-  defaultFn?: Function;
-  hidden: boolean;
-  toString(): string;
-  getValue(obj: { [key: string]: any }): any;
-  getPropertySignature(builders: { [name: string]: Builder }): any;
-}
+export class Field<T> {
+  static from<T>(params: {
+    name: string;
+    type: AbstractType<T>;
+    defaultFn?: Function;
+    hidden?: boolean;
+  }) {
+    return new Field(
+      params.name,
+      params.type,
+      params.defaultFn,
+      !!params.hidden,
+    );
+  }
 
-export function createField<T>(params: {
-  name: string;
-  type: AbstractType<T>;
-  defaultFn?: Function;
-  hidden?: boolean;
-}): Field<T> {
-  const { name, type, defaultFn } = params;
-  const hidden = !!params.hidden;
+  private constructor(
+    public name: string,
+    public type: AbstractType<T>,
+    public defaultFn: Function | undefined,
+    public hidden: boolean,
+  ) {}
 
-  return {
-    name,
-    type,
-    defaultFn,
-    hidden,
+  toString() {
+    return JSON.stringify(this.name) + ": " + this.type;
+  }
 
-    toString() {
-      return JSON.stringify(name) + ": " + type;
-    },
+  getValue(obj: { [key: string]: any }) {
+    var value = obj[this.name];
 
-    getValue(obj: { [key: string]: any }) {
-      var value = obj[name];
-
-      if (typeof value !== "undefined") {
-        return value;
-      }
-
-      if (typeof defaultFn === "function") {
-        value = defaultFn.call(obj);
-      }
-
+    if (typeof value !== "undefined") {
       return value;
-    },
-
-    getPropertySignature(builders: { [name: string]: Builder }): any {
-      return builders.tsPropertySignature.from({
-        key: builders.identifier(name),
-        typeAnnotation: builders.tsTypeAnnotation(type.getTypeAnnotation()),
-        optional: defaultFn != null || hidden,
-      });
     }
-  };
+
+    if (typeof this.defaultFn === "function") {
+      value = this.defaultFn.call(obj);
+    }
+
+    return value;
+  }
+
+  getPropertySignature(builders: { [name: string]: Builder }): any {
+    return builders.tsPropertySignature.from({
+      key: builders.identifier(this.name),
+      typeAnnotation: builders.tsTypeAnnotation(this.type.getTypeAnnotation()),
+      optional: this.defaultFn != null || this.hidden,
+    });
+  }
 }
 
 export interface ASTNode {
@@ -182,7 +178,7 @@ export default function typesPlugin(_fork?: Fork) {
       // Support { someField: FieldType, ... } syntax.
       if (isObject.check(value)) {
         return new ObjectType(Object.keys(value).map(
-          name => createField({ name, type: Type.from(value[name], name) })
+          name => Field.from({ name, type: Type.from(value[name], name) })
         ));
       }
 
@@ -823,7 +819,7 @@ export default function typesPlugin(_fork?: Fork) {
         JSON.stringify(this.typeName));
       return this;
     }
-    this.ownFields[name] = createField({ name, type: Type.from(type), defaultFn, hidden });
+    this.ownFields[name] = Field.from({ name, type: Type.from(type), defaultFn, hidden });
     return this; // For chaining.
   };
 
