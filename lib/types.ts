@@ -54,9 +54,51 @@ abstract class AbstractType<T> {
   static def(_typeName: string): Def {
     throw new Error("not implemented");
   }
+
+  constructor(protected innerType: TypeUnion<T>) {}
 }
 
-export { AbstractType as Type }
+export { AbstractType as Type };
+
+interface BaseType<T> {
+  readonly [__typeBrand]: T;
+}
+
+interface IdentityType<T> extends BaseType<T> {
+  readonly kind: "IdentityType";
+  readonly value: T;
+}
+
+interface PredicateType<T> extends BaseType<T> {
+  readonly kind: "PredicateType";
+  readonly predicate: AnyCheckFn;
+  readonly name: string;
+}
+
+interface OrType<T> extends BaseType<T> {
+  readonly kind: "OrType";
+  // TODO(brieb): TypeUnion<any>[]
+  readonly types: AbstractType<any>[];
+}
+
+interface ArrayType<T> extends BaseType<T[]> {
+  readonly kind: "ArrayType";
+  // TODO(brieb): TypeUnion<T>
+  readonly elemType: AbstractType<T>;
+}
+
+interface ObjectType<T> extends BaseType<T[]> {
+  readonly kind: "ObjectType";
+  readonly fields: Field<any>[];
+}
+
+// TODO(brieb): rename to `Type`
+type TypeUnion<T> =
+  | IdentityType<T>
+  | PredicateType<T>
+  | OrType<T>
+  | ArrayType<T>
+  | ObjectType<T>
 
 export type AnyType = Omit<AbstractType<any>, "check" | "assert" | typeof __typeBrand> & {
   check: AnyCheckFn;
@@ -147,13 +189,170 @@ export interface Builder {
   from(obj: { [param: string]: any }): ASTNode;
 }
 
+type TypeKind = TypeUnion<any>["kind"];
+type TypesByKind = { [K in TypeKind]: Extract<TypeUnion<any>, { kind: K }> };
+type FromForType<T> = Omit<T, "kind" | typeof __typeBrand>;
+type TypeBuilders = { [K in TypeKind]: (from: FromForType<TypesByKind[K]>) => TypesByKind[K] }
+const typeBuilders: TypeBuilders = {
+  ArrayType(from) {
+    return { kind: "ArrayType", ...from } as ArrayType<any>;
+  },
+  IdentityType(from) {
+    return { kind: "IdentityType", ...from } as IdentityType<any>;
+  },
+  ObjectType(from) {
+    return { kind: "ObjectType", ...from } as ObjectType<any>;
+  },
+  OrType(from) {
+    return { kind: "OrType", ...from } as OrType<any>;
+  },
+  PredicateType(from) {
+    return { kind: "PredicateType", ...from } as PredicateType<any>;
+  },
+};
+
+function typeToString(type: TypeUnion<any>) {
+  switch(type.kind) {
+    case "ArrayType":
+      return "[" + type.elemType + "]";
+    case "IdentityType":
+      return String(type.value);
+    case "ObjectType":
+      return "{ " + type.fields.join(", ") + " }";
+    case "OrType":
+      return type.types.join(" | ");
+    case "PredicateType":
+      return type.name;
+    default:
+      return assertNever(type);
+  }
+}
+
+function assertNever(x: never): never {
+  throw new Error("Unexpected: " + x);
+}
+
 export default function typesPlugin(_fork?: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
-  abstract class Type<T> extends AbstractType<T> {
+  function check<T>(
+    parent: Type<T>,
+    type: TypeUnion<T>,
+    value: any,
+    deep?: any,
+  ): value is T {
+    switch(type.kind) {
+      case "ArrayType": {
+        return Array.isArray(value) &&
+          value.every(elem => type.elemType.check(elem, deep));
+      }
+
+      case "IdentityType": {
+        const result = value === type.value;
+        if (!result && typeof deep === "function") {
+          deep(parent, value);
+        }
+        return result;
+      }
+
+      case "ObjectType": {
+        return isObject.check(value) &&
+          type.fields.every(field => field.type.check(value[field.name], deep));
+      }
+
+      case "OrType": {
+        return type.types.some(type => {
+          return type.check(value, deep);
+        });
+      }
+
+      case "PredicateType": {
+        const result = type.predicate(value, deep);
+        if (!result && typeof deep === "function") {
+          deep(parent, value);
+        }
+        return result;
+      }
+
+      default:
+        return assertNever(type);
+    }
+  }
+
+  function getTSTypeAnnotation(type: TypeUnion<any>): any {
+    switch(type.kind) {
+      case "ArrayType": {
+        let elemTypeAnnotation = type.elemType.getTSTypeAnnotation();
+        if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
+          elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
+        }
+        return builders.tsArrayType(elemTypeAnnotation);
+      }
+
+      case "IdentityType": {
+        if (type.value === null) {
+          return builders.tsNullKeyword();
+        }
+        switch (typeof type.value) {
+          case "undefined": return builders.tsUndefinedKeyword();
+          case "string":    return builders.tsLiteralType(builders.stringLiteral(type.value));
+          case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(type.value));
+          case "number":    return builders.tsNumberKeyword();
+          case "object":    return builders.tsObjectKeyword();
+          case "function":  return builders.tsFunctionType();
+          case "symbol":    return builders.tsSymbolKeyword();
+          default:          return builders.tsAnyKeyword();
+        }
+      }
+
+      case "ObjectType": {
+        return builders.tsTypeLiteral.from({
+          members: type.fields.map(field => field.getPropertySignature(builders))
+        });
+      }
+
+      case "OrType": {
+        return builders.tsUnionType(
+          type.types.map(type => type.getTSTypeAnnotation())
+        );
+      }
+
+      case "PredicateType": {
+        if (typeof type.name !== "string") {
+          return builders.tsAnyKeyword();
+        }
+
+        if (hasOwn.call(namedTypes, type.name)) {
+          // TODO Make this work even if TypeScript types not used?
+          return builders.tsTypeReference(builders.tsQualifiedName(
+            builders.identifier("K"), // TODO Don't hard-code this.
+            builders.identifier(type.name + "Kind")
+          ));
+        }
+
+        if (/^[$A-Z_][a-z0-9_$]*$/i.test(type.name)) {
+          return builders.tsTypeReference(builders.identifier(type.name));
+        }
+
+        if (/^number [<>=]+ \d+$/.test(type.name)) {
+          return builders.tsNumberKeyword();
+        }
+
+        // Not much else to do...
+        return builders.tsAnyKeyword();
+      }
+
+      default:
+        return assertNever(type);
+    }
+  }
+
+  class Type<T> extends AbstractType<T> {
     static or(...types: any[]) {
-      return new OrType<any>(types.map(type => Type.from(type)));
+      return new Type(typeBuilders.OrType({
+        types: types.map(type => Type.from(type)),
+      }));
     }
 
     static from(value: any, name?: string): AbstractType<any> {
@@ -172,14 +371,18 @@ export default function typesPlugin(_fork?: Fork) {
         if (value.length !== 1) {
           throw new Error("only one element type is permitted for typed arrays");
         }
-        return new ArrayType(Type.from(value[0]));
+        return new Type(typeBuilders.ArrayType({
+          elemType: Type.from(value[0]),
+        }));
       }
 
       // Support { someField: FieldType, ... } syntax.
       if (isObject.check(value)) {
-        return new ObjectType(Object.keys(value).map(
-          name => Field.from({ name, type: Type.from(value[name], name) })
-        ));
+        return new Type(typeBuilders.ObjectType({
+          fields: Object.keys(value).map(
+            name => Field.from({ name, type: Type.from(value[name], name) })
+          ),
+        }));
       }
 
       if (typeof value === "function") {
@@ -192,14 +395,14 @@ export default function typesPlugin(_fork?: Fork) {
           throw new Error("missing name");
         }
 
-        return new PredicateType(value, name);
+        return new Type(typeBuilders.PredicateType({ name, predicate: value, }));
       }
 
       // As a last resort, toType returns a type that matches any value that
       // is === from. This is primarily useful for literal values like
       // toType(null), but it has the additional advantage of allowing
       // toType to be a total function.
-      return new IdentityType(value);
+      return new Type(typeBuilders.IdentityType({ value }));
     }
 
     // Define a type whose name is registered in a namespace (the defCache) so
@@ -212,156 +415,22 @@ export default function typesPlugin(_fork?: Fork) {
         ? defCache[typeName]
         : defCache[typeName] = new Def(typeName);
     }
-  }
-
-  class IdentityType<T> extends Type<T> {
-    constructor(private value: T) {
-      super();
-    }
 
     check(value: any, deep?: any): value is T {
-      const result = value === this.value;
-      if (! result && typeof deep === "function") {
-        deep(this, value);
-      }
-      return result;
+      return check<T>(this, this.innerType, value, deep);
     }
 
     toString() {
-      return String(this.value);
+      return typeToString(this.innerType);
     }
 
     getTSTypeAnnotation() {
-      if (this.value === null) {
-        return builders.tsNullKeyword();
-      }
-      switch (typeof this.value) {
-      case "undefined": return builders.tsUndefinedKeyword();
-      case "string":    return builders.tsLiteralType(builders.stringLiteral(this.value));
-      case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(this.value));
-      case "number":    return builders.tsNumberKeyword();
-      case "object":    return builders.tsObjectKeyword();
-      case "function":  return builders.tsFunctionType();
-      case "symbol":    return builders.tsSymbolKeyword();
-      default:          return builders.tsAnyKeyword();
-      }
-    }
-  }
-
-  class PredicateType<T> extends Type<T> {
-    constructor(
-      private predicate: AnyCheckFn,
-      private name: string,
-    ) {
-      super();
-    }
-
-    check(value: any, deep?: any): value is T {
-      const result = this.predicate(value, deep);
-      if (! result && typeof deep === "function") {
-        deep(this, value);
-      }
-      return result;
-    }
-
-    toString() {
-      return this.name;
-    }
-
-    getTSTypeAnnotation() {
-      if (typeof this.name !== "string") {
-        return builders.tsAnyKeyword();
-      }
-
-      if (hasOwn.call(namedTypes, this.name)) {
-        // TODO Make this work even if TypeScript types not used?
-        return builders.tsTypeReference(builders.tsQualifiedName(
-          builders.identifier("K"), // TODO Don't hard-code this.
-          builders.identifier(this.name + "Kind")
-        ));
-      }
-
-      if (/^[$A-Z_][a-z0-9_$]*$/i.test(this.name)) {
-        return builders.tsTypeReference(builders.identifier(this.name));
-      }
-
-      if (/^number [<>=]+ \d+$/.test(this.name)) {
-        return builders.tsNumberKeyword();
-      }
-
-      // Not much else to do...
-      return builders.tsAnyKeyword();
-    }
-  }
-
-  class OrType<T> extends Type<T> {
-    constructor(private types: Type<any>[]) {
-      super();
-    }
-
-    check(value: any, deep?: any): value is T {
-      return this.types.some(type => {
-        return type.check(value, deep);
-      });
-    }
-
-    toString() {
-      return this.types.join(" | ");
-    }
-
-    getTSTypeAnnotation() {
-      return builders.tsUnionType(
-        this.types.map(type => type.getTSTypeAnnotation())
-      );
-    }
-  }
-
-  class ArrayType<T> extends Type<T[]> {
-    constructor(private elemType: Type<T>) {
-      super();
-    }
-
-    check(value: any, deep?: any): value is T[] {
-      return Array.isArray(value) &&
-        value.every(elem => this.elemType.check(elem, deep));
-    }
-
-    toString() {
-      return "[" + this.elemType + "]";
-    }
-
-    getTSTypeAnnotation() {
-      let elemTypeAnnotation = this.elemType.getTSTypeAnnotation();
-      if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
-        elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
-      }
-      return builders.tsArrayType(elemTypeAnnotation);
-    }
-  }
-
-  class ObjectType<T> extends Type<T> {
-    constructor(private fields: Field<any>[]) {
-      super();
-    }
-
-    check(value: any, deep?: any): value is T {
-      return isObject.check(value) &&
-        this.fields.every(field => field.type.check(value[field.name], deep));
-    }
-
-    toString() {
-      return "{ " + this.fields.join(", ") + " }";
-    }
-
-    getTSTypeAnnotation() {
-      return builders.tsTypeLiteral.from({
-        members: this.fields.map(field => field.getPropertySignature(builders))
-      });
+      return getTSTypeAnnotation(this.innerType);
     }
   }
 
   var builtInCtorFns: Function[] = [];
-  var builtInCtorTypes: PredicateType<any>[] = [];
+  var builtInCtorTypes: Type<any>[] = [];
 
   type BuiltInTypes = {
     string: typeof isString;
@@ -380,10 +449,10 @@ export default function typesPlugin(_fork?: Fork) {
   function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): AbstractType<T> {
     const objStr = objToStr.call(example);
 
-    const type = new PredicateType<T>(
-      value => objToStr.call(value) === objStr,
+    const type = new Type<T>(typeBuilders.PredicateType({
       name,
-    );
+      predicate: value => objToStr.call(value) === objStr,
+    }));
 
     builtInTypes[name] = type;
 
@@ -433,10 +502,10 @@ export default function typesPlugin(_fork?: Fork) {
       fieldNames: {value: []}, // Non-hidden keys of allFields.
 
       type: {
-        value: new PredicateType(
-          (value, deep) => self.check(value, deep),
-          typeName,
-        ),
+        value: new Type(typeBuilders.PredicateType({
+          name: typeName,
+          predicate: (value, deep) => self.check(value, deep),
+        })),
       }
     });
   } as any as DefConstructor;
@@ -636,7 +705,7 @@ export default function typesPlugin(_fork?: Fork) {
     return old;
   };
 
-  var isArrayOfString = new ArrayType(isString);
+  var isArrayOfString = new Type(typeBuilders.ArrayType({ elemType: isString }));
 
   // Calling the .build method of a Def simultaneously marks the type as
   // buildable (by defining builders[getBuilderName(typeName)]) and
