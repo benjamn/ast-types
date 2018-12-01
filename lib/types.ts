@@ -2,7 +2,7 @@ import { Fork, Omit } from "../types";
 import buildersPlugin, { Builder } from "./builders";
 import namedTypesPlugin from "./named-types";
 import typeAnnotationsPlugin from "./type-annotations";
-import { assertNever } from "./utils";
+import { assertNever, shallowStringify } from "./utils";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -19,20 +19,6 @@ export type AssertFn<T> = (value: any, deep?: any) => value is T;
 export type AnyAssertFn = (value: any, deep?: any) => boolean;
 
 export type NameType = string | (() => string);
-
-function shallowStringify(value: any): string {
-  if (Array.isArray(value)) {
-    return "[" + value.map(shallowStringify).join(", ") + "]";
-  }
-
-  if (value && typeof value === "object") {
-    return "{ " + Object.keys(value).map(function (key) {
-      return key + ": " + value[key];
-    }).join(", ") + " }";
-  }
-
-  return JSON.stringify(value);
-}
 
 abstract class AbstractType<T> {
   abstract toString(): string;
