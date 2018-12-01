@@ -33,7 +33,7 @@ function shallowStringify(value: any): string {
 abstract class AbstractType<T> {
   abstract toString(): string;
   abstract check(value: any, deep?: any): value is T;
-  abstract getTypeAnnotation(): any;
+  abstract getTSTypeAnnotation(): any;
 
   assert(value: any, deep?: any): value is T {
     if (!this.check(value, deep)) {
@@ -132,7 +132,7 @@ export class Field<T> {
   getPropertySignature(builders: { [name: string]: Builder }): any {
     return builders.tsPropertySignature.from({
       key: builders.identifier(this.name),
-      typeAnnotation: builders.tsTypeAnnotation(this.type.getTypeAnnotation()),
+      typeAnnotation: builders.tsTypeAnnotation(this.type.getTSTypeAnnotation()),
       optional: this.defaultFn != null || this.hidden,
     });
   }
@@ -231,7 +231,7 @@ export default function typesPlugin(_fork?: Fork) {
       return String(this.value);
     }
 
-    getTypeAnnotation() {
+    getTSTypeAnnotation() {
       if (this.value === null) {
         return builders.tsNullKeyword();
       }
@@ -268,7 +268,7 @@ export default function typesPlugin(_fork?: Fork) {
       return this.name;
     }
 
-    getTypeAnnotation() {
+    getTSTypeAnnotation() {
       if (typeof this.name !== "string") {
         return builders.tsAnyKeyword();
       }
@@ -309,9 +309,9 @@ export default function typesPlugin(_fork?: Fork) {
       return this.types.join(" | ");
     }
 
-    getTypeAnnotation() {
+    getTSTypeAnnotation() {
       return builders.tsUnionType(
-        this.types.map(type => type.getTypeAnnotation())
+        this.types.map(type => type.getTSTypeAnnotation())
       );
     }
   }
@@ -330,8 +330,8 @@ export default function typesPlugin(_fork?: Fork) {
       return "[" + this.elemType + "]";
     }
 
-    getTypeAnnotation() {
-      let elemTypeAnnotation = this.elemType.getTypeAnnotation();
+    getTSTypeAnnotation() {
+      let elemTypeAnnotation = this.elemType.getTSTypeAnnotation();
       if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
         elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
       }
@@ -353,7 +353,7 @@ export default function typesPlugin(_fork?: Fork) {
       return "{ " + this.fields.join(", ") + " }";
     }
 
-    getTypeAnnotation() {
+    getTSTypeAnnotation() {
       return builders.tsTypeLiteral.from({
         members: this.fields.map(field => field.getPropertySignature(builders))
       });

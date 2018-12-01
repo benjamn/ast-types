@@ -191,10 +191,10 @@ const out = [
                         typeAnnotation: b.tsTypeAnnotation(
                           !!buildParamAllowsUndefined[buildParam]
                             ? b.tsUnionType([
-                                field.type.getTypeAnnotation(),
+                                field.type.getTSTypeAnnotation(),
                                 b.tsUndefinedKeyword(),
                               ])
-                            : field.type.getTypeAnnotation()
+                            : field.type.getTSTypeAnnotation()
                         ),
                         optional: !!buildParamIsOptional[buildParam],
                       });
