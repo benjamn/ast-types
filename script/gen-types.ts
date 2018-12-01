@@ -1,11 +1,13 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import typesModuleFn from "../lib/types";
-import astTypes from "../main";
+import { createFork } from "../fork";
 import { StatementKind } from "../gen/kinds";
+import typesPlugin from "../lib/types";
+import astTypes from "../main";
 
-const { getBuilderName } = typesModuleFn();
+const fork = createFork();
+const { getBuilderName } = typesPlugin(fork);
 const { builders: b } = astTypes;
 
 const RESERVED: { [reserved: string]: boolean | undefined } = {

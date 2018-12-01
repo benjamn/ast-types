@@ -6,6 +6,40 @@ import nodePathPlugin from "./lib/node-path";
 import { Def, Fork, Plugin } from "./types";
 
 export default function (defs: Def[]) {
+  var fork = createFork();
+
+  var types = fork.use(typesPlugin);
+
+  defs.forEach(fork.use);
+
+  types.finalize();
+
+  var PathVisitor = fork.use(pathVisitorPlugin);
+
+  var exports = {
+    Type: types.Type,
+    builtInTypes: types.builtInTypes,
+    namedTypes: types.namedTypes,
+    builders: types.builders,
+    defineMethod: types.defineMethod,
+    getFieldNames: types.getFieldNames,
+    getFieldValue: types.getFieldValue,
+    eachField: types.eachField,
+    someField: types.someField,
+    getSupertypeNames: types.getSupertypeNames,
+    astNodesAreEquivalent: fork.use(equivPlugin),
+    finalize: types.finalize,
+    Path: fork.use(pathPlugin),
+    NodePath: fork.use(nodePathPlugin),
+    PathVisitor,
+    use: fork.use,
+    visit: PathVisitor.visit
+  };
+
+  return exports;
+};
+
+export function createFork(): Fork {
   var used: Plugin<unknown>[] = [];
   var usedResult: unknown[] = [];
 
@@ -21,33 +55,5 @@ export default function (defs: Def[]) {
 
   var fork: Fork = { use };
 
-  var types = use(typesPlugin);
-
-  defs.forEach(use);
-
-  types.finalize();
-
-  var PathVisitor = use(pathVisitorPlugin);
-
-  var exports = {
-    Type: types.Type,
-    builtInTypes: types.builtInTypes,
-    namedTypes: types.namedTypes,
-    builders: types.builders,
-    defineMethod: types.defineMethod,
-    getFieldNames: types.getFieldNames,
-    getFieldValue: types.getFieldValue,
-    eachField: types.eachField,
-    someField: types.someField,
-    getSupertypeNames: types.getSupertypeNames,
-    astNodesAreEquivalent: use(equivPlugin),
-    finalize: types.finalize,
-    Path: use(pathPlugin),
-    NodePath: use(nodePathPlugin),
-    PathVisitor,
-    use: use,
-    visit: PathVisitor.visit
-  };
-
-  return exports;
-};
+  return fork;
+}

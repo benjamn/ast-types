@@ -1,4 +1,8 @@
 import { Fork, Omit } from "../types";
+import buildersPlugin, { Builder } from "./builders";
+import namedTypesPlugin from "./named-types";
+import typeAnnotationsPlugin from "./type-annotations";
+import { assertNever } from "./utils";
 
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -93,7 +97,7 @@ interface ObjectType<T> extends BaseType<T[]> {
 }
 
 // TODO(brieb): rename to `Type`
-type TypeUnion<T> =
+export type TypeUnion<T> =
   | IdentityType<T>
   | PredicateType<T>
   | OrType<T>
@@ -184,11 +188,6 @@ export interface ASTNode {
   type: string;
 }
 
-export interface Builder {
-  (...args: any[]): ASTNode;
-  from(obj: { [param: string]: any }): ASTNode;
-}
-
 type TypeKind = TypeUnion<any>["kind"];
 type TypesByKind = { [K in TypeKind]: Extract<TypeUnion<any>, { kind: K }> };
 type FromForType<T> = Omit<T, "kind" | typeof __typeBrand>;
@@ -228,11 +227,11 @@ function typeToString(type: TypeUnion<any>) {
   }
 }
 
-function assertNever(x: never): never {
-  throw new Error("Unexpected: " + x);
-}
+export default function typesPlugin(fork: Fork) {
+  const { builders } = fork.use(buildersPlugin);
+  const { namedTypes } = fork.use(namedTypesPlugin);
+  const { getTSTypeAnnotation } = fork.use(typeAnnotationsPlugin);
 
-export default function typesPlugin(_fork?: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
@@ -273,74 +272,6 @@ export default function typesPlugin(_fork?: Fork) {
           deep(parent, value);
         }
         return result;
-      }
-
-      default:
-        return assertNever(type);
-    }
-  }
-
-  function getTSTypeAnnotation(type: TypeUnion<any>): any {
-    switch(type.kind) {
-      case "ArrayType": {
-        let elemTypeAnnotation = type.elemType.getTSTypeAnnotation();
-        if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
-          elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
-        }
-        return builders.tsArrayType(elemTypeAnnotation);
-      }
-
-      case "IdentityType": {
-        if (type.value === null) {
-          return builders.tsNullKeyword();
-        }
-        switch (typeof type.value) {
-          case "undefined": return builders.tsUndefinedKeyword();
-          case "string":    return builders.tsLiteralType(builders.stringLiteral(type.value));
-          case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(type.value));
-          case "number":    return builders.tsNumberKeyword();
-          case "object":    return builders.tsObjectKeyword();
-          case "function":  return builders.tsFunctionType();
-          case "symbol":    return builders.tsSymbolKeyword();
-          default:          return builders.tsAnyKeyword();
-        }
-      }
-
-      case "ObjectType": {
-        return builders.tsTypeLiteral.from({
-          members: type.fields.map(field => field.getPropertySignature(builders))
-        });
-      }
-
-      case "OrType": {
-        return builders.tsUnionType(
-          type.types.map(type => type.getTSTypeAnnotation())
-        );
-      }
-
-      case "PredicateType": {
-        if (typeof type.name !== "string") {
-          return builders.tsAnyKeyword();
-        }
-
-        if (hasOwn.call(namedTypes, type.name)) {
-          // TODO Make this work even if TypeScript types not used?
-          return builders.tsTypeReference(builders.tsQualifiedName(
-            builders.identifier("K"), // TODO Don't hard-code this.
-            builders.identifier(type.name + "Kind")
-          ));
-        }
-
-        if (/^[$A-Z_][a-z0-9_$]*$/i.test(type.name)) {
-          return builders.tsTypeReference(builders.identifier(type.name));
-        }
-
-        if (/^number [<>=]+ \d+$/.test(type.name)) {
-          return builders.tsNumberKeyword();
-        }
-
-        // Not much else to do...
-        return builders.tsAnyKeyword();
       }
 
       default:
@@ -678,8 +609,6 @@ export default function typesPlugin(_fork?: Fork) {
   // False by default until .build(...) is called on an instance.
   Object.defineProperty(Dp, "buildable", {value: false});
 
-  var builders: { [name: string]: Builder } = {};
-
   // This object is used as prototype for any node created by a builder.
   var nodePrototype: { [definedMethod: string]: Function } = {};
 
@@ -891,8 +820,6 @@ export default function typesPlugin(_fork?: Fork) {
     this.ownFields[name] = Field.from({ name, type: Type.from(type), defaultFn, hidden });
     return this; // For chaining.
   };
-
-  var namedTypes: { [name: string]: AnyType } = {};
 
   // Like Object.keys, but aware of what fields each AST type should have.
   function getFieldNames(object: any) {
