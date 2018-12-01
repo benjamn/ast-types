@@ -52,6 +52,7 @@ export { AbstractType as Type };
 
 interface BaseType<T> {
   readonly [__typeBrand]: T;
+  toString(): string;
 }
 
 interface IdentityType<T> extends BaseType<T> {
@@ -173,28 +174,6 @@ export interface ASTNode {
   type: string;
 }
 
-type TypeKind = InnerType<any>["kind"];
-type TypesByKind = { [K in TypeKind]: Extract<InnerType<any>, { kind: K }> };
-type FromForType<T> = Omit<T, "kind" | typeof __typeBrand>;
-type TypeBuilders = { [K in TypeKind]: (from: FromForType<TypesByKind[K]>) => TypesByKind[K] }
-const typeBuilders: TypeBuilders = {
-  ArrayType(from) {
-    return { kind: "ArrayType", ...from } as ArrayType<any>;
-  },
-  IdentityType(from) {
-    return { kind: "IdentityType", ...from } as IdentityType<any>;
-  },
-  ObjectType(from) {
-    return { kind: "ObjectType", ...from } as ObjectType<any>;
-  },
-  OrType(from) {
-    return { kind: "OrType", ...from } as OrType<any>;
-  },
-  PredicateType(from) {
-    return { kind: "PredicateType", ...from } as PredicateType<any>;
-  },
-};
-
 function typeToString(type: InnerType<any>) {
   switch(type.kind) {
     case "ArrayType":
@@ -211,6 +190,31 @@ function typeToString(type: InnerType<any>) {
       return assertNever(type);
   }
 }
+
+type TypeKind = InnerType<any>["kind"];
+type TypesByKind = { [K in TypeKind]: Extract<InnerType<any>, { kind: K }> };
+type FromForType<T> = Omit<T, "kind" | "toString" | typeof __typeBrand>;
+type TypeBuilders = { [K in TypeKind]: (from: FromForType<TypesByKind[K]>) => TypesByKind[K] }
+
+function typeBuilderForKind<K extends TypeKind>(kind: K) {
+  return function (from: FromForType<TypesByKind[K]>): TypesByKind[K] {
+    return {
+      kind,
+      toString() {
+        return typeToString(this);
+      },
+      ...(from as any)
+    } as TypesByKind[K];
+  }
+}
+
+const typeBuilders: TypeBuilders = {
+  ArrayType: typeBuilderForKind("ArrayType"),
+  IdentityType: typeBuilderForKind("IdentityType"),
+  ObjectType: typeBuilderForKind("ObjectType"),
+  OrType: typeBuilderForKind("OrType"),
+  PredicateType: typeBuilderForKind("PredicateType"),
+};
 
 export default function typesPlugin(fork: Fork) {
   const { builders } = fork.use(buildersPlugin);
@@ -329,7 +333,7 @@ export default function typesPlugin(fork: Fork) {
     }
 
     toString() {
-      return typeToString(this.innerType);
+      return this.innerType.toString();
     }
 
     getTSTypeAnnotation() {
