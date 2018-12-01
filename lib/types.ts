@@ -59,7 +59,7 @@ abstract class AbstractType<T> {
     throw new Error("not implemented");
   }
 
-  constructor(protected innerType: TypeUnion<T>) {}
+  constructor(protected innerType: InnerType<T>) {}
 }
 
 export { AbstractType as Type };
@@ -96,8 +96,7 @@ interface ObjectType<T> extends BaseType<T[]> {
   readonly fields: Field<any>[];
 }
 
-// TODO(brieb): rename to `Type`
-export type TypeUnion<T> =
+export type InnerType<T> =
   | IdentityType<T>
   | PredicateType<T>
   | OrType<T>
@@ -188,8 +187,8 @@ export interface ASTNode {
   type: string;
 }
 
-type TypeKind = TypeUnion<any>["kind"];
-type TypesByKind = { [K in TypeKind]: Extract<TypeUnion<any>, { kind: K }> };
+type TypeKind = InnerType<any>["kind"];
+type TypesByKind = { [K in TypeKind]: Extract<InnerType<any>, { kind: K }> };
 type FromForType<T> = Omit<T, "kind" | typeof __typeBrand>;
 type TypeBuilders = { [K in TypeKind]: (from: FromForType<TypesByKind[K]>) => TypesByKind[K] }
 const typeBuilders: TypeBuilders = {
@@ -210,7 +209,7 @@ const typeBuilders: TypeBuilders = {
   },
 };
 
-function typeToString(type: TypeUnion<any>) {
+function typeToString(type: InnerType<any>) {
   switch(type.kind) {
     case "ArrayType":
       return "[" + type.elemType + "]";
@@ -237,7 +236,7 @@ export default function typesPlugin(fork: Fork) {
 
   function check<T>(
     parent: Type<T>,
-    type: TypeUnion<T>,
+    type: InnerType<T>,
     value: any,
     deep?: any,
   ): value is T {

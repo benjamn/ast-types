@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import buildersPlugin from "./builders";
 import namedTypesPlugin from "./named-types";
-import { TypeUnion } from "./types";
+import { InnerType } from "./types";
 import { assertNever } from "./utils";
 
 const Op = Object.prototype;
@@ -11,7 +11,7 @@ export default function typeAnnotationsPlugin(fork: Fork) {
   const { builders } = fork.use(buildersPlugin);
   const { namedTypes } = fork.use(namedTypesPlugin);
 
-  function getTSTypeAnnotation(type: TypeUnion<any>): any {
+  function getTSTypeAnnotation(type: InnerType<any>): any {
     switch(type.kind) {
       case "ArrayType": {
         let elemTypeAnnotation = type.elemType.getTSTypeAnnotation();
