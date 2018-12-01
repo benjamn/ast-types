@@ -234,50 +234,6 @@ export default function typesPlugin(fork: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
-  function check<T>(
-    parent: Type<T>,
-    type: InnerType<T>,
-    value: any,
-    deep?: any,
-  ): value is T {
-    switch(type.kind) {
-      case "ArrayType": {
-        return Array.isArray(value) &&
-          value.every(elem => type.elemType.check(elem, deep));
-      }
-
-      case "IdentityType": {
-        const result = value === type.value;
-        if (!result && typeof deep === "function") {
-          deep(parent, value);
-        }
-        return result;
-      }
-
-      case "ObjectType": {
-        return isObject.check(value) &&
-          type.fields.every(field => field.type.check(value[field.name], deep));
-      }
-
-      case "OrType": {
-        return type.types.some(type => {
-          return type.check(value, deep);
-        });
-      }
-
-      case "PredicateType": {
-        const result = type.predicate(value, deep);
-        if (!result && typeof deep === "function") {
-          deep(parent, value);
-        }
-        return result;
-      }
-
-      default:
-        return assertNever(type);
-    }
-  }
-
   class Type<T> extends AbstractType<T> {
     static or(...types: any[]) {
       return new Type(typeBuilders.OrType({
@@ -347,7 +303,43 @@ export default function typesPlugin(fork: Fork) {
     }
 
     check(value: any, deep?: any): value is T {
-      return check<T>(this, this.innerType, value, deep);
+      const type = this.innerType;
+      switch(type.kind) {
+        case "ArrayType": {
+          return Array.isArray(value) &&
+            value.every(elem => type.elemType.check(elem, deep));
+        }
+
+        case "IdentityType": {
+          const result = value === type.value;
+          if (!result && typeof deep === "function") {
+            deep(this, value);
+          }
+          return result;
+        }
+
+        case "ObjectType": {
+          return isObject.check(value) &&
+            type.fields.every(field => field.type.check(value[field.name], deep));
+        }
+
+        case "OrType": {
+          return type.types.some(type => {
+            return type.check(value, deep);
+          });
+        }
+
+        case "PredicateType": {
+          const result = type.predicate(value, deep);
+          if (!result && typeof deep === "function") {
+            deep(this, value);
+          }
+          return result;
+        }
+
+        default:
+          return assertNever(type);
+      }
     }
 
     toString() {
