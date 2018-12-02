@@ -13,7 +13,7 @@ export interface PathVisitor {
   _changeReported: any;
   _abortRequested: boolean;
   visit(...args: any[]): any;
-  reset(path: any, ...args: any[]): any;
+  reset(...args: any[]): any;
   visitWithoutReset(path: any): any;
   AbortRequest: any;
   abort(): void;
@@ -56,7 +56,7 @@ export interface SharedContextMethods {
   abort(): void;
 }
 
-export interface Context extends Omit<PathVisitor, "visit">, SharedContextMethods {}
+export interface Context extends Omit<PathVisitor, "visit" | "reset">, SharedContextMethods {}
 
 export default function pathVisitorPlugin(fork: Fork) {
   var types = fork.use(typesPlugin);

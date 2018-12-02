@@ -199,7 +199,7 @@ export default function typesPlugin(_fork: Fork) {
   function typeBuilderForKind<K extends TypeKind>(kind: K) {
     return function <T>(from: FromForType<TypesByKind[K]>): Type<T> {
       const privateType: TypesByKind[K] = {
-        [__typeBrand]: __typePluginBrand,
+        [__typeBrand]: __typePluginBrand as any as T,
         kind,
         toString() {
           switch(this.kind) {
@@ -925,11 +925,11 @@ export default function typesPlugin(_fork: Fork) {
     // skip if there is nothing to wrap
     if (!wrapped) return;
 
-    const builder: Builder = function () {
-      return builders.expressionStatement(wrapped.apply(builders, arguments));
+    const builder: Builder = function (...args: Parameters<typeof wrapped>) {
+      return builders.expressionStatement(wrapped.apply(builders, args));
     };
-    builder.from = function () {
-      return builders.expressionStatement(wrapped.from.apply(builders, arguments));
+    builder.from = function (...args: Parameters<typeof wrapped.from>) {
+      return builders.expressionStatement(wrapped.from.apply(builders, args));
     }
 
     builders[wrapperName] = builder;

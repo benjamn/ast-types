@@ -38,7 +38,7 @@ export default function scopePlugin(fork: Fork) {
   var isArray = types.builtInTypes.array;
   var b = types.builders;
 
-  const Scope = function Scope(this: Scope, path: any, parentScope: any) {
+  const Scope = function Scope(this: Scope, path: any, parentScope: unknown) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
@@ -51,7 +51,7 @@ export default function scopePlugin(fork: Fork) {
       if (!(parentScope instanceof Scope)) {
         throw new Error("");
       }
-      depth = parentScope.depth + 1;
+      depth = (parentScope as Scope).depth + 1;
     } else {
       parentScope = null;
       depth = 0;

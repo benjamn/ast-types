@@ -326,7 +326,7 @@ export default function pathPlugin(fork: Fork): PathConstructor {
       var originalLength = parentValue.length;
       var move = getMoves(this.parentPath, count - 1, this.name + 1);
 
-      var spliceArgs = [this.name, 1];
+      var spliceArgs: [number, number, ...any[]] = [this.name, 1];
       for (var i = 0; i < count; ++i) {
         spliceArgs.push(arguments[i]);
       }
