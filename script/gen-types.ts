@@ -6,9 +6,20 @@ import astTypes from "../main";
 const {
   builders: b,
   getBuilderName,
-  getTSTypeAnnotation,
-  getTSPropertySignature,
+  createTSTypeAnnotator,
 } = astTypes;
+
+const { getTSTypeAnnotation, getTSPropertySignature } = createTSTypeAnnotator({
+  getReferenceToKind(typeName) {
+    // TODO Make this work even if TypeScript types not used?
+    return b.tsTypeReference(
+      b.tsQualifiedName(
+        b.identifier("K"),
+        b.identifier(`${typeName}Kind`)
+      )
+    );
+  }
+});
 
 const RESERVED: { [reserved: string]: boolean | undefined } = {
   extends: true,

@@ -17,10 +17,7 @@ export default function (defs: Def[]) {
 
   const PathVisitor = fork.use(pathVisitorPlugin);
 
-  const {
-    getTSTypeAnnotation,
-    getTSPropertySignature,
-  } = fork.use(typeAnnotationsPlugin);
+  const { createTSTypeAnnotator } = fork.use(typeAnnotationsPlugin);
 
   const exports = {
     Type: types.Type,
@@ -41,8 +38,7 @@ export default function (defs: Def[]) {
     PathVisitor,
     use: fork.use,
     visit: PathVisitor.visit,
-    getTSTypeAnnotation,
-    getTSPropertySignature,
+    createTSTypeAnnotator,
   };
 
   return exports;
