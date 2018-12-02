@@ -98,35 +98,14 @@ export interface DefConstructor {
   fromValue(value: any): any;
 }
 
-export class Field<T> {
-  public hidden: boolean;
+export interface Field<T> {
+  readonly name: string;
+  readonly type: Type<T>;
+  readonly defaultFn?: Function;
+  readonly hidden: boolean;
 
-  constructor(
-    public name: string,
-    public type: Type<T>,
-    public defaultFn?: Function,
-    hidden?: boolean,
-  ) {
-    this.hidden = !!hidden;
-  }
-
-  toString() {
-    return JSON.stringify(this.name) + ": " + this.type;
-  }
-
-  getValue(obj: { [key: string]: any }) {
-    var value = obj[this.name];
-
-    if (typeof value !== "undefined") {
-      return value;
-    }
-
-    if (typeof this.defaultFn === "function") {
-      value = this.defaultFn.call(obj);
-    }
-
-    return value;
-  }
+  toString(): string;
+  getValue(obj: { [key: string]: any }): any;
 }
 
 export interface ASTNode {
@@ -240,6 +219,37 @@ export default function typesPlugin(_fork: Fork) {
     }
   }
 
+  class FieldImpl<T> implements Field<T> {
+    public hidden: boolean;
+
+    constructor(
+      public name: string,
+      public type: Type<T>,
+      public defaultFn?: Function,
+      hidden?: boolean,
+    ) {
+      this.hidden = !!hidden;
+    }
+
+    toString() {
+      return JSON.stringify(this.name) + ": " + this.type;
+    }
+
+    getValue(obj: { [key: string]: any }) {
+      var value = obj[this.name];
+
+      if (typeof value !== "undefined") {
+        return value;
+      }
+
+      if (typeof this.defaultFn === "function") {
+        value = this.defaultFn.call(obj);
+      }
+
+      return value;
+    }
+  }
+
   const Type = {
     or(...types: any[]): Type<any> {
       return new TypeImpl(typeBuilders.OrType({
@@ -272,7 +282,7 @@ export default function typesPlugin(_fork: Fork) {
       if (isObject.check(value)) {
         return new TypeImpl(typeBuilders.ObjectType({
           fields: Object.keys(value).map(
-            name => new Field(name, Type.from(value[name], name))
+            name => new FieldImpl(name, Type.from(value[name], name))
           ),
         }));
       }
@@ -768,7 +778,7 @@ export default function typesPlugin(_fork: Fork) {
         JSON.stringify(this.typeName));
       return this;
     }
-    this.ownFields[name] = new Field(name, Type.from(type), defaultFn, hidden);
+    this.ownFields[name] = new FieldImpl(name, Type.from(type), defaultFn, hidden);
     return this; // For chaining.
   };
 
