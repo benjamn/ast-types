@@ -25,7 +25,7 @@ type GenTypes = {
 
 type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;
 
-const main = fork([
+const defs = [
   // This core module of AST types captures ES5 as it is parsed today by
   // git://github.com/ariya/esprima.git#master.
   coreDef,
@@ -42,8 +42,9 @@ const main = fork([
   babelDef,
   typescriptDef,
   esProposalsDef,
-]) as any as Main;
+];
 
+const main = fork(defs) as any as Main;
 export default main;
 
 export {

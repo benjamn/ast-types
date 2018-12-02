@@ -1,20 +1,19 @@
 import { Fork } from "../types";
-import buildersPlugin from "./builders";
-import namedTypesPlugin from "./named-types";
-import { InnerType } from "./types";
+import typesPlugin, { Field, Type } from "./types";
 import { assertNever } from "./utils";
 
 const Op = Object.prototype;
 const hasOwn = Op.hasOwnProperty;
 
 export default function typeAnnotationsPlugin(fork: Fork) {
-  const { builders } = fork.use(buildersPlugin);
-  const { namedTypes } = fork.use(namedTypesPlugin);
+  const { builders, namedTypes } = fork.use(typesPlugin);
 
-  function getTSTypeAnnotation(type: InnerType<any>): any {
-    switch(type.kind) {
+  function getTSTypeAnnotation(type: Type<any>): any {
+    const privateType = type.__type;
+
+    switch(privateType.kind) {
       case "ArrayType": {
-        let elemTypeAnnotation = type.elemType.getTSTypeAnnotation();
+        let elemTypeAnnotation = getTSTypeAnnotation(privateType.elemType);
         if (namedTypes.TSUnionType.check(elemTypeAnnotation)) { // TODO Improve this test.
           elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
         }
@@ -22,13 +21,13 @@ export default function typeAnnotationsPlugin(fork: Fork) {
       }
 
       case "IdentityType": {
-        if (type.value === null) {
+        if (privateType.value === null) {
           return builders.tsNullKeyword();
         }
-        switch (typeof type.value) {
+        switch (typeof privateType.value) {
           case "undefined": return builders.tsUndefinedKeyword();
-          case "string":    return builders.tsLiteralType(builders.stringLiteral(type.value));
-          case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(type.value));
+          case "string":    return builders.tsLiteralType(builders.stringLiteral(privateType.value));
+          case "boolean":   return builders.tsLiteralType(builders.booleanLiteral(privateType.value));
           case "number":    return builders.tsNumberKeyword();
           case "object":    return builders.tsObjectKeyword();
           case "function":  return builders.tsFunctionType();
@@ -39,34 +38,34 @@ export default function typeAnnotationsPlugin(fork: Fork) {
 
       case "ObjectType": {
         return builders.tsTypeLiteral.from({
-          members: type.fields.map(field => field.getPropertySignature(builders))
+          members: privateType.fields.map(field => getTSPropertySignature(field))
         });
       }
 
       case "OrType": {
         return builders.tsUnionType(
-          type.types.map(type => type.getTSTypeAnnotation())
+          privateType.types.map(type => getTSTypeAnnotation(type))
         );
       }
 
       case "PredicateType": {
-        if (typeof type.name !== "string") {
+        if (typeof privateType.name !== "string") {
           return builders.tsAnyKeyword();
         }
 
-        if (hasOwn.call(namedTypes, type.name)) {
+        if (hasOwn.call(namedTypes, privateType.name)) {
           // TODO Make this work even if TypeScript types not used?
           return builders.tsTypeReference(builders.tsQualifiedName(
             builders.identifier("K"), // TODO Don't hard-code this.
-            builders.identifier(type.name + "Kind")
+            builders.identifier(privateType.name + "Kind")
           ));
         }
 
-        if (/^[$A-Z_][a-z0-9_$]*$/i.test(type.name)) {
-          return builders.tsTypeReference(builders.identifier(type.name));
+        if (/^[$A-Z_][a-z0-9_$]*$/i.test(privateType.name)) {
+          return builders.tsTypeReference(builders.identifier(privateType.name));
         }
 
-        if (/^number [<>=]+ \d+$/.test(type.name)) {
+        if (/^number [<>=]+ \d+$/.test(privateType.name)) {
           return builders.tsNumberKeyword();
         }
 
@@ -75,11 +74,20 @@ export default function typeAnnotationsPlugin(fork: Fork) {
       }
 
       default:
-        return assertNever(type);
+        return assertNever(privateType);
     }
+  }
+
+  function getTSPropertySignature(field: Field<any>): any {
+    return builders.tsPropertySignature.from({
+      key: builders.identifier(field.name),
+      typeAnnotation: builders.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
+      optional: field.defaultFn != null || field.hidden,
+    });
   }
 
   return {
     getTSTypeAnnotation,
+    getTSPropertySignature,
   };
 }

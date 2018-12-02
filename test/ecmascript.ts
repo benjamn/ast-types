@@ -263,7 +263,7 @@ describe("shallow and deep checks", function() {
 describe("whole-program validation", function() {
   this.timeout(20000);
 
-  // TODO(brie): do we need these?
+  // TODO(brieb): do we need these?
   // shared.validateECMAScript("main.js");
   // shared.validateECMAScript("lib/shared.js");
   // shared.validateECMAScript("def/core.js");

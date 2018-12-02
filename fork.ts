@@ -3,20 +3,26 @@ import pathVisitorPlugin from "./lib/path-visitor";
 import equivPlugin from "./lib/equiv";
 import pathPlugin from "./lib/path";
 import nodePathPlugin from "./lib/node-path";
+import typeAnnotationsPlugin from "./lib/type-annotations";
 import { Def, Fork, Plugin } from "./types";
 
 export default function (defs: Def[]) {
-  var fork = createFork();
+  const fork = createFork();
 
-  var types = fork.use(typesPlugin);
+  const types = fork.use(typesPlugin);
 
   defs.forEach(fork.use);
 
   types.finalize();
 
-  var PathVisitor = fork.use(pathVisitorPlugin);
+  const PathVisitor = fork.use(pathVisitorPlugin);
 
-  var exports = {
+  const {
+    getTSTypeAnnotation,
+    getTSPropertySignature,
+  } = fork.use(typeAnnotationsPlugin);
+
+  const exports = {
     Type: types.Type,
     builtInTypes: types.builtInTypes,
     namedTypes: types.namedTypes,
@@ -27,21 +33,24 @@ export default function (defs: Def[]) {
     eachField: types.eachField,
     someField: types.someField,
     getSupertypeNames: types.getSupertypeNames,
+    getBuilderName: types.getBuilderName,
     astNodesAreEquivalent: fork.use(equivPlugin),
     finalize: types.finalize,
     Path: fork.use(pathPlugin),
     NodePath: fork.use(nodePathPlugin),
     PathVisitor,
     use: fork.use,
-    visit: PathVisitor.visit
+    visit: PathVisitor.visit,
+    getTSTypeAnnotation,
+    getTSPropertySignature,
   };
 
   return exports;
 };
 
-export function createFork(): Fork {
-  var used: Plugin<unknown>[] = [];
-  var usedResult: unknown[] = [];
+function createFork(): Fork {
+  const used: Plugin<unknown>[] = [];
+  const usedResult: unknown[] = [];
 
   function use<T>(plugin: Plugin<T>): T {
     var idx = used.indexOf(plugin);
