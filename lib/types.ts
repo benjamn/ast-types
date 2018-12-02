@@ -7,8 +7,6 @@ var Op = Object.prototype;
 var objToStr = Op.toString;
 var hasOwn = Op.hasOwnProperty;
 
-declare const __typeBrand: unique symbol;
-
 export type CheckFn<T> = (value: any, deep?: any) => value is T;
 export type AnyCheckFn = (value: any, deep?: any) => boolean;
 
@@ -33,6 +31,8 @@ export type AnyType = Omit<Type<any>, "check" | "assert" | "__type"> & {
   check: AnyCheckFn;
   assert: AnyAssertFn;
 };
+
+const __typeBrand = Symbol();
 
 interface BaseType<T> {
   readonly [__typeBrand]: T;
@@ -117,54 +117,17 @@ export interface Builder {
   from(obj: { [param: string]: any }): ASTNode;
 }
 
-function typeToString(type: PrivateType<any>) {
-  switch(type.kind) {
-    case "ArrayType":
-      return "[" + type.elemType + "]";
-    case "IdentityType":
-      return String(type.value);
-    case "ObjectType":
-      return "{ " + type.fields.join(", ") + " }";
-    case "OrType":
-      return type.types.join(" | ");
-    case "PredicateType":
-      return type.name;
-    default:
-      return assertNever(type);
-  }
-}
-
-type TypeKind = PrivateType<any>["kind"];
-type TypesByKind = { [K in TypeKind]: Extract<PrivateType<any>, { kind: K }> };
-type FromForType<T> = Omit<T, "kind" | "toString" | typeof __typeBrand>;
-type TypeBuilders = { [K in TypeKind]: (from: FromForType<TypesByKind[K]>) => TypesByKind[K] }
-
-function typeBuilderForKind<K extends TypeKind>(kind: K) {
-  return function (from: FromForType<TypesByKind[K]>): TypesByKind[K] {
-    return {
-      kind,
-      toString() {
-        return typeToString(this);
-      },
-      ...(from as any)
-    } as TypesByKind[K];
-  }
-}
-
-const typeBuilders: TypeBuilders = {
-  ArrayType: typeBuilderForKind("ArrayType"),
-  IdentityType: typeBuilderForKind("IdentityType"),
-  ObjectType: typeBuilderForKind("ObjectType"),
-  OrType: typeBuilderForKind("OrType"),
-  PredicateType: typeBuilderForKind("PredicateType"),
-};
-
 export default function typesPlugin(_fork: Fork) {
   // A type is an object with a .check method that takes a value and returns
   // true or false according to whether the value matches the type.
 
   class TypeImpl<T> implements Type<T> {
-    constructor(public __type: PrivateType<T>) {}
+    __type: PrivateType<T>
+
+    constructor(__type: PrivateType<T>) {
+      validatePrivateType(__type);
+      this.__type = __type;
+    }
 
     check(value: any, deep?: any): value is T {
       const type = this.__type;
@@ -219,6 +182,56 @@ export default function typesPlugin(_fork: Fork) {
     }
   }
 
+  // Enforce that private types are constructed within this plugin instance.
+  const __typePluginBrand = Symbol();
+  function validatePrivateType(type: any): type is PrivateType<any> {
+    if (type == null || type[__typeBrand] !== __typePluginBrand) {
+      throw new Error("");
+    }
+    return true;
+  }
+
+  type TypeKind = PrivateType<any>["kind"];
+  type TypesByKind = { [K in TypeKind]: Extract<PrivateType<any>, { kind: K }> };
+  type FromForType<T> = Omit<T, "kind" | "toString" | typeof __typeBrand>;
+  type TypeBuilders = { [K in TypeKind]: <T>(from: FromForType<TypesByKind[K]>) => Type<T> }
+
+  function typeBuilderForKind<K extends TypeKind>(kind: K) {
+    return function <T>(from: FromForType<TypesByKind[K]>): Type<T> {
+      const privateType: TypesByKind[K] = {
+        [__typeBrand]: __typePluginBrand,
+        kind,
+        toString() {
+          switch(this.kind) {
+            case "ArrayType":
+              return "[" + this.elemType + "]";
+            case "IdentityType":
+              return String(this.value);
+            case "ObjectType":
+              return "{ " + this.fields.join(", ") + " }";
+            case "OrType":
+              return this.types.join(" | ");
+            case "PredicateType":
+              return this.name;
+            default:
+              return assertNever(this);
+          }
+        },
+        ...(from as any)
+      };
+
+      return new TypeImpl(privateType);
+    }
+  }
+
+  const typeBuilders: TypeBuilders = {
+    ArrayType: typeBuilderForKind("ArrayType"),
+    IdentityType: typeBuilderForKind("IdentityType"),
+    ObjectType: typeBuilderForKind("ObjectType"),
+    OrType: typeBuilderForKind("OrType"),
+    PredicateType: typeBuilderForKind("PredicateType"),
+  };
+
   class FieldImpl<T> implements Field<T> {
     public hidden: boolean;
 
@@ -250,74 +263,72 @@ export default function typesPlugin(_fork: Fork) {
     }
   }
 
-  const Type = {
-    or(...types: any[]): Type<any> {
-      return new TypeImpl(typeBuilders.OrType({
-        types: types.map(type => Type.from(type)),
-      }));
-    },
+  function orTypeFrom(...types: any[]): Type<any> {
+    return typeBuilders.OrType({
+      types: types.map(type => typeFrom(type)),
+    });
+  }
 
-    from(value: any, name?: string): Type<any> {
-      if (value instanceof TypeImpl) {
-        return value;
-      }
-
-      // The Def type is used as a helper for constructing compound
-      // interface types for AST nodes.
-      if (value instanceof Def) {
-        return value.type;
-      }
-
-      // Support [ElemType] syntax.
-      if (isArray.check(value)) {
-        if (value.length !== 1) {
-          throw new Error("only one element type is permitted for typed arrays");
-        }
-        return new TypeImpl(typeBuilders.ArrayType({
-          elemType: Type.from(value[0]),
-        }));
-      }
-
-      // Support { someField: FieldType, ... } syntax.
-      if (isObject.check(value)) {
-        return new TypeImpl(typeBuilders.ObjectType({
-          fields: Object.keys(value).map(
-            name => new FieldImpl(name, Type.from(value[name], name))
-          ),
-        }));
-      }
-
-      if (typeof value === "function") {
-        var bicfIndex = builtInCtorFns.indexOf(value);
-        if (bicfIndex >= 0) {
-          return builtInCtorTypes[bicfIndex];
-        }
-
-        if (typeof name !== "string") {
-          throw new Error("missing name");
-        }
-
-        return new TypeImpl(typeBuilders.PredicateType({ name, predicate: value, }));
-      }
-
-      // As a last resort, toType returns a type that matches any value that
-      // is === from. This is primarily useful for literal values like
-      // toType(null), but it has the additional advantage of allowing
-      // toType to be a total function.
-      return new TypeImpl(typeBuilders.IdentityType({ value }));
-    },
-
-    // Define a type whose name is registered in a namespace (the defCache) so
-    // that future definitions will return the same type given the same name.
-    // In particular, this system allows for circular and forward definitions.
-    // The Def object d returned from Type.def may be used to configure the
-    // type d.type by calling methods such as d.bases, d.build, and d.field.
-    def(typeName: string): Def {
-      return hasOwn.call(defCache, typeName)
-        ? defCache[typeName]
-        : defCache[typeName] = new Def(typeName);
+  function typeFrom(value: any, name?: string): Type<any> {
+    if (value instanceof TypeImpl) {
+      return value;
     }
-  };
+
+    // The Def type is used as a helper for constructing compound
+    // interface types for AST nodes.
+    if (value instanceof Def) {
+      return value.type;
+    }
+
+    // Support [ElemType] syntax.
+    if (isArray.check(value)) {
+      if (value.length !== 1) {
+        throw new Error("only one element type is permitted for typed arrays");
+      }
+      return typeBuilders.ArrayType({
+        elemType: typeFrom(value[0]),
+      });
+    }
+
+    // Support { someField: FieldType, ... } syntax.
+    if (isObject.check(value)) {
+      return typeBuilders.ObjectType({
+        fields: Object.keys(value).map(
+          name => new FieldImpl(name, typeFrom(value[name], name))
+        ),
+      });
+    }
+
+    if (typeof value === "function") {
+      var bicfIndex = builtInCtorFns.indexOf(value);
+      if (bicfIndex >= 0) {
+        return builtInCtorTypes[bicfIndex];
+      }
+
+      if (typeof name !== "string") {
+        throw new Error("missing name");
+      }
+
+      return typeBuilders.PredicateType({ name, predicate: value, });
+    }
+
+    // As a last resort, toType returns a type that matches any value that
+    // is === from. This is primarily useful for literal values like
+    // toType(null), but it has the additional advantage of allowing
+    // toType to be a total function.
+    return typeBuilders.IdentityType({ value });
+  }
+
+  // Define a type whose name is registered in a namespace (the defCache) so
+  // that future definitions will return the same type given the same name.
+  // In particular, this system allows for circular and forward definitions.
+  // The Def object d returned from Type.def may be used to configure the
+  // type d.type by calling methods such as d.bases, d.build, and d.field.
+  function defForTypeName(typeName: string): Def {
+    return hasOwn.call(defCache, typeName)
+      ? defCache[typeName]
+      : defCache[typeName] = new Def(typeName);
+  }
 
   var builtInCtorFns: Function[] = [];
   var builtInCtorTypes: Type<any>[] = [];
@@ -339,10 +350,10 @@ export default function typesPlugin(_fork: Fork) {
   function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): Type<T> {
     const objStr = objToStr.call(example);
 
-    const type = new TypeImpl<T>(typeBuilders.PredicateType({
+    const type = typeBuilders.PredicateType<T>({
       name,
       predicate: value => objToStr.call(value) === objStr,
-    }));
+    });
 
     builtInTypes[name] = type;
 
@@ -392,10 +403,10 @@ export default function typesPlugin(_fork: Fork) {
       fieldNames: {value: []}, // Non-hidden keys of allFields.
 
       type: {
-        value: new TypeImpl(typeBuilders.PredicateType({
+        value: typeBuilders.PredicateType({
           name: typeName,
           predicate: (value, deep) => self.check(value, deep),
-        })),
+        }),
       }
     });
   } as any as DefConstructor;
@@ -595,7 +606,7 @@ export default function typesPlugin(_fork: Fork) {
     return old;
   };
 
-  var isArrayOfString = new TypeImpl(typeBuilders.ArrayType({ elemType: isString }));
+  var isArrayOfString = typeBuilders.ArrayType({ elemType: isString });
 
   // Calling the .build method of a Def simultaneously marks the type as
   // buildable (by defining builders[getBuilderName(typeName)]) and
@@ -778,7 +789,7 @@ export default function typesPlugin(_fork: Fork) {
         JSON.stringify(this.typeName));
       return this;
     }
-    this.ownFields[name] = new FieldImpl(name, Type.from(type), defaultFn, hidden);
+    this.ownFields[name] = new FieldImpl(name, typeFrom(type), defaultFn, hidden);
     return this; // For chaining.
   };
 
@@ -974,8 +985,18 @@ export default function typesPlugin(_fork: Fork) {
     });
   };
 
+  const TypeForExport = TypeImpl as {
+    new <T>(): Type<T>;
+    or: typeof orTypeFrom,
+    from: typeof typeFrom;
+    def: typeof defForTypeName;
+  };
+  TypeForExport.or = orTypeFrom;
+  TypeForExport.from = typeFrom;
+  TypeForExport.def = defForTypeName;
+
   return {
-    Type,
+    Type: TypeForExport,
     builtInTypes,
     getSupertypeNames,
     computeSupertypeLookupTable,
