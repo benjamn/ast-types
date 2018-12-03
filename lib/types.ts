@@ -122,6 +122,10 @@ export default function typesPlugin(_fork: Fork) {
   // true or false according to whether the value matches the type.
 
   class TypeImpl<T> implements Type<T> {
+    static or = orTypeFrom;
+    static from = typeFrom;
+    static def = defForTypeName;
+
     __type: PrivateType<T>
 
     constructor(__type: PrivateType<T>) {
@@ -985,15 +989,8 @@ export default function typesPlugin(_fork: Fork) {
     });
   };
 
-  const TypeForExport = TypeImpl as {
-    new <T>(): Type<T>;
-    or: typeof orTypeFrom,
-    from: typeof typeFrom;
-    def: typeof defForTypeName;
-  };
-  TypeForExport.or = orTypeFrom;
-  TypeForExport.from = typeFrom;
-  TypeForExport.def = defForTypeName;
+  type Statics<T> = { [K in Exclude<keyof T, "prototype">]: T[K] };
+  const TypeForExport = TypeImpl as { new <T>(): Type<T> } & Statics<typeof TypeImpl>;
 
   return {
     Type: TypeForExport,
