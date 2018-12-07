@@ -1831,17 +1831,6 @@ export interface TypeParameterBuilder {
   ): N.TypeParameter;
 }
 
-export interface PrivateNameBuilder {
-  (name: K.IdentifierKind): N.PrivateName;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      name: K.IdentifierKind
-    }
-  ): N.PrivateName;
-}
-
 export interface ClassPrivatePropertyBuilder {
   (key: K.IdentifierKind): N.ClassPrivateProperty;
   from(
@@ -2545,6 +2534,47 @@ export interface ClassMethodBuilder {
   ): N.ClassMethod;
 }
 
+export interface ClassPrivateMethodBuilder {
+  (
+    kind: "method" | "get" | "set",
+    key: K.PrivateNameKind,
+    params: K.PatternKind[],
+    body: K.BlockStatementKind | K.ExpressionKind,
+    staticParam?: boolean
+  ): N.ClassPrivateMethod;
+  from(
+    params: {
+      async?: boolean,
+      body: K.BlockStatementKind | K.ExpressionKind,
+      comments?: K.CommentKind[] | null,
+      decorators?: K.DecoratorKind[] | undefined,
+      defaults?: (K.ExpressionKind | null)[],
+      expression?: boolean,
+      generator?: boolean,
+      id?: K.IdentifierKind | null,
+      key: K.PrivateNameKind,
+      kind: "method" | "get" | "set",
+      loc?: K.SourceLocationKind | null,
+      params: K.PatternKind[],
+      rest?: K.IdentifierKind | null,
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      static?: boolean,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
+    }
+  ): N.ClassPrivateMethod;
+}
+
+export interface PrivateNameBuilder {
+  (id: K.IdentifierKind): N.PrivateName;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): N.PrivateName;
+}
+
 export interface RestPropertyBuilder {
   (argument: K.ExpressionKind): N.RestProperty;
   from(
@@ -2864,27 +2894,27 @@ export interface TSParenthesizedTypeBuilder {
 }
 
 export interface TSFunctionTypeBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind)[]): N.TSFunctionType;
+  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSFunctionType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSFunctionType;
 }
 
 export interface TSConstructorTypeBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind)[]): N.TSConstructorType;
+  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSConstructorType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSConstructorType;
 }
@@ -2905,7 +2935,7 @@ export interface TSDeclareFunctionBuilder {
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
       returnType?: K.TSTypeAnnotationKind | K.NoopKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSDeclareFunction;
 }
@@ -2933,7 +2963,7 @@ export interface TSDeclareMethodBuilder {
       params: K.PatternKind[],
       returnType?: K.TSTypeAnnotationKind | K.NoopKind | null,
       static?: boolean,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSDeclareMethod;
 }
@@ -3047,9 +3077,9 @@ export interface TSMethodSignatureBuilder {
       key: K.ExpressionKind,
       loc?: K.SourceLocationKind | null,
       optional?: boolean,
-      parameters: (K.IdentifierKind | K.RestElementKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSMethodSignature;
 }
@@ -3070,27 +3100,27 @@ export interface TSTypePredicateBuilder {
 }
 
 export interface TSCallSignatureDeclarationBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind)[]): N.TSCallSignatureDeclaration;
+  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSCallSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSCallSignatureDeclaration;
 }
 
 export interface TSConstructSignatureDeclarationBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind)[]): N.TSConstructSignatureDeclaration;
+  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSConstructSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSConstructSignatureDeclaration;
 }
@@ -3173,7 +3203,7 @@ export interface TSTypeAliasDeclarationBuilder {
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       typeAnnotation: K.TSTypeKind,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSTypeAliasDeclaration;
 }
@@ -3278,7 +3308,7 @@ export interface TSInterfaceDeclarationBuilder {
       extends?: K.TSExpressionWithTypeArgumentsKind[] | null,
       id: K.IdentifierKind | K.TSQualifiedNameKind,
       loc?: K.SourceLocationKind | null,
-      typeParameters?: K.TSTypeParameterDeclarationKind | null
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
   ): N.TSInterfaceDeclaration;
 }
@@ -3467,7 +3497,6 @@ export interface Builders {
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
   typeofTypeAnnotation: TypeofTypeAnnotationBuilder;
   typeParameter: TypeParameterBuilder;
-  privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
   interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
@@ -3518,6 +3547,8 @@ export interface Builders {
   regExpLiteral: RegExpLiteralBuilder;
   objectMethod: ObjectMethodBuilder;
   classMethod: ClassMethodBuilder;
+  classPrivateMethod: ClassPrivateMethodBuilder;
+  privateName: PrivateNameBuilder;
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;

@@ -171,7 +171,6 @@ export interface Visitor<M = {}> {
   visitTypeofTypeAnnotation?(this: Context & M, path: NodePath<N.TypeofTypeAnnotation>): any;
   visitType?(this: Context & M, path: NodePath<N.Type>): any;
   visitTypeParameter?(this: Context & M, path: NodePath<N.TypeParameter>): any;
-  visitPrivateName?(this: Context & M, path: NodePath<N.PrivateName>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<N.ClassPrivateProperty>): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath<N.InterfaceTypeAnnotation>): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath<N.InterfaceExtends>): any;
@@ -223,6 +222,8 @@ export interface Visitor<M = {}> {
   visitRegExpLiteral?(this: Context & M, path: NodePath<N.RegExpLiteral>): any;
   visitObjectMethod?(this: Context & M, path: NodePath<N.ObjectMethod>): any;
   visitClassMethod?(this: Context & M, path: NodePath<N.ClassMethod>): any;
+  visitClassPrivateMethod?(this: Context & M, path: NodePath<N.ClassPrivateMethod>): any;
+  visitPrivateName?(this: Context & M, path: NodePath<N.PrivateName>): any;
   visitRestProperty?(this: Context & M, path: NodePath<N.RestProperty>): any;
   visitForAwaitStatement?(this: Context & M, path: NodePath<N.ForAwaitStatement>): any;
   visitImport?(this: Context & M, path: NodePath<N.Import>): any;

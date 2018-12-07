@@ -260,11 +260,24 @@ export default function (fork: Fork) {
     .field("body", def("BlockStatement"))
     .field("computed", Boolean, defaults["false"])
     .field("static", Boolean, defaults["false"])
-    .field("generator", Boolean, defaults["false"])
-    .field("async", Boolean, defaults["false"])
     .field("decorators",
            or([def("Decorator")], null),
            defaults["null"]);
+
+  def("ClassPrivateMethod")
+    .bases("Function")
+    .build("kind", "key", "params", "body", "static")
+    .field("key", def("PrivateName"))
+    .field("kind", or("method", "get", "set"))
+    .field("static", Boolean, defaults["false"])
+    .field("decorators",
+           or([def("Decorator")], void 0),
+           defaults["undefined"]);
+
+  def("PrivateName")
+    .bases("Expression", "Pattern")
+    .build("id")
+    .field("id", def("Identifier"));
 
   var ObjectPatternProperty = or(
     def("Property"),

@@ -244,11 +244,6 @@ export default function (fork: Fork) {
   def("ClassProperty")
     .field("variance", LegacyVariance, defaults["null"]);
 
-  def("PrivateName")
-    .bases("Expression")
-    .build("name")
-    .field("name", def("Identifier"));
-
   def("ClassPrivateProperty")
     .bases("ClassProperty")
     .build("key")

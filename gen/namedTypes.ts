@@ -170,7 +170,6 @@ export interface NamedTypes {
   TypeofTypeAnnotation: Type<N.TypeofTypeAnnotation>;
   Type: Type<N.Type>;
   TypeParameter: Type<N.TypeParameter>;
-  PrivateName: Type<N.PrivateName>;
   ClassPrivateProperty: Type<N.ClassPrivateProperty>;
   InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
   InterfaceExtends: Type<N.InterfaceExtends>;
@@ -222,6 +221,8 @@ export interface NamedTypes {
   RegExpLiteral: Type<N.RegExpLiteral>;
   ObjectMethod: Type<N.ObjectMethod>;
   ClassMethod: Type<N.ClassMethod>;
+  ClassPrivateMethod: Type<N.ClassPrivateMethod>;
+  PrivateName: Type<N.PrivateName>;
   RestProperty: Type<N.RestProperty>;
   ForAwaitStatement: Type<N.ForAwaitStatement>;
   Import: Type<N.Import>;

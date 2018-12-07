@@ -54,7 +54,9 @@ export default function (fork: Fork) {
         .bases("Node")
         .field("id", or(def("Identifier"), null), defaults["null"])
         .field("params", [def("Pattern")])
-        .field("body", def("BlockStatement"));
+        .field("body", def("BlockStatement"))
+        .field("generator", Boolean, defaults["false"])
+        .field("async", Boolean, defaults["false"]);
 
     def("Statement").bases("Node");
 

@@ -48,7 +48,7 @@ export default function (fork: Fork) {
   // optional .typeParameters field.
   def("TSHasOptionalTypeParameters")
     .field("typeParameters",
-           or(def("TSTypeParameterDeclaration"), null),
+           or(def("TSTypeParameterDeclaration"), null, void 0),
            defaults["null"]);
 
   // An abstract (non-buildable) base type that provide a commonly-needed
@@ -139,7 +139,8 @@ export default function (fork: Fork) {
 
   var ParametersType = [or(
     def("Identifier"),
-    def("RestElement")
+    def("RestElement"),
+    def("ObjectPattern")
   )];
 
   ["TSFunctionType",
