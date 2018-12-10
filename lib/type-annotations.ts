@@ -14,11 +14,9 @@ export default function typeAnnotationsPlugin(fork: Fork) {
 
   function createTSTypeAnnotator(config: TSTypeAnnotatorConfig) {
     function getTSTypeAnnotation(type: Type<any>): any {
-      const privateType = type.__type;
-
-      switch (privateType.kind) {
+      switch (type.kind) {
         case "ArrayType": {
-          let elemTypeAnnotation = getTSTypeAnnotation(privateType.elemType);
+          let elemTypeAnnotation = getTSTypeAnnotation(type.elemType);
           // TODO Improve this test.
           if (namedTypes.TSUnionType.check(elemTypeAnnotation)) {
             elemTypeAnnotation = builders.tsParenthesizedType(elemTypeAnnotation);
@@ -27,16 +25,16 @@ export default function typeAnnotationsPlugin(fork: Fork) {
         }
 
         case "IdentityType": {
-          if (privateType.value === null) {
+          if (type.value === null) {
             return builders.tsNullKeyword();
           }
-          switch (typeof privateType.value) {
+          switch (typeof type.value) {
             case "undefined":
               return builders.tsUndefinedKeyword();
             case "string":
-              return builders.tsLiteralType(builders.stringLiteral(privateType.value));
+              return builders.tsLiteralType(builders.stringLiteral(type.value));
             case "boolean":
-              return builders.tsLiteralType(builders.booleanLiteral(privateType.value));
+              return builders.tsLiteralType(builders.booleanLiteral(type.value));
             case "number":
               return builders.tsNumberKeyword();
             case "object":
@@ -52,28 +50,28 @@ export default function typeAnnotationsPlugin(fork: Fork) {
 
         case "ObjectType": {
           return builders.tsTypeLiteral.from({
-            members: privateType.fields.map(field => getTSPropertySignature(field)),
+            members: type.fields.map(field => getTSPropertySignature(field)),
           });
         }
 
         case "OrType": {
-          return builders.tsUnionType(privateType.types.map(type => getTSTypeAnnotation(type)));
+          return builders.tsUnionType(type.types.map(type => getTSTypeAnnotation(type)));
         }
 
         case "PredicateType": {
-          if (typeof privateType.name !== "string") {
+          if (typeof type.name !== "string") {
             return builders.tsAnyKeyword();
           }
 
-          if (hasOwn.call(namedTypes, privateType.name)) {
-            return config.getReferenceToKind(privateType.name);
+          if (hasOwn.call(namedTypes, type.name)) {
+            return config.getReferenceToKind(type.name);
           }
 
-          if (/^[$A-Z_][a-z0-9_$]*$/i.test(privateType.name)) {
-            return builders.tsTypeReference(builders.identifier(privateType.name));
+          if (/^[$A-Z_][a-z0-9_$]*$/i.test(type.name)) {
+            return builders.tsTypeReference(builders.identifier(type.name));
           }
 
-          if (/^number [<>=]+ \d+$/.test(privateType.name)) {
+          if (/^number [<>=]+ \d+$/.test(type.name)) {
             return builders.tsNumberKeyword();
           }
 
@@ -82,7 +80,7 @@ export default function typeAnnotationsPlugin(fork: Fork) {
         }
 
         default:
-          return assertNever(privateType);
+          return assertNever(type);
       }
     }
 
