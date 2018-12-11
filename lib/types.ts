@@ -22,11 +22,7 @@ export interface AnyType {
   assert(value: any, deep?: Deep): boolean;
 }
 
-declare const __typeBrand: unique symbol;
-
 abstract class BaseType<T> {
-  readonly [__typeBrand]: T;
-
   abstract toString(): string;
 
   abstract check(value: any, deep?: Deep): value is T;
