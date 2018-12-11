@@ -19,6 +19,7 @@ export interface AnyType {
   toString(): string;
   check(value: any, deep?: Deep): boolean;
   assert(value: any, deep?: Deep): boolean;
+  arrayOf(): AnyType;
 }
 
 abstract class BaseType<T> {
@@ -33,13 +34,18 @@ abstract class BaseType<T> {
     }
     return true;
   }
+
+  arrayOf(): Type<T[]> {
+    const elemType = this as any as Type<T>;
+    return new ArrayType<T[]>(elemType);
+  }
 }
 
 class ArrayType<T> extends BaseType<T> {
   readonly kind: "ArrayType" = "ArrayType";
 
   constructor(
-    public readonly elemType: Type<T>,
+    public readonly elemType: Type<T extends (infer E)[] ? E : never>,
   ) {
     super();
   }
