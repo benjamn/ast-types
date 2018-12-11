@@ -14,7 +14,7 @@ export interface SourceLocation {
 }
 
 export interface Node extends Printable {
-  type: "Node";
+  type: string;
   comments?: K.CommentKind[] | null;
 }
 
@@ -43,12 +43,9 @@ export interface Program extends Omit<Node, "type"> {
   interpreter?: K.InterpreterDirectiveKind | null;
 }
 
-export interface Statement extends Omit<Node, "type"> {
-  type: "Statement";
-}
+export interface Statement extends Node {}
 
-export interface Function extends Omit<Node, "type"> {
-  type: "Function";
+export interface Function extends Node {
   id?: K.IdentifierKind | null;
   params: K.PatternKind[];
   body: K.BlockStatementKind | K.ExpressionKind;
@@ -61,13 +58,8 @@ export interface Function extends Omit<Node, "type"> {
   typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
 
-export interface Pattern extends Omit<Node, "type"> {
-  type: "Pattern";
-}
-
-export interface Expression extends Omit<Node, "type">, Omit<Pattern, "type"> {
-  type: "Expression";
-}
+export interface Pattern extends Node {}
+export interface Expression extends Node, Pattern {}
 
 export interface Identifier extends Omit<Node, "type">, Omit<Expression, "type">, Omit<Pattern, "type"> {
   type: "Identifier";
@@ -179,9 +171,7 @@ export interface ForStatement extends Omit<Statement, "type"> {
   body: K.StatementKind;
 }
 
-export interface Declaration extends Omit<Statement, "type"> {
-  type: "Declaration";
-}
+export interface Declaration extends Statement {}
 
 export interface VariableDeclaration extends Omit<Declaration, "type"> {
   type: "VariableDeclaration";
@@ -379,8 +369,8 @@ export interface ComprehensionExpression extends Omit<Expression, "type"> {
 }
 
 export interface ObjectProperty extends Omit<Node, "type"> {
-  type: "ObjectProperty";
   shorthand?: boolean;
+  type: "ObjectProperty";
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
   value: K.ExpressionKind | K.PatternKind;
   accessibility?: K.LiteralKind | null;
@@ -467,12 +457,9 @@ export interface ClassExpression extends Omit<Expression, "type"> {
   implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];
 }
 
-export interface Specifier extends Omit<Node, "type"> {
-  type: "Specifier";
-}
+export interface Specifier extends Node {}
 
-export interface ModuleSpecifier extends Omit<Specifier, "type"> {
-  type: "ModuleSpecifier";
+export interface ModuleSpecifier extends Specifier {
   local?: K.IdentifierKind | null;
   id?: K.IdentifierKind | null;
   name?: K.IdentifierKind | null;
@@ -558,100 +545,79 @@ export interface GraphIndexExpression extends Omit<Expression, "type"> {
   index: number;
 }
 
-export interface XMLDefaultDeclaration extends Omit<Declaration, "type"> {
-  type: "XMLDefaultDeclaration";
+export interface XMLDefaultDeclaration extends Declaration {
   namespace: K.ExpressionKind;
 }
 
-export interface XMLAnyName extends Omit<Expression, "type"> {
-  type: "XMLAnyName";
-}
+export interface XMLAnyName extends Expression {}
 
-export interface XMLQualifiedIdentifier extends Omit<Expression, "type"> {
-  type: "XMLQualifiedIdentifier";
+export interface XMLQualifiedIdentifier extends Expression {
   left: K.IdentifierKind | K.XMLAnyNameKind;
   right: K.IdentifierKind | K.ExpressionKind;
   computed: boolean;
 }
 
-export interface XMLFunctionQualifiedIdentifier extends Omit<Expression, "type"> {
-  type: "XMLFunctionQualifiedIdentifier";
+export interface XMLFunctionQualifiedIdentifier extends Expression {
   right: K.IdentifierKind | K.ExpressionKind;
   computed: boolean;
 }
 
-export interface XMLAttributeSelector extends Omit<Expression, "type"> {
-  type: "XMLAttributeSelector";
+export interface XMLAttributeSelector extends Expression {
   attribute: K.ExpressionKind;
 }
 
-export interface XMLFilterExpression extends Omit<Expression, "type"> {
-  type: "XMLFilterExpression";
+export interface XMLFilterExpression extends Expression {
   left: K.ExpressionKind;
   right: K.ExpressionKind;
 }
 
-export interface XML extends Omit<Node, "type"> {
-  type: "XML";
-}
+export interface XML extends Node {}
 
-export interface XMLElement extends Omit<XML, "type">, Omit<Expression, "type"> {
-  type: "XMLElement";
+export interface XMLElement extends XML, Expression {
   contents: K.XMLKind[];
 }
 
-export interface XMLList extends Omit<XML, "type">, Omit<Expression, "type"> {
-  type: "XMLList";
+export interface XMLList extends XML, Expression {
   contents: K.XMLKind[];
 }
 
-export interface XMLEscape extends Omit<XML, "type"> {
-  type: "XMLEscape";
+export interface XMLEscape extends XML {
   expression: K.ExpressionKind;
 }
 
-export interface XMLText extends Omit<XML, "type"> {
-  type: "XMLText";
+export interface XMLText extends XML {
   text: string;
 }
 
-export interface XMLStartTag extends Omit<XML, "type"> {
-  type: "XMLStartTag";
+export interface XMLStartTag extends XML {
   contents: K.XMLKind[];
 }
 
-export interface XMLEndTag extends Omit<XML, "type"> {
-  type: "XMLEndTag";
+export interface XMLEndTag extends XML {
   contents: K.XMLKind[];
 }
 
-export interface XMLPointTag extends Omit<XML, "type"> {
-  type: "XMLPointTag";
+export interface XMLPointTag extends XML {
   contents: K.XMLKind[];
 }
 
-export interface XMLName extends Omit<XML, "type"> {
-  type: "XMLName";
+export interface XMLName extends XML {
   contents: string | K.XMLKind[];
 }
 
-export interface XMLAttribute extends Omit<XML, "type"> {
-  type: "XMLAttribute";
+export interface XMLAttribute extends XML {
   value: string;
 }
 
-export interface XMLCdata extends Omit<XML, "type"> {
-  type: "XMLCdata";
+export interface XMLCdata extends XML {
   contents: string;
 }
 
-export interface XMLComment extends Omit<XML, "type"> {
-  type: "XMLComment";
+export interface XMLComment extends XML {
   contents: string;
 }
 
-export interface XMLProcessingInstruction extends Omit<XML, "type"> {
-  type: "XMLProcessingInstruction";
+export interface XMLProcessingInstruction extends XML {
   target: string;
   contents: string | null;
 }
@@ -768,9 +734,7 @@ export interface ClassImplements extends Omit<Node, "type"> {
   typeParameters?: K.TypeParameterInstantiationKind | null;
 }
 
-export interface TSType extends Omit<Node, "type"> {
-  type: "TSType";
-}
+export interface TSType extends Node {}
 
 export interface TSExpressionWithTypeArguments extends Omit<TSType, "type"> {
   type: "TSExpressionWithTypeArguments";
@@ -778,13 +742,8 @@ export interface TSExpressionWithTypeArguments extends Omit<TSType, "type"> {
   typeParameters?: K.TSTypeParameterInstantiationKind | null;
 }
 
-export interface Flow extends Omit<Node, "type"> {
-  type: "Flow";
-}
-
-export interface FlowType extends Omit<Flow, "type"> {
-  type: "FlowType";
-}
+export interface Flow extends Node {}
+export interface FlowType extends Flow {}
 
 export interface AnyTypeAnnotation extends Omit<FlowType, "type"> {
   type: "AnyTypeAnnotation";
@@ -1084,9 +1043,7 @@ export interface DeclareExportAllDeclaration extends Omit<Declaration, "type"> {
   source?: K.LiteralKind | null;
 }
 
-export interface FlowPredicate extends Omit<Flow, "type"> {
-  type: "FlowPredicate";
-}
+export interface FlowPredicate extends Flow {}
 
 export interface InferredPredicate extends Omit<FlowPredicate, "type"> {
   type: "InferredPredicate";

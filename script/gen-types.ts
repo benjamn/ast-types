@@ -56,16 +56,13 @@ const out = [
       KINDS_IMPORT,
       ...Object.keys(astTypes.namedTypes).map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
-        const fieldNames = Object.keys({ type: true, ...typeDef.ownFields }).filter(
-          fieldName => !!typeDef.allFields[fieldName]
-        );
 
         return b.exportNamedDeclaration(
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
             extends: typeDef.baseNames.map(baseName => {
               const baseDef = astTypes.Type.def(baseName);
-              const commonFieldNames = fieldNames.filter(
+              const commonFieldNames = Object.keys(typeDef.ownFields).filter(
                 fieldName => !!baseDef.allFields[fieldName]
               );
 
@@ -75,9 +72,7 @@ const out = [
                   b.tsTypeParameterInstantiation([
                     b.tsTypeReference(b.identifier(baseName)),
                     b.tsUnionType(
-                      commonFieldNames.map(fieldName => {
-                        return b.tsLiteralType(b.stringLiteral(fieldName));
-                      })
+                      commonFieldNames.map(fieldName => b.tsLiteralType(b.stringLiteral(fieldName)))
                     ),
                   ])
                 );
@@ -86,15 +81,16 @@ const out = [
               }
             }),
             body: b.tsInterfaceBody(
-              fieldNames.map(fieldName => {
-                if (fieldName === "type") {
+              Object.keys(typeDef.ownFields).map(fieldName => {
+                const field = typeDef.allFields[fieldName];
+
+                if (field.name === "type" && field.defaultFn) {
                   return b.tsPropertySignature(
                     b.identifier("type"),
-                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName)))
+                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
                   );
                 }
 
-                const field = typeDef.allFields[fieldName];
                 return getTSPropertySignature(field);
               })
             ),
@@ -226,7 +222,7 @@ const out = [
                   typeAnnotation: b.tsTypeAnnotation(b.tsStringKeyword()),
                 }),
               ],
-              b.tsTypeAnnotation(b.tsAnyKeyword()),
+              b.tsTypeAnnotation(b.tsAnyKeyword())
             ),
           ])
         )
@@ -391,7 +387,7 @@ function getTSTypeAnnotation(type: Type<any>): any {
   }
 }
 
-function getTSPropertySignature(field: Field<any>): any {
+function getTSPropertySignature(field: Field<any>) {
   return b.tsPropertySignature(
     b.identifier(field.name),
     b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
