@@ -233,11 +233,7 @@ const out = [
                         typeAnnotation: b.tsTypeLiteral.from({
                           members: Object.keys(typeDef.allFields)
                             .filter(fieldName => fieldName !== "type")
-                            .sort((fieldName1, fieldName2) => {
-                              const field1 = typeDef.allFields[fieldName1];
-                              const field2 = typeDef.allFields[fieldName2];
-                              return field1.name < field2.name ? -1 : 1;
-                            })
+                            .sort() // Sort field name strings lexicographically.
                             .map(fieldName => {
                               return getTSPropertySignature(typeDef.allFields[fieldName]);
                             }),
