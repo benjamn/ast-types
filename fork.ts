@@ -3,7 +3,6 @@ import pathVisitorPlugin from "./lib/path-visitor";
 import equivPlugin from "./lib/equiv";
 import pathPlugin from "./lib/path";
 import nodePathPlugin from "./lib/node-path";
-import typeAnnotationsPlugin from "./lib/type-annotations";
 import { Def, Fork, Plugin } from "./types";
 
 export default function (defs: Def[]) {
@@ -16,8 +15,6 @@ export default function (defs: Def[]) {
   types.finalize();
 
   const PathVisitor = fork.use(pathVisitorPlugin);
-
-  const { createTSTypeAnnotator } = fork.use(typeAnnotationsPlugin);
 
   const exports = {
     Type: types.Type,
@@ -38,7 +35,6 @@ export default function (defs: Def[]) {
     PathVisitor,
     use: fork.use,
     visit: PathVisitor.visit,
-    createTSTypeAnnotator,
   };
 
   return exports;

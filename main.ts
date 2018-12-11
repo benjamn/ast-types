@@ -11,7 +11,7 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
 import { Omit } from "./types";
-import { ASTNode, Type, AnyType } from "./lib/types";
+import { ASTNode, Type, AnyType, Field } from "./lib/types";
 import { NodePath } from "./lib/node-path";
 import { NamedTypes } from "./gen/namedTypes";
 import { Builders } from "./gen/builders";
@@ -51,6 +51,7 @@ export {
   ASTNode,
   Type,
   AnyType,
+  Field,
   NodePath,
   NamedTypes,
   Builders,

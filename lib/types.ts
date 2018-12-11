@@ -1,5 +1,4 @@
 import { Fork } from "../types";
-import { shallowStringify } from "./utils";
 
 const Op = Object.prototype;
 const objToStr = Op.toString;
@@ -36,7 +35,7 @@ abstract class BaseType<T> {
   }
 }
 
-class ArrayType<T> extends BaseType<T[]> {
+class ArrayType<T> extends BaseType<T> {
   readonly kind: "ArrayType" = "ArrayType";
 
   constructor(
@@ -49,7 +48,7 @@ class ArrayType<T> extends BaseType<T[]> {
     return "[" + this.elemType + "]";
   }
 
-  check(value: any, deep?: Deep): value is T[] {
+  check(value: any, deep?: Deep): value is T {
     return Array.isArray(value) && value.every(elem => this.elemType.check(elem, deep));
   }
 }
@@ -268,6 +267,20 @@ export interface Builder {
   from(obj: { [param: string]: any }): ASTNode;
 }
 
+function shallowStringify(value: any): string {
+  if (Array.isArray(value)) {
+    return "[" + value.map(shallowStringify).join(", ") + "]";
+  }
+
+  if (value && typeof value === "object") {
+    return "{ " + Object.keys(value).map(function (key) {
+      return key + ": " + value[key];
+    }).join(", ") + " }";
+  }
+
+  return JSON.stringify(value);
+}
+
 export default function typesPlugin(_fork: Fork) {
   const Type = {
     or(...types: any[]): Type<any> {
@@ -386,7 +399,7 @@ export default function typesPlugin(_fork: Fork) {
   };
   var builtInTypes = {} as BuiltInTypes;
 
-  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): PredicateType<T> {
+  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): Type<T> {
     const objStr = objToStr.call(example);
 
     const type = new PredicateType<T>(name, value => objToStr.call(value) === objStr);
