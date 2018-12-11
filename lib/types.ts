@@ -248,15 +248,40 @@ export abstract class Def<T = any> {
   abstract finalize(): void;
 }
 
-export interface Field<T> {
-  readonly name: string;
-  readonly type: Type<T>;
-  readonly defaultFn?: Function;
-  readonly hidden: boolean;
+class Field<T> {
+  public readonly hidden: boolean;
 
-  toString(): string;
-  getValue(obj: { [key: string]: any }): any;
+  constructor(
+    public readonly name: string,
+    public readonly type: Type<T>,
+    public readonly defaultFn?: Function,
+    hidden?: boolean,
+  ) {
+    this.hidden = !!hidden;
+  }
+
+  toString(): string {
+    return JSON.stringify(this.name) + ": " + this.type;
+  }
+
+  getValue(obj: { [key: string]: any }) {
+    var value = obj[this.name];
+
+    if (typeof value !== "undefined") {
+      return value;
+    }
+
+    if (typeof this.defaultFn === "function") {
+      value = this.defaultFn.call(obj);
+    }
+
+    return value;
+  }
 }
+
+// Only export the Field type (not the value), so it's not externally constructable.
+type FieldType<T> = Field<T>;
+export { FieldType as Field };
 
 export interface ASTNode {
   type: string;
@@ -315,7 +340,7 @@ export default function typesPlugin(_fork: Fork) {
       // Support { someField: FieldType, ... } syntax.
       if (isObject.check(value)) {
         return new ObjectType(Object.keys(value).map(name => {
-          return new FieldImpl(name, Type.from(value[name], name));
+          return new Field(name, Type.from(value[name], name));
         }));
       }
 
@@ -350,37 +375,6 @@ export default function typesPlugin(_fork: Fork) {
         : defCache[typeName] = new DefImpl(typeName);
     },
   };
-
-  class FieldImpl<T> implements Field<T> {
-    public hidden: boolean;
-
-    constructor(
-      public name: string,
-      public type: Type<T>,
-      public defaultFn?: Function,
-      hidden?: boolean,
-    ) {
-      this.hidden = !!hidden;
-    }
-
-    toString() {
-      return JSON.stringify(this.name) + ": " + this.type;
-    }
-
-    getValue(obj: { [key: string]: any }) {
-      var value = obj[this.name];
-
-      if (typeof value !== "undefined") {
-        return value;
-      }
-
-      if (typeof this.defaultFn === "function") {
-        value = this.defaultFn.call(obj);
-      }
-
-      return value;
-    }
-  }
 
   var builtInCtorFns: Function[] = [];
   var builtInCtorTypes: Type<any>[] = [];
@@ -660,7 +654,7 @@ export default function typesPlugin(_fork: Fork) {
           JSON.stringify(this.typeName));
         return this;
       }
-      this.ownFields[name] = new FieldImpl(name, Type.from(type), defaultFn, hidden);
+      this.ownFields[name] = new Field(name, Type.from(type), defaultFn, hidden);
       return this; // For chaining.
     }
 
