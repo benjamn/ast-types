@@ -3,7 +3,7 @@ import typesPlugin, { ASTNode } from "./types";
 import pathPlugin, { Path } from "./path";
 import scopePlugin, { Scope } from "./scope";
 
-export interface NodePath<N extends ASTNode = any, V = any> extends Path<V> {
+export interface NodePath<N = any, V = any> extends Path<V> {
   node: N;
   parent: any;
   scope: any;

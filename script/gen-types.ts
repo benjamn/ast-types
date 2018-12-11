@@ -83,27 +83,46 @@ const out = [
     file: "nodes.ts",
     ast: createModule([
       b.importDeclaration.from({
-        specifiers: [b.importSpecifier(b.identifier("ASTNode"))],
-        source: b.stringLiteral("../lib/types"),
+        specifiers: [b.importSpecifier(b.identifier("Omit"))],
+        source: b.stringLiteral("../types"),
       }),
       importFromKinds(),
       ...Object.keys(astTypes.namedTypes).map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
+        const fieldNames = Object.keys({ type: true, ...typeDef.ownFields })
+          .filter(fieldName => !!typeDef.allFields[fieldName]);
+
         return b.exportNamedDeclaration(
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
-            extends: [b.tsExpressionWithTypeArguments(b.identifier("ASTNode"))],
-            body: b.tsInterfaceBody.from({
-              body: Object.keys(typeDef.allFields).map(fieldName => {
-                const field = typeDef.allFields[fieldName];
+            extends: typeDef.baseNames.map(baseName => {
+              const baseDef = astTypes.Type.def(baseName);
+              const commonFieldNames = fieldNames.filter(fieldName => !!baseDef.allFields[fieldName]);
 
+              if (commonFieldNames.length > 0) {
+                return b.tsExpressionWithTypeArguments(
+                  b.identifier("Omit"),
+                  b.tsTypeParameterInstantiation([
+                    b.tsTypeReference(b.identifier(baseName)),
+                    b.tsUnionType(commonFieldNames.map(fieldName => {
+                      return b.tsLiteralType(b.stringLiteral(fieldName));
+                    })),
+                  ])
+                );
+              } else {
+                return b.tsExpressionWithTypeArguments(b.identifier(baseName));
+              }
+            }),
+            body: b.tsInterfaceBody.from({
+              body: fieldNames.map(fieldName => {
                 if (fieldName === "type") {
                   return b.tsPropertySignature.from({
-                    key: b.identifier(fieldName),
+                    key: b.identifier("type"),
                     typeAnnotation: b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName))),
                   });
                 }
 
+                const field = typeDef.allFields[fieldName];
                 return getTSPropertySignature(field);
               }),
             }),
