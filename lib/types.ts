@@ -119,7 +119,7 @@ class OrType<T> extends BaseType<T> {
   }
 }
 
-class PredicateType<T> extends BaseType<T> {
+export class PredicateType<T> extends BaseType<T> {
   readonly kind: "PredicateType" = "PredicateType";
 
   constructor(
