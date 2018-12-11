@@ -253,13 +253,13 @@ export default function (fork: Fork) {
 
   def("TSIndexSignature")
     .bases("Declaration", "TSHasOptionalTypeAnnotation")
-    .build("parameters")
+    .build("parameters", "typeAnnotation")
     .field("parameters", [def("Identifier")]) // Length === 1
     .field("readonly", Boolean, defaults["false"]);
 
   def("TSPropertySignature")
     .bases("Declaration", "TSHasOptionalTypeAnnotation")
-    .build("key")
+    .build("key", "typeAnnotation", "optional")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("readonly", Boolean, defaults["false"])
@@ -272,7 +272,7 @@ export default function (fork: Fork) {
     .bases("Declaration",
            "TSHasOptionalTypeParameters",
            "TSHasOptionalTypeAnnotation")
-    .build("key")
+    .build("key", "parameters", "typeAnnotation")
     .field("key", def("Expression"))
     .field("computed", Boolean, defaults["false"])
     .field("optional", Boolean, defaults["false"])
@@ -293,7 +293,7 @@ export default function (fork: Fork) {
       .bases("Declaration",
              "TSHasOptionalTypeParameters",
              "TSHasOptionalTypeAnnotation")
-      .build("parameters")
+      .build("parameters", "typeAnnotation")
       .field("parameters", ParametersType);
   });
 
@@ -363,7 +363,7 @@ export default function (fork: Fork) {
 
   def("TSTypeAliasDeclaration")
     .bases("Declaration", "TSHasOptionalTypeParameters")
-    .build("id")
+    .build("id", "typeAnnotation")
     .field("id", def("Identifier"))
     .field("declare", Boolean, defaults["false"])
     .field("typeAnnotation", def("TSType"));

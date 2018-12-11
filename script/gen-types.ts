@@ -37,14 +37,14 @@ const out = [
       NODES_IMPORT,
       ...Object.keys(supertypeToSubtypes).map(baseName => {
         return b.exportNamedDeclaration(
-          b.tsTypeAliasDeclaration.from({
-            id: b.identifier(`${baseName}Kind`),
-            typeAnnotation: b.tsUnionType(
+          b.tsTypeAliasDeclaration(
+            b.identifier(`${baseName}Kind`),
+            b.tsUnionType(
               supertypeToSubtypes[baseName].map(subtypeName =>
                 b.tsTypeReference(b.tsQualifiedName(NODES_ID, b.identifier(subtypeName)))
               )
-            ),
-          })
+            )
+          )
         );
       }),
     ]),
@@ -88,10 +88,10 @@ const out = [
             body: b.tsInterfaceBody(
               fieldNames.map(fieldName => {
                 if (fieldName === "type") {
-                  return b.tsPropertySignature.from({
-                    key: b.identifier("type"),
-                    typeAnnotation: b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName))),
-                  });
+                  return b.tsPropertySignature(
+                    b.identifier("type"),
+                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName)))
+                  );
                 }
 
                 const field = typeDef.allFields[fieldName];
@@ -115,19 +115,19 @@ const out = [
         b.tsInterfaceDeclaration(
           b.identifier("NamedTypes"),
           b.tsInterfaceBody(
-            Object.keys(astTypes.namedTypes).map(typeName => {
-              return b.tsPropertySignature.from({
-                key: b.identifier(typeName),
-                typeAnnotation: b.tsTypeAnnotation(
+            Object.keys(astTypes.namedTypes).map(typeName =>
+              b.tsPropertySignature(
+                b.identifier(typeName),
+                b.tsTypeAnnotation(
                   b.tsTypeReference(
                     b.identifier("Type"),
                     b.tsTypeParameterInstantiation([
                       b.tsTypeReference(b.tsQualifiedName(NODES_ID, b.identifier(typeName))),
                     ])
                   )
-                ),
-              });
-            })
+                )
+              )
+            )
           )
         )
       ),
@@ -163,11 +163,11 @@ const out = [
         });
 
         return b.exportNamedDeclaration(
-          b.tsInterfaceDeclaration.from({
-            id: b.identifier(`${typeName}Builder`),
-            body: b.tsInterfaceBody([
-              b.tsCallSignatureDeclaration.from({
-                parameters: typeDef.buildParams
+          b.tsInterfaceDeclaration(
+            b.identifier(`${typeName}Builder`),
+            b.tsInterfaceBody([
+              b.tsCallSignatureDeclaration(
+                typeDef.buildParams
                   .filter(buildParam => !!typeDef.allFields[buildParam])
                   .map(buildParam => {
                     const field = typeDef.allFields[buildParam];
@@ -183,29 +183,29 @@ const out = [
                       optional: !!buildParamIsOptional[buildParam],
                     });
                   }),
-                typeAnnotation: returnType,
-              }),
-              b.tsMethodSignature.from({
-                key: b.identifier("from"),
-                parameters: [
+                returnType
+              ),
+              b.tsMethodSignature(
+                b.identifier("from"),
+                [
                   b.identifier.from({
                     name: "params",
-                    typeAnnotation: b.tsTypeAnnotation.from({
-                      typeAnnotation: b.tsTypeLiteral.from({
-                        members: Object.keys(typeDef.allFields)
+                    typeAnnotation: b.tsTypeAnnotation(
+                      b.tsTypeLiteral(
+                        Object.keys(typeDef.allFields)
                           .filter(fieldName => fieldName !== "type")
                           .sort() // Sort field name strings lexicographically.
                           .map(fieldName => {
                             return getTSPropertySignature(typeDef.allFields[fieldName]);
-                          }),
-                      }),
-                    }),
+                          })
+                      )
+                    ),
                   }),
                 ],
-                typeAnnotation: returnType,
-              }),
-            ]),
-          })
+                returnType
+              ),
+            ])
+          )
         );
       }),
 
@@ -214,22 +214,20 @@ const out = [
           b.identifier("Builders"),
           b.tsInterfaceBody([
             ...builderTypeNames.map(typeName =>
-              b.tsPropertySignature.from({
-                key: b.identifier(getBuilderName(typeName)),
-                typeAnnotation: b.tsTypeAnnotation(
-                  b.tsTypeReference(b.identifier(`${typeName}Builder`))
-                ),
-              })
+              b.tsPropertySignature(
+                b.identifier(getBuilderName(typeName)),
+                b.tsTypeAnnotation(b.tsTypeReference(b.identifier(`${typeName}Builder`)))
+              )
             ),
-            b.tsIndexSignature.from({
-              parameters: [
+            b.tsIndexSignature(
+              [
                 b.identifier.from({
                   name: "builderName",
                   typeAnnotation: b.tsTypeAnnotation(b.tsStringKeyword()),
                 }),
               ],
-              typeAnnotation: b.tsTypeAnnotation(b.tsAnyKeyword()),
-            }),
+              b.tsTypeAnnotation(b.tsAnyKeyword()),
+            ),
           ])
         )
       ),
@@ -394,11 +392,11 @@ function getTSTypeAnnotation(type: Type<any>): any {
 }
 
 function getTSPropertySignature(field: Field<any>): any {
-  return b.tsPropertySignature.from({
-    key: b.identifier(field.name),
-    typeAnnotation: b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
-    optional: field.defaultFn != null || field.hidden,
-  });
+  return b.tsPropertySignature(
+    b.identifier(field.name),
+    b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
+    field.defaultFn != null || field.hidden
+  );
 }
 
 function assertNever(x: never): never {

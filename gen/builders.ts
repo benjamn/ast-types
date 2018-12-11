@@ -3040,7 +3040,10 @@ export interface TSTypeOperatorBuilder {
 }
 
 export interface TSIndexSignatureBuilder {
-  (parameters: K.IdentifierKind[]): N.TSIndexSignature;
+  (
+    parameters: K.IdentifierKind[],
+    typeAnnotation?: K.TSTypeAnnotationKind | null
+  ): N.TSIndexSignature;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -3053,7 +3056,11 @@ export interface TSIndexSignatureBuilder {
 }
 
 export interface TSPropertySignatureBuilder {
-  (key: K.ExpressionKind): N.TSPropertySignature;
+  (
+    key: K.ExpressionKind,
+    typeAnnotation?: K.TSTypeAnnotationKind | null,
+    optional?: boolean
+  ): N.TSPropertySignature;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -3069,7 +3076,11 @@ export interface TSPropertySignatureBuilder {
 }
 
 export interface TSMethodSignatureBuilder {
-  (key: K.ExpressionKind): N.TSMethodSignature;
+  (
+    key: K.ExpressionKind,
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    typeAnnotation?: K.TSTypeAnnotationKind | null
+  ): N.TSMethodSignature;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -3100,7 +3111,10 @@ export interface TSTypePredicateBuilder {
 }
 
 export interface TSCallSignatureDeclarationBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSCallSignatureDeclaration;
+  (
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    typeAnnotation?: K.TSTypeAnnotationKind | null
+  ): N.TSCallSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -3113,7 +3127,10 @@ export interface TSCallSignatureDeclarationBuilder {
 }
 
 export interface TSConstructSignatureDeclarationBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSConstructSignatureDeclaration;
+  (
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    typeAnnotation?: K.TSTypeAnnotationKind | null
+  ): N.TSConstructSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -3195,7 +3212,7 @@ export interface TSEnumDeclarationBuilder {
 }
 
 export interface TSTypeAliasDeclarationBuilder {
-  (id: K.IdentifierKind): N.TSTypeAliasDeclaration;
+  (id: K.IdentifierKind, typeAnnotation: K.TSTypeKind): N.TSTypeAliasDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
