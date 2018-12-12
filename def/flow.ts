@@ -278,7 +278,9 @@ export default function (fork: Fork) {
     .bases("Node")
     .build("id")
     .field("id", def("Identifier"))
-    .field("typeParameters", or(def("TypeParameterInstantiation"), null));
+    .field("typeParameters",
+           or(def("TypeParameterInstantiation"), null),
+           defaults["null"]);
 
   def("TypeAlias")
     .bases("Declaration")

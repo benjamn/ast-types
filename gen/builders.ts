@@ -384,12 +384,12 @@ export interface FunctionExpressionBuilder {
 }
 
 export interface VariableDeclaratorBuilder {
-  (id: K.PatternKind, init: K.ExpressionKind | null): N.VariableDeclarator;
+  (id: K.PatternKind, init?: K.ExpressionKind | null): N.VariableDeclarator;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       id: K.PatternKind,
-      init: K.ExpressionKind | null,
+      init?: K.ExpressionKind | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.VariableDeclarator;
@@ -1860,7 +1860,7 @@ export interface InterfaceExtendsBuilder {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
-      typeParameters: K.TypeParameterInstantiationKind | null
+      typeParameters?: K.TypeParameterInstantiationKind | null
     }
   ): N.InterfaceExtends;
 }

@@ -198,7 +198,7 @@ export default function (fork: Fork) {
         .bases("Node")
         .build("id", "init")
         .field("id", def("Pattern"))
-        .field("init", or(def("Expression"), null));
+        .field("init", or(def("Expression"), null), defaults["null"]);
 
     // TODO Are all Expressions really Patterns?
     def("Expression").bases("Node", "Pattern");

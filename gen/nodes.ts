@@ -203,7 +203,7 @@ export interface FunctionExpression extends Omit<Function, "type">, Omit<Express
 export interface VariableDeclarator extends Omit<Node, "type"> {
   type: "VariableDeclarator";
   id: K.PatternKind;
-  init: K.ExpressionKind | null;
+  init?: K.ExpressionKind | null;
 }
 
 export interface ThisExpression extends Omit<Expression, "type"> {
@@ -941,7 +941,7 @@ export interface InterfaceTypeAnnotation extends Omit<FlowType, "type"> {
 export interface InterfaceExtends extends Omit<Node, "type"> {
   type: "InterfaceExtends";
   id: K.IdentifierKind;
-  typeParameters: K.TypeParameterInstantiationKind | null;
+  typeParameters?: K.TypeParameterInstantiationKind | null;
 }
 
 export interface InterfaceDeclaration extends Omit<Declaration, "type"> {
