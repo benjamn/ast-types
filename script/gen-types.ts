@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import astTypes, { Type, Field } from "../main";
+import astTypes, { Type } from "../main";
 
 const Op = Object.prototype;
 const hasOwn = Op.hasOwnProperty;
@@ -91,7 +91,10 @@ const out = [
                   );
                 }
 
-                return getTSPropertySignature(field);
+                return b.tsPropertySignature(
+                  b.identifier(field.name),
+                  b.tsTypeAnnotation(getTSTypeAnnotation(field.type))
+                );
               })
             ),
           })
@@ -192,7 +195,12 @@ const out = [
                           .filter(fieldName => fieldName !== "type")
                           .sort() // Sort field name strings lexicographically.
                           .map(fieldName => {
-                            return getTSPropertySignature(typeDef.allFields[fieldName]);
+                            const field = typeDef.allFields[fieldName];
+                            return b.tsPropertySignature(
+                              b.identifier(field.name),
+                              b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
+                              field.defaultFn != null || field.hidden
+                            );
                           })
                       )
                     ),
@@ -354,7 +362,14 @@ function getTSTypeAnnotation(type: Type<any>): any {
     }
 
     case "ObjectType": {
-      return b.tsTypeLiteral(type.fields.map(field => getTSPropertySignature(field)));
+      return b.tsTypeLiteral(
+        type.fields.map(field =>
+          b.tsPropertySignature(
+            b.identifier(field.name),
+            b.tsTypeAnnotation(getTSTypeAnnotation(field.type))
+          )
+        )
+      );
     }
 
     case "OrType": {
@@ -385,14 +400,6 @@ function getTSTypeAnnotation(type: Type<any>): any {
     default:
       return assertNever(type);
   }
-}
-
-function getTSPropertySignature(field: Field<any>) {
-  return b.tsPropertySignature(
-    b.identifier(field.name),
-    b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
-    field.defaultFn != null || field.hidden
-  );
 }
 
 function assertNever(x: never): never {
