@@ -434,7 +434,7 @@ export interface ClassProperty extends Omit<Declaration, "type"> {
 
 export interface ClassBody extends Omit<Declaration, "type"> {
   type: "ClassBody";
-  body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
+  body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
 }
 
 export interface ClassDeclaration extends Omit<Declaration, "type"> {
@@ -1216,7 +1216,7 @@ export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "
   body: K.BlockStatementKind;
   computed?: boolean;
   static?: boolean | null;
-  abstract?: boolean;
+  abstract?: boolean | null;
   access?: "public" | "private" | "protected" | null;
   accessibility?: "public" | "private" | "protected" | null;
   decorators?: K.DecoratorKind[] | null;
@@ -1230,7 +1230,7 @@ export interface ClassPrivateMethod extends Omit<Function, "type" | "body"> {
   body: K.BlockStatementKind;
   computed?: boolean;
   static?: boolean | null;
-  abstract?: boolean;
+  abstract?: boolean | null;
   access?: "public" | "private" | "protected" | null;
   accessibility?: "public" | "private" | "protected" | null;
   decorators?: K.DecoratorKind[] | null;

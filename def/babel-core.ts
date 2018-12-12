@@ -242,7 +242,9 @@ export default function (fork: Fork) {
     def("VariableDeclarator"),
     def("ClassPropertyDefinition"),
     def("ClassProperty"),
-    def("ClassMethod")
+    def("ClassPrivateProperty"),
+    def("ClassMethod"),
+    def("ClassPrivateMethod"),
   );
 
   // MethodDefinition -> ClassMethod

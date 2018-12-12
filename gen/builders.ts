@@ -908,11 +908,11 @@ export interface ClassPropertyBuilder {
 
 export interface ClassBodyBuilder {
   (
-    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
+    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
   ): N.ClassBody;
   from(
     params: {
-      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[],
+      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[],
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null
     }
@@ -2523,7 +2523,7 @@ export interface ClassMethodBuilder {
   ): N.ClassMethod;
   from(
     params: {
-      abstract?: boolean,
+      abstract?: boolean | null,
       access?: "public" | "private" | "protected" | null,
       accessibility?: "public" | "private" | "protected" | null,
       async?: boolean,
@@ -2559,7 +2559,7 @@ export interface ClassPrivateMethodBuilder {
   ): N.ClassPrivateMethod;
   from(
     params: {
-      abstract?: boolean,
+      abstract?: boolean | null,
       access?: "public" | "private" | "protected" | null,
       accessibility?: "public" | "private" | "protected" | null,
       async?: boolean,

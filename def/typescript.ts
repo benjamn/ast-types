@@ -449,7 +449,9 @@ export default function (fork: Fork) {
       def("VariableDeclarator"),
       def("ClassPropertyDefinition"),
       def("ClassProperty"),
+      def("ClassPrivateProperty"),
       def("ClassMethod"),
+      def("ClassPrivateMethod"),
       // Just need to add these types:
       def("TSDeclareMethod"),
       TSTypeMember
