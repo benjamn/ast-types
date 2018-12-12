@@ -1855,12 +1855,15 @@ export interface ClassPrivatePropertyBuilder {
 }
 
 export interface InterfaceTypeAnnotationBuilder {
-  (body: K.ObjectTypeAnnotationKind, extendsParam: K.InterfaceExtendsKind[]): N.InterfaceTypeAnnotation;
+  (
+    body: K.ObjectTypeAnnotationKind,
+    extendsParam?: K.InterfaceExtendsKind[] | null
+  ): N.InterfaceTypeAnnotation;
   from(
     params: {
       body: K.ObjectTypeAnnotationKind,
       comments?: K.CommentKind[] | null,
-      extends: K.InterfaceExtendsKind[],
+      extends?: K.InterfaceExtendsKind[] | null,
       loc?: K.SourceLocationKind | null
     }
   ): N.InterfaceTypeAnnotation;
@@ -2511,15 +2514,18 @@ export interface ObjectMethodBuilder {
 
 export interface ClassMethodBuilder {
   (
-    kind: "get" | "set" | "method" | "constructor",
+    kind: "get" | "set" | "method" | "constructor" | undefined,
     key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
     params: K.PatternKind[],
     body: K.BlockStatementKind,
     computed?: boolean,
-    staticParam?: boolean
+    staticParam?: boolean | null
   ): N.ClassMethod;
   from(
     params: {
+      abstract?: boolean,
+      access?: "public" | "private" | "protected" | null,
+      accessibility?: "public" | "private" | "protected" | null,
       async?: boolean,
       body: K.BlockStatementKind,
       comments?: K.CommentKind[] | null,
@@ -2530,12 +2536,13 @@ export interface ClassMethodBuilder {
       generator?: boolean,
       id?: K.IdentifierKind | null,
       key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-      kind: "get" | "set" | "method" | "constructor",
+      kind?: "get" | "set" | "method" | "constructor",
       loc?: K.SourceLocationKind | null,
+      optional?: boolean | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      static?: boolean,
+      static?: boolean | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ClassMethod;
@@ -2543,29 +2550,35 @@ export interface ClassMethodBuilder {
 
 export interface ClassPrivateMethodBuilder {
   (
-    kind: "method" | "get" | "set",
+    kind: "get" | "set" | "method" | "constructor" | undefined,
     key: K.PrivateNameKind,
     params: K.PatternKind[],
-    body: K.BlockStatementKind | K.ExpressionKind,
-    staticParam?: boolean
+    body: K.BlockStatementKind,
+    computed?: boolean,
+    staticParam?: boolean | null
   ): N.ClassPrivateMethod;
   from(
     params: {
+      abstract?: boolean,
+      access?: "public" | "private" | "protected" | null,
+      accessibility?: "public" | "private" | "protected" | null,
       async?: boolean,
-      body: K.BlockStatementKind | K.ExpressionKind,
+      body: K.BlockStatementKind,
       comments?: K.CommentKind[] | null,
-      decorators?: K.DecoratorKind[] | undefined,
+      computed?: boolean,
+      decorators?: K.DecoratorKind[] | null,
       defaults?: (K.ExpressionKind | null)[],
       expression?: boolean,
       generator?: boolean,
       id?: K.IdentifierKind | null,
       key: K.PrivateNameKind,
-      kind: "method" | "get" | "set",
+      kind?: "get" | "set" | "method" | "constructor",
       loc?: K.SourceLocationKind | null,
+      optional?: boolean | null,
       params: K.PatternKind[],
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      static?: boolean,
+      static?: boolean | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ClassPrivateMethod;

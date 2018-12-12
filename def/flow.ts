@@ -263,7 +263,7 @@ export default function (fork: Fork) {
     .bases("FlowType")
     .build("body", "extends")
     .field("body", def("ObjectTypeAnnotation"))
-    .field("extends", [def("InterfaceExtends")]);
+    .field("extends", or([def("InterfaceExtends")], null), defaults["null"]);
 
   def("InterfaceDeclaration")
     .bases("Declaration")

@@ -254,25 +254,27 @@ export default function (fork: Fork) {
   def("ClassMethod")
     .bases("Declaration", "Function")
     .build("kind", "key", "params", "body", "computed", "static")
-    .field("kind", or("get", "set", "method", "constructor"))
-    .field("key", or(def("Literal"), def("Identifier"), def("Expression")))
-    .field("params", [def("Pattern")])
-    .field("body", def("BlockStatement"))
-    .field("computed", Boolean, defaults["false"])
-    .field("static", Boolean, defaults["false"])
-    .field("decorators",
-           or([def("Decorator")], null),
-           defaults["null"]);
+    .field("key", or(def("Literal"), def("Identifier"), def("Expression")));
 
   def("ClassPrivateMethod")
     .bases("Function")
-    .build("kind", "key", "params", "body", "static")
-    .field("key", def("PrivateName"))
-    .field("kind", or("method", "get", "set"))
-    .field("static", Boolean, defaults["false"])
-    .field("decorators",
-           or([def("Decorator")], void 0),
-           defaults["undefined"]);
+    .build("kind", "key", "params", "body", "computed", "static")
+    .field("key", def("PrivateName"));
+
+  ["ClassMethod",
+   "ClassPrivateMethod",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("kind", or("get", "set", "method", "constructor"), () => "method")
+      .field("body", def("BlockStatement"))
+      .field("computed", Boolean, defaults["false"])
+      .field("static", or(Boolean, null), defaults["null"])
+      .field("abstract", or(Boolean, null), defaults["null"])
+      .field("access", or("public", "private", "protected", null), defaults["null"])
+      .field("accessibility", or("public", "private", "protected", null), defaults["null"])
+      .field("decorators", or([def("Decorator")], null), defaults["null"])
+      .field("optional", or(Boolean, null), defaults["null"]);
+  });
 
   def("PrivateName")
     .bases("Expression", "Pattern")

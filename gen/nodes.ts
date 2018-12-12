@@ -940,7 +940,7 @@ export interface ClassPrivateProperty extends Omit<ClassProperty, "type" | "key"
 export interface InterfaceTypeAnnotation extends Omit<FlowType, "type"> {
   type: "InterfaceTypeAnnotation";
   body: K.ObjectTypeAnnotationKind;
-  extends: K.InterfaceExtendsKind[];
+  extends?: K.InterfaceExtendsKind[] | null;
 }
 
 export interface InterfaceExtends extends Omit<Node, "type"> {
@@ -1209,23 +1209,32 @@ export interface ObjectMethod extends Omit<Node, "type">, Omit<Function, "type" 
   decorators?: K.DecoratorKind[] | null;
 }
 
-export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "type" | "params" | "body"> {
+export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "type" | "body"> {
   type: "ClassMethod";
-  kind: "get" | "set" | "method" | "constructor";
   key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
-  params: K.PatternKind[];
+  kind?: "get" | "set" | "method" | "constructor";
   body: K.BlockStatementKind;
   computed?: boolean;
-  static?: boolean;
+  static?: boolean | null;
+  abstract?: boolean;
+  access?: "public" | "private" | "protected" | null;
+  accessibility?: "public" | "private" | "protected" | null;
   decorators?: K.DecoratorKind[] | null;
+  optional?: boolean | null;
 }
 
-export interface ClassPrivateMethod extends Omit<Function, "type"> {
+export interface ClassPrivateMethod extends Omit<Function, "type" | "body"> {
   type: "ClassPrivateMethod";
   key: K.PrivateNameKind;
-  kind: "method" | "get" | "set";
-  static?: boolean;
-  decorators?: K.DecoratorKind[] | undefined;
+  kind?: "get" | "set" | "method" | "constructor";
+  body: K.BlockStatementKind;
+  computed?: boolean;
+  static?: boolean | null;
+  abstract?: boolean;
+  access?: "public" | "private" | "protected" | null;
+  accessibility?: "public" | "private" | "protected" | null;
+  decorators?: K.DecoratorKind[] | null;
+  optional?: boolean | null;
 }
 
 export interface PrivateName extends Omit<Expression, "type">, Omit<Pattern, "type"> {
