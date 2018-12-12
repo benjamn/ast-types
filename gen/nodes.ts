@@ -932,11 +932,6 @@ export interface TypeParameter extends Omit<FlowType, "type"> {
   bound?: K.TypeAnnotationKind | null;
 }
 
-export interface ClassPrivateProperty extends Omit<ClassProperty, "type" | "key"> {
-  type: "ClassPrivateProperty";
-  key: K.IdentifierKind;
-}
-
 export interface InterfaceTypeAnnotation extends Omit<FlowType, "type"> {
   type: "InterfaceTypeAnnotation";
   body: K.ObjectTypeAnnotationKind;
@@ -1207,6 +1202,12 @@ export interface ObjectMethod extends Omit<Node, "type">, Omit<Function, "type" 
   async?: boolean;
   accessibility?: K.LiteralKind | null;
   decorators?: K.DecoratorKind[] | null;
+}
+
+export interface ClassPrivateProperty extends Omit<ClassProperty, "type" | "key" | "value"> {
+  type: "ClassPrivateProperty";
+  key: K.PrivateNameKind;
+  value?: K.ExpressionKind | null;
 }
 
 export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "type" | "body"> {

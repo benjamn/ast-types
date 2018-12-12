@@ -278,6 +278,12 @@ export default function (fork: Fork) {
       .field("optional", or(Boolean, null), defaults["null"]);
   });
 
+  def("ClassPrivateProperty")
+    .bases("ClassProperty")
+    .build("key", "value")
+    .field("key", def("PrivateName"))
+    .field("value", or(def("Expression"), null), defaults["null"]);
+
   def("PrivateName")
     .bases("Expression", "Pattern")
     .build("id")

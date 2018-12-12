@@ -1838,22 +1838,6 @@ export interface TypeParameterBuilder {
   ): N.TypeParameter;
 }
 
-export interface ClassPrivatePropertyBuilder {
-  (key: K.IdentifierKind): N.ClassPrivateProperty;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      key: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null,
-      static?: boolean,
-      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      value: K.ExpressionKind | null,
-      variance?: K.VarianceKind | "plus" | "minus" | null
-    }
-  ): N.ClassPrivateProperty;
-}
-
 export interface InterfaceTypeAnnotationBuilder {
   (
     body: K.ObjectTypeAnnotationKind,
@@ -2510,6 +2494,22 @@ export interface ObjectMethodBuilder {
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): N.ObjectMethod;
+}
+
+export interface ClassPrivatePropertyBuilder {
+  (key: K.PrivateNameKind, value?: K.ExpressionKind | null): N.ClassPrivateProperty;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.PrivateNameKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      value?: K.ExpressionKind | null,
+      variance?: K.VarianceKind | "plus" | "minus" | null
+    }
+  ): N.ClassPrivateProperty;
 }
 
 export interface ClassMethodBuilder {
@@ -3534,7 +3534,6 @@ export interface Builders {
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
   typeofTypeAnnotation: TypeofTypeAnnotationBuilder;
   typeParameter: TypeParameterBuilder;
-  classPrivateProperty: ClassPrivatePropertyBuilder;
   interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
   interfaceDeclaration: InterfaceDeclarationBuilder;
@@ -3583,6 +3582,7 @@ export interface Builders {
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
   objectMethod: ObjectMethodBuilder;
+  classPrivateProperty: ClassPrivatePropertyBuilder;
   classMethod: ClassMethodBuilder;
   classPrivateMethod: ClassPrivateMethodBuilder;
   privateName: PrivateNameBuilder;

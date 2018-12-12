@@ -169,7 +169,6 @@ export interface NamedTypes {
   IntersectionTypeAnnotation: Type<N.IntersectionTypeAnnotation>;
   TypeofTypeAnnotation: Type<N.TypeofTypeAnnotation>;
   TypeParameter: Type<N.TypeParameter>;
-  ClassPrivateProperty: Type<N.ClassPrivateProperty>;
   InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
   InterfaceExtends: Type<N.InterfaceExtends>;
   InterfaceDeclaration: Type<N.InterfaceDeclaration>;
@@ -219,6 +218,7 @@ export interface NamedTypes {
   BooleanLiteral: Type<N.BooleanLiteral>;
   RegExpLiteral: Type<N.RegExpLiteral>;
   ObjectMethod: Type<N.ObjectMethod>;
+  ClassPrivateProperty: Type<N.ClassPrivateProperty>;
   ClassMethod: Type<N.ClassMethod>;
   ClassPrivateMethod: Type<N.ClassPrivateMethod>;
   PrivateName: Type<N.PrivateName>;

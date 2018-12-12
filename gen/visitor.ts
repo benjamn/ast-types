@@ -170,7 +170,6 @@ export interface Visitor<M = {}> {
   visitIntersectionTypeAnnotation?(this: Context & M, path: NodePath<N.IntersectionTypeAnnotation>): any;
   visitTypeofTypeAnnotation?(this: Context & M, path: NodePath<N.TypeofTypeAnnotation>): any;
   visitTypeParameter?(this: Context & M, path: NodePath<N.TypeParameter>): any;
-  visitClassPrivateProperty?(this: Context & M, path: NodePath<N.ClassPrivateProperty>): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath<N.InterfaceTypeAnnotation>): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath<N.InterfaceExtends>): any;
   visitInterfaceDeclaration?(this: Context & M, path: NodePath<N.InterfaceDeclaration>): any;
@@ -220,6 +219,7 @@ export interface Visitor<M = {}> {
   visitBooleanLiteral?(this: Context & M, path: NodePath<N.BooleanLiteral>): any;
   visitRegExpLiteral?(this: Context & M, path: NodePath<N.RegExpLiteral>): any;
   visitObjectMethod?(this: Context & M, path: NodePath<N.ObjectMethod>): any;
+  visitClassPrivateProperty?(this: Context & M, path: NodePath<N.ClassPrivateProperty>): any;
   visitClassMethod?(this: Context & M, path: NodePath<N.ClassMethod>): any;
   visitClassPrivateMethod?(this: Context & M, path: NodePath<N.ClassPrivateMethod>): any;
   visitPrivateName?(this: Context & M, path: NodePath<N.PrivateName>): any;
