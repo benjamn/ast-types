@@ -260,7 +260,7 @@ export default function (fork: Fork) {
 
   def("ClassPrivateMethod")
     .bases("Declaration", "Function")
-    .build("kind", "key", "params", "body", "computed", "static")
+    .build("key", "params", "body", "kind", "computed", "static")
     .field("key", def("PrivateName"));
 
   ["ClassMethod",

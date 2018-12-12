@@ -2550,10 +2550,10 @@ export interface ClassMethodBuilder {
 
 export interface ClassPrivateMethodBuilder {
   (
-    kind: "get" | "set" | "method" | "constructor" | undefined,
     key: K.PrivateNameKind,
     params: K.PatternKind[],
     body: K.BlockStatementKind,
+    kind?: "get" | "set" | "method" | "constructor",
     computed?: boolean,
     staticParam?: boolean | null
   ): N.ClassPrivateMethod;

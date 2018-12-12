@@ -1223,7 +1223,7 @@ export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "
   optional?: boolean | null;
 }
 
-export interface ClassPrivateMethod extends Omit<Function, "type" | "body"> {
+export interface ClassPrivateMethod extends Omit<Declaration, "type">, Omit<Function, "type" | "body"> {
   type: "ClassPrivateMethod";
   key: K.PrivateNameKind;
   kind?: "get" | "set" | "method" | "constructor";
