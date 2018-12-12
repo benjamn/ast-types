@@ -169,7 +169,6 @@ export interface Visitor<M = {}> {
   visitUnionTypeAnnotation?(this: Context & M, path: NodePath<N.UnionTypeAnnotation>): any;
   visitIntersectionTypeAnnotation?(this: Context & M, path: NodePath<N.IntersectionTypeAnnotation>): any;
   visitTypeofTypeAnnotation?(this: Context & M, path: NodePath<N.TypeofTypeAnnotation>): any;
-  visitType?(this: Context & M, path: NodePath<N.Type>): any;
   visitTypeParameter?(this: Context & M, path: NodePath<N.TypeParameter>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<N.ClassPrivateProperty>): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath<N.InterfaceTypeAnnotation>): any;

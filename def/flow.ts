@@ -216,11 +216,12 @@ export default function (fork: Fork) {
 
   def("ObjectTypeInternalSlot")
     .bases("Node")
-    .build("id", "static", "method")
+    .build("id", "value", "optional", "static", "method")
     .field("id", def("Identifier"))
+    .field("value", def("FlowType"))
+    .field("optional", Boolean)
     .field("static", Boolean)
-    .field("method", Boolean)
-    .field("value", def("Type"));
+    .field("method", Boolean);
 
   def("TypeParameterDeclaration")
     .bases("Node")

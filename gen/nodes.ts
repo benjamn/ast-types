@@ -881,9 +881,10 @@ export interface ObjectTypeCallProperty extends Omit<Node, "type"> {
 export interface ObjectTypeInternalSlot extends Omit<Node, "type"> {
   type: "ObjectTypeInternalSlot";
   id: K.IdentifierKind;
+  value: K.FlowTypeKind;
+  optional: boolean;
   static: boolean;
   method: boolean;
-  value: K.TypeKind;
 }
 
 export interface Variance extends Omit<Node, "type"> {
@@ -923,8 +924,6 @@ export interface TypeofTypeAnnotation extends Omit<FlowType, "type"> {
   type: "TypeofTypeAnnotation";
   argument: K.FlowTypeKind;
 }
-
-export interface Type {}
 
 export interface TypeParameter extends Omit<FlowType, "type"> {
   type: "TypeParameter";

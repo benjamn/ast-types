@@ -165,7 +165,6 @@ export type MemberTypeAnnotationKind = N.MemberTypeAnnotation;
 export type UnionTypeAnnotationKind = N.UnionTypeAnnotation;
 export type IntersectionTypeAnnotationKind = N.IntersectionTypeAnnotation;
 export type TypeofTypeAnnotationKind = N.TypeofTypeAnnotation;
-export type TypeKind = N.Type;
 export type TypeParameterKind = N.TypeParameter;
 export type ClassPrivatePropertyKind = N.ClassPrivateProperty;
 export type InterfaceTypeAnnotationKind = N.InterfaceTypeAnnotation;

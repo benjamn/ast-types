@@ -1712,15 +1712,22 @@ export interface ObjectTypeCallPropertyBuilder {
 }
 
 export interface ObjectTypeInternalSlotBuilder {
-  (id: K.IdentifierKind, staticParam: boolean, method: boolean): N.ObjectTypeInternalSlot;
+  (
+    id: K.IdentifierKind,
+    value: K.FlowTypeKind,
+    optional: boolean,
+    staticParam: boolean,
+    method: boolean
+  ): N.ObjectTypeInternalSlot;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       method: boolean,
+      optional: boolean,
       static: boolean,
-      value: K.TypeKind
+      value: K.FlowTypeKind
     }
   ): N.ObjectTypeInternalSlot;
 }

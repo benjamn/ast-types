@@ -168,7 +168,6 @@ export interface NamedTypes {
   UnionTypeAnnotation: Type<N.UnionTypeAnnotation>;
   IntersectionTypeAnnotation: Type<N.IntersectionTypeAnnotation>;
   TypeofTypeAnnotation: Type<N.TypeofTypeAnnotation>;
-  Type: Type<N.Type>;
   TypeParameter: Type<N.TypeParameter>;
   ClassPrivateProperty: Type<N.ClassPrivateProperty>;
   InterfaceTypeAnnotation: Type<N.InterfaceTypeAnnotation>;
