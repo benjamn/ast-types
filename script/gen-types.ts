@@ -56,15 +56,16 @@ const out = [
       KINDS_IMPORT,
       ...Object.keys(astTypes.namedTypes).map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
+        const fieldNames = Object.keys({ type: true, ...typeDef.ownFields })
+          .filter(fieldName => !!typeDef.allFields[fieldName]);
 
         return b.exportNamedDeclaration(
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
             extends: typeDef.baseNames.map(baseName => {
               const baseDef = astTypes.Type.def(baseName);
-              const commonFieldNames = Object.keys(typeDef.ownFields).filter(
-                fieldName => !!baseDef.allFields[fieldName]
-              );
+              const commonFieldNames = fieldNames
+                .filter(fieldName => !!baseDef.allFields[fieldName]);
 
               if (commonFieldNames.length > 0) {
                 return b.tsExpressionWithTypeArguments(
@@ -72,7 +73,9 @@ const out = [
                   b.tsTypeParameterInstantiation([
                     b.tsTypeReference(b.identifier(baseName)),
                     b.tsUnionType(
-                      commonFieldNames.map(fieldName => b.tsLiteralType(b.stringLiteral(fieldName)))
+                      commonFieldNames.map(fieldName => 
+                        b.tsLiteralType(b.stringLiteral(fieldName))
+                      )
                     ),
                   ])
                 );
@@ -81,13 +84,13 @@ const out = [
               }
             }),
             body: b.tsInterfaceBody(
-              Object.keys(typeDef.ownFields).map(fieldName => {
+              fieldNames.map(fieldName => {
                 const field = typeDef.allFields[fieldName];
 
-                if (field.name === "type" && field.defaultFn) {
+                if (field.name === "type") {
                   return b.tsPropertySignature(
                     b.identifier("type"),
-                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
+                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName)))
                   );
                 }
 
