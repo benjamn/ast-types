@@ -259,7 +259,7 @@ export default function (fork: Fork) {
     .field("key", or(def("Literal"), def("Identifier"), def("Expression")));
 
   def("ClassPrivateMethod")
-    .bases("Function")
+    .bases("Declaration", "Function")
     .build("kind", "key", "params", "body", "computed", "static")
     .field("key", def("PrivateName"));
 
