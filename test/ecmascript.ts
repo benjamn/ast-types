@@ -274,8 +274,8 @@ describe("whole-program validation", function() {
 });
 
 describe("esprima Syntax types", function() {
-  var def = types.Type.def;
-  var typeNames: any = {};
+  const { def, hasDef } = types.Type;
+  const typeNames: any = {};
 
   function addTypeName(name: any) {
     typeNames[name] = name;
@@ -288,13 +288,13 @@ describe("esprima Syntax types", function() {
   it("should all be buildable", function() {
     Object.keys(typeNames).forEach(function(name) {
       assert.ok(hasOwn.call(n, name), name);
-      assert.strictEqual(def(name).buildable, true, name);
+      assert.strictEqual(hasDef(name) && def(name).buildable, true, name);
     });
   });
 
   it("builders for subtypes of Expression should have equivalent ExpressionStatement builders", function() {
     Object.keys(typeNames).forEach(function(name) {
-      if (def(name).buildable &&
+      if (hasDef(name) && def(name).buildable &&
           def("Expression").isSupertypeOf(def(name))) {
         var statementBuilderName = rawTypes.getStatementBuilderName(name);
         assert.ok(b[statementBuilderName], name + ":" +statementBuilderName);

@@ -380,6 +380,10 @@ export default function typesPlugin(_fork: Fork) {
         ? defCache[typeName]
         : defCache[typeName] = new DefImpl(typeName);
     },
+
+    hasDef(typeName: string) {
+      return hasOwn.call(defCache, typeName);
+    }
   };
 
   var builtInCtorFns: Function[] = [];
