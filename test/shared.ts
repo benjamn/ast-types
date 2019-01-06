@@ -43,3 +43,14 @@ export function babylonParse(source: any, options?: any) {
 }
 
 export { esprimaParse };
+
+// Helper for determining if we should care that a given type is not defined yet.
+// TODO Periodically revisit this as proposals advance.
+export function isEarlyStageProposalType(typeName: string) {
+  if (/^Pipeline/.test(typeName)) {
+    // The pipeline operator syntax is still at Stage 1:
+    // https://github.com/tc39/proposals#stage-1
+    return true;
+  }
+  return false;
+}

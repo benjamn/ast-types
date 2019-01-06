@@ -6,7 +6,11 @@ import { Literal } from "estree";
 import * as babelTypes from "@babel/types";
 import fork from "../fork";
 import types from "../main";
-import * as shared from "./shared";
+import {
+  babylonParse,
+  validateECMAScript,
+  isEarlyStageProposalType,
+} from "./shared";
 import typesPlugin from "../lib/types";
 import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
@@ -264,13 +268,13 @@ describe("whole-program validation", function() {
   this.timeout(20000);
 
   // TODO(brieb): do we need these?
-  // shared.validateECMAScript("main.js");
-  // shared.validateECMAScript("lib/shared.js");
-  // shared.validateECMAScript("def/core.js");
-  // shared.validateECMAScript("lib/types.js");
-  // shared.validateECMAScript("test/run.js");
-  shared.validateECMAScript("test/data/backbone.js");
-  shared.validateECMAScript("test/data/jquery-1.9.1.js");
+  // validateECMAScript("main.js");
+  // validateECMAScript("lib/shared.js");
+  // validateECMAScript("def/core.js");
+  // validateECMAScript("lib/types.js");
+  // validateECMAScript("test/run.js");
+  validateECMAScript("test/data/backbone.js");
+  validateECMAScript("test/data/jquery-1.9.1.js");
 });
 
 describe("esprima Syntax types", function() {
@@ -278,6 +282,9 @@ describe("esprima Syntax types", function() {
   const typeNames: any = {};
 
   function addTypeName(name: any) {
+    if (isEarlyStageProposalType(name)) {
+      return;
+    }
     typeNames[name] = name;
   }
 
@@ -1175,7 +1182,7 @@ describe("scope methods", function () {
   });
 
   it("getBindings should work for import statements (acorn)", function() {
-    var ast = shared.babylonParse([
+    var ast = babylonParse([
       "import {x, y as z} from 'xy';",
       "import xyDefault from 'xy';",
       "import * as xyNamespace from 'xy';"
@@ -2276,7 +2283,7 @@ describe("BigIntLiteral nodes", function () {
     }
 
     function parseAndCheck(code: any) {
-      var program = shared.babylonParse(code);
+      var program = babylonParse(code);
       var exp = program.body[0].expression;
       if (n.UnaryExpression.check(exp)) {
         checkExp(exp.argument);
