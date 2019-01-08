@@ -27,6 +27,8 @@ const KINDS_IMPORT = b.importDeclaration(
   b.stringLiteral("./kinds")
 );
 
+const NODE_UNION_ID = b.identifier("ASTNode");
+
 const supertypeToSubtypes = getSupertypeToSubtypes();
 const builderTypeNames = getBuilderTypeNames();
 
@@ -86,11 +88,23 @@ const out = [
               ownFieldNames.map(fieldName => {
                 const field = typeDef.allFields[fieldName];
 
-                if (field.name === "type" && field.defaultFn) {
-                  return b.tsPropertySignature(
-                    b.identifier("type"),
-                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
-                  );
+                if (field.name === "type") {
+                  if (field.defaultFn) {
+                    return b.tsPropertySignature(
+                      b.identifier("type"),
+                      b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
+                    );
+                  } else {
+                    return b.tsPropertySignature(
+                      b.identifier("type"),
+                      b.tsTypeAnnotation(
+                        b.tsIndexedAccessType(
+                          b.tsTypeReference(NODE_UNION_ID),
+                          b.tsLiteralType(b.stringLiteral("type"))
+                        )
+                      )
+                    );
+                  }
                 }
 
                 return b.tsPropertySignature(
@@ -104,7 +118,7 @@ const out = [
       }),
       b.exportNamedDeclaration(
         b.tsTypeAliasDeclaration(
-          b.identifier("ASTNode"),
+          NODE_UNION_ID,
           b.tsUnionType(
             Object.keys(astTypes.namedTypes)
               .filter(typeName => astTypes.Type.def(typeName).buildable)

@@ -14,7 +14,7 @@ export interface SourceLocation {
 }
 
 export interface Node extends Printable {
-  type: string;
+  type: ASTNode["type"];
   comments: K.CommentKind[] | null;
 }
 
