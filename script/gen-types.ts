@@ -102,6 +102,16 @@ const out = [
           })
         );
       }),
+      b.exportNamedDeclaration(
+        b.tsTypeAliasDeclaration(
+          b.identifier("ASTNode"),
+          b.tsUnionType(
+            Object.keys(astTypes.namedTypes)
+              .filter(typeName => astTypes.Type.def(typeName).buildable)
+              .map(typeName => b.tsTypeReference(b.identifier(typeName))),
+          )
+        )
+      )
     ]),
   },
   {
