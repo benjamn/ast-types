@@ -35,15 +35,25 @@ const out = [
     file: "kinds.ts",
     ast: moduleWithBody([
       NODES_IMPORT,
-      ...Object.keys(supertypeToSubtypes).map(baseName => {
+      ...Object.keys(supertypeToSubtypes).map(supertype => {
+        const buildableSubtypes = getBuildableSubtypes(supertype);
+        if (buildableSubtypes.length === 0) {
+          // Some of the XML* types don't have buildable subtypes,
+          // so fall back to using the supertype's node type
+          return b.exportNamedDeclaration(
+            b.tsTypeAliasDeclaration(
+              b.identifier(`${supertype}Kind`),
+              b.tsTypeReference(b.tsQualifiedName(NODES_ID, b.identifier(supertype)))
+            )
+          );
+        }
+
         return b.exportNamedDeclaration(
           b.tsTypeAliasDeclaration(
-            b.identifier(`${baseName}Kind`),
-            b.tsUnionType(
-              supertypeToSubtypes[baseName].map(subtypeName =>
-                b.tsTypeReference(b.tsQualifiedName(NODES_ID, b.identifier(subtypeName)))
-              )
-            )
+            b.identifier(`${supertype}Kind`),
+            b.tsUnionType(buildableSubtypes.map(subtype =>
+              b.tsTypeReference(b.tsQualifiedName(NODES_ID, b.identifier(subtype)))
+            ))
           )
         );
       }),
@@ -72,7 +82,7 @@ const out = [
                   b.tsTypeParameterInstantiation([
                     b.tsTypeReference(b.identifier(baseName)),
                     b.tsUnionType(
-                      commonFieldNames.map(fieldName => 
+                      commonFieldNames.map(fieldName =>
                         b.tsLiteralType(b.stringLiteral(fieldName))
                       )
                     ),
@@ -337,6 +347,15 @@ function getBuilderTypeNames() {
 
     return !!typeDef.buildParams && !!(astTypes.builders as any)[builderName];
   });
+}
+
+function getBuildableSubtypes(supertype: string): string[] {
+  return Array.from(new Set(
+    Object.keys(astTypes.namedTypes).filter(typeName => {
+      const typeDef = astTypes.Type.def(typeName);
+      return typeDef.allSupertypes[supertype] != null && typeDef.buildable;
+    })
+  ));
 }
 
 function getTSTypeAnnotation(type: Type<any>): any {
