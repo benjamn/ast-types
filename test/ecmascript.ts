@@ -267,12 +267,6 @@ describe("shallow and deep checks", function() {
 describe("whole-program validation", function() {
   this.timeout(20000);
 
-  // TODO(brieb): do we need these?
-  // validateECMAScript("main.js");
-  // validateECMAScript("lib/shared.js");
-  // validateECMAScript("def/core.js");
-  // validateECMAScript("lib/types.js");
-  // validateECMAScript("test/run.js");
   validateECMAScript("test/data/backbone.js");
   validateECMAScript("test/data/jquery-1.9.1.js");
 });
