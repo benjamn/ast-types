@@ -56,15 +56,14 @@ const out = [
       KINDS_IMPORT,
       ...Object.keys(astTypes.namedTypes).map(typeName => {
         const typeDef = astTypes.Type.def(typeName);
-        const fieldNames = Object.keys({ type: true, ...typeDef.ownFields })
-          .filter(fieldName => !!typeDef.allFields[fieldName]);
+        const ownFieldNames = Object.keys(typeDef.ownFields);
 
         return b.exportNamedDeclaration(
           b.tsInterfaceDeclaration.from({
             id: b.identifier(typeName),
             extends: typeDef.baseNames.map(baseName => {
               const baseDef = astTypes.Type.def(baseName);
-              const commonFieldNames = fieldNames
+              const commonFieldNames = ownFieldNames
                 .filter(fieldName => !!baseDef.allFields[fieldName]);
 
               if (commonFieldNames.length > 0) {
@@ -84,13 +83,13 @@ const out = [
               }
             }),
             body: b.tsInterfaceBody(
-              fieldNames.map(fieldName => {
+              ownFieldNames.map(fieldName => {
                 const field = typeDef.allFields[fieldName];
 
-                if (field.name === "type") {
+                if (field.name === "type" && field.defaultFn) {
                   return b.tsPropertySignature(
                     b.identifier("type"),
-                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(typeName)))
+                    b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
                   );
                 }
 
