@@ -26,20 +26,37 @@
   },
   "license": "MIT",
   "main": "main.js",
+  "types": "main.d.ts",
   "scripts": {
-    "test": "test/run.sh"
+    "gen": "ts-node --transpile-only script/gen-types.ts",
+    "tsc": "tsc --noEmit",
+    "mocha": "test/run.sh",
+    "test": "npm run gen && npm run tsc && npm run mocha",
+    "clean": "ts-emit-clean",
+    "build": "tsc && ts-add-module-exports",
+    "prepack": "npm run clean && npm run gen && npm run build",
+    "postpack": "npm run clean"
   },
   "dependencies": {},
   "devDependencies": {
-    "babel-types": "^6.26.0",
-    "babylon": "^7.0.0-beta.40",
+    "@babel/parser": "^7.1.6",
+    "@babel/types": "^7.1.6",
+    "@types/esprima": "^4.0.2",
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.9",
     "espree": "^4.0.0",
     "esprima": "~4.0.0",
     "esprima-fb": "~14001.1.0-dev-harmony-fb",
     "flow-parser": "^0.83.0",
     "glob": "^7.1.2",
     "mocha": "^5.0.0",
-    "reify": "^0.18.0"
+    "recast": "^0.16.1",
+    "reify": "^0.18.1",
+    "ts-add-module-exports": "^1.0.0",
+    "ts-emit-clean": "^1.0.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
   },
   "engines": {
     "node": ">=4"

@@ -1,2 +1,7 @@
 /node_modules
+/script
 /test
+/types
+
+*.ts
+!*.d.ts
