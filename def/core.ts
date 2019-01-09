@@ -29,13 +29,11 @@ export default function (fork: Fork) {
         ), defaults["null"], true);
 
     def("SourceLocation")
-        .build("start", "end", "source")
         .field("start", def("Position"))
         .field("end", def("Position"))
         .field("source", or(String, null), defaults["null"]);
 
     def("Position")
-        .build("line", "column")
         .field("line", geq(1))
         .field("column", geq(0));
 

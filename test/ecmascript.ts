@@ -403,11 +403,11 @@ describe("types.eachField", function() {
 
   it("should work for non-buildable types", function() {
     check({ type: "Position" }, [
-      "type", "line", "column"
+      "line", "column"
     ]);
 
     check({ type: "SourceLocation" }, [
-      "type", "start", "end", "source"
+      "start", "end", "source"
     ]);
   });
 
@@ -1504,10 +1504,16 @@ describe("types.defineMethod", function() {
     assert.strictEqual(types.defineMethod("at", at), void 0);
     assert.strictEqual(thisExpr.loc, null);
 
-    thisExpr.at(b.sourceLocation(
-      b.position(1, 0),
-      b.position(1, 4)
-    ));
+    thisExpr.at({
+      start: {
+        line: 1,
+        column: 0,
+      },
+      end: {
+        line: 1,
+        column: 4,
+      }
+    });
 
     assert.strictEqual(thisExpr.loc.start.line, 1);
     assert.strictEqual(thisExpr.loc.start.column, 0);
