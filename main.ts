@@ -2,8 +2,6 @@ import fork from "./fork";
 import coreDef from "./def/core";
 import es6Def from "./def/es6";
 import es7Def from "./def/es7";
-import mozillaDef from "./def/mozilla";
-import e4xDef from "./def/e4x";
 import jsxDef from "./def/jsx";
 import flowDef from "./def/flow";
 import esprimaDef from "./def/esprima";
@@ -34,8 +32,6 @@ const defs = [
   // configure the precise type hierarchy that you need.
   es6Def,
   es7Def,
-  mozillaDef,
-  e4xDef,
   jsxDef,
   flowDef,
   esprimaDef,

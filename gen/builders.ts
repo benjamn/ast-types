@@ -285,14 +285,12 @@ export interface ForInStatementBuilder {
   (
     left: K.VariableDeclarationKind | K.ExpressionKind,
     right: K.ExpressionKind,
-    body: K.StatementKind,
-    each?: boolean
+    body: K.StatementKind
   ): N.ForInStatement;
   from(
     params: {
       body: K.StatementKind,
       comments?: K.CommentKind[] | null,
-      each?: boolean,
       left: K.VariableDeclarationKind | K.ExpressionKind,
       loc?: K.SourceLocationKind | null,
       right: K.ExpressionKind
@@ -314,14 +312,14 @@ export interface FunctionDeclarationBuilder {
   (
     id: K.IdentifierKind,
     params: K.PatternKind[],
-    body: K.BlockStatementKind | K.ExpressionKind,
+    body: K.BlockStatementKind,
     generator?: boolean,
     expression?: boolean
   ): N.FunctionDeclaration;
   from(
     params: {
       async?: boolean,
-      body: K.BlockStatementKind | K.ExpressionKind,
+      body: K.BlockStatementKind,
       comments?: K.CommentKind[] | null,
       defaults?: (K.ExpressionKind | null)[],
       expression?: boolean,
@@ -340,14 +338,14 @@ export interface FunctionExpressionBuilder {
   (
     id: K.IdentifierKind | null | undefined,
     params: K.PatternKind[],
-    body: K.BlockStatementKind | K.ExpressionKind,
+    body: K.BlockStatementKind,
     generator?: boolean,
     expression?: boolean
   ): N.FunctionExpression;
   from(
     params: {
       async?: boolean,
-      body: K.BlockStatementKind | K.ExpressionKind,
+      body: K.BlockStatementKind,
       comments?: K.CommentKind[] | null,
       defaults?: (K.ExpressionKind | null)[],
       expression?: boolean,
@@ -1072,53 +1070,6 @@ export interface AwaitExpressionBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): N.AwaitExpression;
-}
-
-export interface LetStatementBuilder {
-  (head: K.VariableDeclaratorKind[], body: K.StatementKind): N.LetStatement;
-  from(
-    params: {
-      body: K.StatementKind,
-      comments?: K.CommentKind[] | null,
-      head: K.VariableDeclaratorKind[],
-      loc?: K.SourceLocationKind | null
-    }
-  ): N.LetStatement;
-}
-
-export interface LetExpressionBuilder {
-  (head: K.VariableDeclaratorKind[], body: K.ExpressionKind): N.LetExpression;
-  from(
-    params: {
-      body: K.ExpressionKind,
-      comments?: K.CommentKind[] | null,
-      head: K.VariableDeclaratorKind[],
-      loc?: K.SourceLocationKind | null
-    }
-  ): N.LetExpression;
-}
-
-export interface GraphExpressionBuilder {
-  (index: number, expression: K.LiteralKind): N.GraphExpression;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.LiteralKind,
-      index: number,
-      loc?: K.SourceLocationKind | null
-    }
-  ): N.GraphExpression;
-}
-
-export interface GraphIndexExpressionBuilder {
-  (index: number): N.GraphIndexExpression;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      index: number,
-      loc?: K.SourceLocationKind | null
-    }
-  ): N.GraphIndexExpression;
 }
 
 export interface JSXAttributeBuilder {
@@ -3452,10 +3403,6 @@ export interface Builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   awaitExpression: AwaitExpressionBuilder;
-  letStatement: LetStatementBuilder;
-  letExpression: LetExpressionBuilder;
-  graphExpression: GraphExpressionBuilder;
-  graphIndexExpression: GraphIndexExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;

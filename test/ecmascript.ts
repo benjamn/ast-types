@@ -16,7 +16,6 @@ import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
 import es6Def from "../def/es6";
 import es7Def from "../def/es7";
-import mozillaDef from "../def/mozilla";
 import babelDef from "../def/babel";
 
 var n = types.namedTypes;
@@ -1433,7 +1432,6 @@ describe("array and object pattern scope", function() {
       coreDef,
       es6Def,
       es7Def,
-      mozillaDef,
     ]);
     var b = types.builders;
 
