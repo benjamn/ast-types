@@ -865,8 +865,8 @@ export interface OpaqueType extends Omit<Declaration, "type"> {
   type: "OpaqueType";
   id: K.IdentifierKind;
   typeParameters: K.TypeParameterDeclarationKind | null;
-  implType: K.FlowTypeKind;
-  superType: K.FlowTypeKind;
+  impltype: K.FlowTypeKind;
+  supertype: K.FlowTypeKind;
 }
 
 export interface DeclareTypeAlias extends Omit<TypeAlias, "type"> {

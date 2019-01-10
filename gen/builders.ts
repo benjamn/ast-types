@@ -1852,15 +1852,17 @@ export interface TypeAliasBuilder {
 export interface OpaqueTypeBuilder {
   (
     id: K.IdentifierKind,
-    typeParameters: K.TypeParameterDeclarationKind | null
+    typeParameters: K.TypeParameterDeclarationKind | null,
+    impltype: K.FlowTypeKind,
+    supertype: K.FlowTypeKind
   ): N.OpaqueType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
-      implType: K.FlowTypeKind,
+      impltype: K.FlowTypeKind,
       loc?: K.SourceLocationKind | null,
-      superType: K.FlowTypeKind,
+      supertype: K.FlowTypeKind,
       typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): N.OpaqueType;

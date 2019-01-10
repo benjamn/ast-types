@@ -295,8 +295,8 @@ export default function (fork: Fork) {
     .build("id", "typeParameters", "impltype", "supertype")
     .field("id", def("Identifier"))
     .field("typeParameters", or(def("TypeParameterDeclaration"), null))
-    .field("implType", def("FlowType"))
-    .field("superType", def("FlowType"));
+    .field("impltype", def("FlowType"))
+    .field("supertype", def("FlowType"));
 
   def("DeclareTypeAlias")
     .bases("TypeAlias")
