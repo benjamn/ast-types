@@ -744,6 +744,7 @@ export interface ObjectTypeAnnotation extends Omit<FlowType, "type"> {
   properties: (K.ObjectTypePropertyKind | K.ObjectTypeSpreadPropertyKind)[];
   indexers: K.ObjectTypeIndexerKind[];
   callProperties: K.ObjectTypeCallPropertyKind[];
+  inexact: boolean | undefined;
   exact: boolean;
   internalSlots: K.ObjectTypeInternalSlotKind[];
 }

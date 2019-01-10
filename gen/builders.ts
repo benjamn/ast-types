@@ -1579,6 +1579,7 @@ export interface ObjectTypeAnnotationBuilder {
       comments?: K.CommentKind[] | null,
       exact?: boolean,
       indexers?: K.ObjectTypeIndexerKind[],
+      inexact?: boolean | undefined,
       internalSlots?: K.ObjectTypeInternalSlotKind[],
       loc?: K.SourceLocationKind | null,
       properties: (K.ObjectTypePropertyKind | K.ObjectTypeSpreadPropertyKind)[]
