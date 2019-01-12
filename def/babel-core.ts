@@ -2,7 +2,7 @@ import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import es7Def from "./es7";
-import * as N from "../gen/nodes";
+import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
   fork.use(es7Def);

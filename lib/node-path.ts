@@ -2,6 +2,7 @@ import { Fork } from "../types";
 import typesPlugin, { ASTNode } from "./types";
 import pathPlugin, { Path } from "./path";
 import scopePlugin, { Scope } from "./scope";
+import { namedTypes } from "../gen/namedTypes";
 
 export interface NodePath<N = any, V = any> extends Path<V> {
   node: N;
@@ -213,22 +214,24 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
               && parent.object === node;
 
           case "BinaryExpression":
-          case "LogicalExpression":
-            var po = parent.operator;
-            var pp = PRECEDENCE[po];
-            var no = node.operator;
-            var np = PRECEDENCE[no];
+          case "LogicalExpression": {
+            const n = node as namedTypes.BinaryExpression | namedTypes.LogicalExpression;
+            const po = parent.operator;
+            const pp = PRECEDENCE[po];
+            const no = n.operator;
+            const np = PRECEDENCE[no];
 
             if (pp > np) {
               return true;
             }
 
             if (pp === np && this.name === "right") {
-              if (parent.right !== node) {
+              if (parent.right !== n) {
                 throw new Error("Nodes must be equal");
               }
               return true;
             }
+          }
 
           default:
             return false;
@@ -272,7 +275,7 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
 
       case "Literal":
         return parent.type === "MemberExpression"
-          && isNumber.check(node.value)
+          && isNumber.check((node as namedTypes.Literal).value)
           && this.name === "object"
           && parent.object === node;
 
@@ -485,7 +488,8 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
 
       ifStatement.replace(testExpressionStatement);
     } else if (!consequent && alternate) {
-      var negatedTestExpression = b.unaryExpression('!', testExpression, true);
+      var negatedTestExpression: namedTypes.Expression =
+        b.unaryExpression('!', testExpression, true);
 
       if (n.UnaryExpression.check(testExpression) && testExpression.operator === '!') {
         negatedTestExpression = testExpression.argument;

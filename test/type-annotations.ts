@@ -1,5 +1,5 @@
 import assert from "assert";
-import types from "../main";
+import * as types from "../main";
 
 describe("type annotations", function () {
   it("can build Identifier with Flow typeAnnotation", function () {

@@ -6,7 +6,7 @@ import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser"
 import fork from "../fork";
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
-import types from "../main";
+import { visit } from "../main";
 
 var pkgRootDir = path.resolve(__dirname, "..");
 var tsTypes = fork([
@@ -161,7 +161,7 @@ glob("**/*.ts", {
     });
   
     it("should register typescript types with the scope", function() {  
-      types.visit(ast, {
+      visit(ast, {
         visitProgram(path) {
           assert(path.scope.declaresType('Foo'));
           assert(path.scope.declaresType('Bar'));

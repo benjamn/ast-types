@@ -2,9 +2,7 @@ import path from "path";
 import fs from "fs";
 import { parse as esprimaParse } from "esprima";
 import { parse as reifyBabylonParse } from "reify/lib/parsers/babylon";
-import types from "../main";
-
-var n = types.namedTypes;
+import { namedTypes as n } from "../main";
 
 export function validateECMAScript(file: any) {
   var fullPath = path.join(__dirname, "..", file);
