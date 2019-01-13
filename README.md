@@ -421,7 +421,7 @@ Scope
 
 The object exposed as `path.scope` during AST traversals provides
 information about variable and function declarations in the scope that
-contains `path.node`. See [scope.js](lib/scope.js) for its public
+contains `path.node`. See [scope.ts](lib/scope.ts) for its public
 interface, which currently includes `.isGlobal`, `.getGlobalScope()`,
 `.depth`, `.declares(name)`, `.lookup(name)`, and `.getBindings()`.
 
@@ -477,10 +477,9 @@ b.file("lib/types.js", b.thisExpression());
 // ==> AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
 ```
 The `def` syntax is used to define all the default AST node types found in
-[core.js](def/core.js),
-[e4x.js](def/e4x.js),
-[es6.js](def/es6.js),
-[es7.js](def/es7.js),
-[flow.js](def/flow.js), and
-[jsx.js](def/jsx.js), so you have
+[core.ts](def/core.ts),
+[es6.ts](def/es6.ts),
+[es7.ts](def/es7.ts),
+[flow.ts](def/flow.ts), and
+[jsx.ts](def/jsx.ts), so you have
 no shortage of examples to learn from.
