@@ -1,60 +1,54 @@
-var assert = require("assert");
-var types = require("../fork.js")([
-  require("../def/flow"),
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var assert_1 = __importDefault(require("assert"));
+var flow_parser_1 = __importDefault(require("flow-parser"));
+var fork_1 = __importDefault(require("../fork"));
+var flow_1 = __importDefault(require("../def/flow"));
+var types = fork_1.default([
+    flow_1.default,
 ]);
-
 describe("flow types", function () {
-  it("issue #242", function () {
-    const parser = {
-      parse(code) {
-        return require('flow-parser').parse(code, {
-          types: true
+    it("issue #242", function () {
+        var parser = {
+            parse: function (code) {
+                return flow_parser_1.default.parse(code, {
+                    types: true
+                });
+            }
+        };
+        var program = parser.parse([
+            "class A<B> extends C<D> {}",
+            "function f<E>() {}",
+        ].join("\n"));
+        var identifierNames = [];
+        var typeParamNames = [];
+        types.visit(program, {
+            visitIdentifier: function (path) {
+                identifierNames.push(path.node.name);
+                this.traverse(path);
+            },
+            visitTypeParameter: function (path) {
+                typeParamNames.push(path.node.name);
+                this.traverse(path);
+            }
         });
-      }
-    };
-
-    const program = parser.parse([
-      "class A<B> extends C<D> {}",
-      "function f<E>() {}",
-    ].join("\n"));
-
-    const typeParam = program.body[0].typeParameters.params[0];
-    const superTypeParam =
-      program.body[0].superTypeParameters.params[0].id;
-    const functionTypeParam = program.body[1].typeParameters.params[0];
-
-    const identifierNames = [];
-    const typeParamNames = []
-
-    types.visit(program, {
-      visitIdentifier(path) {
-        identifierNames.push(path.node.name);
-        this.traverse(path);
-      },
-
-      visitTypeParameter(path) {
-        typeParamNames.push(path.node.name);
-        this.traverse(path);
-      }
+        assert_1.default.deepEqual(identifierNames, ["A", "C", "D", "f"]);
+        assert_1.default.deepEqual(typeParamNames, ["B", "E"]);
     });
-
-    assert.deepEqual(identifierNames, ["A", "C", "D", "f"]);
-    assert.deepEqual(typeParamNames, ["B", "E"]);
-  });
-
-  it("issue #261", function () {
-    const parser = {
-      parse(code) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
-    const program = parser.parse('declare module.exports: {};');
-
-    assert.strictEqual(program.body[0].type, 'DeclareModuleExports');
-    assert.notEqual(program.body[0].typeAnnotation, undefined);
-    assert.strictEqual(program.body[0].typeAnnotation.type, 'TypeAnnotation');
-  });
+    it("issue #261", function () {
+        var parser = {
+            parse: function (code) {
+                return flow_parser_1.default.parse(code, {
+                    types: true
+                });
+            }
+        };
+        var program = parser.parse('declare module.exports: {};');
+        assert_1.default.strictEqual(program.body[0].type, 'DeclareModuleExports');
+        assert_1.default.notEqual(program.body[0].typeAnnotation, undefined);
+        assert_1.default.strictEqual(program.body[0].typeAnnotation.type, 'TypeAnnotation');
+    });
 });

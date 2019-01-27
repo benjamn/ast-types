@@ -1,4 +1,6 @@
-require("./ecmascript.js");
-require("./typescript.js");
-require("./flow.js");
-require("./type-annotations.js");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./ecmascript");
+require("./typescript");
+require("./flow");
+require("./type-annotations");

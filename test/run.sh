@@ -6,7 +6,7 @@ cd $(dirname $0)/data
 
 BAB_TAG=v$(node -p 'require("@babel/parser/package.json").version')
 
-if [ ! -d babylon ]
+if [ ! -d babel-parser ]
 then
 	if [ -d /tmp/babel ]
 	then
@@ -36,3 +36,7 @@ fi
 cd .. # back to the ast-types/test/ directory
 
 exec mocha --check-leaks --reporter spec --full-trace $@ run.js
+
+exec mocha --require ts-node/register/transpile-only \
+	--check-leaks --reporter spec --full-trace $@ run.ts
+
