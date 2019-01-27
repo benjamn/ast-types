@@ -847,6 +847,7 @@ export interface ObjectTypeAnnotation extends Omit<FlowType, "type"> {
   properties: (K.ObjectTypePropertyKind | K.ObjectTypeSpreadPropertyKind)[];
   indexers: K.ObjectTypeIndexerKind[];
   callProperties: K.ObjectTypeCallPropertyKind[];
+  inexact: boolean | undefined;
   exact: boolean;
   internalSlots: K.ObjectTypeInternalSlotKind[];
 }
@@ -967,8 +968,8 @@ export interface OpaqueType extends Omit<Declaration, "type"> {
   type: "OpaqueType";
   id: K.IdentifierKind;
   typeParameters: K.TypeParameterDeclarationKind | null;
-  implType: K.FlowTypeKind;
-  superType: K.FlowTypeKind;
+  impltype: K.FlowTypeKind;
+  supertype: K.FlowTypeKind;
 }
 
 export interface DeclareTypeAlias extends Omit<TypeAlias, "type"> {

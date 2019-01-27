@@ -109,6 +109,7 @@ function default_1(fork) {
     ])
         .field("indexers", [def("ObjectTypeIndexer")], defaults.emptyArray)
         .field("callProperties", [def("ObjectTypeCallProperty")], defaults.emptyArray)
+        .field("inexact", or(Boolean, void 0), defaults["undefined"])
         .field("exact", Boolean, defaults["false"])
         .field("internalSlots", [def("ObjectTypeInternalSlot")], defaults.emptyArray);
     def("Variance")
@@ -227,8 +228,8 @@ function default_1(fork) {
         .build("id", "typeParameters", "impltype", "supertype")
         .field("id", def("Identifier"))
         .field("typeParameters", or(def("TypeParameterDeclaration"), null))
-        .field("implType", def("FlowType"))
-        .field("superType", def("FlowType"));
+        .field("impltype", def("FlowType"))
+        .field("supertype", def("FlowType"));
     def("DeclareTypeAlias")
         .bases("TypeAlias")
         .build("id", "typeParameters", "right");
