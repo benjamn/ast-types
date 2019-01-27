@@ -236,6 +236,9 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
 
       case "SequenceExpression":
         switch (parent.type) {
+          case "ReturnStatement":
+            return false;
+
           case "ForStatement":
             // Although parentheses wouldn't hurt around sequence
             // expressions in the head of for loops, traditional style
@@ -270,9 +273,19 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
             return false;
         }
 
+        case "IntersectionTypeAnnotation":
+        case "UnionTypeAnnotation":
+          return parent.type === "NullableTypeAnnotation";
+
       case "Literal":
         return parent.type === "MemberExpression"
           && isNumber.check(node.value)
+          && this.name === "object"
+          && parent.object === node;
+
+      // Babel 6 Literal split
+      case "NumericLiteral":
+        return parent.type === "MemberExpression"
           && this.name === "object"
           && parent.object === node;
 
@@ -300,6 +313,22 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
 
           default:
             return false;
+        }
+
+     case "ArrowFunctionExpression":
+        if (n.CallExpression.check(parent) && this.name === 'callee') {
+            return true;
+        }
+        if (n.MemberExpression.check(parent) && this.name === 'object') {
+            return true;
+        }
+
+        return isBinary(parent);
+
+      case "ObjectExpression":
+        if (parent.type === "ArrowFunctionExpression" &&
+          this.name === "body") {
+            return true;
         }
 
       default:
@@ -342,7 +371,8 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
     ["<", ">", "<=", ">=", "in", "instanceof"],
     [">>", "<<", ">>>"],
     ["+", "-"],
-    ["*", "/", "%"]
+    ["*", "/", "%"],
+    ["**"]
   ].forEach(function (tier, i) {
     tier.forEach(function (op) {
       PRECEDENCE[op] = i;

@@ -93,7 +93,19 @@ export default function pathVisitorPlugin(fork: Fork) {
 
     for (var methodName in visitor) {
       if (/^visit[A-Z]/.test(methodName)) {
-        typeNames[methodName.slice("visit".length)] = true;
+        var type = methodName.slice("visit".length);
+
+        if (!(type in types.namedTypes)) {
+          if (methodName !== "visitWithoutReset") {
+            console.warn(
+              "\x1B[33m", // yellow
+              "Are you sure you meant [" + methodName + "]?",
+              "\x1B[0m" // reset
+            );
+          }
+        } else {
+          typeNames[type] = true;
+        }
       }
     }
 
