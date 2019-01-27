@@ -43,7 +43,7 @@ export default function (fork: Fork) {
     .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
   ["ClassDeclaration",
-   "ClassExpression",
+    "ClassExpression",
   ].forEach(typeName => {
     def(typeName)
       .field("typeParameters", TypeParamDecl, defaults["null"])
@@ -51,7 +51,13 @@ export default function (fork: Fork) {
              or(def("TypeParameterInstantiation"),
                 def("TSTypeParameterInstantiation"),
                 null),
-             defaults["null"])
+             defaults["null"]);
+  });
+
+  ["ClassDeclaration",
+   "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
       .field("implements",
              or([def("ClassImplements")],
                 [def("TSExpressionWithTypeArguments")]),
