@@ -13,4 +13,4 @@ test/data/babel-parser
 !/types/**/*.d.ts
 
 desktop.ini
-
+tmp*/

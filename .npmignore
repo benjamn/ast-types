@@ -2,6 +2,3 @@
 /script
 /test
 /types
-
-*.ts
-!*.d.ts
