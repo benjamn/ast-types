@@ -15,6 +15,7 @@ var isString = builtin.string;
 var rawTypes = types.use(require("../lib/types"));
 
 var hasOwn = Object.prototype.hasOwnProperty;
+var nodeMajorVersion = parseInt(process.versions.node, 10);
 
 describe("basic type checking", function() {
   var fooId = b.identifier("foo");
@@ -1161,7 +1162,8 @@ describe("scope methods", function () {
     assert.deepEqual(names, ["x", "xyDefault", "xyNamespace", "z"]);
   });
 
-  it("should work for ES6 syntax (espree)", function() {
+  (nodeMajorVersion >= 6 ? it : xit)
+  ("should work for ES6 syntax (espree)", function() {
     var names;
 
     var ast = require("espree").parse([

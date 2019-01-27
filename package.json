@@ -1,7 +1,7 @@
 {
   "author": "Ben Newman <bn@cs.stanford.edu>",
   "name": "@gerhobbelt/ast-types",
-  "version": "0.11.6-23",
+  "version": "0.11.7-23",
   "description": "Esprima-compatible implementation of the Mozilla JS Parser API",
   "keywords": [
     "ast",
