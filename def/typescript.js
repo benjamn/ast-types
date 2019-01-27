@@ -1,4 +1,4 @@
-"use strict";;
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -278,6 +278,11 @@ function default_1(fork) {
         .field("declare", Boolean, defaults["false"])
         .field("global", Boolean, defaults["false"])
         .field("body", or(def("TSModuleBlock"), def("TSModuleDeclaration"), null), defaults["null"]);
+    def("TSImportType")
+        .bases("TSType", "TSHasOptionalTypeParameters")
+        .build("argument", "qualifier")
+        .field("argument", or(StringLiteral, IdOrQualifiedName))
+        .field("qualifier", or(StringLiteral, IdOrQualifiedName, null, void 0), defaults["undefined"]);
     def("TSImportEqualsDeclaration")
         .bases("Declaration")
         .build("id", "moduleReference")
@@ -325,4 +330,4 @@ function default_1(fork) {
         def("TSDeclareMethod"), TSTypeMember)]);
 }
 exports.default = default_1;
-module.exports = exports["default"];
+;

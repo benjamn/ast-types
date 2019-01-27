@@ -1,4 +1,4 @@
-"use strict";;
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -255,4 +255,4 @@ function default_1(fork) {
         .build();
 }
 exports.default = default_1;
-module.exports = exports["default"];
+;

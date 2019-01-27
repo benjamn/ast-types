@@ -2,6 +2,27 @@
 import * as K from "./kinds";
 import * as N from "./nodes";
 
+export interface SourceLocationBuilder {
+  (start: K.PositionKind, end: K.PositionKind, source?: string | null): N.SourceLocation;
+  from(
+    params: {
+      end: K.PositionKind,
+      source?: string | null,
+      start: K.PositionKind
+    }
+  ): N.SourceLocation;
+}
+
+export interface PositionBuilder {
+  (line: number, column: number): N.Position;
+  from(
+    params: {
+      column: number,
+      line: number
+    }
+  ): N.Position;
+}
+
 export interface FileBuilder {
   (program: K.ProgramKind, name?: string | null): N.File;
   from(
@@ -3252,6 +3273,22 @@ export interface TSModuleDeclarationBuilder {
   ): N.TSModuleDeclaration;
 }
 
+export interface TSImportTypeBuilder {
+  (
+    argument: K.StringLiteralKind | K.IdentifierKind | K.TSQualifiedNameKind,
+    qualifier?: K.StringLiteralKind | K.IdentifierKind | K.TSQualifiedNameKind | null | undefined
+  ): N.TSImportType;
+  from(
+    params: {
+      argument: K.StringLiteralKind | K.IdentifierKind | K.TSQualifiedNameKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      qualifier?: K.StringLiteralKind | K.IdentifierKind | K.TSQualifiedNameKind | null | undefined,
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
+    }
+  ): N.TSImportType;
+}
+
 export interface TSImportEqualsDeclarationBuilder {
   (
     id: K.IdentifierKind,
@@ -3379,6 +3416,8 @@ export interface OptionalCallExpressionBuilder {
 }
 
 export interface Builders {
+  sourceLocation: SourceLocationBuilder;
+  position: PositionBuilder;
   file: FileBuilder;
   program: ProgramBuilder;
   identifier: IdentifierBuilder;
@@ -3614,6 +3653,7 @@ export interface Builders {
   tsTypeAliasDeclaration: TSTypeAliasDeclarationBuilder;
   tsModuleBlock: TSModuleBlockBuilder;
   tsModuleDeclaration: TSModuleDeclarationBuilder;
+  tsImportType: TSImportTypeBuilder;
   tsImportEqualsDeclaration: TSImportEqualsDeclarationBuilder;
   tsExternalModuleReference: TSExternalModuleReferenceBuilder;
   tsExportAssignment: TSExportAssignmentBuilder;

@@ -1,4 +1,4 @@
-"use strict";;
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,10 +22,12 @@ function default_1(fork) {
         .field("type", String)
         .field("comments", or([def("Comment")], null), defaults["null"], true);
     def("SourceLocation")
+        .build("start", "end", "source")
         .field("start", def("Position"))
         .field("end", def("Position"))
         .field("source", or(String, null), defaults["null"]);
     def("Position")
+        .build("line", "column")
         .field("line", geq(1))
         .field("column", geq(0));
     def("File")
@@ -300,4 +302,4 @@ function default_1(fork) {
         .field("trailing", Boolean, defaults["false"]);
 }
 exports.default = default_1;
-module.exports = exports["default"];
+;

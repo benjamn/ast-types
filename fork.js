@@ -1,4 +1,4 @@
-"use strict";;
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -37,6 +37,7 @@ function default_1(defs) {
     return exports;
 }
 exports.default = default_1;
+;
 function createFork() {
     var used = [];
     var usedResult = [];
@@ -52,4 +53,3 @@ function createFork() {
     var fork = { use: use };
     return fork;
 }
-module.exports = exports["default"];

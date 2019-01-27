@@ -1,4 +1,4 @@
-"use strict";;
+"use strict";
 /**
  * Type annotation defs shared between Flow and TypeScript.
  * These defs could not be defined in ./flow.ts or ./typescript.ts directly
@@ -34,9 +34,14 @@ function default_1(fork) {
     ].forEach(function (typeName) {
         def(typeName)
             .field("typeParameters", TypeParamDecl, defaults["null"])
-            .field("superTypeParameters", or(def("TypeParameterInstantiation"), def("TSTypeParameterInstantiation"), null), defaults["null"])
+            .field("superTypeParameters", or(def("TypeParameterInstantiation"), def("TSTypeParameterInstantiation"), null), defaults["null"]);
+    });
+    ["ClassDeclaration",
+        "ClassExpression",
+    ].forEach(function (typeName) {
+        def(typeName)
             .field("implements", or([def("ClassImplements")], [def("TSExpressionWithTypeArguments")]), defaults.emptyArray);
     });
 }
 exports.default = default_1;
-module.exports = exports["default"];
+;

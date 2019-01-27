@@ -290,10 +290,10 @@ describe("types.eachField", function () {
     });
     it("should work for non-buildable types", function () {
         check({ type: "Position" }, [
-            "line", "column"
+            "type", "line", "column"
         ]);
         check({ type: "SourceLocation" }, [
-            "start", "end", "source"
+            "type", "start", "end", "source"
         ]);
     });
     it("should respect hidden fields", function () {
