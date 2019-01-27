@@ -12,3 +12,5 @@ test/data/babel-parser
 # Except...
 !/types/**/*.d.ts
 
+desktop.ini
+
