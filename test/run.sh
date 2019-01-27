@@ -37,6 +37,6 @@ cd .. # back to the ast-types/test/ directory
 
 exec mocha --check-leaks --reporter spec --full-trace $@ run.js
 
-exec mocha --require ts-node/register/transpile-only \
-	--check-leaks --reporter spec --full-trace $@ run.ts
+# exec mocha --require ts-node/register/transpile-only \
+# 	--check-leaks --reporter spec --full-trace $@ run.ts
 
