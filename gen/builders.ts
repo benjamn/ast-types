@@ -3206,6 +3206,22 @@ export interface TSModuleDeclarationBuilder {
   ): N.TSModuleDeclaration;
 }
 
+export interface TSImportTypeBuilder {
+  (
+    argument: K.StringLiteralKind,
+    qualifier?: K.IdentifierKind | K.TSQualifiedNameKind | undefined
+  ): N.TSImportType;
+  from(
+    params: {
+      argument: K.StringLiteralKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      qualifier?: K.IdentifierKind | K.TSQualifiedNameKind | undefined,
+      typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
+    }
+  ): N.TSImportType;
+}
+
 export interface TSImportEqualsDeclarationBuilder {
   (
     id: K.IdentifierKind,
@@ -3564,6 +3580,7 @@ export interface Builders {
   tsTypeAliasDeclaration: TSTypeAliasDeclarationBuilder;
   tsModuleBlock: TSModuleBlockBuilder;
   tsModuleDeclaration: TSModuleDeclarationBuilder;
+  tsImportType: TSImportTypeBuilder;
   tsImportEqualsDeclaration: TSImportEqualsDeclarationBuilder;
   tsExternalModuleReference: TSExternalModuleReferenceBuilder;
   tsExportAssignment: TSExportAssignmentBuilder;

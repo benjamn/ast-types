@@ -252,6 +252,7 @@ export interface NamedTypes {
   TSTypeAliasDeclaration: Type<N.TSTypeAliasDeclaration>;
   TSModuleBlock: Type<N.TSModuleBlock>;
   TSModuleDeclaration: Type<N.TSModuleDeclaration>;
+  TSImportType: Type<N.TSImportType>;
   TSImportEqualsDeclaration: Type<N.TSImportEqualsDeclaration>;
   TSExternalModuleReference: Type<N.TSExternalModuleReference>;
   TSExportAssignment: Type<N.TSExportAssignment>;

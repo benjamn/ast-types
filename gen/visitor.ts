@@ -253,6 +253,7 @@ export interface Visitor<M = {}> {
   visitTSTypeAliasDeclaration?(this: Context & M, path: NodePath<N.TSTypeAliasDeclaration>): any;
   visitTSModuleBlock?(this: Context & M, path: NodePath<N.TSModuleBlock>): any;
   visitTSModuleDeclaration?(this: Context & M, path: NodePath<N.TSModuleDeclaration>): any;
+  visitTSImportType?(this: Context & M, path: NodePath<N.TSImportType>): any;
   visitTSImportEqualsDeclaration?(this: Context & M, path: NodePath<N.TSImportEqualsDeclaration>): any;
   visitTSExternalModuleReference?(this: Context & M, path: NodePath<N.TSExternalModuleReference>): any;
   visitTSExportAssignment?(this: Context & M, path: NodePath<N.TSExportAssignment>): any;
