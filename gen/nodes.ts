@@ -251,7 +251,7 @@ export interface UnaryExpression extends Omit<Expression, "type"> {
 
 export interface BinaryExpression extends Omit<Expression, "type"> {
   type: "BinaryExpression";
-  operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof" | "..";
+  operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof";
   left: K.ExpressionKind;
   right: K.ExpressionKind;
 }
