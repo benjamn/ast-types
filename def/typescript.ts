@@ -312,7 +312,7 @@ export default function (fork: Fork) {
   def("TSTypeQuery")
     .bases("TSType")
     .build("exprName")
-    .field("exprName", TSEntityName);
+    .field("exprName", or(TSEntityName, def("TSImportType")));
 
   // Inferred from Babylon's tsParseTypeMember method.
   var TSTypeMember = or(

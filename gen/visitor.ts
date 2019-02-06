@@ -110,6 +110,10 @@ export interface Visitor<M = {}> {
   visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<N.TSTypeParameterInstantiation>): any;
   visitClassImplements?(this: Context & M, path: NodePath<N.ClassImplements>): any;
   visitTSType?(this: Context & M, path: NodePath<N.TSType>): any;
+  visitTSHasOptionalTypeParameterInstantiation?(
+    this: Context & M,
+    path: NodePath<N.TSHasOptionalTypeParameterInstantiation>
+  ): any;
   visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath<N.TSExpressionWithTypeArguments>): any;
   visitFlow?(this: Context & M, path: NodePath<N.Flow>): any;
   visitFlowType?(this: Context & M, path: NodePath<N.FlowType>): any;
@@ -247,13 +251,13 @@ export interface Visitor<M = {}> {
   visitTSConstructSignatureDeclaration?(this: Context & M, path: NodePath<N.TSConstructSignatureDeclaration>): any;
   visitTSEnumMember?(this: Context & M, path: NodePath<N.TSEnumMember>): any;
   visitTSTypeQuery?(this: Context & M, path: NodePath<N.TSTypeQuery>): any;
+  visitTSImportType?(this: Context & M, path: NodePath<N.TSImportType>): any;
   visitTSTypeLiteral?(this: Context & M, path: NodePath<N.TSTypeLiteral>): any;
   visitTSTypeAssertion?(this: Context & M, path: NodePath<N.TSTypeAssertion>): any;
   visitTSEnumDeclaration?(this: Context & M, path: NodePath<N.TSEnumDeclaration>): any;
   visitTSTypeAliasDeclaration?(this: Context & M, path: NodePath<N.TSTypeAliasDeclaration>): any;
   visitTSModuleBlock?(this: Context & M, path: NodePath<N.TSModuleBlock>): any;
   visitTSModuleDeclaration?(this: Context & M, path: NodePath<N.TSModuleDeclaration>): any;
-  visitTSImportType?(this: Context & M, path: NodePath<N.TSImportType>): any;
   visitTSImportEqualsDeclaration?(this: Context & M, path: NodePath<N.TSImportEqualsDeclaration>): any;
   visitTSExternalModuleReference?(this: Context & M, path: NodePath<N.TSExternalModuleReference>): any;
   visitTSExportAssignment?(this: Context & M, path: NodePath<N.TSExportAssignment>): any;

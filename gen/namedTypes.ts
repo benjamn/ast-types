@@ -109,6 +109,7 @@ export interface NamedTypes {
   TSTypeParameterInstantiation: Type<N.TSTypeParameterInstantiation>;
   ClassImplements: Type<N.ClassImplements>;
   TSType: Type<N.TSType>;
+  TSHasOptionalTypeParameterInstantiation: Type<N.TSHasOptionalTypeParameterInstantiation>;
   TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   Flow: Type<N.Flow>;
   FlowType: Type<N.FlowType>;
@@ -246,13 +247,13 @@ export interface NamedTypes {
   TSConstructSignatureDeclaration: Type<N.TSConstructSignatureDeclaration>;
   TSEnumMember: Type<N.TSEnumMember>;
   TSTypeQuery: Type<N.TSTypeQuery>;
+  TSImportType: Type<N.TSImportType>;
   TSTypeLiteral: Type<N.TSTypeLiteral>;
   TSTypeAssertion: Type<N.TSTypeAssertion>;
   TSEnumDeclaration: Type<N.TSEnumDeclaration>;
   TSTypeAliasDeclaration: Type<N.TSTypeAliasDeclaration>;
   TSModuleBlock: Type<N.TSModuleBlock>;
   TSModuleDeclaration: Type<N.TSModuleDeclaration>;
-  TSImportType: Type<N.TSImportType>;
   TSImportEqualsDeclaration: Type<N.TSImportEqualsDeclaration>;
   TSExternalModuleReference: Type<N.TSExternalModuleReference>;
   TSExportAssignment: Type<N.TSExportAssignment>;
