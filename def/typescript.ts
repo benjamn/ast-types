@@ -389,8 +389,8 @@ export default function (fork: Fork) {
     .bases("TSType",
            "TSHasOptionalTypeParameters")
     .build("argument", "qualifier")
-    .field("argument", or(StringLiteral, IdOrQualifiedName))
-    .field("qualifier", or(StringLiteral, IdOrQualifiedName, null, void 0), defaults["undefined"]);
+    .field("argument", StringLiteral)
+    .field("qualifier", or(IdOrQualifiedName, void 0), defaults["undefined"]);
 
   def("TSImportEqualsDeclaration")
     .bases("Declaration")
