@@ -474,7 +474,7 @@ export interface UnaryExpressionBuilder {
 
 export interface BinaryExpressionBuilder {
   (
-    operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof" | "..",
+    operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof",
     left: K.ExpressionKind,
     right: K.ExpressionKind
   ): N.BinaryExpression;
@@ -483,7 +483,7 @@ export interface BinaryExpressionBuilder {
       comments?: K.CommentKind[] | null,
       left: K.ExpressionKind,
       loc?: K.SourceLocationKind | null,
-      operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof" | "..",
+      operator: "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "<<" | ">>" | ">>>" | "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "in" | "instanceof",
       right: K.ExpressionKind
     }
   ): N.BinaryExpression;
