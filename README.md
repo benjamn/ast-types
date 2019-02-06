@@ -421,7 +421,7 @@ Scope
 
 The object exposed as `path.scope` during AST traversals provides
 information about variable and function declarations in the scope that
-contains `path.node`. See [scope.js](lib/scope.js) for its public
+contains `path.node`. See [scope.ts](lib/scope.ts) for its public
 interface, which currently includes `.isGlobal`, `.getGlobalScope()`,
 `.depth`, `.declares(name)`, `.lookup(name)`, and `.getBindings()`.
 
@@ -476,11 +476,19 @@ b.file(b.blockStatement([]));
 b.file("lib/types.js", b.thisExpression());
 // ==> AssertionError: {"type":"ThisExpression","loc":null} does not match type Program
 ```
+
 The `def` syntax is used to define all the default AST node types found in
-[core.js](def/core.js),
-[e4x.js](def/e4x.js),
-[es6.js](def/es6.js),
-[es7.js](def/es7.js),
-[flow.js](def/flow.js), and
-[jsx.js](def/jsx.js), so you have
+[babel-core.ts](def/babel-core.ts),
+[babel.ts](def/babel.ts),
+[core.ts](def/core.ts),
+[es-proposals.ts](def/es-proposals.ts),
+[es6.ts](def/es6.ts),
+[es7.ts](def/es7.ts),
+[esprima.ts](def/esprima.ts),
+[flow.ts](def/flow.ts),
+[jsx.ts](def/jsx.ts),
+[type-annotations.ts](def/type-annotations.ts),
+and
+[typescripts.ts](def/typescripts.ts),
+so you have
 no shortage of examples to learn from.
