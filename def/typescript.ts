@@ -37,9 +37,13 @@ export default function (fork: Fork) {
   );
 
   def("TSTypeReference")
-    .bases("TSType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("typeName", "typeParameters")
-    .field("typeName", TSEntityName)
+    .field("typeName", TSEntityName);
+
+  // An abstract (non-buildable) base type that provide a commonly-needed
+  // optional .typeParameters field.
+  def("TSHasOptionalTypeParameterInstantiation")
     .field("typeParameters",
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
@@ -386,9 +390,8 @@ export default function (fork: Fork) {
            defaults["null"]);
 
   def("TSImportType")
-    .bases("TSType",
-           "TSHasOptionalTypeParameters")
-    .build("argument", "qualifier")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
+    .build("argument", "qualifier", "typeParameters")
     .field("argument", StringLiteral)
     .field("qualifier", or(TSEntityName, void 0), defaults["undefined"]);
 
@@ -422,12 +425,9 @@ export default function (fork: Fork) {
     .field("body", [TSTypeMember]);
 
   def("TSExpressionWithTypeArguments")
-    .bases("TSType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("expression", "typeParameters")
-    .field("expression", TSEntityName)
-    .field("typeParameters",
-           or(def("TSTypeParameterInstantiation"), null),
-           defaults["null"]);
+    .field("expression", TSEntityName);
 
   def("TSInterfaceDeclaration")
     .bases("Declaration", "TSHasOptionalTypeParameters")
