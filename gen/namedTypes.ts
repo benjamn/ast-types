@@ -109,6 +109,7 @@ export interface NamedTypes {
   TSTypeParameterInstantiation: Type<N.TSTypeParameterInstantiation>;
   ClassImplements: Type<N.ClassImplements>;
   TSType: Type<N.TSType>;
+  TSHasOptionalTypeParameterInstantiation: Type<N.TSHasOptionalTypeParameterInstantiation>;
   TSExpressionWithTypeArguments: Type<N.TSExpressionWithTypeArguments>;
   Flow: Type<N.Flow>;
   FlowType: Type<N.FlowType>;
@@ -209,6 +210,7 @@ export interface NamedTypes {
   TSAsExpression: Type<N.TSAsExpression>;
   TSNonNullExpression: Type<N.TSNonNullExpression>;
   TSAnyKeyword: Type<N.TSAnyKeyword>;
+  TSBigIntKeyword: Type<N.TSBigIntKeyword>;
   TSBooleanKeyword: Type<N.TSBooleanKeyword>;
   TSNeverKeyword: Type<N.TSNeverKeyword>;
   TSNullKeyword: Type<N.TSNullKeyword>;
@@ -246,6 +248,7 @@ export interface NamedTypes {
   TSConstructSignatureDeclaration: Type<N.TSConstructSignatureDeclaration>;
   TSEnumMember: Type<N.TSEnumMember>;
   TSTypeQuery: Type<N.TSTypeQuery>;
+  TSImportType: Type<N.TSImportType>;
   TSTypeLiteral: Type<N.TSTypeLiteral>;
   TSTypeAssertion: Type<N.TSTypeAssertion>;
   TSEnumDeclaration: Type<N.TSEnumDeclaration>;

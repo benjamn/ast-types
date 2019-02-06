@@ -29,9 +29,8 @@
   "types": "main.d.ts",
   "scripts": {
     "gen": "ts-node --transpile-only script/gen-types.ts",
-    "tsc": "tsc --noEmit",
     "mocha": "test/run.sh",
-    "test": "npm run gen && npm run tsc && npm run mocha",
+    "test": "npm run gen && npm run build && npm run mocha",
     "clean": "ts-emit-clean",
     "build": "tsc && ts-add-module-exports",
     "prepack": "npm run clean && npm run gen && npm run build",

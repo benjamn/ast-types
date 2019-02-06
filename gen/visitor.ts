@@ -110,6 +110,10 @@ export interface Visitor<M = {}> {
   visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<N.TSTypeParameterInstantiation>): any;
   visitClassImplements?(this: Context & M, path: NodePath<N.ClassImplements>): any;
   visitTSType?(this: Context & M, path: NodePath<N.TSType>): any;
+  visitTSHasOptionalTypeParameterInstantiation?(
+    this: Context & M,
+    path: NodePath<N.TSHasOptionalTypeParameterInstantiation>
+  ): any;
   visitTSExpressionWithTypeArguments?(this: Context & M, path: NodePath<N.TSExpressionWithTypeArguments>): any;
   visitFlow?(this: Context & M, path: NodePath<N.Flow>): any;
   visitFlowType?(this: Context & M, path: NodePath<N.FlowType>): any;
@@ -210,6 +214,7 @@ export interface Visitor<M = {}> {
   visitTSAsExpression?(this: Context & M, path: NodePath<N.TSAsExpression>): any;
   visitTSNonNullExpression?(this: Context & M, path: NodePath<N.TSNonNullExpression>): any;
   visitTSAnyKeyword?(this: Context & M, path: NodePath<N.TSAnyKeyword>): any;
+  visitTSBigIntKeyword?(this: Context & M, path: NodePath<N.TSBigIntKeyword>): any;
   visitTSBooleanKeyword?(this: Context & M, path: NodePath<N.TSBooleanKeyword>): any;
   visitTSNeverKeyword?(this: Context & M, path: NodePath<N.TSNeverKeyword>): any;
   visitTSNullKeyword?(this: Context & M, path: NodePath<N.TSNullKeyword>): any;
@@ -247,6 +252,7 @@ export interface Visitor<M = {}> {
   visitTSConstructSignatureDeclaration?(this: Context & M, path: NodePath<N.TSConstructSignatureDeclaration>): any;
   visitTSEnumMember?(this: Context & M, path: NodePath<N.TSEnumMember>): any;
   visitTSTypeQuery?(this: Context & M, path: NodePath<N.TSTypeQuery>): any;
+  visitTSImportType?(this: Context & M, path: NodePath<N.TSImportType>): any;
   visitTSTypeLiteral?(this: Context & M, path: NodePath<N.TSTypeLiteral>): any;
   visitTSTypeAssertion?(this: Context & M, path: NodePath<N.TSTypeAssertion>): any;
   visitTSEnumDeclaration?(this: Context & M, path: NodePath<N.TSEnumDeclaration>): any;

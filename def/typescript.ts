@@ -31,15 +31,19 @@ export default function (fork: Fork) {
   def("TSType")
     .bases("Node");
 
-  var IdOrQualifiedName = or(
+  var TSEntityName = or(
     def("Identifier"),
     def("TSQualifiedName")
   );
 
   def("TSTypeReference")
-    .bases("TSType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("typeName", "typeParameters")
-    .field("typeName", IdOrQualifiedName)
+    .field("typeName", TSEntityName);
+
+  // An abstract (non-buildable) base type that provide a commonly-needed
+  // optional .typeParameters field.
+  def("TSHasOptionalTypeParameterInstantiation")
     .field("typeParameters",
            or(def("TSTypeParameterInstantiation"), null),
            defaults["null"]);
@@ -61,8 +65,8 @@ export default function (fork: Fork) {
   def("TSQualifiedName")
     .bases("Node")
     .build("left", "right")
-    .field("left", IdOrQualifiedName)
-    .field("right", IdOrQualifiedName);
+    .field("left", TSEntityName)
+    .field("right", TSEntityName);
 
   def("TSAsExpression")
     .bases("Expression")
@@ -80,6 +84,7 @@ export default function (fork: Fork) {
 
   [ // Define all the simple keyword types.
     "TSAnyKeyword",
+    "TSBigIntKeyword",
     "TSBooleanKeyword",
     "TSNeverKeyword",
     "TSNullKeyword",
@@ -308,7 +313,7 @@ export default function (fork: Fork) {
   def("TSTypeQuery")
     .bases("TSType")
     .build("exprName")
-    .field("exprName", IdOrQualifiedName);
+    .field("exprName", or(TSEntityName, def("TSImportType")));
 
   // Inferred from Babylon's tsParseTypeMember method.
   var TSTypeMember = or(
@@ -376,7 +381,7 @@ export default function (fork: Fork) {
   def("TSModuleDeclaration")
     .bases("Declaration")
     .build("id", "body")
-    .field("id", or(StringLiteral, IdOrQualifiedName))
+    .field("id", or(StringLiteral, TSEntityName))
     .field("declare", Boolean, defaults["false"])
     .field("global", Boolean, defaults["false"])
     .field("body",
@@ -385,13 +390,19 @@ export default function (fork: Fork) {
               null),
            defaults["null"]);
 
+  def("TSImportType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
+    .build("argument", "qualifier", "typeParameters")
+    .field("argument", StringLiteral)
+    .field("qualifier", or(TSEntityName, void 0), defaults["undefined"]);
+
   def("TSImportEqualsDeclaration")
     .bases("Declaration")
     .build("id", "moduleReference")
     .field("id", def("Identifier"))
     .field("isExport", Boolean, defaults["false"])
     .field("moduleReference",
-           or(IdOrQualifiedName,
+           or(TSEntityName,
               def("TSExternalModuleReference")));
 
   def("TSExternalModuleReference")
@@ -415,17 +426,14 @@ export default function (fork: Fork) {
     .field("body", [TSTypeMember]);
 
   def("TSExpressionWithTypeArguments")
-    .bases("TSType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("expression", "typeParameters")
-    .field("expression", IdOrQualifiedName)
-    .field("typeParameters",
-           or(def("TSTypeParameterInstantiation"), null),
-           defaults["null"]);
+    .field("expression", TSEntityName);
 
   def("TSInterfaceDeclaration")
     .bases("Declaration", "TSHasOptionalTypeParameters")
     .build("id", "body")
-    .field("id", IdOrQualifiedName)
+    .field("id", TSEntityName)
     .field("declare", Boolean, defaults["false"])
     .field("extends",
            or([def("TSExpressionWithTypeArguments")], null),

@@ -2632,6 +2632,16 @@ export interface TSAnyKeywordBuilder {
   ): N.TSAnyKeyword;
 }
 
+export interface TSBigIntKeywordBuilder {
+  (): N.TSBigIntKeyword;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): N.TSBigIntKeyword;
+}
+
 export interface TSBooleanKeywordBuilder {
   (): N.TSBooleanKeyword;
   from(
@@ -3111,14 +3121,31 @@ export interface TSEnumMemberBuilder {
 }
 
 export interface TSTypeQueryBuilder {
-  (exprName: K.IdentifierKind | K.TSQualifiedNameKind): N.TSTypeQuery;
+  (exprName: K.IdentifierKind | K.TSQualifiedNameKind | K.TSImportTypeKind): N.TSTypeQuery;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      exprName: K.IdentifierKind | K.TSQualifiedNameKind,
+      exprName: K.IdentifierKind | K.TSQualifiedNameKind | K.TSImportTypeKind,
       loc?: K.SourceLocationKind | null
     }
   ): N.TSTypeQuery;
+}
+
+export interface TSImportTypeBuilder {
+  (
+    argument: K.StringLiteralKind,
+    qualifier?: K.IdentifierKind | K.TSQualifiedNameKind | undefined,
+    typeParameters?: K.TSTypeParameterInstantiationKind | null
+  ): N.TSImportType;
+  from(
+    params: {
+      argument: K.StringLiteralKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      qualifier?: K.IdentifierKind | K.TSQualifiedNameKind | undefined,
+      typeParameters?: K.TSTypeParameterInstantiationKind | null
+    }
+  ): N.TSImportType;
 }
 
 export interface TSTypeLiteralBuilder {
@@ -3521,6 +3548,7 @@ export interface Builders {
   tsAsExpression: TSAsExpressionBuilder;
   tsNonNullExpression: TSNonNullExpressionBuilder;
   tsAnyKeyword: TSAnyKeywordBuilder;
+  tsBigIntKeyword: TSBigIntKeywordBuilder;
   tsBooleanKeyword: TSBooleanKeywordBuilder;
   tsNeverKeyword: TSNeverKeywordBuilder;
   tsNullKeyword: TSNullKeywordBuilder;
@@ -3558,6 +3586,7 @@ export interface Builders {
   tsConstructSignatureDeclaration: TSConstructSignatureDeclarationBuilder;
   tsEnumMember: TSEnumMemberBuilder;
   tsTypeQuery: TSTypeQueryBuilder;
+  tsImportType: TSImportTypeBuilder;
   tsTypeLiteral: TSTypeLiteralBuilder;
   tsTypeAssertion: TSTypeAssertionBuilder;
   tsEnumDeclaration: TSEnumDeclarationBuilder;
