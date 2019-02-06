@@ -237,7 +237,7 @@ export default function pathPlugin(fork: Fork): PathConstructor {
   Pp.insertAt = function insertAt(index) {
     var argc = arguments.length;
     var move = getMoves(this, argc - 1, index);
-    if (move === emptyMoves) {
+    if (move === emptyMoves && argc <= 1) {
       return this;
     }
 
