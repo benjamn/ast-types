@@ -214,6 +214,7 @@ export interface Visitor<M = {}> {
   visitTSAsExpression?(this: Context & M, path: NodePath<N.TSAsExpression>): any;
   visitTSNonNullExpression?(this: Context & M, path: NodePath<N.TSNonNullExpression>): any;
   visitTSAnyKeyword?(this: Context & M, path: NodePath<N.TSAnyKeyword>): any;
+  visitTSBigIntKeyword?(this: Context & M, path: NodePath<N.TSBigIntKeyword>): any;
   visitTSBooleanKeyword?(this: Context & M, path: NodePath<N.TSBooleanKeyword>): any;
   visitTSNeverKeyword?(this: Context & M, path: NodePath<N.TSNeverKeyword>): any;
   visitTSNullKeyword?(this: Context & M, path: NodePath<N.TSNullKeyword>): any;

@@ -84,6 +84,7 @@ export default function (fork: Fork) {
 
   [ // Define all the simple keyword types.
     "TSAnyKeyword",
+    "TSBigIntKeyword",
     "TSBooleanKeyword",
     "TSNeverKeyword",
     "TSNullKeyword",

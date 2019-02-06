@@ -210,6 +210,7 @@ export interface NamedTypes {
   TSAsExpression: Type<N.TSAsExpression>;
   TSNonNullExpression: Type<N.TSNonNullExpression>;
   TSAnyKeyword: Type<N.TSAnyKeyword>;
+  TSBigIntKeyword: Type<N.TSBigIntKeyword>;
   TSBooleanKeyword: Type<N.TSBooleanKeyword>;
   TSNeverKeyword: Type<N.TSNeverKeyword>;
   TSNullKeyword: Type<N.TSNullKeyword>;

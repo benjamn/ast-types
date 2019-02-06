@@ -2632,6 +2632,16 @@ export interface TSAnyKeywordBuilder {
   ): N.TSAnyKeyword;
 }
 
+export interface TSBigIntKeywordBuilder {
+  (): N.TSBigIntKeyword;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): N.TSBigIntKeyword;
+}
+
 export interface TSBooleanKeywordBuilder {
   (): N.TSBooleanKeyword;
   from(
@@ -3538,6 +3548,7 @@ export interface Builders {
   tsAsExpression: TSAsExpressionBuilder;
   tsNonNullExpression: TSNonNullExpressionBuilder;
   tsAnyKeyword: TSAnyKeywordBuilder;
+  tsBigIntKeyword: TSBigIntKeywordBuilder;
   tsBooleanKeyword: TSBooleanKeywordBuilder;
   tsNeverKeyword: TSNeverKeywordBuilder;
   tsNullKeyword: TSNullKeywordBuilder;
