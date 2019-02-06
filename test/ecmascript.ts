@@ -2010,6 +2010,20 @@ describe("path.insertAt", function() {
     assert.strictEqual(elems.get("length").value, 9);
   });
 
+  it("should insert nodes even when path.value is empty", function() {
+    var path = new NodePath({
+      elements: []
+    });
+
+    var elems = path.get("elements");
+    elems.insertAt(0, 0, "foo", true);
+    assert.deepEqual(elems.value, [0, "foo", true]);
+
+    elems.replace([]);
+    elems.insertAt(1, 0, "foo", true);
+    assert.deepEqual(elems.value, [, 0, "foo", true]);
+  });
+
   it("should throw when path.value not an array", function() {
     assert.throws(function() {
       new NodePath({ foo: 42 }).get("foo").insertAt(0);
