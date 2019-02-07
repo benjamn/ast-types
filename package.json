@@ -50,7 +50,7 @@
     "flow-parser": "^0.83.0",
     "glob": "^7.1.2",
     "mocha": "^5.0.0",
-    "recast": "^0.16.1",
+    "recast": "^0.17.3",
     "reify": "^0.18.1",
     "ts-add-module-exports": "^1.0.0",
     "ts-emit-clean": "^1.0.0",
