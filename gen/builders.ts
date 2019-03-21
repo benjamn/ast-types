@@ -871,6 +871,7 @@ export interface ClassPropertyBuilder {
   ): N.ClassProperty;
   from(
     params: {
+      access?: "public" | "private" | "protected" | undefined,
       comments?: K.CommentKind[] | null,
       computed?: boolean,
       key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
@@ -2433,6 +2434,7 @@ export interface ClassPrivatePropertyBuilder {
   (key: K.PrivateNameKind, value?: K.ExpressionKind | null): N.ClassPrivateProperty;
   from(
     params: {
+      access?: "public" | "private" | "protected" | undefined,
       comments?: K.CommentKind[] | null,
       computed?: boolean,
       key: K.PrivateNameKind,

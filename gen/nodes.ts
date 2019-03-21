@@ -427,6 +427,7 @@ export interface ClassProperty extends Omit<Declaration, "type"> {
   static: boolean;
   typeAnnotation: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   variance: K.VarianceKind | "plus" | "minus" | null;
+  access: "public" | "private" | "protected" | undefined;
 }
 
 export interface ClassBody extends Omit<Declaration, "type"> {
