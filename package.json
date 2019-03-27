@@ -38,8 +38,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/parser": "^7.1.6",
-    "@babel/types": "^7.1.6",
+    "@babel/parser": "^7.4.2",
+    "@babel/types": "^7.4.0",
     "@types/esprima": "^4.0.2",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.5",
@@ -55,7 +55,7 @@
     "ts-add-module-exports": "^1.0.0",
     "ts-emit-clean": "^1.0.0",
     "ts-node": "^7.0.1",
-    "typescript": "^3.2.2"
+    "typescript": "^3.3.4000"
   },
   "engines": {
     "node": ">=4"
