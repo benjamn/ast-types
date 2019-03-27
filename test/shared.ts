@@ -47,10 +47,20 @@ export { esprimaParse };
 // Helper for determining if we should care that a given type is not defined yet.
 // TODO Periodically revisit this as proposals advance.
 export function isEarlyStageProposalType(typeName: string) {
-  if (/^Pipeline/.test(typeName)) {
+  switch (typeName) {
     // The pipeline operator syntax is still at Stage 1:
     // https://github.com/tc39/proposals#stage-1
-    return true;
+    case "PipelineTopicExpression":
+    case "PipelineBareFunction":
+    case "PipelinePrimaryTopicReference":
+    // A Babel-specific AST innovation:
+    // https://github.com/babel/babel/pull/9364
+    case "Placeholder":
+    // Partial application proposal (stage 1):
+    // https://github.com/babel/babel/pull/9474
+    case "ArgumentPlaceholder":
+      return true;
+    default:
+      return false;
   }
-  return false;
 }
