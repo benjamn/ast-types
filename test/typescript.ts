@@ -136,6 +136,7 @@ glob("**/*.ts", {
               "objectRestSpread",
               "classProperties",
               "optionalCatchBinding",
+              "numericSeparator",
             ]
           }).program;
 
