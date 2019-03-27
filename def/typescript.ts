@@ -145,6 +145,7 @@ export default function (fork: Fork) {
   var ParametersType = [or(
     def("Identifier"),
     def("RestElement"),
+    def("ArrayPattern"),
     def("ObjectPattern")
   )];
 

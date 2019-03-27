@@ -1292,12 +1292,12 @@ export interface TSParenthesizedType extends Omit<TSType, "type"> {
 
 export interface TSFunctionType extends Omit<TSType, "type">, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation {
   type: "TSFunctionType";
-  parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[];
+  parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[];
 }
 
 export interface TSConstructorType extends Omit<TSType, "type">, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation {
   type: "TSConstructorType";
-  parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[];
+  parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[];
 }
 
 export interface TSDeclareFunction extends Omit<Declaration, "type">, TSHasOptionalTypeParameters {
@@ -1382,7 +1382,7 @@ export interface TSMethodSignature extends Omit<Declaration, "type">, TSHasOptio
   key: K.ExpressionKind;
   computed: boolean;
   optional: boolean;
-  parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[];
+  parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[];
 }
 
 export interface TSTypePredicate extends Omit<TSTypeAnnotation, "type" | "typeAnnotation"> {
@@ -1393,12 +1393,12 @@ export interface TSTypePredicate extends Omit<TSTypeAnnotation, "type" | "typeAn
 
 export interface TSCallSignatureDeclaration extends Omit<Declaration, "type">, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation {
   type: "TSCallSignatureDeclaration";
-  parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[];
+  parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[];
 }
 
 export interface TSConstructSignatureDeclaration extends Omit<Declaration, "type">, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation {
   type: "TSConstructSignatureDeclaration";
-  parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[];
+  parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[];
 }
 
 export interface TSEnumMember extends Omit<Node, "type"> {

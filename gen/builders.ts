@@ -2857,12 +2857,14 @@ export interface TSParenthesizedTypeBuilder {
 }
 
 export interface TSFunctionTypeBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSFunctionType;
+  (
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[]
+  ): N.TSFunctionType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
       typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
@@ -2870,12 +2872,14 @@ export interface TSFunctionTypeBuilder {
 }
 
 export interface TSConstructorTypeBuilder {
-  (parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[]): N.TSConstructorType;
+  (
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[]
+  ): N.TSConstructorType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
       typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
@@ -3041,7 +3045,7 @@ export interface TSPropertySignatureBuilder {
 export interface TSMethodSignatureBuilder {
   (
     key: K.ExpressionKind,
-    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
     typeAnnotation?: K.TSTypeAnnotationKind | null
   ): N.TSMethodSignature;
   from(
@@ -3051,7 +3055,7 @@ export interface TSMethodSignatureBuilder {
       key: K.ExpressionKind,
       loc?: K.SourceLocationKind | null,
       optional?: boolean,
-      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
       typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
@@ -3075,14 +3079,14 @@ export interface TSTypePredicateBuilder {
 
 export interface TSCallSignatureDeclarationBuilder {
   (
-    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
     typeAnnotation?: K.TSTypeAnnotationKind | null
   ): N.TSCallSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
       typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
@@ -3091,14 +3095,14 @@ export interface TSCallSignatureDeclarationBuilder {
 
 export interface TSConstructSignatureDeclarationBuilder {
   (
-    parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+    parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
     typeAnnotation?: K.TSTypeAnnotationKind | null
   ): N.TSConstructSignatureDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      parameters: (K.IdentifierKind | K.RestElementKind | K.ObjectPatternKind)[],
+      parameters: (K.IdentifierKind | K.RestElementKind | K.ArrayPatternKind | K.ObjectPatternKind)[],
       typeAnnotation?: K.TSTypeAnnotationKind | null,
       typeParameters?: K.TSTypeParameterDeclarationKind | null | undefined
     }
