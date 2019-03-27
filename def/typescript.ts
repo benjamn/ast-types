@@ -451,6 +451,11 @@ export default function (fork: Fork) {
     .field("parameter", or(def("Identifier"),
                            def("AssignmentPattern")));
 
+  def("ClassProperty")
+    .field("access", // Not "accessibility"?
+           or("public", "private", "protected", void 0),
+           defaults["undefined"])
+
   // Defined already in es6 and babel-core.
   def("ClassBody")
     .field("body", [or(
