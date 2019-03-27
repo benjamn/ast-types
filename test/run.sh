@@ -15,7 +15,7 @@ then
 fi
 
 # Hard-code this for now.
-TS_TAG=v2.7.2
+TS_TAG=v$(node -p 'require("typescript/package.json").version')
 
 if [ ! -d typescript-compiler ]
 then
