@@ -3,7 +3,8 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "rootDir": ".",
+    "sourceMap": true,
+    "declarationMap": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -12,10 +13,14 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "stripInternal": true,
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "outDir": "lib"
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
-    "test/data"
+    "src/test/data"
   ]
 }
