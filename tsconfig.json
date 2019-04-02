@@ -13,11 +13,18 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "stripInternal": true,
-    "lib": ["es2015"],
-    "outDir": "lib"
+    "outDir": "lib",
+
+    "lib": [
+      "es2015"
+    ],
+    "types": [
+      "mocha"
+    ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "types/*.d.ts",
   ],
   "exclude": [
     "node_modules",
