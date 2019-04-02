@@ -1,10 +1,7 @@
-node_modules
-lib
-src/test/data/babel-parser
-src/test/data/typescript-compiler
+/node_modules
+/lib
+/src/test/data/babel-parser
+/src/test/data/typescript-compiler
 
-# Ignore TypeScript-emitted files
-*.js
-*.d.ts
-# Except...
-!/types/**/*.d.ts
+# Ignore "npm pack" output
+/*.tgz
