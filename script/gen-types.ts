@@ -6,7 +6,7 @@ import {
   builders as b,
   namedTypes as n,
   getBuilderName,
-} from "../main";
+} from "../src/main";
 
 const Op = Object.prototype;
 const hasOwn = Op.hasOwnProperty;
@@ -349,7 +349,7 @@ const out = [
 
 out.forEach(({ file, ast }) => {
   fs.writeFileSync(
-    path.resolve(__dirname, `../gen/${file}`),
+    path.resolve(__dirname, `../src/gen/${file}`),
     prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
   );
 });

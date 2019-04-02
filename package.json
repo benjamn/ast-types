@@ -25,8 +25,8 @@
     "url": "git://github.com/benjamn/ast-types.git"
   },
   "license": "MIT",
-  "main": "main.js",
-  "types": "main.d.ts",
+  "main": "lib/main.js",
+  "types": "lib/main.d.ts",
   "scripts": {
     "gen": "ts-node --transpile-only script/gen-types.ts",
     "mocha": "test/run.sh",
