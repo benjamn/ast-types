@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 set -ex
+PROJECTDIR=$(dirname $(dirname $(realpath $0)))
 
-cd $(dirname $0)/data
+cd $PROJECTDIR/src/test/data
 
 BAB_TAG=v$(node -p 'require("@babel/parser/package.json").version')
 
@@ -24,8 +25,7 @@ then
     rm -rf TypeScript
 fi
 
-cd .. # back to the ast-types/test/ directory
+cd $PROJECTDIR/src/test
 
-# Run Mocha on the generated .js code, rather than the .ts source code, so
-# that we're testing the same kind of output that we're shipping to npm.
-exec mocha --reporter spec --full-trace $@ run.js
+exec $PROJECTDIR/node_modules/.bin/mocha --require ts-node/register/transpile-only \
+     --reporter spec --full-trace $@ run.ts
