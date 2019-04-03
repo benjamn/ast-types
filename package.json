@@ -29,7 +29,7 @@
   "types": "lib/main.d.ts",
   "scripts": {
     "gen": "ts-node --transpile-only script/gen-types.ts",
-    "mocha": "test/run.sh",
+    "mocha": "script/run-tests.sh",
     "test": "npm run gen && npm run build && npm run mocha",
     "clean": "rimraf lib/",
     "build": "tsc && ts-add-module-exports",
