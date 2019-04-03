@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 set -ex
-PROJECTDIR=$(dirname $(dirname $(realpath $0)))
+
+PROJECTDIR="`cd $(dirname $0)/..; pwd`"
 
 cd $PROJECTDIR/src/test/data
 
