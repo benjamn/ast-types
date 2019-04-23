@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { prettyPrint } from "recast";
-import astTypes, { Type } from "../main";
+import astTypes, { Type } from "../src/main";
 
 const Op = Object.prototype;
 const hasOwn = Op.hasOwnProperty;
@@ -316,7 +316,7 @@ const out = [
 
 out.forEach(({ file, ast }) => {
   fs.writeFileSync(
-    path.resolve(__dirname, `../gen/${file}`),
+    path.resolve(__dirname, `../src/gen/${file}`),
     prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
   );
 });
