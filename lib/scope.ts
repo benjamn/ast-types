@@ -206,7 +206,9 @@ export default function scopePlugin(fork: Fork) {
 
     } else if (
       (namedTypes.TypeAlias && namedTypes.TypeAlias.check(node)) ||
-      (namedTypes.TSTypeAliasDeclaration && namedTypes.TSTypeAliasDeclaration.check(node))
+      (namedTypes.InterfaceDeclaration && namedTypes.InterfaceDeclaration.check(node)) ||
+      (namedTypes.TSTypeAliasDeclaration && namedTypes.TSTypeAliasDeclaration.check(node)) ||
+      (namedTypes.TSInterfaceDeclaration && namedTypes.TSInterfaceDeclaration.check(node))
     ) {
       addTypePattern(path.get("id"), scopeTypes);
 
