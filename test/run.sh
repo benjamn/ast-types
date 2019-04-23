@@ -14,7 +14,7 @@ then
     rm -rf babel
 fi
 
-TS_TAG=v$(node -p 'require("../../node_modules/typescript/package.json").version')
+TS_TAG=v$(node -p 'require("typescript/package.json").version')
 
 if [ ! -d typescript-compiler ]
 then
