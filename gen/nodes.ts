@@ -1253,7 +1253,7 @@ export interface TSArrayType extends Omit<TSType, "type"> {
 
 export interface TSLiteralType extends Omit<TSType, "type"> {
   type: "TSLiteralType";
-  literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind;
+  literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind;
 }
 
 export interface TSUnionType extends Omit<TSType, "type"> {
