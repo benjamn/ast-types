@@ -113,7 +113,9 @@ export default function (fork: Fork) {
     .field("literal",
            or(def("NumericLiteral"),
               def("StringLiteral"),
-              def("BooleanLiteral")));
+              def("BooleanLiteral"),
+              def("TemplateLiteral"),
+              def("UnaryExpression")));
 
   ["TSUnionType",
    "TSIntersectionType",

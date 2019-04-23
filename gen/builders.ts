@@ -2766,11 +2766,13 @@ export interface TSArrayTypeBuilder {
 }
 
 export interface TSLiteralTypeBuilder {
-  (literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind): N.TSLiteralType;
+  (
+    literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind
+  ): N.TSLiteralType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind,
+      literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind,
       loc?: K.SourceLocationKind | null
     }
   ): N.TSLiteralType;
