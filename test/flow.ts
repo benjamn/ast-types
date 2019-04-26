@@ -56,4 +56,25 @@ describe("flow types", function () {
     assert.notEqual(program.body[0].typeAnnotation, undefined);
     assert.strictEqual(program.body[0].typeAnnotation.type, 'TypeAnnotation');
   });
+
+  describe('scope', () => {
+    const scope = [
+      "type Foo = {}",
+      "interface Bar {}"
+    ];
+  
+    const ast = flowParser.parse(scope.join("\n"));
+  
+    it("should register flow types with the scope", function() {  
+      types.visit(ast, {
+        visitProgram(path: any) {
+          assert(path.scope.declaresType('Foo'));
+          assert(path.scope.declaresType('Bar'));
+          assert.equal(path.scope.lookupType('Foo').getTypes()['Foo'][0].parent.node.type, 'TypeAlias');
+          assert.equal(path.scope.lookupType('Bar').getTypes()['Bar'][0].parent.node.type, 'InterfaceDeclaration');
+          return false;
+        }
+      });
+    });
+  });
 });

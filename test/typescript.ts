@@ -1,3 +1,4 @@
+import assert from "assert";
 import fs from "fs";
 import path from "path";
 import glob from "glob";
@@ -5,6 +6,7 @@ import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser"
 import fork from "../fork";
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
+import types from "../main";
 
 var pkgRootDir = path.resolve(__dirname, "..");
 var tsTypes = fork([
@@ -144,6 +146,29 @@ glob("**/*.ts", {
 
           done();
         });
+      });
+    });
+  });
+
+  describe('scope', () => {
+    const scope = [
+      "type Foo = {}",
+      "interface Bar {}"
+    ];
+  
+    const ast = babelParse(scope.join("\n"), {
+      plugins: ['typescript']
+    });
+  
+    it("should register typescript types with the scope", function() {  
+      types.visit(ast, {
+        visitProgram(path) {
+          assert(path.scope.declaresType('Foo'));
+          assert(path.scope.declaresType('Bar'));
+          assert.equal(path.scope.lookupType('Foo').getTypes()['Foo'][0].parent.node.type, 'TSTypeAliasDeclaration');
+          assert.equal(path.scope.lookupType('Bar').getTypes()['Bar'][0].parent.node.type, 'TSInterfaceDeclaration');
+          return false;
+        }
       });
     });
   });
