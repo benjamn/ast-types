@@ -70,7 +70,7 @@ export default function (fork: Fork) {
 
   def("TSAsExpression")
     .bases("Expression", "Pattern")
-    .build("expression")
+    .build("expression", "typeAnnotation")
     .field("expression", def("Expression"))
     .field("typeAnnotation", def("TSType"))
     .field("extra",
