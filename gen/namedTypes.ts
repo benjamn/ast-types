@@ -12,8 +12,8 @@ export interface NamedTypes {
   Program: Type<N.Program>;
   Statement: Type<N.Statement>;
   Function: Type<N.Function>;
-  Pattern: Type<N.Pattern>;
   Expression: Type<N.Expression>;
+  Pattern: Type<N.Pattern>;
   Identifier: Type<N.Identifier>;
   BlockStatement: Type<N.BlockStatement>;
   EmptyStatement: Type<N.EmptyStatement>;
@@ -48,12 +48,12 @@ export interface NamedTypes {
   UnaryExpression: Type<N.UnaryExpression>;
   BinaryExpression: Type<N.BinaryExpression>;
   AssignmentExpression: Type<N.AssignmentExpression>;
+  MemberExpression: Type<N.MemberExpression>;
   UpdateExpression: Type<N.UpdateExpression>;
   LogicalExpression: Type<N.LogicalExpression>;
   ConditionalExpression: Type<N.ConditionalExpression>;
   NewExpression: Type<N.NewExpression>;
   CallExpression: Type<N.CallExpression>;
-  MemberExpression: Type<N.MemberExpression>;
   RestElement: Type<N.RestElement>;
   TypeAnnotation: Type<N.TypeAnnotation>;
   TSTypeAnnotation: Type<N.TSTypeAnnotation>;

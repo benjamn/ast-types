@@ -13,8 +13,8 @@ export interface Visitor<M = {}> {
   visitProgram?(this: Context & M, path: NodePath<N.Program>): any;
   visitStatement?(this: Context & M, path: NodePath<N.Statement>): any;
   visitFunction?(this: Context & M, path: NodePath<N.Function>): any;
-  visitPattern?(this: Context & M, path: NodePath<N.Pattern>): any;
   visitExpression?(this: Context & M, path: NodePath<N.Expression>): any;
+  visitPattern?(this: Context & M, path: NodePath<N.Pattern>): any;
   visitIdentifier?(this: Context & M, path: NodePath<N.Identifier>): any;
   visitBlockStatement?(this: Context & M, path: NodePath<N.BlockStatement>): any;
   visitEmptyStatement?(this: Context & M, path: NodePath<N.EmptyStatement>): any;
@@ -49,12 +49,12 @@ export interface Visitor<M = {}> {
   visitUnaryExpression?(this: Context & M, path: NodePath<N.UnaryExpression>): any;
   visitBinaryExpression?(this: Context & M, path: NodePath<N.BinaryExpression>): any;
   visitAssignmentExpression?(this: Context & M, path: NodePath<N.AssignmentExpression>): any;
+  visitMemberExpression?(this: Context & M, path: NodePath<N.MemberExpression>): any;
   visitUpdateExpression?(this: Context & M, path: NodePath<N.UpdateExpression>): any;
   visitLogicalExpression?(this: Context & M, path: NodePath<N.LogicalExpression>): any;
   visitConditionalExpression?(this: Context & M, path: NodePath<N.ConditionalExpression>): any;
   visitNewExpression?(this: Context & M, path: NodePath<N.NewExpression>): any;
   visitCallExpression?(this: Context & M, path: NodePath<N.CallExpression>): any;
-  visitMemberExpression?(this: Context & M, path: NodePath<N.MemberExpression>): any;
   visitRestElement?(this: Context & M, path: NodePath<N.RestElement>): any;
   visitTypeAnnotation?(this: Context & M, path: NodePath<N.TypeAnnotation>): any;
   visitTSTypeAnnotation?(this: Context & M, path: NodePath<N.TSTypeAnnotation>): any;

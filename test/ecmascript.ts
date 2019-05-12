@@ -181,7 +181,7 @@ describe("supertype lookup", function() {
   it("should properly linearize the inheritance hierarchy", function() {
     assert.deepEqual(
       types.getSupertypeNames("FunctionExpression"),
-      ["Function", "Expression", "Pattern", "Node", "Printable"]
+      ["Function", "Expression", "Node", "Printable"]
     );
   });
 

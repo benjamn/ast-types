@@ -492,18 +492,35 @@ export interface BinaryExpressionBuilder {
 export interface AssignmentExpressionBuilder {
   (
     operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=",
-    left: K.PatternKind,
+    left: K.PatternKind | K.MemberExpressionKind,
     right: K.ExpressionKind
   ): N.AssignmentExpression;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      left: K.PatternKind,
+      left: K.PatternKind | K.MemberExpressionKind,
       loc?: K.SourceLocationKind | null,
       operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=",
       right: K.ExpressionKind
     }
   ): N.AssignmentExpression;
+}
+
+export interface MemberExpressionBuilder {
+  (
+    object: K.ExpressionKind,
+    property: K.IdentifierKind | K.ExpressionKind,
+    computed?: boolean
+  ): N.MemberExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      loc?: K.SourceLocationKind | null,
+      object: K.ExpressionKind,
+      property: K.IdentifierKind | K.ExpressionKind
+    }
+  ): N.MemberExpression;
 }
 
 export interface UpdateExpressionBuilder {
@@ -581,23 +598,6 @@ export interface CallExpressionBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): N.CallExpression;
-}
-
-export interface MemberExpressionBuilder {
-  (
-    object: K.ExpressionKind,
-    property: K.IdentifierKind | K.ExpressionKind,
-    computed?: boolean
-  ): N.MemberExpression;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      loc?: K.SourceLocationKind | null,
-      object: K.ExpressionKind,
-      property: K.IdentifierKind | K.ExpressionKind
-    }
-  ): N.MemberExpression;
 }
 
 export interface RestElementBuilder {
@@ -3403,12 +3403,12 @@ export interface Builders {
   unaryExpression: UnaryExpressionBuilder;
   binaryExpression: BinaryExpressionBuilder;
   assignmentExpression: AssignmentExpressionBuilder;
+  memberExpression: MemberExpressionBuilder;
   updateExpression: UpdateExpressionBuilder;
   logicalExpression: LogicalExpressionBuilder;
   conditionalExpression: ConditionalExpressionBuilder;
   newExpression: NewExpressionBuilder;
   callExpression: CallExpressionBuilder;
-  memberExpression: MemberExpressionBuilder;
   restElement: RestElementBuilder;
   typeAnnotation: TypeAnnotationBuilder;
   tsTypeAnnotation: TSTypeAnnotationBuilder;

@@ -56,10 +56,10 @@ export interface Function extends Node {
   typeParameters: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
 }
 
+export interface Expression extends Node {}
 export interface Pattern extends Node {}
-export interface Expression extends Node, Pattern {}
 
-export interface Identifier extends Omit<Node, "type">, Omit<Expression, "type">, Omit<Pattern, "type"> {
+export interface Identifier extends Omit<Expression, "type">, Omit<Pattern, "type"> {
   type: "Identifier";
   name: string;
   optional: boolean;
@@ -228,7 +228,7 @@ export interface Property extends Omit<Node, "type"> {
   decorators: K.DecoratorKind[] | null;
 }
 
-export interface Literal extends Omit<Node, "type">, Omit<Expression, "type"> {
+export interface Literal extends Omit<Expression, "type"> {
   type: "Literal";
   value: string | boolean | null | number | RegExp;
   regex: {
@@ -259,8 +259,15 @@ export interface BinaryExpression extends Omit<Expression, "type"> {
 export interface AssignmentExpression extends Omit<Expression, "type"> {
   type: "AssignmentExpression";
   operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=";
-  left: K.PatternKind;
+  left: K.PatternKind | K.MemberExpressionKind;
   right: K.ExpressionKind;
+}
+
+export interface MemberExpression extends Omit<Expression, "type"> {
+  type: "MemberExpression";
+  object: K.ExpressionKind;
+  property: K.IdentifierKind | K.ExpressionKind;
+  computed: boolean;
 }
 
 export interface UpdateExpression extends Omit<Expression, "type"> {
@@ -294,13 +301,6 @@ export interface CallExpression extends Omit<Expression, "type"> {
   type: "CallExpression";
   callee: K.ExpressionKind;
   arguments: (K.ExpressionKind | K.SpreadElementKind)[];
-}
-
-export interface MemberExpression extends Omit<Expression, "type"> {
-  type: "MemberExpression";
-  object: K.ExpressionKind;
-  property: K.IdentifierKind | K.ExpressionKind;
-  computed: boolean;
 }
 
 export interface RestElement extends Omit<Pattern, "type"> {
@@ -1180,7 +1180,7 @@ export interface TSHasOptionalTypeAnnotation {
   typeAnnotation: K.TSTypeAnnotationKind | null;
 }
 
-export interface TSAsExpression extends Omit<Expression, "type"> {
+export interface TSAsExpression extends Omit<Expression, "type">, Omit<Pattern, "type"> {
   type: "TSAsExpression";
   expression: K.ExpressionKind;
   typeAnnotation: K.TSTypeKind;
@@ -1189,7 +1189,7 @@ export interface TSAsExpression extends Omit<Expression, "type"> {
   } | null;
 }
 
-export interface TSNonNullExpression extends Omit<Expression, "type"> {
+export interface TSNonNullExpression extends Omit<Expression, "type">, Omit<Pattern, "type"> {
   type: "TSNonNullExpression";
   expression: K.ExpressionKind;
 }
@@ -1424,7 +1424,7 @@ export interface TSTypeLiteral extends Omit<TSType, "type"> {
   members: (K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
 }
 
-export interface TSTypeAssertion extends Omit<Expression, "type"> {
+export interface TSTypeAssertion extends Omit<Expression, "type">, Omit<Pattern, "type"> {
   type: "TSTypeAssertion";
   typeAnnotation: K.TSTypeKind;
   expression: K.ExpressionKind;
@@ -1514,4 +1514,4 @@ export interface OptionalCallExpression extends Omit<CallExpression, "type"> {
   optional: boolean;
 }
 
-export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | MemberExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | MethodDefinition | SpreadElement | AssignmentPattern | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | ImportSpecifier | ImportNamespaceSpecifier | ImportDefaultSpecifier | ImportDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | SpreadProperty | SpreadPropertyPattern | AwaitExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXMemberExpression | JSXSpreadAttribute | JSXElement | JSXOpeningElement | JSXClosingElement | JSXFragment | JSXText | JSXOpeningFragment | JSXClosingFragment | JSXEmptyExpression | JSXSpreadChild | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | NumberTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | OpaqueType | DeclareTypeAlias | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportSpecifier | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | ExportDeclaration | Block | Line | Noop | DoExpression | Super | BindExpression | Decorator | MetaProperty | ParenthesizedExpression | ExportDefaultDeclaration | ExportNamedDeclaration | ExportNamespaceSpecifier | ExportDefaultSpecifier | ExportAllDeclaration | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassPrivateProperty | ClassMethod | ClassPrivateMethod | PrivateName | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty | OptionalMemberExpression | OptionalCallExpression;
+export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | MemberExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | MethodDefinition | SpreadElement | AssignmentPattern | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | ImportSpecifier | ImportNamespaceSpecifier | ImportDefaultSpecifier | ImportDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | SpreadProperty | SpreadPropertyPattern | AwaitExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXMemberExpression | JSXSpreadAttribute | JSXElement | JSXOpeningElement | JSXClosingElement | JSXFragment | JSXText | JSXOpeningFragment | JSXClosingFragment | JSXEmptyExpression | JSXSpreadChild | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | NumberTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | OpaqueType | DeclareTypeAlias | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportSpecifier | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | ExportDeclaration | Block | Line | Noop | DoExpression | Super | BindExpression | Decorator | MetaProperty | ParenthesizedExpression | ExportDefaultDeclaration | ExportNamedDeclaration | ExportNamespaceSpecifier | ExportDefaultSpecifier | ExportAllDeclaration | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassPrivateProperty | ClassMethod | ClassPrivateMethod | PrivateName | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty | OptionalMemberExpression | OptionalCallExpression;
