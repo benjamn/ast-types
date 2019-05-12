@@ -69,7 +69,7 @@ export default function (fork: Fork) {
     .field("right", TSEntityName);
 
   def("TSAsExpression")
-    .bases("Expression")
+    .bases("Expression", "Pattern")
     .build("expression")
     .field("expression", def("Expression"))
     .field("typeAnnotation", def("TSType"))
@@ -78,7 +78,7 @@ export default function (fork: Fork) {
            defaults["null"]);
 
   def("TSNonNullExpression")
-    .bases("Expression")
+    .bases("Expression", "Pattern")
     .build("expression")
     .field("expression", def("Expression"));
 
@@ -340,7 +340,7 @@ export default function (fork: Fork) {
     .field("default", or(def("TSType"), void 0), defaults["undefined"]);
 
   def("TSTypeAssertion")
-    .bases("Expression")
+    .bases("Expression", "Pattern")
     .build("typeAnnotation", "expression")
     .field("typeAnnotation", def("TSType"))
     .field("expression", def("Expression"))

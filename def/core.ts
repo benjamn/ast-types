@@ -198,8 +198,7 @@ export default function (fork: Fork) {
         .field("id", def("Pattern"))
         .field("init", or(def("Expression"), null), defaults["null"]);
 
-    // TODO Are all Expressions really Patterns?
-    def("Expression").bases("Node", "Pattern");
+    def("Expression").bases("Node");
 
     def("ThisExpression").bases("Expression").build();
 
@@ -264,7 +263,7 @@ export default function (fork: Fork) {
         .bases("Expression")
         .build("operator", "left", "right")
         .field("operator", AssignmentOperator)
-        .field("left", def("Pattern"))
+        .field("left", or(def("Pattern"), def("MemberExpression")))
         .field("right", def("Expression"));
 
     var UpdateOperator = or("++", "--");
@@ -332,15 +331,13 @@ export default function (fork: Fork) {
         .field("consequent", [def("Statement")]);
 
     def("Identifier")
-        // But aren't Expressions and Patterns already Nodes? TODO Report this.
-        .bases("Node", "Expression", "Pattern")
+        .bases("Expression", "Pattern")
         .build("name")
         .field("name", String)
         .field("optional", Boolean, defaults["false"]);
 
     def("Literal")
-        // But aren't Expressions already Nodes? TODO Report this.
-        .bases("Node", "Expression")
+        .bases("Expression")
         .build("value")
         .field("value", or(String, Boolean, null, Number, RegExp))
         .field("regex", or({
