@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
-import * as N from "../gen/nodes";
+import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
     var types = fork.use(typesPlugin);

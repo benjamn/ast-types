@@ -16,7 +16,7 @@ export default function (defs: Def[]) {
 
   const PathVisitor = fork.use(pathVisitorPlugin);
 
-  const exports = {
+  return {
     Type: types.Type,
     builtInTypes: types.builtInTypes,
     namedTypes: types.namedTypes,
@@ -36,8 +36,6 @@ export default function (defs: Def[]) {
     use: fork.use,
     visit: PathVisitor.visit,
   };
-
-  return exports;
 };
 
 function createFork(): Fork {

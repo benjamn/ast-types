@@ -760,7 +760,7 @@ export default function typesPlugin(_fork: Fork) {
     return table;
   }
 
-  var builders: { [name: string]: Builder } = Object.create(null);
+  var builders: import("../gen/builders").builders = Object.create(null);
 
   // This object is used as prototype for any node created by a builder.
   var nodePrototype: { [definedMethod: string]: Function } = {};
@@ -810,7 +810,7 @@ export default function typesPlugin(_fork: Fork) {
     return typeName.replace(/(Expression)?$/, "Statement");
   }
 
-  var namedTypes: { [name: string]: AnyType } = {};
+  var namedTypes = {} as import("../gen/namedTypes").NamedTypes;
 
   // Like Object.keys, but aware of what fields each AST type should have.
   function getFieldNames(object: any) {

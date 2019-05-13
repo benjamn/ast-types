@@ -24,13 +24,15 @@ From GitHub:
 Basic Usage
 ---
 ```js
-var assert = require("assert");
-var n = require("ast-types").namedTypes;
-var b = require("ast-types").builders;
+import assert from "assert";
+import {
+  namedTypes as n,
+  builders as b,
+} from "ast-types";
 
 var fooId = b.identifier("foo");
 var ifFoo = b.ifStatement(fooId, b.blockStatement([
-    b.expressionStatement(b.callExpression(fooId, []))
+  b.expressionStatement(b.callExpression(fooId, []))
 ]));
 
 assert.ok(n.IfStatement.check(ifFoo));
@@ -39,8 +41,9 @@ assert.ok(n.Node.check(ifFoo));
 
 assert.ok(n.BlockStatement.check(ifFoo.consequent));
 assert.strictEqual(
-    ifFoo.consequent.body[0].expression.arguments.length,
-    0);
+  ifFoo.consequent.body[0].expression.arguments.length,
+  0,
+);
 
 assert.strictEqual(ifFoo.test, fooId);
 assert.ok(n.Expression.check(ifFoo.test));
@@ -59,18 +62,22 @@ of enumerating the known fields of your AST nodes and getting their
 values, you may be interested in the primitives `getFieldNames` and
 `getFieldValue`:
 ```js
-var types = require("ast-types");
-var partialFunExpr = { type: "FunctionExpression" };
+import {
+  getFieldNames,
+  getFieldValue,
+} from "ast-types";
+
+const partialFunExpr = { type: "FunctionExpression" };
 
 // Even though partialFunExpr doesn't actually contain all the fields that
 // are expected for a FunctionExpression, types.getFieldNames knows:
-console.log(types.getFieldNames(partialFunExpr));
+console.log(getFieldNames(partialFunExpr));
 // [ 'type', 'id', 'params', 'body', 'generator', 'expression',
 //   'defaults', 'rest', 'async' ]
 
 // For fields that have default values, types.getFieldValue will return
 // the default if the field is not actually defined.
-console.log(types.getFieldValue(partialFunExpr, "generator"));
+console.log(getFieldValue(partialFunExpr, "generator"));
 // false
 ```
 
@@ -81,31 +88,32 @@ defined in terms of `getFieldNames` and `getFieldValue`:
 // or undefined, passing each field name and effective value (as returned
 // by getFieldValue) to the callback. If the object has no corresponding
 // Def, the callback will never be called.
-exports.eachField = function(object, callback, context) {
-    getFieldNames(object).forEach(function(name) {
-        callback.call(this, name, getFieldValue(object, name));
-    }, context);
-};
+export function eachField(object, callback, context) {
+  getFieldNames(object).forEach(function(name) {
+    callback.call(this, name, getFieldValue(object, name));
+  }, context);
+}
 
 // Similar to eachField, except that iteration stops as soon as the
 // callback returns a truthy value. Like Array.prototype.some, the final
 // result is either true or false to indicates whether the callback
 // returned true for any element or not.
-exports.someField = function(object, callback, context) {
-    return getFieldNames(object).some(function(name) {
-        return callback.call(this, name, getFieldValue(object, name));
-    }, context);
-};
+export function someField(object, callback, context) {
+  return getFieldNames(object).some(function(name) {
+    return callback.call(this, name, getFieldValue(object, name));
+  }, context);
+}
 ```
 
 So here's how you might make a copy of an AST node:
 ```js
-var copy = {};
-require("ast-types").eachField(node, function(name, value) {
-    // Note that undefined fields will be visited too, according to
-    // the rules associated with node.type, and default field values
-    // will be substituted if appropriate.
-    copy[name] = value;
+import { eachField } from "ast-types";
+const copy = {};
+eachField(node, function(name, value) {
+  // Note that undefined fields will be visited too, according to
+  // the rules associated with node.type, and default field values
+  // will be substituted if appropriate.
+  copy[name] = value;
 })
 ```
 
@@ -115,30 +123,34 @@ the powerful `types.visit` abstraction.
 Here's a trivial example of how you might assert that `arguments.callee`
 is never used in `ast`:
 ```js
-var assert = require("assert");
-var types = require("ast-types");
-var n = types.namedTypes;
+import assert from "assert";
+import {
+  visit,
+  namedTypes as n,
+} from "ast-types";
 
-types.visit(ast, {
-    // This method will be called for any node with .type "MemberExpression":
-    visitMemberExpression: function(path) {
-        // Visitor methods receive a single argument, a NodePath object
-        // wrapping the node of interest.
-        var node = path.node;
+visit(ast, {
+  // This method will be called for any node with .type "MemberExpression":
+  visitMemberExpression(path) {
+    // Visitor methods receive a single argument, a NodePath object
+    // wrapping the node of interest.
+    var node = path.node;
 
-        if (n.Identifier.check(node.object) &&
-            node.object.name === "arguments" &&
-            n.Identifier.check(node.property)) {
-            assert.notStrictEqual(node.property.name, "callee");
-        }
-
-        // It's your responsibility to call this.traverse with some
-        // NodePath object (usually the one passed into the visitor
-        // method) before the visitor method returns, or return false to
-        // indicate that the traversal need not continue any further down
-        // this subtree.
-        this.traverse(path);
+    if (
+      n.Identifier.check(node.object) &&
+      node.object.name === "arguments" &&
+      n.Identifier.check(node.property)
+    ) {
+      assert.notStrictEqual(node.property.name, "callee");
     }
+
+    // It's your responsibility to call this.traverse with some
+    // NodePath object (usually the one passed into the visitor
+    // method) before the visitor method returns, or return false to
+    // indicate that the traversal need not continue any further down
+    // this subtree.
+    this.traverse(path);
+  }
 });
 ```
 
@@ -146,87 +158,87 @@ Here's a slightly more involved example of transforming `...rest`
 parameters into browser-runnable ES5 JavaScript:
 
 ```js
-var b = types.builders;
+import { builders as b, visit } from "ast-types";
 
 // Reuse the same AST structure for Array.prototype.slice.call.
 var sliceExpr = b.memberExpression(
+  b.memberExpression(
     b.memberExpression(
-        b.memberExpression(
-            b.identifier("Array"),
-            b.identifier("prototype"),
-            false
-        ),
-        b.identifier("slice"),
-        false
+      b.identifier("Array"),
+      b.identifier("prototype"),
+      false
     ),
-    b.identifier("call"),
+    b.identifier("slice"),
     false
+  ),
+  b.identifier("call"),
+  false
 );
 
-types.visit(ast, {
-    // This method will be called for any node whose type is a subtype of
-    // Function (e.g., FunctionDeclaration, FunctionExpression, and
-    // ArrowFunctionExpression). Note that types.visit precomputes a
-    // lookup table from every known type to the appropriate visitor
-    // method to call for nodes of that type, so the dispatch takes
-    // constant time.
-    visitFunction: function(path) {
-        // Visitor methods receive a single argument, a NodePath object
-        // wrapping the node of interest.
-        var node = path.node;
+visit(ast, {
+  // This method will be called for any node whose type is a subtype of
+  // Function (e.g., FunctionDeclaration, FunctionExpression, and
+  // ArrowFunctionExpression). Note that types.visit precomputes a
+  // lookup table from every known type to the appropriate visitor
+  // method to call for nodes of that type, so the dispatch takes
+  // constant time.
+  visitFunction(path) {
+    // Visitor methods receive a single argument, a NodePath object
+    // wrapping the node of interest.
+    const node = path.node;
 
-        // It's your responsibility to call this.traverse with some
-        // NodePath object (usually the one passed into the visitor
-        // method) before the visitor method returns, or return false to
-        // indicate that the traversal need not continue any further down
-        // this subtree. An assertion will fail if you forget, which is
-        // awesome, because it means you will never again make the
-        // disastrous mistake of forgetting to traverse a subtree. Also
-        // cool: because you can call this method at any point in the
-        // visitor method, it's up to you whether your traversal is
-        // pre-order, post-order, or both!
-        this.traverse(path);
+    // It's your responsibility to call this.traverse with some
+    // NodePath object (usually the one passed into the visitor
+    // method) before the visitor method returns, or return false to
+    // indicate that the traversal need not continue any further down
+    // this subtree. An assertion will fail if you forget, which is
+    // awesome, because it means you will never again make the
+    // disastrous mistake of forgetting to traverse a subtree. Also
+    // cool: because you can call this method at any point in the
+    // visitor method, it's up to you whether your traversal is
+    // pre-order, post-order, or both!
+    this.traverse(path);
 
-        // This traversal is only concerned with Function nodes that have
-        // rest parameters.
-        if (!node.rest) {
-            return;
-        }
-
-        // For the purposes of this example, we won't worry about functions
-        // with Expression bodies.
-        n.BlockStatement.assert(node.body);
-
-        // Use types.builders to build a variable declaration of the form
-        //
-        //   var rest = Array.prototype.slice.call(arguments, n);
-        //
-        // where `rest` is the name of the rest parameter, and `n` is a
-        // numeric literal specifying the number of named parameters the
-        // function takes.
-        var restVarDecl = b.variableDeclaration("var", [
-            b.variableDeclarator(
-                node.rest,
-                b.callExpression(sliceExpr, [
-                    b.identifier("arguments"),
-                    b.literal(node.params.length)
-                ])
-            )
-        ]);
-
-        // Similar to doing node.body.body.unshift(restVarDecl), except
-        // that the other NodePath objects wrapping body statements will
-        // have their indexes updated to accommodate the new statement.
-        path.get("body", "body").unshift(restVarDecl);
-
-        // Nullify node.rest now that we have simulated the behavior of
-        // the rest parameter using ordinary JavaScript.
-        path.get("rest").replace(null);
-
-        // There's nothing wrong with doing node.rest = null, but I wanted
-        // to point out that the above statement has the same effect.
-        assert.strictEqual(node.rest, null);
+    // This traversal is only concerned with Function nodes that have
+    // rest parameters.
+    if (!node.rest) {
+      return;
     }
+
+    // For the purposes of this example, we won't worry about functions
+    // with Expression bodies.
+    n.BlockStatement.assert(node.body);
+
+    // Use types.builders to build a variable declaration of the form
+    //
+    //   var rest = Array.prototype.slice.call(arguments, n);
+    //
+    // where `rest` is the name of the rest parameter, and `n` is a
+    // numeric literal specifying the number of named parameters the
+    // function takes.
+    const restVarDecl = b.variableDeclaration("var", [
+      b.variableDeclarator(
+        node.rest,
+        b.callExpression(sliceExpr, [
+          b.identifier("arguments"),
+          b.literal(node.params.length)
+        ])
+      )
+    ]);
+
+    // Similar to doing node.body.body.unshift(restVarDecl), except
+    // that the other NodePath objects wrapping body statements will
+    // have their indexes updated to accommodate the new statement.
+    path.get("body", "body").unshift(restVarDecl);
+
+    // Nullify node.rest now that we have simulated the behavior of
+    // the rest parameter using ordinary JavaScript.
+    path.get("rest").replace(null);
+
+    // There's nothing wrong with doing node.rest = null, but I wanted
+    // to point out that the above statement has the same effect.
+    assert.strictEqual(node.rest, null);
+  }
 });
 ```
 
@@ -235,64 +247,64 @@ determines if a given function node refers to `this`:
 
 ```js
 function usesThis(funcNode) {
-    n.Function.assert(funcNode);
-    var result = false;
+  n.Function.assert(funcNode);
+  var result = false;
 
-    types.visit(funcNode, {
-        visitThisExpression: function(path) {
-            result = true;
+  visit(funcNode, {
+    visitThisExpression(path) {
+      result = true;
 
-            // The quickest way to terminate the traversal is to call
-            // this.abort(), which throws a special exception (instanceof
-            // this.AbortRequest) that will be caught in the top-level
-            // types.visit method, so you don't have to worry about
-            // catching the exception yourself.
-            this.abort();
-        },
+      // The quickest way to terminate the traversal is to call
+      // this.abort(), which throws a special exception (instanceof
+      // this.AbortRequest) that will be caught in the top-level
+      // types.visit method, so you don't have to worry about
+      // catching the exception yourself.
+      this.abort();
+    },
 
-        visitFunction: function(path) {
-            // ThisExpression nodes in nested scopes don't count as `this`
-            // references for the original function node, so we can safely
-            // avoid traversing this subtree.
-            return false;
-        },
+    visitFunction(path) {
+      // ThisExpression nodes in nested scopes don't count as `this`
+      // references for the original function node, so we can safely
+      // avoid traversing this subtree.
+      return false;
+    },
 
-        visitCallExpression: function(path) {
-            var node = path.node;
+    visitCallExpression(path) {
+      const node = path.node;
 
-            // If the function contains CallExpression nodes involving
-            // super, those expressions will implicitly depend on the
-            // value of `this`, even though they do not explicitly contain
-            // any ThisExpression nodes.
-            if (this.isSuperCallExpression(node)) {
-                result = true;
-                this.abort(); // Throws AbortRequest exception.
-            }
+      // If the function contains CallExpression nodes involving
+      // super, those expressions will implicitly depend on the
+      // value of `this`, even though they do not explicitly contain
+      // any ThisExpression nodes.
+      if (this.isSuperCallExpression(node)) {
+        result = true;
+        this.abort(); // Throws AbortRequest exception.
+      }
 
-            this.traverse(path);
-        },
+      this.traverse(path);
+    },
 
-        // Yes, you can define arbitrary helper methods.
-        isSuperCallExpression: function(callExpr) {
-            n.CallExpression.assert(callExpr);
-            return this.isSuperIdentifier(callExpr.callee)
-                || this.isSuperMemberExpression(callExpr.callee);
-        },
+    // Yes, you can define arbitrary helper methods.
+    isSuperCallExpression(callExpr) {
+      n.CallExpression.assert(callExpr);
+      return this.isSuperIdentifier(callExpr.callee)
+          || this.isSuperMemberExpression(callExpr.callee);
+    },
 
-        // And even helper helper methods!
-        isSuperIdentifier: function(node) {
-            return n.Identifier.check(node.callee)
-                && node.callee.name === "super";
-        },
+    // And even helper helper methods!
+    isSuperIdentifier(node) {
+      return n.Identifier.check(node.callee)
+          && node.callee.name === "super";
+    },
 
-        isSuperMemberExpression: function(node) {
-            return n.MemberExpression.check(node.callee)
-                && n.Identifier.check(node.callee.object)
-                && node.callee.object.name === "super";
-        }
-    });
+    isSuperMemberExpression(node) {
+      return n.MemberExpression.check(node.callee)
+          && n.Identifier.check(node.callee.object)
+          && node.callee.object.name === "super";
+    }
+  });
 
-    return result;
+  return result;
 }
 ```
 
@@ -384,8 +396,8 @@ fifth.replace(newerNode);
 
 // Replace the third element in an array with two new nodes:
 path.get("elements", 2).replace(
-    b.identifier("foo"),
-    b.thisExpression()
+  b.identifier("foo"),
+  b.thisExpression()
 );
 
 // Remove a node and its parent if it would leave a redundant AST node:
@@ -432,35 +444,40 @@ The `ast-types` module was designed to be extended. To that end, it
 provides a readable, declarative syntax for specifying new AST node types,
 based primarily upon the `require("ast-types").Type.def` function:
 ```js
-var types = require("ast-types");
-var def = types.Type.def;
-var string = types.builtInTypes.string;
-var b = types.builders;
+import {
+  Type,
+  builtInTypes,
+  builders as b,
+  finalize,
+} from "ast-types";
+
+const { def } = Type;
+const { string } = builtInTypes;
 
 // Suppose you need a named File type to wrap your Programs.
 def("File")
-    .bases("Node")
-    .build("name", "program")
-    .field("name", string)
-    .field("program", def("Program"));
+  .bases("Node")
+  .build("name", "program")
+  .field("name", string)
+  .field("program", def("Program"));
 
 // Prevent further modifications to the File type (and any other
 // types newly introduced by def(...)).
-types.finalize();
+finalize();
 
 // The b.file builder function is now available. It expects two
 // arguments, as named by .build("name", "program") above.
-var main = b.file("main.js", b.program([
-    // Pointless program contents included for extra color.
-    b.functionDeclaration(b.identifier("succ"), [
-        b.identifier("x")
-    ], b.blockStatement([
-        b.returnStatement(
-            b.binaryExpression(
-                "+", b.identifier("x"), b.literal(1)
-            )
-        )
-    ]))
+const main = b.file("main.js", b.program([
+  // Pointless program contents included for extra color.
+  b.functionDeclaration(b.identifier("succ"), [
+    b.identifier("x")
+  ], b.blockStatement([
+    b.returnStatement(
+      b.binaryExpression(
+        "+", b.identifier("x"), b.literal(1)
+      )
+    )
+  ]))
 ]));
 
 assert.strictEqual(main.name, "main.js");

@@ -8,22 +8,32 @@ import esprimaDef from "./def/esprima";
 import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import esProposalsDef from "./def/es-proposals";
-import { Omit } from "./types";
 import { ASTNode, Type, AnyType, Field } from "./lib/types";
 import { NodePath } from "./lib/node-path";
-import { NamedTypes } from "./gen/namedTypes";
-import { Builders } from "./gen/builders";
+import { namedTypes } from "./gen/namedTypes";
+import { builders } from "./gen/builders";
 import { Visitor } from "./gen/visitor";
 
-type GenTypes = {
-  namedTypes: NamedTypes;
-  builders: Builders;
-  visit<M = {}>(node: ASTNode, methods?: Visitor<M> & M): any;
-};
-
-type Main = Omit<ReturnType<typeof fork>, keyof GenTypes> & GenTypes;
-
-const defs = [
+const {
+  astNodesAreEquivalent,
+  builders,
+  builtInTypes,
+  defineMethod,
+  eachField,
+  finalize,
+  getBuilderName,
+  getFieldNames,
+  getFieldValue,
+  getSupertypeNames,
+  namedTypes: n,
+  NodePath,
+  Path,
+  PathVisitor,
+  someField,
+  Type,
+  use,
+  visit,
+} = fork([
   // This core module of AST types captures ES5 as it is parsed today by
   // git://github.com/ariya/esprima.git#master.
   coreDef,
@@ -38,18 +48,33 @@ const defs = [
   babelDef,
   typescriptDef,
   esProposalsDef,
-];
+]);
 
-const main = fork(defs) as any as Main;
-export default main;
+// Populate the exported fields of the namedTypes namespace, while still
+// retaining its member types.
+Object.assign(namedTypes, n);
 
 export {
-  ASTNode,
-  Type,
   AnyType,
+  ASTNode,
+  astNodesAreEquivalent,
+  builders,
+  builtInTypes,
+  defineMethod,
+  eachField,
   Field,
+  finalize,
+  getBuilderName,
+  getFieldNames,
+  getFieldValue,
+  getSupertypeNames,
+  namedTypes,
   NodePath,
-  NamedTypes,
-  Builders,
+  Path,
+  PathVisitor,
+  someField,
+  Type,
+  use,
+  visit,
   Visitor,
 };

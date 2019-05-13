@@ -26,7 +26,7 @@ export interface PathVisitor {
 
 export interface PathVisitorStatics {
   fromMethodsObject(methods?: any): Visitor;
-  visit(node: ASTNode, methods?: any): any;
+  visit<M = {}>(node: ASTNode, methods?: import("../gen/visitor").Visitor<M>): any;
 }
 
 export interface PathVisitorConstructor extends PathVisitorStatics {

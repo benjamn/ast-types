@@ -5,7 +5,22 @@ import * as esprimaFb from "esprima-fb";
 import { Literal } from "estree";
 import * as babelTypes from "@babel/types";
 import fork from "../fork";
-import types from "../main";
+import {
+  Type,
+  namedTypes as n,
+  builders as b,
+  Path,
+  NodePath,
+  PathVisitor,
+  builtInTypes as builtin,
+  use,
+  getSupertypeNames,
+  getFieldValue,
+  eachField,
+  visit,
+  defineMethod,
+  astNodesAreEquivalent,
+} from "../main";
 import {
   babylonParse,
   validateECMAScript,
@@ -18,15 +33,12 @@ import es6Def from "../def/es6";
 import es7Def from "../def/es7";
 import babelDef from "../def/babel";
 
-var n = types.namedTypes;
-var b = types.builders;
-var Path = types.Path;
-var NodePath = types.NodePath;
-var PathVisitor = types.PathVisitor;
-var builtin = types.builtInTypes;
-var isRegExp = builtin.RegExp;
-var isString = builtin.string;
-var rawTypes = types.use(typesPlugin);
+const {
+  RegExp: isRegExp,
+  string: isString,
+} = builtin;
+
+var rawTypes = use(typesPlugin);
 
 var hasOwn = Object.prototype.hasOwnProperty;
 var nodeMajorVersion = parseInt(process.versions.node, 10);
@@ -141,7 +153,7 @@ describe("builders", function() {
 
 describe("isSupertypeOf", function() {
   it("should report correct supertype relationships", function() {
-    var def = types.Type.def;
+    var def = Type.def;
 
     assert.ok(def("Node").isSupertypeOf(def("Node")));
     assert.ok(def("Node").isSupertypeOf(def("Expression")));
@@ -155,7 +167,7 @@ describe("isSupertypeOf", function() {
 
 describe("supertype lookup", function() {
   it("should resolve the most precise supertypes", function() {
-    var table = types.use(typesPlugin).computeSupertypeLookupTable({
+    var table = use(typesPlugin).computeSupertypeLookupTable({
       Function: true,
       Declaration: true,
       ArrowFunctionExpression: true,
@@ -180,14 +192,14 @@ describe("supertype lookup", function() {
 
   it("should properly linearize the inheritance hierarchy", function() {
     assert.deepEqual(
-      types.getSupertypeNames("FunctionExpression"),
+      getSupertypeNames("FunctionExpression"),
       ["Function", "Expression", "Node", "Printable"]
     );
   });
 
   it("should trigger an AssertionError for unknown types", function() {
     assert.throws(function() {
-      types.getSupertypeNames("AlienBoomerangDeclaration");
+      getSupertypeNames("AlienBoomerangDeclaration");
     });
   });
 });
@@ -271,7 +283,7 @@ describe("whole-program validation", function() {
 });
 
 describe("esprima Syntax types", function() {
-  const { def, hasDef } = types.Type;
+  const { def, hasDef } = Type;
   const typeNames: any = {};
 
   function addTypeName(name: any) {
@@ -310,14 +322,14 @@ describe("esprima Syntax types", function() {
 describe("types.getFieldValue", function() {
   it("should work for explicit fields", function() {
     assert.strictEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "CatchClause"
       }, "type"),
       "CatchClause"
     );
 
     assert.strictEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "CatchClause",
         guard: b.identifier("test")
       }, "guard").name,
@@ -327,35 +339,35 @@ describe("types.getFieldValue", function() {
 
   it("should work for implicit/default fields", function() {
     assert.strictEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "CatchClause"
       }, "guard"),
       null
     );
 
     assert.strictEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "CatchClause"
       }, "asdf"),
       void 0
     );
 
     assert.deepEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "TryStatement",
       }, "handler"),
       null
     );
 
     assert.deepEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "TryStatement",
       }, "handlers"),
       []
     );
 
     assert.deepEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "TryStatement",
       }, "guardedHandlers"),
       []
@@ -364,7 +376,7 @@ describe("types.getFieldValue", function() {
 
   it("should work for explicitly undefined fields", function() {
     assert.deepEqual(
-      types.getFieldValue({
+      getFieldValue({
         type: "TryStatement",
         guardedHandlers: void 0
       }, "guardedHandlers"),
@@ -374,7 +386,7 @@ describe("types.getFieldValue", function() {
 
   it("should handle undefined objects", function() {
     assert.equal(
-      types.getFieldValue(undefined, "name"),
+      getFieldValue(undefined, "name"),
       undefined
     );
   });
@@ -386,7 +398,7 @@ describe("types.eachField", function() {
   function check(node: any, names: any) {
     var seen: any[] = [];
 
-    types.eachField(node, function(this: any, name: any, value: any) {
+    eachField(node, function(this: any, name: any, value: any) {
       assert.strictEqual(this, context);
       if (name === "type")
         assert.strictEqual(node.type, value);
@@ -465,7 +477,7 @@ describe("types.visit", function() {
   it("should have correct .parent path", function() {
     var literalCount = 0;
 
-    n.TryStatement.assert(types.visit(ts, {
+    n.TryStatement.assert(visit(ts, {
       visitLiteral: function(path) {
         var node = path.node;
         literalCount += 1;
@@ -485,7 +497,7 @@ describe("types.visit", function() {
   it("should abort subtree traversal when false returned", function() {
     var ids: any = {};
 
-    types.visit(ts, {
+    visit(ts, {
       visitMemberExpression: function(_path: any) {
         return false;
       },
@@ -501,7 +513,7 @@ describe("types.visit", function() {
 
     ids = {};
 
-    types.visit(ts, {
+    visit(ts, {
       visitIdentifier: function(path) {
         ids[path.node.name] = true;
         this.traverse(path);
@@ -519,7 +531,7 @@ describe("types.visit", function() {
   it("this.abort() should abort entire traversal", function() {
     var literal = "not visited";
     var unvisitedTypes: any[] = [];
-    var root = types.visit(call, {
+    var root = visit(call, {
       visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           this.abort();
@@ -549,7 +561,7 @@ describe("types.visit", function() {
   it("this.abort() should be cancelable", function() {
     var literal: any = "not visited";
     var unvisitedTypes: any[] = [];
-    var root = types.visit(call, {
+    var root = visit(call, {
       visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           this.abort();
@@ -608,7 +620,7 @@ describe("types.visit", function() {
     var blockComments: any[] = [];
     var lineComments: any[] = [];
 
-    types.visit(ast, {
+    visit(ast, {
       visitComment: function(path) {
         this.traverse(path);
         if (n.Block.check(path.value)) {
@@ -631,7 +643,7 @@ describe("types.visit", function() {
     blockComments.length = 0;
     lineComments.length = 0;
 
-    types.visit(ast, {
+    visit(ast, {
       visitBlock: function(path) {
         blockComments.push(path.value);
         this.traverse(path);
@@ -646,7 +658,7 @@ describe("types.visit", function() {
     blockComments.length = 0;
     lineComments.length = 0;
 
-    types.visit(ast, {
+    visit(ast, {
       visitLine: function(path) {
         lineComments.push(path.value);
         this.traverse(path);
@@ -664,7 +676,7 @@ describe("types.visit", function() {
     blockComments.length = 0;
     lineComments.length = 0;
 
-    types.visit(ast, {
+    visit(ast, {
       visitBlock: function(path) {
         blockComments.push(path.value);
         this.traverse(path);
@@ -705,7 +717,7 @@ describe("path traversal", function() {
 
     // Note that we're passing a path instead of a node as the first
     // argument to types.traverse.
-    types.visit(path, {
+    visit(path, {
       visitIdentifier: function(path) {
         var node = path.node;
         ++idCount;
@@ -734,7 +746,7 @@ describe("replacing the root", function() {
   );
 
   it("should be possible", function() {
-    var callExp = types.visit(ast, {
+    var callExp = visit(ast, {
       visitExpressionStatement: function(path) {
         path.replace(b.callExpression(b.identifier("f"), [
           path.node.expression
@@ -923,7 +935,7 @@ describe("path.replace", function() {
   });
 
   it("should support replacement with a single node", function() {
-    types.visit(ast, {
+    visit(ast, {
       visitIdentifier: function(path) {
         if (path.node.name === "a") {
           path.replace(b.identifier("b"));
@@ -936,7 +948,7 @@ describe("path.replace", function() {
   });
 
   it("should support replacement in an array with a single node", function() {
-    types.visit(ast, {
+    visit(ast, {
       visitVariableDeclaration: function(path) {
         path.replace(b.returnStatement(null));
         this.traverse(path);
@@ -948,7 +960,7 @@ describe("path.replace", function() {
   });
 
   it("should support replacement with nothing", function() {
-    types.visit(ast, {
+    visit(ast, {
       visitVariableDeclaration: function(path) {
         path.replace();
         this.traverse(path);
@@ -959,7 +971,7 @@ describe("path.replace", function() {
   });
 
   it("should support replacement with itself plus more in an array", function() {
-    types.visit(ast, {
+    visit(ast, {
       visitVariableDeclaration: function(path) {
         var scopeBody = path.scope.path.get("body", "body");
 
@@ -1013,7 +1025,7 @@ describe("path.replace", function() {
   });
 
   it("should not throw when replacing the same node twice", function() {
-    types.visit(ast, {
+    visit(ast, {
       visitVariableDeclaration: function(path) {
         path.replace(b.expressionStatement(b.literal(null)));
         n.ExpressionStatement.assert(path.value);
@@ -1048,7 +1060,7 @@ describe("global scope", function() {
   it("should be reachable from nested scopes", function() {
     var globalScope: any;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
@@ -1074,7 +1086,7 @@ describe("global scope", function() {
   it("should be found by .lookup and .declares", function() {
     var globalScope: any;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         assert.strictEqual(path.scope.isGlobal, true);
         globalScope = path.scope;
@@ -1115,7 +1127,7 @@ describe("scope methods", function () {
     var ast = parse(scope.join("\n"));
     var checked: any[] = [];
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         var bindings = path.scope.getBindings();
         assert.deepEqual(["bar", "foo", "nom"], Object.keys(bindings).sort());
@@ -1164,7 +1176,7 @@ describe("scope methods", function () {
 
     var names;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
@@ -1186,7 +1198,7 @@ describe("scope methods", function () {
 
     var names;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         names = Object.keys(path.scope.getBindings()).sort();
         this.traverse(path);
@@ -1211,7 +1223,7 @@ describe("scope methods", function () {
       ecmaVersion: 6
     });
 
-    types.visit(ast, {
+    visit(ast, {
       visitFunctionDeclaration: function(path) {
         names = Object.keys(path.scope.lookup("zap").getBindings()).sort();
         assert.deepEqual(names, ["zap"]);
@@ -1224,7 +1236,7 @@ describe("scope methods", function () {
     var ast = parse(scope.join("\n"));
     var bindings;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         path.scope.injectTemporary();
         bindings = path.scope.getBindings();
@@ -1249,7 +1261,7 @@ describe("scope methods", function () {
     var barVarDecl: any;
     var romVarDecl: any;
 
-    types.visit(ast, {
+    visit(ast, {
       visitProgram: function(path) {
         path.get("body").unshift(
           globalVarDecl = b.variableDeclaration("var", [
@@ -1492,14 +1504,14 @@ describe("array and object pattern scope", function() {
 
 describe("types.defineMethod", function() {
   function at(this: any, loc: any) {
-    types.namedTypes.SourceLocation.assert(loc);
+    n.SourceLocation.assert(loc);
     this.loc = loc;
   }
 
   var thisExpr: any = b.thisExpression();
 
   it("should allow defining an .at method", function() {
-    assert.strictEqual(types.defineMethod("at", at), void 0);
+    assert.strictEqual(defineMethod("at", at), void 0);
     assert.strictEqual(thisExpr.loc, null);
 
     thisExpr.at({
@@ -1521,7 +1533,7 @@ describe("types.defineMethod", function() {
 
   it("should allow methods to be removed", function() {
     // Now try removing the method.
-    assert.strictEqual(types.defineMethod("at"), at);
+    assert.strictEqual(defineMethod("at"), at);
     assert.strictEqual(thisExpr.at, void 0);
     assert.strictEqual("at" in thisExpr, false);
   });
@@ -1539,16 +1551,16 @@ describe("types.visit", function() {
   });
 
   it("should be identical to PathVisitor.visit", function() {
-    assert.strictEqual(types.visit, PathVisitor.visit);
+    assert.strictEqual(visit, PathVisitor.visit);
   });
 
   it("should work with no visitors", function() {
     var foo = b.identifier("foo");
-    assert.strictEqual(types.visit(foo), foo);
+    assert.strictEqual(visit(foo), foo);
   });
 
   it("should allow simple tree modifications", function() {
-    var bar = types.visit(b.identifier("foo"), {
+    var bar = visit(b.identifier("foo"), {
       visitIdentifier: function(path) {
         assert.ok(path instanceof NodePath);
         path.value.name = "bar";
@@ -1562,7 +1574,7 @@ describe("types.visit", function() {
 
   it("should complain about missing this.traverse", function() {
     try {
-      types.visit(objProp, {
+      visit(objProp, {
         visitIdentifier: function(_path: any) {
           // buh?
         }
@@ -1581,7 +1593,7 @@ describe("types.visit", function() {
   it("should support this.traverse", function() {
     var idNames: any[] = [];
 
-    types.visit(objProp, {
+    visit(objProp, {
       visitMemberExpression: function(path) {
         this.traverse(path, {
           visitIdentifier: function(path) {
@@ -1606,7 +1618,7 @@ describe("types.visit", function() {
 
     idNames.length = 0;
 
-    types.visit(objProp, {
+    visit(objProp, {
       visitMemberExpression: function(path) {
         path.get("object", "name").replace("asdfasdf");
         path.get("property", "name").replace("zxcvzxcv");
@@ -1629,7 +1641,7 @@ describe("types.visit", function() {
       b.thisExpression()
     ]);
 
-    types.visit(seqExpr, {
+    visit(seqExpr, {
       visitIdentifier: function(path) {
         assert.strictEqual(path.value.name, "zxcv");
         path.replace(
@@ -1650,7 +1662,7 @@ describe("types.visit", function() {
     n.Identifier.assert(bar);
     assert.strictEqual(bar.name, "bar");
 
-    types.visit(seqExpr, {
+    visit(seqExpr, {
       visitIdentifier: function(path) {
         if (path.value.name === "foo") {
           path.replace(path.value, path.value);
@@ -1674,7 +1686,7 @@ describe("types.visit", function() {
     n.Identifier.assert(bar);
     assert.strictEqual(bar.name, "bar");
 
-    types.visit(seqExpr, {
+    visit(seqExpr, {
       visitLiteral: function(path) {
         path.replace();
         return false;
@@ -1706,7 +1718,7 @@ describe("types.visit", function() {
     var objectContext;
     var propertyContext;
 
-    types.visit(objProp, {
+    visit(objProp, {
       visitIdentifier: function(path) {
         assert.strictEqual(this.needToCallTraverse, true);
         this.traverse(path);
@@ -1758,7 +1770,7 @@ describe("types.visit", function() {
       };
     }
 
-    types.visit(callExpr, {
+    visit(callExpr, {
       visitNode:            makeVisitorMethod(nodes),
       visitExpression:      makeVisitorMethod(expressions),
       visitIdentifier:      makeVisitorMethod(identifiers),
@@ -1803,7 +1815,7 @@ describe("types.visit", function() {
   it("should replace this.currentPath with returned value", function() {
     assert.strictEqual(objProp.computed, false);
 
-    types.visit(objProp, {
+    visit(objProp, {
       visitIdentifier: function(path) {
         if (path.value.name === "property") {
           path.parent.get("computed").replace(true);
@@ -2105,31 +2117,31 @@ describe("path.insertAfter", function() {
 
 describe("types.astNodesAreEquivalent", function() {
   it("should work for simple values", function() {
-    types.astNodesAreEquivalent.assert(1, 2 - 1);
-    types.astNodesAreEquivalent.assert("1", 1);
-    types.astNodesAreEquivalent.assert(true, !false);
+    astNodesAreEquivalent.assert(1, 2 - 1);
+    astNodesAreEquivalent.assert("1", 1);
+    astNodesAreEquivalent.assert(true, !false);
 
     var d1 = new Date;
     var d2 = new Date(+d1);
     assert.notStrictEqual(d1, d2);
-    types.astNodesAreEquivalent.assert(d1, d2);
+    astNodesAreEquivalent.assert(d1, d2);
 
-    types.astNodesAreEquivalent.assert(/x/, /x/);
-    assert.strictEqual(types.astNodesAreEquivalent(/x/g, /x/), false);
+    astNodesAreEquivalent.assert(/x/, /x/);
+    assert.strictEqual(astNodesAreEquivalent(/x/g, /x/), false);
   });
 
   it("should work for arrays", function() {
-    types.astNodesAreEquivalent.assert([], [1, 2, 3].slice(10));
-    types.astNodesAreEquivalent.assert([1, 2, 3], [1].concat(2, [3]));
-    types.astNodesAreEquivalent.assert([1,, 3], [1,, 3,]);
+    astNodesAreEquivalent.assert([], [1, 2, 3].slice(10));
+    astNodesAreEquivalent.assert([1, 2, 3], [1].concat(2, [3]));
+    astNodesAreEquivalent.assert([1,, 3], [1,, 3,]);
     assert.strictEqual(
-      types.astNodesAreEquivalent([1,, 3], [1, void 0, 3]),
+      astNodesAreEquivalent([1,, 3], [1, void 0, 3]),
       false
     );
   });
 
   it("should work for objects", function() {
-    types.astNodesAreEquivalent.assert({
+    astNodesAreEquivalent.assert({
       foo: 42,
       bar: "asdf"
     }, {
@@ -2137,7 +2149,7 @@ describe("types.astNodesAreEquivalent", function() {
       foo: 42
     });
 
-    assert.strictEqual(types.astNodesAreEquivalent({
+    assert.strictEqual(astNodesAreEquivalent({
       foo: 42,
       bar: "asdf",
       baz: true
@@ -2146,7 +2158,7 @@ describe("types.astNodesAreEquivalent", function() {
       foo: 42
     }), false);
 
-    assert.strictEqual(types.astNodesAreEquivalent({
+    assert.strictEqual(astNodesAreEquivalent({
       foo: 42,
       bar: "asdf"
     }, {
@@ -2158,7 +2170,7 @@ describe("types.astNodesAreEquivalent", function() {
 
   it("should work for AST nodes", function() {
     function check(src1: any, src2: any) {
-      types.astNodesAreEquivalent.assert(parse(src1), parse(src2));
+      astNodesAreEquivalent.assert(parse(src1), parse(src2));
     }
 
     function checkNot(src1: any, src2: any) {
@@ -2166,11 +2178,11 @@ describe("types.astNodesAreEquivalent", function() {
       var ast2 = parse(src2, { loc: true });
 
       assert.throws(function() {
-        types.astNodesAreEquivalent.assert(ast1, ast2);
+        astNodesAreEquivalent.assert(ast1, ast2);
       });
 
       var problemPath: any[] = [];
-      types.astNodesAreEquivalent(parse(src1), parse(src2), problemPath);
+      astNodesAreEquivalent(parse(src1), parse(src2), problemPath);
       assert.notStrictEqual(problemPath.length, 0);
 
       var a: any = ast1;
@@ -2249,7 +2261,7 @@ describe("RegExpLiteral nodes", function() {
       n.Literal.assert(regExp);
       isRegExp.assert(regExp.value);
 
-      var regex = types.getFieldValue(regExp, "regex");
+      var regex = getFieldValue(regExp, "regex");
 
       regex.flags = regex.flags.split("").sort().join("");
 
@@ -2258,7 +2270,7 @@ describe("RegExpLiteral nodes", function() {
         flags: "gim"
       });
 
-      types.Type.from({
+      Type.from({
         pattern: isString,
         flags: isString
       }).assert(regex);
@@ -2349,8 +2361,8 @@ describe("MemberExpression", function() {
   it("should set computed flag to false by default", function(){
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
-      b.identifier('bar')
-    )
+      b.identifier('bar'),
+    );
 
     assert.strictEqual(memberExpression.computed, false)
   });
@@ -2358,8 +2370,8 @@ describe("MemberExpression", function() {
   it("should not set computed to true if property is a callExpression", function(){
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
-      b.callExpression(b.identifier('bar'), [])
-    )
+      b.callExpression(b.identifier('bar'), []),
+    );
 
     assert.strictEqual(memberExpression.computed, false)
   });
@@ -2367,8 +2379,8 @@ describe("MemberExpression", function() {
   it("should set computed flag to true if property is a literal", function(){
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
-      b.literal('bar')
-    )
+      b.literal('bar'),
+    );
 
     assert.strictEqual(memberExpression.computed, true)
   });
@@ -2376,8 +2388,8 @@ describe("MemberExpression", function() {
   it("should set computed flag to true if property is a memberExpression", function(){
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
-      b.memberExpression(b.identifier('foo'), b.literal('bar'))
-    )
+      b.memberExpression(b.identifier('foo'), b.literal('bar')),
+    );
 
     assert.strictEqual(memberExpression.computed, true)
   });
@@ -2385,8 +2397,8 @@ describe("MemberExpression", function() {
   it("should set computed flag to true if property is a binaryExpression", function(){
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
-      b.memberExpression(b.identifier('foo'), b.literal('bar'))
-    )
+      b.memberExpression(b.identifier('foo'), b.literal('bar')),
+    );
 
     assert.strictEqual(memberExpression.computed, true)
   });
@@ -2395,8 +2407,8 @@ describe("MemberExpression", function() {
     var memberExpression = b.memberExpression(
       b.identifier('foo'),
       b.callExpression(b.identifier('bar'), []),
-      true
-    )
+      true,
+    );
 
     assert.strictEqual(memberExpression.computed, true);
   });

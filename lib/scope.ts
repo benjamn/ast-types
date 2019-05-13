@@ -272,7 +272,11 @@ export default function scopePlugin(fork: Fork) {
       addPattern(path.get("id"), bindings);
 
     } else if (ScopeType.check(node)) {
-      if (namedTypes.CatchClause.check(node)) {
+      if (
+        namedTypes.CatchClause.check(node) &&
+        // TODO Broaden this to accept any pattern.
+        namedTypes.Identifier.check(node.param)
+      ) {
         var catchParamName = node.param.name;
         var hadBinding = hasOwn.call(bindings, catchParamName);
 
