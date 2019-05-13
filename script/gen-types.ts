@@ -109,6 +109,12 @@ const out = [
                           b.identifier("type"),
                           b.tsTypeAnnotation(b.tsLiteralType(b.stringLiteral(field.defaultFn())))
                         );
+                      } else if (field.defaultFn) {
+                        return b.tsPropertySignature(
+                          b.identifier(field.name),
+                          b.tsTypeAnnotation(getTSTypeAnnotation(field.type)),
+                          true, // optional
+                        );
                       }
 
                       return b.tsPropertySignature(
