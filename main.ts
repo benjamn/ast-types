@@ -25,7 +25,7 @@ const {
   getFieldNames,
   getFieldValue,
   getSupertypeNames,
-  namedTypes,
+  namedTypes: n,
   NodePath,
   Path,
   PathVisitor,
@@ -49,6 +49,10 @@ const {
   typescriptDef,
   esProposalsDef,
 ]);
+
+// Populate the exported fields of the namedTypes namespace, while still
+// retaining its member types.
+Object.assign(namedTypes, n);
 
 export {
   AnyType,

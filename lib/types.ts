@@ -810,7 +810,7 @@ export default function typesPlugin(_fork: Fork) {
     return typeName.replace(/(Expression)?$/, "Statement");
   }
 
-  var namedTypes = {} as import("../gen/namedTypes").namedTypes;
+  var namedTypes = {} as import("../gen/namedTypes").NamedTypes;
 
   // Like Object.keys, but aware of what fields each AST type should have.
   function getFieldNames(object: any) {

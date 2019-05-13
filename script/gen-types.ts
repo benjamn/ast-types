@@ -120,6 +120,7 @@ const out = [
                 })
               );
             }),
+
             b.exportNamedDeclaration(
               b.tsTypeAliasDeclaration(
                 b.identifier("ASTNode"),
@@ -130,12 +131,34 @@ const out = [
                 )
               )
             ),
+
+            ...Object.keys(n).map(typeName =>
+              b.exportNamedDeclaration(
+                b.variableDeclaration("let", [
+                  b.variableDeclarator(
+                    b.identifier.from({
+                      name: typeName,
+                      typeAnnotation: b.tsTypeAnnotation(
+                        b.tsTypeReference(
+                          b.identifier("Type"),
+                          b.tsTypeParameterInstantiation([
+                            b.tsTypeReference(
+                              b.identifier(typeName),
+                            ),
+                          ]),
+                        ),
+                      ),
+                    }),
+                  ),
+                ]),
+              ),
+            ),
           ]),
         )
       ),
       b.exportNamedDeclaration(
         b.tsInterfaceDeclaration(
-          b.identifier("namedTypes"),
+          b.identifier("NamedTypes"),
           b.tsInterfaceBody(
             Object.keys(n).map(typeName =>
               b.tsPropertySignature(
