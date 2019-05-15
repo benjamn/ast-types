@@ -2599,7 +2599,7 @@ export interface TSTypeReferenceBuilder {
 }
 
 export interface TSAsExpressionBuilder {
-  (expression: K.ExpressionKind): namedTypes.TSAsExpression;
+  (expression: K.ExpressionKind, typeAnnotation: K.TSTypeKind): namedTypes.TSAsExpression;
   from(
     params: {
       comments?: K.CommentKind[] | null,
