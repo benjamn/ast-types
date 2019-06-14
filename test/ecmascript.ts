@@ -795,6 +795,14 @@ describe("NodePath", function() {
     )
   );
 
+  var binaryAwait = b.expressionStatement(
+    b.logicalExpression(
+      "&&",
+      b.awaitExpression(b.identifier("a")),
+      b.awaitExpression(b.identifier("b"))
+    )
+  );
+
   it("should support .needsParens()", function() {
     var argPath = path.get("expression", "argument");
     assert.ok(argPath.needsParens());
@@ -817,6 +825,19 @@ describe("NodePath", function() {
 
     var sequenceAssignmentPath = new NodePath(sequenceAssignmentAST);
     assert.ok(sequenceAssignmentPath.get("right").needsParens());
+  });
+
+  it("should correctly determine .needsParens() for await", function() {
+    var programPath = new NodePath(parse("async v => (await v).b"));
+    var memberPath = programPath.get("body", 0, "expression", "body");
+    n.MemberExpression.assert(memberPath.value);
+    assert.ok(!memberPath.needsParens());
+    assert.ok(memberPath.get("object").needsParens());
+
+    var baPath = new NodePath(binaryAwait);
+    assert.ok(!baPath.get("expression").needsParens());
+    assert.ok(baPath.get("expression", "left").needsParens());
+    assert.ok(baPath.get("expression", "right").needsParens());
   });
 
   it("should support .needsParens(true)", function() {

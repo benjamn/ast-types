@@ -255,8 +255,10 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
             return true;
         }
 
+      case "AwaitExpression":
       case "YieldExpression":
         switch (parent.type) {
+          case "AwaitExpression":
           case "BinaryExpression":
           case "LogicalExpression":
           case "UnaryExpression":
