@@ -380,4 +380,16 @@ export default function (fork: Fork) {
     .bases("FlowPredicate")
     .build("value")
     .field("value", def("Expression"));
+
+  def("CallExpression")
+    .field("typeArguments", or(
+      null,
+      def("TypeParameterInstantiation"),
+    ), defaults["null"]);
+
+  def("NewExpression")
+    .field("typeArguments", or(
+      null,
+      def("TypeParameterInstantiation"),
+    ), defaults["null"]);
 };

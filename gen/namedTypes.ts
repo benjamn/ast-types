@@ -297,12 +297,14 @@ export namespace namedTypes {
     type: "NewExpression";
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
+    typeArguments?: null | K.TypeParameterInstantiationKind;
   }
 
   export interface CallExpression extends Omit<Expression, "type"> {
     type: "CallExpression";
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
+    typeArguments?: null | K.TypeParameterInstantiationKind;
   }
 
   export interface RestElement extends Omit<Pattern, "type"> {
