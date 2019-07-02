@@ -51,7 +51,7 @@
     "glob": "7.1.4",
     "mocha": "6.1.4",
     "recast": "0.18.1",
-    "reify": "0.20.6",
+    "reify": "0.20.10",
     "ts-add-module-exports": "1.0.0",
     "ts-emit-clean": "1.0.0",
     "ts-node": "7.0.1",
