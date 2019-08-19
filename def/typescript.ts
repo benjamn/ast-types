@@ -484,4 +484,16 @@ export default function (fork: Fork) {
       def("TSDeclareMethod"),
       TSTypeMember
     )]);
+
+  def("CallExpression")
+    .field("typeParameters", or(
+      null,
+      def("TSTypeParameterInstantiation"),
+    ), defaults["null"]);
+
+  def("NewExpression")
+    .field("typeParameters", or(
+      null,
+      def("TSTypeParameterInstantiation"),
+    ), defaults["null"]);
 };
