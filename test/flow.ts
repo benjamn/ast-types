@@ -88,7 +88,10 @@ describe("flow types", function () {
   describe('scope', () => {
     const scope = [
       "type Foo = {}",
-      "interface Bar {}"
+      "interface Bar {}",
+      "import type ImportedFoo from './foo'",
+      "import type {OtherBar as ImportedBar} from './bar'",
+      "import {type ImportedBaz} from './baz'",
     ];
   
     const ast = flowParser.parse(scope.join("\n"));
@@ -98,8 +101,15 @@ describe("flow types", function () {
         visitProgram(path: any) {
           assert(path.scope.declaresType('Foo'));
           assert(path.scope.declaresType('Bar'));
+          assert(!path.scope.declaresType('OtherBar'));
+          assert(path.scope.declaresType('ImportedFoo'));
+          assert(path.scope.declaresType('ImportedBar'));
+          assert(path.scope.declaresType('ImportedBaz'));
           assert.equal(path.scope.lookupType('Foo').getTypes()['Foo'][0].parent.node.type, 'TypeAlias');
           assert.equal(path.scope.lookupType('Bar').getTypes()['Bar'][0].parent.node.type, 'InterfaceDeclaration');
+          assert.equal(path.scope.lookupType('ImportedFoo').getTypes()['ImportedFoo'][0].parent.node.type, 'ImportDefaultSpecifier');
+          assert.equal(path.scope.lookupType('ImportedBar').getTypes()['ImportedBar'][0].parent.node.type, 'ImportSpecifier');
+          assert.equal(path.scope.lookupType('ImportedBaz').getTypes()['ImportedBaz'][0].parent.node.type, 'ImportSpecifier');
           return false;
         }
       });
