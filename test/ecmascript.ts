@@ -1221,7 +1221,7 @@ describe("scope methods", function () {
       "};"
     ].join("\n"), {
       sourceType: "module",
-      ecmaVersion: 6
+      ecmaVersion: 2020,
     });
 
     visit(ast, {
