@@ -31,6 +31,7 @@ import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
 import es6Def from "../def/es6";
 import es7Def from "../def/es7";
+import es2020Def from "../def/es2020";
 import babelDef from "../def/babel";
 
 const {
@@ -1220,7 +1221,7 @@ describe("scope methods", function () {
       "};"
     ].join("\n"), {
       sourceType: "module",
-      ecmaVersion: 6
+      ecmaVersion: 2020,
     });
 
     visit(ast, {
@@ -2478,5 +2479,63 @@ describe('Nullish Coalescing Operator', function() {
         b.identifier("b")
       );
     }, "does not match field \"operator\"");
+  });
+});
+
+describe('Dynamic import', () => {
+  const {
+    visit,
+    namedTypes: n,
+    builders: b,
+  } = fork([ es2020Def ]);
+
+  it('should work with expression values', () => {
+    const importExpression =  b.importExpression(
+      b.sequenceExpression([
+        b.literal(0),
+        b.literal("foo"),
+      ])
+    );
+
+    assert.deepStrictEqual(
+      importExpression.source,
+      b.sequenceExpression([
+        b.literal(0),
+        b.literal("foo"),
+      ])
+    );
+  });
+
+  it('should not allow empty source', () => {
+    assert.throws(() => {
+      b.importExpression(
+        undefined as $InvalidType
+      );
+    });
+  });
+
+  it('should parse with espree', () => {
+    const code = [
+      "import { foo } from './foo';",
+      "import('./bar')",
+    ].join('\n');
+
+    const ast = espree.parse(code, {
+      sourceType: 'module',
+      ecmaVersion: 2020
+    });
+
+    visit(ast, {
+      visitImportDeclaration(path) {
+        assert.strictEqual(path.node.source.value, "./foo");
+        this.traverse(path);
+      },
+      visitImportExpression(path) {
+        const source = path.node.source as Literal;
+        n.Literal.check(source);
+        assert.strictEqual(source.value, "./bar");
+        this.traverse(path);
+      }
+    })
   });
 });

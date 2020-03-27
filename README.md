@@ -501,6 +501,7 @@ The `def` syntax is used to define all the default AST node types found in
 [es-proposals.ts](def/es-proposals.ts),
 [es6.ts](def/es6.ts),
 [es7.ts](def/es7.ts),
+[es2020.ts](def/es2020.ts),
 [esprima.ts](def/esprima.ts),
 [flow.ts](def/flow.ts),
 [jsx.ts](def/jsx.ts),

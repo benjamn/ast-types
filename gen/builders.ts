@@ -1075,6 +1075,17 @@ export interface AwaitExpressionBuilder {
   ): namedTypes.AwaitExpression;
 }
 
+export interface ImportExpressionBuilder {
+  (source: K.ExpressionKind): namedTypes.ImportExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      source: K.ExpressionKind
+    }
+  ): namedTypes.ImportExpression;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -3444,6 +3455,7 @@ export interface builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   awaitExpression: AwaitExpressionBuilder;
+  importExpression: ImportExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
