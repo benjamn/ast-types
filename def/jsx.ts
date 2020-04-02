@@ -7,10 +7,10 @@ import { namedTypes as N } from "../gen/namedTypes";
 export default function (fork: Fork) {
   fork.use(es2020Def);
 
-  var types = fork.use(typesPlugin);
-  var def = types.Type.def;
-  var or = types.Type.or;
-  var defaults = fork.use(sharedPlugin).defaults;
+  const types = fork.use(typesPlugin);
+  const def = types.Type.def;
+  const or = types.Type.or;
+  const defaults = fork.use(sharedPlugin).defaults;
 
   def("JSXAttribute")
     .bases("Node")
@@ -19,6 +19,8 @@ export default function (fork: Fork) {
     .field("value", or(
       def("Literal"), // attr="value"
       def("JSXExpressionContainer"), // attr={value}
+      def("JSXElement"), // attr=<div />
+      def("JSXFragment"), // attr=<></>
       null // attr= or just attr
     ), defaults["null"]);
 
@@ -40,7 +42,7 @@ export default function (fork: Fork) {
     .field("property", def("JSXIdentifier"))
     .field("computed", Boolean, defaults.false);
 
-  var JSXElementName = or(
+  const JSXElementName = or(
     def("JSXIdentifier"),
     def("JSXNamespacedName"),
     def("JSXMemberExpression")
@@ -51,7 +53,7 @@ export default function (fork: Fork) {
     .build("argument")
     .field("argument", def("Expression"));
 
-  var JSXAttributes = [or(
+  const JSXAttributes = [or(
     def("JSXAttribute"),
     def("JSXSpreadAttribute")
   )];
@@ -59,20 +61,23 @@ export default function (fork: Fork) {
   def("JSXExpressionContainer")
     .bases("Expression")
     .build("expression")
-    .field("expression", def("Expression"));
+    .field("expression", or(def("Expression"), def("JSXEmptyExpression")));
+
+  const JSXChildren = [or(
+    def("JSXText"),
+    def("JSXExpressionContainer"),
+    def("JSXSpreadChild"),
+    def("JSXElement"),
+    def("JSXFragment"),
+    def("Literal") // Legacy: Esprima should return JSXText instead.
+  )];
 
   def("JSXElement")
     .bases("Expression")
     .build("openingElement", "closingElement", "children")
     .field("openingElement", def("JSXOpeningElement"))
     .field("closingElement", or(def("JSXClosingElement"), null), defaults["null"])
-    .field("children", [or(
-      def("JSXElement"),
-      def("JSXExpressionContainer"),
-      def("JSXFragment"),
-      def("JSXText"),
-      def("Literal") // TODO Esprima should return JSXText instead.
-    )], defaults.emptyArray)
+    .field("children", JSXChildren, defaults.emptyArray)
     .field("name", JSXElementName, function (this: N.JSXElement) {
       // Little-known fact: the `this` object inside a default function
       // is none other than the partially-built object itself, and any
@@ -89,49 +94,46 @@ export default function (fork: Fork) {
     }, true); // hidden from traversal
 
   def("JSXOpeningElement")
-    .bases("Node") // TODO Does this make sense? Can't really be an JSXElement.
+    .bases("Node")
     .build("name", "attributes", "selfClosing")
     .field("name", JSXElementName)
     .field("attributes", JSXAttributes, defaults.emptyArray)
     .field("selfClosing", Boolean, defaults["false"]);
 
   def("JSXClosingElement")
-    .bases("Node") // TODO Same concern.
+    .bases("Node")
     .build("name")
     .field("name", JSXElementName);
 
   def("JSXFragment")
     .bases("Expression")
-    .build("openingElement", "closingElement", "children")
-    .field("openingElement", def("JSXOpeningFragment"))
-    .field("closingElement", def("JSXClosingFragment"))
-    .field("children", [or(
-      def("JSXElement"),
-      def("JSXExpressionContainer"),
-      def("JSXFragment"),
-      def("JSXText"),
-      def("Literal") // TODO Esprima should return JSXText instead.
-    )], defaults.emptyArray)
+    .build("openingFragment", "closingFragment", "children")
+    .field("openingFragment", def("JSXOpeningFragment"))
+    .field("closingFragment", def("JSXClosingFragment"))
+    .field("children", JSXChildren, defaults.emptyArray);
 
   def("JSXOpeningFragment")
-    .bases("Node") // TODO Same concern.
+    .bases("Node")
     .build();
 
   def("JSXClosingFragment")
-    .bases("Node") // TODO Same concern.
+    .bases("Node")
     .build();
 
   def("JSXText")
     .bases("Literal")
-    .build("value")
-    .field("value", String);
+    .build("value", "raw")
+    .field("value", String)
+    .field("raw", String, function (this: N.JSXText) {
+       return this.value;
+     });
 
-  def("JSXEmptyExpression").bases("Expression").build();
+  def("JSXEmptyExpression")
+    .bases("Node")
+    .build();
 
-  // This PR has caused many people issues, but supporting it seems like a
-  // good idea anyway: https://github.com/babel/babel/pull/4988
   def("JSXSpreadChild")
-    .bases("Expression")
+    .bases("Node")
     .build("expression")
     .field("expression", def("Expression"));
 };
