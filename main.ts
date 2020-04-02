@@ -1,7 +1,10 @@
 import fork from "./fork";
 import coreDef from "./def/core";
 import es6Def from "./def/es6";
-import es7Def from "./def/es7";
+import es2016Def from "./def/es2016";
+import es2017Def from "./def/es2017";
+import es2018Def from "./def/es2018";
+import es2019Def from "./def/es2019";
 import es2020Def from "./def/es2020";
 import jsxDef from "./def/jsx";
 import flowDef from "./def/flow";
@@ -42,7 +45,10 @@ const {
   // Feel free to add to or remove from this list of extension modules to
   // configure the precise type hierarchy that you need.
   es6Def,
-  es7Def,
+  es2016Def,
+  es2017Def,
+  es2018Def,
+  es2019Def,
   es2020Def,
   jsxDef,
   flowDef,

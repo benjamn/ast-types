@@ -6,16 +6,16 @@ import sharedPlugin from "../lib/shared";
 export default function (fork: Fork) {
   fork.use(coreDef);
 
-  var types = fork.use(typesPlugin);
-  var def = types.Type.def;
-  var or = types.Type.or;
-  var defaults = fork.use(sharedPlugin).defaults;
+  const types = fork.use(typesPlugin);
+  const def = types.Type.def;
+  const or = types.Type.or;
+  const defaults = fork.use(sharedPlugin).defaults;
 
   def("Function")
     .field("generator", Boolean, defaults["false"])
     .field("expression", Boolean, defaults["false"])
     .field("defaults", [or(def("Expression"), null)], defaults.emptyArray)
-    // TODO This could be represented as a RestElement in .params.
+    // Legacy
     .field("rest", or(def("Identifier"), null), defaults["null"]);
 
   // The ESTree way of representing a ...rest parameter.
@@ -32,13 +32,13 @@ export default function (fork: Fork) {
     .field("argument", def("Pattern"));
 
   def("FunctionDeclaration")
-    .build("id", "params", "body", "generator", "expression");
+    .build("id", "params", "body", "generator", "expression")
+    // May be `null` in the context of `export default function () {}`
+    .field("id", or(def("Identifier"), null))
 
   def("FunctionExpression")
     .build("id", "params", "body", "generator", "expression");
 
-  // The Parser API calls this ArrowExpression, but Esprima and all other
-  // actual parsers use ArrowFunctionExpression.
   def("ArrowFunctionExpression")
     .bases("Function", "Expression")
     .build("params", "body", "expression")
@@ -114,15 +114,6 @@ export default function (fork: Fork) {
     .build("elements")
     .field("elements", [or(def("Pattern"), null)]);
 
-  def("MethodDefinition")
-    .bases("Declaration")
-    .build("kind", "key", "value", "static")
-    .field("kind", or("constructor", "method", "get", "set"))
-    .field("key", def("Expression"))
-    .field("value", def("Function"))
-    .field("computed", Boolean, defaults["false"])
-    .field("static", Boolean, defaults["false"]);
-
   def("SpreadElement")
     .bases("Node")
     .build("argument")
@@ -154,7 +145,16 @@ export default function (fork: Fork) {
     .field("left", def("Pattern"))
     .field("right", def("Expression"));
 
-  var ClassBodyElement = or(
+  def("MethodDefinition")
+    .bases("Declaration")
+    .build("kind", "key", "value", "static")
+    .field("kind", or("constructor", "method", "get", "set"))
+    .field("key", def("Expression"))
+    .field("value", def("Function"))
+    .field("computed", Boolean, defaults["false"])
+    .field("static", Boolean, defaults["false"]);
+
+  const ClassBodyElement = or(
     def("MethodDefinition"),
     def("VariableDeclarator"),
     def("ClassPropertyDefinition"),
@@ -192,6 +192,10 @@ export default function (fork: Fork) {
     .field("body", def("ClassBody"))
     .field("superClass", or(def("Expression"), null), defaults["null"]);
 
+  def("Super")
+    .bases("Expression")
+    .build();
+
   // Specifier and ModuleSpecifier are abstract non-standard types
   // introduced for definitional convenience.
   def("Specifier").bases("Node");
@@ -212,21 +216,21 @@ export default function (fork: Fork) {
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("name", or(def("Identifier"), null), defaults["null"]);
 
-  // Like ModuleSpecifier, except type:"ImportSpecifier" and buildable.
   // import {<id [as name]>} from ...;
   def("ImportSpecifier")
     .bases("ModuleSpecifier")
-    .build("id", "name");
-
-  // import <* as id> from ...;
-  def("ImportNamespaceSpecifier")
-    .bases("ModuleSpecifier")
-    .build("id");
+    .build("imported", "local")
+    .field("imported", def("Identifier"));
 
   // import <id> from ...;
   def("ImportDefaultSpecifier")
     .bases("ModuleSpecifier")
-    .build("id");
+    .build("local");
+
+  // import <* as id> from ...;
+  def("ImportNamespaceSpecifier")
+    .bases("ModuleSpecifier")
+    .build("local");
 
   def("ImportDeclaration")
     .bases("Declaration")
@@ -243,6 +247,28 @@ export default function (fork: Fork) {
     ), function() {
       return "value";
     });
+
+  def("ExportNamedDeclaration")
+    .bases("Declaration")
+    .build("declaration", "specifiers", "source")
+    .field("declaration", or(def("Declaration"), null))
+    .field("specifiers", [def("ExportSpecifier")], defaults.emptyArray)
+    .field("source", or(def("Literal"), null), defaults["null"]);
+
+  def("ExportSpecifier")
+    .bases("ModuleSpecifier")
+    .build("local", "exported")
+    .field("exported", def("Identifier"));
+
+  def("ExportDefaultDeclaration")
+    .bases("Declaration")
+    .build("declaration")
+    .field("declaration", or(def("Declaration"), def("Expression")));
+
+  def("ExportAllDeclaration")
+    .bases("Declaration")
+    .build("source")
+    .field("source", def("Literal"));
 
   def("TaggedTemplateExpression")
     .bases("Expression")
@@ -261,4 +287,10 @@ export default function (fork: Fork) {
     .build("value", "tail")
     .field("value", {"cooked": String, "raw": String})
     .field("tail", Boolean);
+
+  def("MetaProperty")
+    .bases("Expression")
+    .build("meta", "property")
+    .field("meta", def("Identifier"))
+    .field("property", def("Identifier"));
 };

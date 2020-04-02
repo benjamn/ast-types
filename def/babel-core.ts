@@ -1,11 +1,11 @@
 import { Fork } from "../types";
+import esProposalsDef from "./es-proposals";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
-import es7Def from "./es7";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
-  fork.use(es7Def);
+  fork.use(esProposalsDef);
 
   var types = fork.use(typesPlugin);
   var defaults = fork.use(sharedPlugin).defaults;
@@ -21,71 +21,16 @@ export default function (fork: Fork) {
     .build("body")
     .field("body", [def("Statement")]);
 
-  def("Super")
-    .bases("Expression")
-    .build();
-
   def("BindExpression")
     .bases("Expression")
     .build("object", "callee")
     .field("object", or(def("Expression"), null))
     .field("callee", def("Expression"));
 
-  def("Decorator")
-    .bases("Node")
-    .build("expression")
-    .field("expression", def("Expression"));
-
-  def("Property")
-    .field("decorators",
-           or([def("Decorator")], null),
-           defaults["null"]);
-
-  def("MethodDefinition")
-    .field("decorators",
-           or([def("Decorator")], null),
-           defaults["null"]);
-
-  def("MetaProperty")
-    .bases("Expression")
-    .build("meta", "property")
-    .field("meta", def("Identifier"))
-    .field("property", def("Identifier"));
-
   def("ParenthesizedExpression")
     .bases("Expression")
     .build("expression")
     .field("expression", def("Expression"));
-
-  def("ImportSpecifier")
-    .bases("ModuleSpecifier")
-    .build("imported", "local")
-    .field("imported", def("Identifier"));
-
-  def("ImportDefaultSpecifier")
-    .bases("ModuleSpecifier")
-    .build("local");
-
-  def("ImportNamespaceSpecifier")
-    .bases("ModuleSpecifier")
-    .build("local");
-
-  def("ExportDefaultDeclaration")
-    .bases("Declaration")
-    .build("declaration")
-    .field("declaration", or(def("Declaration"), def("Expression")));
-
-  def("ExportNamedDeclaration")
-    .bases("Declaration")
-    .build("declaration", "specifiers", "source")
-    .field("declaration", or(def("Declaration"), null))
-    .field("specifiers", [def("ExportSpecifier")], defaults.emptyArray)
-    .field("source", or(def("Literal"), null), defaults["null"]);
-
-  def("ExportSpecifier")
-    .bases("ModuleSpecifier")
-    .build("local", "exported")
-    .field("exported", def("Identifier"));
 
   def("ExportNamespaceSpecifier")
     .bases("Specifier")
@@ -96,12 +41,6 @@ export default function (fork: Fork) {
     .bases("Specifier")
     .build("exported")
     .field("exported", def("Identifier"));
-
-  def("ExportAllDeclaration")
-    .bases("Declaration")
-    .build("exported", "source")
-    .field("exported", or(def("Identifier"), null))
-    .field("source", def("Literal"));
 
   def("CommentBlock")
     .bases("Comment")
@@ -277,17 +216,6 @@ export default function (fork: Fork) {
       .field("decorators", or([def("Decorator")], null), defaults["null"])
       .field("optional", or(Boolean, null), defaults["null"]);
   });
-
-  def("ClassPrivateProperty")
-    .bases("ClassProperty")
-    .build("key", "value")
-    .field("key", def("PrivateName"))
-    .field("value", or(def("Expression"), null), defaults["null"]);
-
-  def("PrivateName")
-    .bases("Expression", "Pattern")
-    .build("id")
-    .field("id", def("Identifier"));
 
   var ObjectPatternProperty = or(
     def("Property"),

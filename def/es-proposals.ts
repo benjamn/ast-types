@@ -1,38 +1,49 @@
 import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
-import coreDef from "./core";
+import es2020Def from "./es2020";
 
 export default function (fork: Fork) {
-  fork.use(coreDef);
+  fork.use(es2020Def);
 
-  var types = fork.use(typesPlugin);
-  var Type = types.Type;
-  var def = types.Type.def;
-  var or = Type.or;
+  const types = fork.use(typesPlugin);
+  const Type = types.Type;
+  const def = types.Type.def;
+  const or = Type.or;
 
-  var shared = fork.use(sharedPlugin);
-  var defaults = shared.defaults;
+  const shared = fork.use(sharedPlugin);
+  const defaults = shared.defaults;
 
+  def("AwaitExpression")
+    .build("argument", "all")
+    .field("argument", or(def("Expression"), null))
+    .field("all", Boolean, defaults["false"]);
 
-  // https://github.com/tc39/proposal-optional-chaining
-  // `a?.b` as per https://github.com/estree/estree/issues/146
-  def("OptionalMemberExpression")
-    .bases("MemberExpression")
-    .build("object", "property", "computed", "optional")
-    .field("optional", Boolean, defaults["true"])
+  // Decorators
+  def("Decorator")
+    .bases("Node")
+    .build("expression")
+    .field("expression", def("Expression"));
 
-  // a?.b()
-  def("OptionalCallExpression")
-    .bases("CallExpression")
-    .build("callee", "arguments", "optional")
-    .field("optional", Boolean, defaults["true"])
+  def("Property")
+    .field("decorators",
+           or([def("Decorator")], null),
+           defaults["null"]);
 
+  def("MethodDefinition")
+    .field("decorators",
+           or([def("Decorator")], null),
+           defaults["null"]);
 
-  // https://github.com/tc39/proposal-nullish-coalescing
-  // `a ?? b` as per https://github.com/babel/babylon/pull/761/files
-  var LogicalOperator = or("||", "&&", "??");
+  // Private names
+  def("PrivateName")
+    .bases("Expression", "Pattern")
+    .build("id")
+    .field("id", def("Identifier"));
 
-  def("LogicalExpression")
-    .field("operator", LogicalOperator)
+  def("ClassPrivateProperty")
+    .bases("ClassProperty")
+    .build("key", "value")
+    .field("key", def("PrivateName"))
+    .field("value", or(def("Expression"), null), defaults["null"]);
 };
