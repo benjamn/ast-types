@@ -8,10 +8,10 @@ export default function (fork: Fork) {
   fork.use(esProposalsDef);
   fork.use(typeAnnotationsDef);
 
-  var types = fork.use(typesPlugin);
-  var def = types.Type.def;
-  var or = types.Type.or;
-  var defaults = fork.use(sharedPlugin).defaults;
+  const types = fork.use(typesPlugin);
+  const def = types.Type.def;
+  const or = types.Type.or;
+  const defaults = fork.use(sharedPlugin).defaults;
 
   // Base types
 
@@ -36,7 +36,15 @@ export default function (fork: Fork) {
     .bases("FlowType")
     .build();
 
+  def("SymbolTypeAnnotation")
+    .bases("FlowType")
+    .build();
+
   def("NumberTypeAnnotation")
+    .bases("FlowType")
+    .build();
+
+  def("BigIntTypeAnnotation")
     .bases("FlowType")
     .build();
 
@@ -52,6 +60,12 @@ export default function (fork: Fork) {
     .bases("FlowType")
     .build("value", "raw")
     .field("value", Number)
+    .field("raw", String);
+
+  def("BigIntLiteralTypeAnnotation")
+    .bases("FlowType")
+    .build("value", "raw")
+    .field("value", null)
     .field("raw", String);
 
   def("StringTypeAnnotation")
@@ -115,7 +129,7 @@ export default function (fork: Fork) {
   def("FunctionTypeParam")
     .bases("Node")
     .build("name", "typeAnnotation", "optional")
-    .field("name", def("Identifier"))
+    .field("name", or(def("Identifier"), null))
     .field("typeAnnotation", def("FlowType"))
     .field("optional", Boolean);
 
@@ -139,12 +153,16 @@ export default function (fork: Fork) {
     .field("exact", Boolean, defaults["false"])
     .field("internalSlots", [def("ObjectTypeInternalSlot")], defaults.emptyArray);
 
+  def("ObjectTypeIndexer")
+    .field("id", or(def("Identifier"), null))
+    .field("static", Boolean);
+
   def("Variance")
     .bases("Node")
     .build("kind")
     .field("kind", or("plus", "minus"));
 
-  var LegacyVariance = or(
+  const LegacyVariance = or(
     def("Variance"),
     "plus",
     "minus",
@@ -236,12 +254,11 @@ export default function (fork: Fork) {
 
   def("TypeParameter")
     .bases("FlowType")
-    .build("name", "variance", "bound")
+    .build("name", "variance", "bound", "default")
     .field("name", String)
     .field("variance", LegacyVariance, defaults["null"])
-    .field("bound",
-           or(def("TypeAnnotation"), null),
-           defaults["null"]);
+    .field("bound", or(def("TypeAnnotation"), null), defaults["null"])
+    .field("default", or(def("FlowType"), null), defaults["null"]);
 
   def("ClassProperty")
     .field("variance", LegacyVariance, defaults["null"]);
@@ -290,21 +307,22 @@ export default function (fork: Fork) {
     .field("typeParameters", or(def("TypeParameterDeclaration"), null))
     .field("right", def("FlowType"));
 
+  def("DeclareTypeAlias")
+    .bases("TypeAlias")
+    .build("id", "typeParameters", "right");
+
   def("OpaqueType")
     .bases("Declaration")
     .build("id", "typeParameters", "impltype", "supertype")
     .field("id", def("Identifier"))
     .field("typeParameters", or(def("TypeParameterDeclaration"), null))
     .field("impltype", def("FlowType"))
-    .field("supertype", def("FlowType"));
-
-  def("DeclareTypeAlias")
-    .bases("TypeAlias")
-    .build("id", "typeParameters", "right");
+    .field("supertype", or(def("FlowType"), null));
 
   def("DeclareOpaqueType")
-    .bases("TypeAlias")
-    .build("id", "typeParameters", "supertype");
+    .bases("OpaqueType")
+    .build("id", "typeParameters", "supertype")
+    .field("impltype", or(def("FlowType"), null));
 
   def("TypeCastExpression")
     .bases("Expression")
@@ -325,7 +343,8 @@ export default function (fork: Fork) {
   def("DeclareFunction")
     .bases("Statement")
     .build("id")
-    .field("id", def("Identifier"));
+    .field("id", def("Identifier"))
+    .field("predicate", or(def("FlowPredicate"), null), defaults["null"]);
 
   def("DeclareClass")
     .bases("InterfaceDeclaration")
@@ -351,6 +370,9 @@ export default function (fork: Fork) {
       def("DeclareFunction"),
       def("DeclareClass"),
       def("FlowType"), // Implies default.
+      def("TypeAlias"), // Implies named type
+      def("DeclareOpaqueType"), // Implies named opaque type
+      def("InterfaceDeclaration"),
       null
     ))
     .field("specifiers", [or(
@@ -370,6 +392,9 @@ export default function (fork: Fork) {
       null
     ), defaults["null"]);
 
+  def("ImportDeclaration")
+    .field("importKind", or("value", "type", "typeof"), () => "value");
+
   def("FlowPredicate").bases("Flow");
 
   def("InferredPredicate")
@@ -380,6 +405,9 @@ export default function (fork: Fork) {
     .bases("FlowPredicate")
     .build("value")
     .field("value", def("Expression"));
+
+  def("Function")
+    .field("predicate", or(def("FlowPredicate"), null), defaults["null"]);
 
   def("CallExpression")
     .field("typeArguments", or(
@@ -392,4 +420,53 @@ export default function (fork: Fork) {
       null,
       def("TypeParameterInstantiation"),
     ), defaults["null"]);
+
+  // Enums
+  def("EnumDeclaration")
+    .bases("Declaration")
+    .build("id", "body")
+    .field("id", def("Identifier"))
+    .field("body", or(
+      def("EnumBooleanBody"),
+      def("EnumNumberBody"),
+      def("EnumStringBody"),
+      def("EnumSymbolBody")));
+
+  def("EnumBooleanBody")
+    .build("members", "explicitType")
+    .field("members", [def("EnumBooleanMember")])
+    .field("explicitType", Boolean);
+
+  def("EnumNumberBody")
+    .build("members", "explicitType")
+    .field("members", [def("EnumNumberMember")])
+    .field("explicitType", Boolean);
+
+  def("EnumStringBody")
+    .build("members", "explicitType")
+    .field("members", or([def("EnumStringMember")], [def("EnumDefaultedMember")]))
+    .field("explicitType", Boolean);
+
+  def("EnumSymbolBody")
+    .build("members")
+    .field("members", [def("EnumDefaultedMember")]);
+
+  def("EnumBooleanMember")
+    .build("id", "init")
+    .field("id", def("Identifier"))
+    .field("init", or(def("Literal"), Boolean));
+
+  def("EnumNumberMember")
+    .build("id", "init")
+    .field("id", def("Identifier"))
+    .field("init", def("Literal"));
+
+  def("EnumStringMember")
+    .build("id", "init")
+    .field("id", def("Identifier"))
+    .field("init", def("Literal"));
+
+  def("EnumDefaultedMember")
+    .build("id")
+    .field("id", def("Identifier"));
 };
