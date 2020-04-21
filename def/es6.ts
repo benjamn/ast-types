@@ -2,6 +2,7 @@ import { Fork } from "../types";
 import coreDef from "./core";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
+import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
   fork.use(coreDef);
@@ -200,27 +201,18 @@ export default function (fork: Fork) {
   // introduced for definitional convenience.
   def("Specifier").bases("Node");
 
-  // This supertype is shared/abused by both def/babel.js and
-  // def/esprima.js. In the future, it will be possible to load only one set
-  // of definitions appropriate for a given parser, but until then we must
-  // rely on default functions to reconcile the conflicting AST formats.
   def("ModuleSpecifier")
     .bases("Specifier")
-    // This local field is used by Babel/Acorn. It should not technically
-    // be optional in the Babel/Acorn AST format, but it must be optional
-    // in the Esprima AST format.
-    .field("local", or(def("Identifier"), null), defaults["null"])
-    // The id and name fields are used by Esprima. The id field should not
-    // technically be optional in the Esprima AST format, but it must be
-    // optional in the Babel/Acorn AST format.
-    .field("id", or(def("Identifier"), null), defaults["null"])
-    .field("name", or(def("Identifier"), null), defaults["null"]);
+    .field("local", def("Identifier"));
 
   // import {<id [as name]>} from ...;
   def("ImportSpecifier")
     .bases("ModuleSpecifier")
     .build("imported", "local")
-    .field("imported", def("Identifier"));
+    .field("imported", def("Identifier"))
+    .field("local", def("Identifier"), function getDefault(this: N.ImportSpecifier) {
+      return this.imported
+    });
 
   // import <id> from ...;
   def("ImportDefaultSpecifier")
@@ -260,14 +252,32 @@ export default function (fork: Fork) {
     .build("local", "exported")
     .field("exported", def("Identifier"));
 
+  def("ExportNamespaceSpecifier")
+    .bases("Specifier")
+    .build("exported")
+    .field("exported", def("Identifier"));
+
+  def("ExportDefaultSpecifier")
+    .bases("Specifier")
+    .build("exported")
+    .field("exported", def("Identifier"));
+
   def("ExportDefaultDeclaration")
     .bases("Declaration")
     .build("declaration")
     .field("declaration", or(def("Declaration"), def("Expression")));
 
+  def("ExportNamedDeclaration")
+    .bases("Declaration")
+    .build("declaration", "specifiers", "source")
+    .field("declaration", or(def("Declaration"), null))
+    .field("specifiers", [def("ExportSpecifier")], defaults.emptyArray)
+    .field("source", or(def("Literal"), null), defaults["null"]);
+
   def("ExportAllDeclaration")
     .bases("Declaration")
-    .build("source")
+    .build("exported", "source")
+    .field("exported", or(def("Identifier"), null))
     .field("source", def("Literal"));
 
   def("TaggedTemplateExpression")

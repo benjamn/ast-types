@@ -32,16 +32,6 @@ export default function (fork: Fork) {
     .build("expression")
     .field("expression", def("Expression"));
 
-  def("ExportNamespaceSpecifier")
-    .bases("Specifier")
-    .build("exported")
-    .field("exported", def("Identifier"));
-
-  def("ExportDefaultSpecifier")
-    .bases("Specifier")
-    .build("exported")
-    .field("exported", def("Identifier"));
-
   def("CommentBlock")
     .bases("Comment")
     .build("value", /*optional:*/ "leading", "trailing");
