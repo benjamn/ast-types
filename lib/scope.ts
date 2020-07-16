@@ -173,7 +173,10 @@ export default function scopePlugin(fork: Fork) {
       // A catch clause establishes a new scope but the only variable
       // bound in that scope is the catch parameter. Any other
       // declarations create bindings in the outer scope.
-      addPattern(path.get("param"), bindings);
+      var param = path.get("param");
+      if (param.value) {
+        addPattern(param, bindings);
+      }
 
     } else {
       recursiveScanScope(path, bindings, scopeTypes);
