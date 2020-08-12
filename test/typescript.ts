@@ -34,6 +34,12 @@ glob("**/input.js", {
     files.forEach((tsPath: any) => {
       var fullPath = path.join(babelTSFixturesDir, tsPath);
 
+      if (tsPath === "class/method-readonly/input.js") {
+        // This file intentionally triggers a parse error for a babel test, so
+        // it doesn't make sense to test here.
+        return;
+      }
+
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
@@ -125,6 +131,13 @@ glob("**/*.ts", {
     files.forEach((tsPath: string) => {
       var fullPath = path.join(tsCompilerDir, tsPath);
 
+      // We have to skip checker.ts because of a bug in babel's typescript
+      // parser plugin. See
+      // https://github.com/babel/babel/issues/7235#issuecomment-549437974
+      if (tsPath === "checker.ts") {
+        return;
+      }
+
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
@@ -139,6 +152,8 @@ glob("**/*.ts", {
               "classProperties",
               "optionalCatchBinding",
               "numericSeparator",
+              "optionalChaining",
+              "nullishCoalescingOperator",
             ]
           }).program;
 
