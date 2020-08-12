@@ -38,7 +38,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/parser": "7.4.4",
+    "@babel/parser": "7.7.7",
     "@babel/types": "7.4.4",
     "@types/esprima": "4.0.2",
     "@types/glob": "7.1.1",
@@ -55,7 +55,7 @@
     "ts-add-module-exports": "1.0.0",
     "ts-emit-clean": "1.0.0",
     "ts-node": "7.0.1",
-    "typescript": "3.4.5"
+    "typescript": "3.9.7"
   },
   "engines": {
     "node": ">=4"
