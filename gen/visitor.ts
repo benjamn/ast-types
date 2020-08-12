@@ -244,6 +244,7 @@ export interface Visitor<M = {}> {
   visitTSDeclareMethod?(this: Context & M, path: NodePath<namedTypes.TSDeclareMethod>): any;
   visitTSMappedType?(this: Context & M, path: NodePath<namedTypes.TSMappedType>): any;
   visitTSTupleType?(this: Context & M, path: NodePath<namedTypes.TSTupleType>): any;
+  visitTSNamedTupleMember?(this: Context & M, path: NodePath<namedTypes.TSNamedTupleMember>): any;
   visitTSRestType?(this: Context & M, path: NodePath<namedTypes.TSRestType>): any;
   visitTSOptionalType?(this: Context & M, path: NodePath<namedTypes.TSOptionalType>): any;
   visitTSIndexedAccessType?(this: Context & M, path: NodePath<namedTypes.TSIndexedAccessType>): any;

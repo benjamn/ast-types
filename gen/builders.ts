@@ -2967,14 +2967,27 @@ export interface TSMappedTypeBuilder {
 }
 
 export interface TSTupleTypeBuilder {
-  (elementTypes: K.TSTypeKind[]): namedTypes.TSTupleType;
+  (elementTypes: (K.TSTypeKind | K.TSNamedTupleMemberKind)[]): namedTypes.TSTupleType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      elementTypes: K.TSTypeKind[],
+      elementTypes: (K.TSTypeKind | K.TSNamedTupleMemberKind)[],
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.TSTupleType;
+}
+
+export interface TSNamedTupleMemberBuilder {
+  (label: K.IdentifierKind, elementType: K.TSTypeKind, optional?: boolean): namedTypes.TSNamedTupleMember;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      elementType: K.TSTypeKind,
+      label: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      optional?: boolean
+    }
+  ): namedTypes.TSNamedTupleMember;
 }
 
 export interface TSRestTypeBuilder {
@@ -3082,14 +3095,16 @@ export interface TSMethodSignatureBuilder {
 export interface TSTypePredicateBuilder {
   (
     parameterName: K.IdentifierKind | K.TSThisTypeKind,
-    typeAnnotation: K.TSTypeAnnotationKind
+    typeAnnotation?: K.TSTypeAnnotationKind | null,
+    asserts?: boolean
   ): namedTypes.TSTypePredicate;
   from(
     params: {
+      asserts?: boolean,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       parameterName: K.IdentifierKind | K.TSThisTypeKind,
-      typeAnnotation: K.TSTypeAnnotationKind
+      typeAnnotation?: K.TSTypeAnnotationKind | null
     }
   ): namedTypes.TSTypePredicate;
 }
@@ -3597,6 +3612,7 @@ export interface builders {
   tsDeclareMethod: TSDeclareMethodBuilder;
   tsMappedType: TSMappedTypeBuilder;
   tsTupleType: TSTupleTypeBuilder;
+  tsNamedTupleMember: TSNamedTupleMemberBuilder;
   tsRestType: TSRestTypeBuilder;
   tsOptionalType: TSOptionalTypeBuilder;
   tsIndexedAccessType: TSIndexedAccessTypeBuilder;
