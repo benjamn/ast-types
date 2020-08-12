@@ -390,25 +390,27 @@ export default function typesPlugin(_fork: Fork) {
   var builtInCtorTypes: Type<any>[] = [];
 
   type BuiltInTypes = {
-    string: typeof isString;
-    function: typeof isFunction;
-    array: typeof isArray;
-    object: typeof isObject;
-    RegExp: typeof isRegExp;
-    Date: typeof isDate;
-    number: typeof isNumber;
-    boolean: typeof isBoolean;
-    null: typeof isNull;
-    undefined: typeof isUndefined;
+    string: string;
+    function: Function;
+    array: any[];
+    object: { [key: string]: any };
+    RegExp: RegExp;
+    Date: Date;
+    number: number;
+    boolean: boolean;
+    null: null;
+    undefined: undefined;
   };
-  var builtInTypes = {} as BuiltInTypes;
 
-  function defBuiltInType<T>(example: T, name: keyof BuiltInTypes): Type<T> {
-    const objStr = objToStr.call(example);
+  function defBuiltInType<K extends keyof BuiltInTypes>(
+    name: K,
+    example: BuiltInTypes[K]
+  ): Type<BuiltInTypes[K]> {
+    const objStr: string = objToStr.call(example);
 
-    const type = new PredicateType<T>(name, value => objToStr.call(value) === objStr);
-
-    builtInTypes[name] = type;
+    const type = new PredicateType<BuiltInTypes[K]>(
+      name,
+      value => objToStr.call(value) === objStr);
 
     if (example && typeof example.constructor === "function") {
       builtInCtorFns.push(example.constructor);
@@ -422,16 +424,29 @@ export default function typesPlugin(_fork: Fork) {
   // value, rather than using the problematic typeof operator. Note however
   // that no subtyping is considered; so, for instance, isObject.check
   // returns false for [], /./, new Date, and null.
-  var isString = defBuiltInType<string>("truthy", "string");
-  var isFunction = defBuiltInType<Function>(function () {}, "function");
-  var isArray = defBuiltInType<any[]>([], "array");
-  var isObject = defBuiltInType<{ [key: string]: any }>({}, "object");
-  var isRegExp = defBuiltInType<RegExp>(/./, "RegExp");
-  var isDate = defBuiltInType<Date>(new Date, "Date");
-  var isNumber = defBuiltInType<number>(3, "number");
-  var isBoolean = defBuiltInType<boolean>(true, "boolean");
-  var isNull = defBuiltInType<null>(null, "null");
-  var isUndefined = defBuiltInType<undefined>(void 0, "undefined");
+  const isString = defBuiltInType("string", "truthy");
+  const isFunction = defBuiltInType("function", function () {});
+  const isArray = defBuiltInType("array", []);
+  const isObject = defBuiltInType("object", {});
+  const isRegExp = defBuiltInType("RegExp", /./);
+  const isDate = defBuiltInType("Date", new Date());
+  const isNumber = defBuiltInType("number", 3);
+  const isBoolean = defBuiltInType("boolean", true);
+  const isNull = defBuiltInType("null", null);
+  const isUndefined = defBuiltInType("undefined", undefined);
+
+  const builtInTypes = {
+    string: isString,
+    function: isFunction,
+    array: isArray,
+    object: isObject,
+    RegExp: isRegExp,
+    Date: isDate,
+    number: isNumber,
+    boolean: isBoolean,
+    null: isNull,
+    undefined: isUndefined,
+  };
 
   // In order to return the same Def instance every time Type.def is called
   // with a particular name, those instances need to be stored in a cache.
