@@ -408,10 +408,11 @@ export default function typesPlugin(_fork: Fork) {
 
     const type = new PredicateType<T>(name, value => objToStr.call(value) === objStr);
 
-    builtInTypes[name] = type;
+    (builtInTypes as any)[name] = type;
 
-    if (example && typeof example.constructor === "function") {
-      builtInCtorFns.push(example.constructor);
+    const ctor = example && (example as any).constructor;
+    if (typeof ctor === "function") {
+      builtInCtorFns.push(ctor);
       builtInCtorTypes.push(type);
     }
 
