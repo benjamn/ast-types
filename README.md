@@ -1,4 +1,4 @@
-# AST Types [![Build Status](https://travis-ci.org/benjamn/ast-types.svg?branch=master)](https://travis-ci.org/benjamn/ast-types)
+# AST Types ![CI](https://github.com/benjamn/ast-types/workflows/CI/badge.svg)
 
 This module provides an efficient, modular,
 [Esprima](https://github.com/ariya/esprima)-compatible implementation of
