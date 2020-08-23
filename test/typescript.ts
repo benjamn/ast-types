@@ -4,12 +4,14 @@ import path from "path";
 import glob from "glob";
 import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser";
 import fork from "../fork";
+import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
 import { visit } from "../main";
 
 var pkgRootDir = path.resolve(__dirname, "..");
 var tsTypes = fork([
+  esProposalsDef,
   typescriptDef,
   jsxDef,
 ]);
