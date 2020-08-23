@@ -228,7 +228,17 @@ export default function (fork: Fork) {
   def("TSTupleType")
     .bases("TSType")
     .build("elementTypes")
-    .field("elementTypes", [def("TSType")]);
+    .field("elementTypes", [or(
+      def("TSType"),
+      def("TSNamedTupleMember")
+    )]);
+
+  def("TSNamedTupleMember")
+    .bases("TSType")
+    .build("label", "elementType", "optional")
+    .field("label", def("Identifier"))
+    .field("optional", Boolean, defaults["false"])
+    .field("elementType", def("TSType"));
 
   def("TSRestType")
     .bases("TSType")
@@ -287,12 +297,14 @@ export default function (fork: Fork) {
     .field("parameters", ParametersType);
 
   def("TSTypePredicate")
-    .bases("TSTypeAnnotation")
-    .build("parameterName", "typeAnnotation")
+    .bases("TSTypeAnnotation", "TSType")
+    .build("parameterName", "typeAnnotation", "asserts")
     .field("parameterName",
            or(def("Identifier"),
               def("TSThisType")))
-    .field("typeAnnotation", def("TSTypeAnnotation"));
+    .field("typeAnnotation", or(def("TSTypeAnnotation"), null),
+           defaults["null"])
+    .field("asserts", Boolean, defaults["false"]);
 
   ["TSCallSignatureDeclaration",
    "TSConstructSignatureDeclaration",
