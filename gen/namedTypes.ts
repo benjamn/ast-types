@@ -56,6 +56,7 @@ export namespace namedTypes {
     rest?: K.IdentifierKind | null;
     returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
+    predicate?: K.FlowPredicateKind | null;
   }
 
   export interface Expression extends Node {}
@@ -489,7 +490,7 @@ export namespace namedTypes {
     type: "ImportDeclaration";
     specifiers?: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[];
     source: K.LiteralKind;
-    importKind?: "value" | "type";
+    importKind?: "value" | "type" | "typeof";
   }
 
   export interface ExportNamedDeclaration extends Omit<Declaration, "type"> {
@@ -732,8 +733,16 @@ export namespace namedTypes {
     type: "VoidTypeAnnotation";
   }
 
+  export interface SymbolTypeAnnotation extends Omit<FlowType, "type"> {
+    type: "SymbolTypeAnnotation";
+  }
+
   export interface NumberTypeAnnotation extends Omit<FlowType, "type"> {
     type: "NumberTypeAnnotation";
+  }
+
+  export interface BigIntTypeAnnotation extends Omit<FlowType, "type"> {
+    type: "BigIntTypeAnnotation";
   }
 
   export interface NumberLiteralTypeAnnotation extends Omit<FlowType, "type"> {
@@ -745,6 +754,12 @@ export namespace namedTypes {
   export interface NumericLiteralTypeAnnotation extends Omit<FlowType, "type"> {
     type: "NumericLiteralTypeAnnotation";
     value: number;
+    raw: string;
+  }
+
+  export interface BigIntLiteralTypeAnnotation extends Omit<FlowType, "type"> {
+    type: "BigIntLiteralTypeAnnotation";
+    value: null;
     raw: string;
   }
 
@@ -803,7 +818,7 @@ export namespace namedTypes {
 
   export interface FunctionTypeParam extends Omit<Node, "type"> {
     type: "FunctionTypeParam";
-    name: K.IdentifierKind;
+    name: K.IdentifierKind | null;
     typeAnnotation: K.FlowTypeKind;
     optional: boolean;
   }
@@ -837,8 +852,9 @@ export namespace namedTypes {
   }
 
   export interface ObjectTypeIndexer extends Omit<Node, "type"> {
-    type: "ObjectTypeIndexer";
     id: K.IdentifierKind;
+    static: boolean;
+    type: "ObjectTypeIndexer";
     key: K.FlowTypeKind;
     value: K.FlowTypeKind;
     variance?: K.VarianceKind | "plus" | "minus" | null;
@@ -902,6 +918,7 @@ export namespace namedTypes {
     name: string;
     variance?: K.VarianceKind | "plus" | "minus" | null;
     bound?: K.TypeAnnotationKind | null;
+    default?: K.FlowTypeKind | null;
   }
 
   export interface InterfaceTypeAnnotation extends Omit<FlowType, "type"> {
@@ -935,20 +952,21 @@ export namespace namedTypes {
     right: K.FlowTypeKind;
   }
 
+  export interface DeclareTypeAlias extends Omit<TypeAlias, "type"> {
+    type: "DeclareTypeAlias";
+  }
+
   export interface OpaqueType extends Omit<Declaration, "type"> {
     type: "OpaqueType";
     id: K.IdentifierKind;
     typeParameters: K.TypeParameterDeclarationKind | null;
     impltype: K.FlowTypeKind;
-    supertype: K.FlowTypeKind;
+    supertype: K.FlowTypeKind | null;
   }
 
-  export interface DeclareTypeAlias extends Omit<TypeAlias, "type"> {
-    type: "DeclareTypeAlias";
-  }
-
-  export interface DeclareOpaqueType extends Omit<TypeAlias, "type"> {
+  export interface DeclareOpaqueType extends Omit<OpaqueType, "type" | "impltype"> {
     type: "DeclareOpaqueType";
+    impltype: K.FlowTypeKind | null;
   }
 
   export interface TypeCastExpression extends Omit<Expression, "type"> {
@@ -970,7 +988,10 @@ export namespace namedTypes {
   export interface DeclareFunction extends Omit<Statement, "type"> {
     type: "DeclareFunction";
     id: K.IdentifierKind;
+    predicate?: K.FlowPredicateKind | null;
   }
+
+  export interface FlowPredicate extends Flow {}
 
   export interface DeclareClass extends Omit<InterfaceDeclaration, "type"> {
     type: "DeclareClass";
@@ -990,7 +1011,7 @@ export namespace namedTypes {
   export interface DeclareExportDeclaration extends Omit<Declaration, "type"> {
     type: "DeclareExportDeclaration";
     default: boolean;
-    declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null;
+    declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | K.TypeAliasKind | K.DeclareOpaqueTypeKind | K.InterfaceDeclarationKind | null;
     specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[];
     source?: K.LiteralKind | null;
   }
@@ -1004,8 +1025,6 @@ export namespace namedTypes {
     source?: K.LiteralKind | null;
   }
 
-  export interface FlowPredicate extends Flow {}
-
   export interface InferredPredicate extends Omit<FlowPredicate, "type"> {
     type: "InferredPredicate";
   }
@@ -1013,6 +1032,58 @@ export namespace namedTypes {
   export interface DeclaredPredicate extends Omit<FlowPredicate, "type"> {
     type: "DeclaredPredicate";
     value: K.ExpressionKind;
+  }
+
+  export interface EnumDeclaration extends Omit<Declaration, "type"> {
+    type: "EnumDeclaration";
+    id: K.IdentifierKind;
+    body: K.EnumBooleanBodyKind | K.EnumNumberBodyKind | K.EnumStringBodyKind | K.EnumSymbolBodyKind;
+  }
+
+  export interface EnumBooleanBody {
+    type: "EnumBooleanBody";
+    members: K.EnumBooleanMemberKind[];
+    explicitType: boolean;
+  }
+
+  export interface EnumNumberBody {
+    type: "EnumNumberBody";
+    members: K.EnumNumberMemberKind[];
+    explicitType: boolean;
+  }
+
+  export interface EnumStringBody {
+    type: "EnumStringBody";
+    members: K.EnumStringMemberKind[] | K.EnumDefaultedMemberKind[];
+    explicitType: boolean;
+  }
+
+  export interface EnumSymbolBody {
+    type: "EnumSymbolBody";
+    members: K.EnumDefaultedMemberKind[];
+  }
+
+  export interface EnumBooleanMember {
+    type: "EnumBooleanMember";
+    id: K.IdentifierKind;
+    init: K.LiteralKind | boolean;
+  }
+
+  export interface EnumNumberMember {
+    type: "EnumNumberMember";
+    id: K.IdentifierKind;
+    init: K.LiteralKind;
+  }
+
+  export interface EnumStringMember {
+    type: "EnumStringMember";
+    id: K.IdentifierKind;
+    init: K.LiteralKind;
+  }
+
+  export interface EnumDefaultedMember {
+    type: "EnumDefaultedMember";
+    id: K.IdentifierKind;
   }
 
   export interface ExportDeclaration extends Omit<Declaration, "type"> {
@@ -1533,7 +1604,7 @@ export namespace namedTypes {
     parameter: K.IdentifierKind | K.AssignmentPatternKind;
   }
 
-  export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | MemberExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | SpreadElement | AssignmentPattern | MethodDefinition | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | Super | ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportDeclaration | ExportNamedDeclaration | ExportSpecifier | ExportDefaultDeclaration | ExportAllDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | MetaProperty | AwaitExpression | SpreadProperty | SpreadPropertyPattern | ImportExpression | OptionalMemberExpression | OptionalCallExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXElement | JSXFragment | JSXMemberExpression | JSXSpreadAttribute | JSXEmptyExpression | JSXText | JSXSpreadChild | JSXOpeningElement | JSXClosingElement | JSXOpeningFragment | JSXClosingFragment | Decorator | PrivateName | ClassPrivateProperty | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | NumberTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | OpaqueType | DeclareTypeAlias | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | ExportDeclaration | Block | Line | Noop | DoExpression | BindExpression | ParenthesizedExpression | ExportNamespaceSpecifier | ExportDefaultSpecifier | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassMethod | ClassPrivateMethod | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSNamedTupleMember | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty;
+  export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | MemberExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | SpreadElement | AssignmentPattern | MethodDefinition | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | Super | ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportDeclaration | ExportNamedDeclaration | ExportSpecifier | ExportDefaultDeclaration | ExportAllDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | MetaProperty | AwaitExpression | SpreadProperty | SpreadPropertyPattern | ImportExpression | OptionalMemberExpression | OptionalCallExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXElement | JSXFragment | JSXMemberExpression | JSXSpreadAttribute | JSXEmptyExpression | JSXText | JSXSpreadChild | JSXOpeningElement | JSXClosingElement | JSXOpeningFragment | JSXClosingFragment | Decorator | PrivateName | ClassPrivateProperty | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | SymbolTypeAnnotation | NumberTypeAnnotation | BigIntTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | BigIntLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | DeclareTypeAlias | OpaqueType | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | EnumDeclaration | EnumBooleanBody | EnumNumberBody | EnumStringBody | EnumSymbolBody | EnumBooleanMember | EnumNumberMember | EnumStringMember | EnumDefaultedMember | ExportDeclaration | Block | Line | Noop | DoExpression | BindExpression | ParenthesizedExpression | ExportNamespaceSpecifier | ExportDefaultSpecifier | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassMethod | ClassPrivateMethod | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSNamedTupleMember | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty;
   export let Printable: Type<Printable>;
   export let SourceLocation: Type<SourceLocation>;
   export let Node: Type<Node>;
@@ -1660,9 +1731,12 @@ export namespace namedTypes {
   export let EmptyTypeAnnotation: Type<EmptyTypeAnnotation>;
   export let MixedTypeAnnotation: Type<MixedTypeAnnotation>;
   export let VoidTypeAnnotation: Type<VoidTypeAnnotation>;
+  export let SymbolTypeAnnotation: Type<SymbolTypeAnnotation>;
   export let NumberTypeAnnotation: Type<NumberTypeAnnotation>;
+  export let BigIntTypeAnnotation: Type<BigIntTypeAnnotation>;
   export let NumberLiteralTypeAnnotation: Type<NumberLiteralTypeAnnotation>;
   export let NumericLiteralTypeAnnotation: Type<NumericLiteralTypeAnnotation>;
+  export let BigIntLiteralTypeAnnotation: Type<BigIntLiteralTypeAnnotation>;
   export let StringTypeAnnotation: Type<StringTypeAnnotation>;
   export let StringLiteralTypeAnnotation: Type<StringLiteralTypeAnnotation>;
   export let BooleanTypeAnnotation: Type<BooleanTypeAnnotation>;
@@ -1695,22 +1769,31 @@ export namespace namedTypes {
   export let InterfaceDeclaration: Type<InterfaceDeclaration>;
   export let DeclareInterface: Type<DeclareInterface>;
   export let TypeAlias: Type<TypeAlias>;
-  export let OpaqueType: Type<OpaqueType>;
   export let DeclareTypeAlias: Type<DeclareTypeAlias>;
+  export let OpaqueType: Type<OpaqueType>;
   export let DeclareOpaqueType: Type<DeclareOpaqueType>;
   export let TypeCastExpression: Type<TypeCastExpression>;
   export let TupleTypeAnnotation: Type<TupleTypeAnnotation>;
   export let DeclareVariable: Type<DeclareVariable>;
   export let DeclareFunction: Type<DeclareFunction>;
+  export let FlowPredicate: Type<FlowPredicate>;
   export let DeclareClass: Type<DeclareClass>;
   export let DeclareModule: Type<DeclareModule>;
   export let DeclareModuleExports: Type<DeclareModuleExports>;
   export let DeclareExportDeclaration: Type<DeclareExportDeclaration>;
   export let ExportBatchSpecifier: Type<ExportBatchSpecifier>;
   export let DeclareExportAllDeclaration: Type<DeclareExportAllDeclaration>;
-  export let FlowPredicate: Type<FlowPredicate>;
   export let InferredPredicate: Type<InferredPredicate>;
   export let DeclaredPredicate: Type<DeclaredPredicate>;
+  export let EnumDeclaration: Type<EnumDeclaration>;
+  export let EnumBooleanBody: Type<EnumBooleanBody>;
+  export let EnumNumberBody: Type<EnumNumberBody>;
+  export let EnumStringBody: Type<EnumStringBody>;
+  export let EnumSymbolBody: Type<EnumSymbolBody>;
+  export let EnumBooleanMember: Type<EnumBooleanMember>;
+  export let EnumNumberMember: Type<EnumNumberMember>;
+  export let EnumStringMember: Type<EnumStringMember>;
+  export let EnumDefaultedMember: Type<EnumDefaultedMember>;
   export let ExportDeclaration: Type<ExportDeclaration>;
   export let Block: Type<Block>;
   export let Line: Type<Line>;
@@ -1926,9 +2009,12 @@ export interface NamedTypes {
   EmptyTypeAnnotation: Type<namedTypes.EmptyTypeAnnotation>;
   MixedTypeAnnotation: Type<namedTypes.MixedTypeAnnotation>;
   VoidTypeAnnotation: Type<namedTypes.VoidTypeAnnotation>;
+  SymbolTypeAnnotation: Type<namedTypes.SymbolTypeAnnotation>;
   NumberTypeAnnotation: Type<namedTypes.NumberTypeAnnotation>;
+  BigIntTypeAnnotation: Type<namedTypes.BigIntTypeAnnotation>;
   NumberLiteralTypeAnnotation: Type<namedTypes.NumberLiteralTypeAnnotation>;
   NumericLiteralTypeAnnotation: Type<namedTypes.NumericLiteralTypeAnnotation>;
+  BigIntLiteralTypeAnnotation: Type<namedTypes.BigIntLiteralTypeAnnotation>;
   StringTypeAnnotation: Type<namedTypes.StringTypeAnnotation>;
   StringLiteralTypeAnnotation: Type<namedTypes.StringLiteralTypeAnnotation>;
   BooleanTypeAnnotation: Type<namedTypes.BooleanTypeAnnotation>;
@@ -1961,22 +2047,31 @@ export interface NamedTypes {
   InterfaceDeclaration: Type<namedTypes.InterfaceDeclaration>;
   DeclareInterface: Type<namedTypes.DeclareInterface>;
   TypeAlias: Type<namedTypes.TypeAlias>;
-  OpaqueType: Type<namedTypes.OpaqueType>;
   DeclareTypeAlias: Type<namedTypes.DeclareTypeAlias>;
+  OpaqueType: Type<namedTypes.OpaqueType>;
   DeclareOpaqueType: Type<namedTypes.DeclareOpaqueType>;
   TypeCastExpression: Type<namedTypes.TypeCastExpression>;
   TupleTypeAnnotation: Type<namedTypes.TupleTypeAnnotation>;
   DeclareVariable: Type<namedTypes.DeclareVariable>;
   DeclareFunction: Type<namedTypes.DeclareFunction>;
+  FlowPredicate: Type<namedTypes.FlowPredicate>;
   DeclareClass: Type<namedTypes.DeclareClass>;
   DeclareModule: Type<namedTypes.DeclareModule>;
   DeclareModuleExports: Type<namedTypes.DeclareModuleExports>;
   DeclareExportDeclaration: Type<namedTypes.DeclareExportDeclaration>;
   ExportBatchSpecifier: Type<namedTypes.ExportBatchSpecifier>;
   DeclareExportAllDeclaration: Type<namedTypes.DeclareExportAllDeclaration>;
-  FlowPredicate: Type<namedTypes.FlowPredicate>;
   InferredPredicate: Type<namedTypes.InferredPredicate>;
   DeclaredPredicate: Type<namedTypes.DeclaredPredicate>;
+  EnumDeclaration: Type<namedTypes.EnumDeclaration>;
+  EnumBooleanBody: Type<namedTypes.EnumBooleanBody>;
+  EnumNumberBody: Type<namedTypes.EnumNumberBody>;
+  EnumStringBody: Type<namedTypes.EnumStringBody>;
+  EnumSymbolBody: Type<namedTypes.EnumSymbolBody>;
+  EnumBooleanMember: Type<namedTypes.EnumBooleanMember>;
+  EnumNumberMember: Type<namedTypes.EnumNumberMember>;
+  EnumStringMember: Type<namedTypes.EnumStringMember>;
+  EnumDefaultedMember: Type<namedTypes.EnumDefaultedMember>;
   ExportDeclaration: Type<namedTypes.ExportDeclaration>;
   Block: Type<namedTypes.Block>;
   Line: Type<namedTypes.Line>;
