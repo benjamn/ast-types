@@ -576,7 +576,7 @@ export namespace namedTypes {
   export interface JSXAttribute extends Omit<Node, "type"> {
     type: "JSXAttribute";
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind;
-    value?: K.LiteralKind | K.JSXExpressionContainerKind | null;
+    value?: K.LiteralKind | K.JSXExpressionContainerKind | K.JSXElementKind | K.JSXFragmentKind | null;
   }
 
   export interface JSXIdentifier extends Omit<Identifier, "type" | "name"> {
@@ -592,7 +592,24 @@ export namespace namedTypes {
 
   export interface JSXExpressionContainer extends Omit<Expression, "type"> {
     type: "JSXExpressionContainer";
-    expression: K.ExpressionKind;
+    expression: K.ExpressionKind | K.JSXEmptyExpressionKind;
+  }
+
+  export interface JSXElement extends Omit<Expression, "type"> {
+    type: "JSXElement";
+    openingElement: K.JSXOpeningElementKind;
+    closingElement?: K.JSXClosingElementKind | null;
+    children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[];
+    name?: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
+    selfClosing?: boolean;
+    attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
+  }
+
+  export interface JSXFragment extends Omit<Expression, "type"> {
+    type: "JSXFragment";
+    openingFragment: K.JSXOpeningFragmentKind;
+    closingFragment: K.JSXClosingFragmentKind;
+    children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[];
   }
 
   export interface JSXMemberExpression extends Omit<MemberExpression, "type" | "object" | "property" | "computed"> {
@@ -607,14 +624,19 @@ export namespace namedTypes {
     argument: K.ExpressionKind;
   }
 
-  export interface JSXElement extends Omit<Expression, "type"> {
-    type: "JSXElement";
-    openingElement: K.JSXOpeningElementKind;
-    closingElement?: K.JSXClosingElementKind | null;
-    children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
-    name?: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
-    selfClosing?: boolean;
-    attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[];
+  export interface JSXEmptyExpression extends Omit<Node, "type"> {
+    type: "JSXEmptyExpression";
+  }
+
+  export interface JSXText extends Omit<Literal, "type" | "value"> {
+    type: "JSXText";
+    value: string;
+    raw?: string;
+  }
+
+  export interface JSXSpreadChild extends Omit<Node, "type"> {
+    type: "JSXSpreadChild";
+    expression: K.ExpressionKind;
   }
 
   export interface JSXOpeningElement extends Omit<Node, "type"> {
@@ -629,33 +651,12 @@ export namespace namedTypes {
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
   }
 
-  export interface JSXFragment extends Omit<Expression, "type"> {
-    type: "JSXFragment";
-    openingElement: K.JSXOpeningFragmentKind;
-    closingElement: K.JSXClosingFragmentKind;
-    children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[];
-  }
-
-  export interface JSXText extends Omit<Literal, "type" | "value"> {
-    type: "JSXText";
-    value: string;
-  }
-
   export interface JSXOpeningFragment extends Omit<Node, "type"> {
     type: "JSXOpeningFragment";
   }
 
   export interface JSXClosingFragment extends Omit<Node, "type"> {
     type: "JSXClosingFragment";
-  }
-
-  export interface JSXEmptyExpression extends Omit<Expression, "type"> {
-    type: "JSXEmptyExpression";
-  }
-
-  export interface JSXSpreadChild extends Omit<Expression, "type"> {
-    type: "JSXSpreadChild";
-    expression: K.ExpressionKind;
   }
 
   export interface Decorator extends Omit<Node, "type"> {
@@ -1532,7 +1533,7 @@ export namespace namedTypes {
     parameter: K.IdentifierKind | K.AssignmentPatternKind;
   }
 
-  export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | MemberExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | SpreadElement | AssignmentPattern | MethodDefinition | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | Super | ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportDeclaration | ExportNamedDeclaration | ExportSpecifier | ExportDefaultDeclaration | ExportAllDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | MetaProperty | AwaitExpression | SpreadProperty | SpreadPropertyPattern | ImportExpression | OptionalMemberExpression | OptionalCallExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXMemberExpression | JSXSpreadAttribute | JSXElement | JSXOpeningElement | JSXClosingElement | JSXFragment | JSXText | JSXOpeningFragment | JSXClosingFragment | JSXEmptyExpression | JSXSpreadChild | Decorator | PrivateName | ClassPrivateProperty | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | NumberTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | OpaqueType | DeclareTypeAlias | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | ExportDeclaration | Block | Line | Noop | DoExpression | BindExpression | ParenthesizedExpression | ExportNamespaceSpecifier | ExportDefaultSpecifier | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassMethod | ClassPrivateMethod | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSNamedTupleMember | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty;
+  export type ASTNode = File | Program | Identifier | BlockStatement | EmptyStatement | ExpressionStatement | IfStatement | LabeledStatement | BreakStatement | ContinueStatement | WithStatement | SwitchStatement | SwitchCase | ReturnStatement | ThrowStatement | TryStatement | CatchClause | WhileStatement | DoWhileStatement | ForStatement | VariableDeclaration | ForInStatement | DebuggerStatement | FunctionDeclaration | FunctionExpression | VariableDeclarator | ThisExpression | ArrayExpression | ObjectExpression | Property | Literal | SequenceExpression | UnaryExpression | BinaryExpression | AssignmentExpression | MemberExpression | UpdateExpression | LogicalExpression | ConditionalExpression | NewExpression | CallExpression | RestElement | TypeAnnotation | TSTypeAnnotation | SpreadElementPattern | ArrowFunctionExpression | ForOfStatement | YieldExpression | GeneratorExpression | ComprehensionBlock | ComprehensionExpression | ObjectProperty | PropertyPattern | ObjectPattern | ArrayPattern | SpreadElement | AssignmentPattern | MethodDefinition | ClassPropertyDefinition | ClassProperty | ClassBody | ClassDeclaration | ClassExpression | Super | ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportDeclaration | ExportNamedDeclaration | ExportSpecifier | ExportDefaultDeclaration | ExportAllDeclaration | TaggedTemplateExpression | TemplateLiteral | TemplateElement | MetaProperty | AwaitExpression | SpreadProperty | SpreadPropertyPattern | ImportExpression | OptionalMemberExpression | OptionalCallExpression | JSXAttribute | JSXIdentifier | JSXNamespacedName | JSXExpressionContainer | JSXElement | JSXFragment | JSXMemberExpression | JSXSpreadAttribute | JSXEmptyExpression | JSXText | JSXSpreadChild | JSXOpeningElement | JSXClosingElement | JSXOpeningFragment | JSXClosingFragment | Decorator | PrivateName | ClassPrivateProperty | TypeParameterDeclaration | TSTypeParameterDeclaration | TypeParameterInstantiation | TSTypeParameterInstantiation | ClassImplements | TSExpressionWithTypeArguments | AnyTypeAnnotation | EmptyTypeAnnotation | MixedTypeAnnotation | VoidTypeAnnotation | NumberTypeAnnotation | NumberLiteralTypeAnnotation | NumericLiteralTypeAnnotation | StringTypeAnnotation | StringLiteralTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullableTypeAnnotation | NullLiteralTypeAnnotation | NullTypeAnnotation | ThisTypeAnnotation | ExistsTypeAnnotation | ExistentialTypeParam | FunctionTypeAnnotation | FunctionTypeParam | ArrayTypeAnnotation | ObjectTypeAnnotation | ObjectTypeProperty | ObjectTypeSpreadProperty | ObjectTypeIndexer | ObjectTypeCallProperty | ObjectTypeInternalSlot | Variance | QualifiedTypeIdentifier | GenericTypeAnnotation | MemberTypeAnnotation | UnionTypeAnnotation | IntersectionTypeAnnotation | TypeofTypeAnnotation | TypeParameter | InterfaceTypeAnnotation | InterfaceExtends | InterfaceDeclaration | DeclareInterface | TypeAlias | OpaqueType | DeclareTypeAlias | DeclareOpaqueType | TypeCastExpression | TupleTypeAnnotation | DeclareVariable | DeclareFunction | DeclareClass | DeclareModule | DeclareModuleExports | DeclareExportDeclaration | ExportBatchSpecifier | DeclareExportAllDeclaration | InferredPredicate | DeclaredPredicate | ExportDeclaration | Block | Line | Noop | DoExpression | BindExpression | ParenthesizedExpression | ExportNamespaceSpecifier | ExportDefaultSpecifier | CommentBlock | CommentLine | Directive | DirectiveLiteral | InterpreterDirective | StringLiteral | NumericLiteral | BigIntLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ObjectMethod | ClassMethod | ClassPrivateMethod | RestProperty | ForAwaitStatement | Import | TSQualifiedName | TSTypeReference | TSAsExpression | TSNonNullExpression | TSAnyKeyword | TSBigIntKeyword | TSBooleanKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSArrayType | TSLiteralType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSTypeParameter | TSParenthesizedType | TSFunctionType | TSConstructorType | TSDeclareFunction | TSDeclareMethod | TSMappedType | TSTupleType | TSNamedTupleMember | TSRestType | TSOptionalType | TSIndexedAccessType | TSTypeOperator | TSIndexSignature | TSPropertySignature | TSMethodSignature | TSTypePredicate | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSEnumMember | TSTypeQuery | TSImportType | TSTypeLiteral | TSTypeAssertion | TSEnumDeclaration | TSTypeAliasDeclaration | TSModuleBlock | TSModuleDeclaration | TSImportEqualsDeclaration | TSExternalModuleReference | TSExportAssignment | TSNamespaceExportDeclaration | TSInterfaceBody | TSInterfaceDeclaration | TSParameterProperty;
   export let Printable: Type<Printable>;
   export let SourceLocation: Type<SourceLocation>;
   export let Node: Type<Node>;
@@ -1631,17 +1632,17 @@ export namespace namedTypes {
   export let JSXIdentifier: Type<JSXIdentifier>;
   export let JSXNamespacedName: Type<JSXNamespacedName>;
   export let JSXExpressionContainer: Type<JSXExpressionContainer>;
+  export let JSXElement: Type<JSXElement>;
+  export let JSXFragment: Type<JSXFragment>;
   export let JSXMemberExpression: Type<JSXMemberExpression>;
   export let JSXSpreadAttribute: Type<JSXSpreadAttribute>;
-  export let JSXElement: Type<JSXElement>;
+  export let JSXEmptyExpression: Type<JSXEmptyExpression>;
+  export let JSXText: Type<JSXText>;
+  export let JSXSpreadChild: Type<JSXSpreadChild>;
   export let JSXOpeningElement: Type<JSXOpeningElement>;
   export let JSXClosingElement: Type<JSXClosingElement>;
-  export let JSXFragment: Type<JSXFragment>;
-  export let JSXText: Type<JSXText>;
   export let JSXOpeningFragment: Type<JSXOpeningFragment>;
   export let JSXClosingFragment: Type<JSXClosingFragment>;
-  export let JSXEmptyExpression: Type<JSXEmptyExpression>;
-  export let JSXSpreadChild: Type<JSXSpreadChild>;
   export let Decorator: Type<Decorator>;
   export let PrivateName: Type<PrivateName>;
   export let ClassPrivateProperty: Type<ClassPrivateProperty>;
@@ -1897,17 +1898,17 @@ export interface NamedTypes {
   JSXIdentifier: Type<namedTypes.JSXIdentifier>;
   JSXNamespacedName: Type<namedTypes.JSXNamespacedName>;
   JSXExpressionContainer: Type<namedTypes.JSXExpressionContainer>;
+  JSXElement: Type<namedTypes.JSXElement>;
+  JSXFragment: Type<namedTypes.JSXFragment>;
   JSXMemberExpression: Type<namedTypes.JSXMemberExpression>;
   JSXSpreadAttribute: Type<namedTypes.JSXSpreadAttribute>;
-  JSXElement: Type<namedTypes.JSXElement>;
+  JSXEmptyExpression: Type<namedTypes.JSXEmptyExpression>;
+  JSXText: Type<namedTypes.JSXText>;
+  JSXSpreadChild: Type<namedTypes.JSXSpreadChild>;
   JSXOpeningElement: Type<namedTypes.JSXOpeningElement>;
   JSXClosingElement: Type<namedTypes.JSXClosingElement>;
-  JSXFragment: Type<namedTypes.JSXFragment>;
-  JSXText: Type<namedTypes.JSXText>;
   JSXOpeningFragment: Type<namedTypes.JSXOpeningFragment>;
   JSXClosingFragment: Type<namedTypes.JSXClosingFragment>;
-  JSXEmptyExpression: Type<namedTypes.JSXEmptyExpression>;
-  JSXSpreadChild: Type<namedTypes.JSXSpreadChild>;
   Decorator: Type<namedTypes.Decorator>;
   PrivateName: Type<namedTypes.PrivateName>;
   ClassPrivateProperty: Type<namedTypes.ClassPrivateProperty>;
