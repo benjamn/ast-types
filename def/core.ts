@@ -1,4 +1,5 @@
 import { Fork } from "../types";
+import { BinaryOperators, AssignmentOperators, LogicalOperators } from "./core-operators";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import { namedTypes as N } from "../gen/namedTypes";
@@ -136,8 +137,7 @@ export default function (fork: Fork) {
     def("CatchClause")
         .bases("Node")
         .build("param", "guard", "body")
-        // https://github.com/tc39/proposal-optional-catch-binding
-        .field("param", or(def("Pattern"), null), defaults["null"])
+        .field("param", def("Pattern"))
         .field("guard", or(def("Expression"), null), defaults["null"])
         .field("body", def("BlockStatement"));
 
@@ -238,14 +238,7 @@ export default function (fork: Fork) {
         // always true for unary operators.
         .field("prefix", Boolean, defaults["true"]);
 
-    var BinaryOperator = or(
-        "==", "!=", "===", "!==",
-        "<", "<=", ">", ">=",
-        "<<", ">>", ">>>",
-        "+", "-", "*", "/", "%", "**",
-        "&", // TODO Missing from the Parser API.
-        "|", "^", "in",
-        "instanceof");
+    const BinaryOperator = or(...BinaryOperators);
 
     def("BinaryExpression")
         .bases("Expression")
@@ -254,10 +247,7 @@ export default function (fork: Fork) {
         .field("left", def("Expression"))
         .field("right", def("Expression"));
 
-    var AssignmentOperator = or(
-        "=", "+=", "-=", "*=", "/=", "%=",
-        "<<=", ">>=", ">>>=",
-        "|=", "^=", "&=");
+    const AssignmentOperator = or(...AssignmentOperators);
 
     def("AssignmentExpression")
         .bases("Expression")
@@ -275,7 +265,7 @@ export default function (fork: Fork) {
         .field("argument", def("Expression"))
         .field("prefix", Boolean);
 
-    var LogicalOperator = or("||", "&&");
+    var LogicalOperator = or(...LogicalOperators);
 
     def("LogicalExpression")
         .bases("Expression")

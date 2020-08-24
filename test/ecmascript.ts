@@ -30,7 +30,6 @@ import typesPlugin from "../lib/types";
 import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
 import es6Def from "../def/es6";
-import es7Def from "../def/es7";
 import es2020Def from "../def/es2020";
 import babelDef from "../def/babel";
 
@@ -1072,7 +1071,8 @@ describe("global scope", function() {
         var node = path.node;
         assert.strictEqual(path.scope.isGlobal, false);
 
-        assert.strictEqual(node.id.name, "bar");
+        const name = node.id ? node.id.name : null;
+        assert.strictEqual(name, "bar");
         assert.notStrictEqual(path.scope, globalScope);
         assert.strictEqual(path.scope.isGlobal, false);
         assert.strictEqual(path.scope.parent, globalScope);
@@ -1444,7 +1444,7 @@ describe("array and object pattern scope", function() {
     var types = fork([
       coreDef,
       es6Def,
-      es7Def,
+      es2020Def,
     ]);
     var b = types.builders;
 

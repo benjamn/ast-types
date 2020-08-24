@@ -1,11 +1,11 @@
 import { Fork } from "../types";
-import es7Def from "./es7";
+import esProposalsDef from "./es-proposals";
 import typeAnnotationsDef from "./type-annotations";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
 export default function (fork: Fork) {
-  fork.use(es7Def);
+  fork.use(esProposalsDef);
   fork.use(typeAnnotationsDef);
 
   var types = fork.use(typesPlugin);

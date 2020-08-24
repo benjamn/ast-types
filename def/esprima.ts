@@ -1,10 +1,10 @@
 import { Fork } from "../types";
-import es7Def from "./es7";
+import es2020Def from "./es2020";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
 export default function (fork: Fork) {
-  fork.use(es7Def);
+  fork.use(es2020Def);
 
   var types = fork.use(typesPlugin);
   var defaults = fork.use(sharedPlugin).defaults;
