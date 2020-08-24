@@ -327,6 +327,7 @@ export interface FunctionDeclarationBuilder {
       id: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
@@ -353,6 +354,7 @@ export interface FunctionExpressionBuilder {
       id?: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
@@ -664,6 +666,7 @@ export interface ArrowFunctionExpressionBuilder {
       id?: null,
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
@@ -994,12 +997,12 @@ export interface ImportDeclarationBuilder {
   (
     specifiers: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[] | undefined,
     source: K.LiteralKind,
-    importKind?: "value" | "type"
+    importKind?: "value" | "type" | "typeof"
   ): namedTypes.ImportDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      importKind?: "value" | "type",
+      importKind?: "value" | "type" | "typeof",
       loc?: K.SourceLocationKind | null,
       source: K.LiteralKind,
       specifiers?: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[]
@@ -1553,6 +1556,16 @@ export interface VoidTypeAnnotationBuilder {
   ): namedTypes.VoidTypeAnnotation;
 }
 
+export interface SymbolTypeAnnotationBuilder {
+  (): namedTypes.SymbolTypeAnnotation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.SymbolTypeAnnotation;
+}
+
 export interface NumberTypeAnnotationBuilder {
   (): namedTypes.NumberTypeAnnotation;
   from(
@@ -1561,6 +1574,16 @@ export interface NumberTypeAnnotationBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.NumberTypeAnnotation;
+}
+
+export interface BigIntTypeAnnotationBuilder {
+  (): namedTypes.BigIntTypeAnnotation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.BigIntTypeAnnotation;
 }
 
 export interface NumberLiteralTypeAnnotationBuilder {
@@ -1585,6 +1608,18 @@ export interface NumericLiteralTypeAnnotationBuilder {
       value: number
     }
   ): namedTypes.NumericLiteralTypeAnnotation;
+}
+
+export interface BigIntLiteralTypeAnnotationBuilder {
+  (value: null, raw: string): namedTypes.BigIntLiteralTypeAnnotation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      raw: string,
+      value: null
+    }
+  ): namedTypes.BigIntLiteralTypeAnnotation;
 }
 
 export interface StringTypeAnnotationBuilder {
@@ -1712,12 +1747,16 @@ export interface FunctionTypeAnnotationBuilder {
 }
 
 export interface FunctionTypeParamBuilder {
-  (name: K.IdentifierKind, typeAnnotation: K.FlowTypeKind, optional: boolean): namedTypes.FunctionTypeParam;
+  (
+    name: K.IdentifierKind | null,
+    typeAnnotation: K.FlowTypeKind,
+    optional: boolean
+  ): namedTypes.FunctionTypeParam;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      name: K.IdentifierKind,
+      name: K.IdentifierKind | null,
       optional: boolean,
       typeAnnotation: K.FlowTypeKind
     }
@@ -1792,6 +1831,7 @@ export interface ObjectTypeIndexerBuilder {
       id: K.IdentifierKind,
       key: K.FlowTypeKind,
       loc?: K.SourceLocationKind | null,
+      static: boolean,
       value: K.FlowTypeKind,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
@@ -1924,12 +1964,14 @@ export interface TypeParameterBuilder {
   (
     name: string,
     variance?: K.VarianceKind | "plus" | "minus" | null,
-    bound?: K.TypeAnnotationKind | null
+    bound?: K.TypeAnnotationKind | null,
+    defaultParam?: K.FlowTypeKind | null
   ): namedTypes.TypeParameter;
   from(
     params: {
       bound?: K.TypeAnnotationKind | null,
       comments?: K.CommentKind[] | null,
+      default?: K.FlowTypeKind | null,
       loc?: K.SourceLocationKind | null,
       name: string,
       variance?: K.VarianceKind | "plus" | "minus" | null
@@ -2017,25 +2059,6 @@ export interface TypeAliasBuilder {
   ): namedTypes.TypeAlias;
 }
 
-export interface OpaqueTypeBuilder {
-  (
-    id: K.IdentifierKind,
-    typeParameters: K.TypeParameterDeclarationKind | null,
-    impltype: K.FlowTypeKind,
-    supertype: K.FlowTypeKind
-  ): namedTypes.OpaqueType;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      impltype: K.FlowTypeKind,
-      loc?: K.SourceLocationKind | null,
-      supertype: K.FlowTypeKind,
-      typeParameters: K.TypeParameterDeclarationKind | null
-    }
-  ): namedTypes.OpaqueType;
-}
-
 export interface DeclareTypeAliasBuilder {
   (
     id: K.IdentifierKind,
@@ -2053,17 +2076,38 @@ export interface DeclareTypeAliasBuilder {
   ): namedTypes.DeclareTypeAlias;
 }
 
+export interface OpaqueTypeBuilder {
+  (
+    id: K.IdentifierKind,
+    typeParameters: K.TypeParameterDeclarationKind | null,
+    impltype: K.FlowTypeKind,
+    supertype: K.FlowTypeKind | null
+  ): namedTypes.OpaqueType;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      impltype: K.FlowTypeKind,
+      loc?: K.SourceLocationKind | null,
+      supertype: K.FlowTypeKind | null,
+      typeParameters: K.TypeParameterDeclarationKind | null
+    }
+  ): namedTypes.OpaqueType;
+}
+
 export interface DeclareOpaqueTypeBuilder {
   (
     id: K.IdentifierKind,
-    typeParameters: K.TypeParameterDeclarationKind | null
+    typeParameters: K.TypeParameterDeclarationKind | null,
+    supertype: K.FlowTypeKind | null
   ): namedTypes.DeclareOpaqueType;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
+      impltype: K.FlowTypeKind | null,
       loc?: K.SourceLocationKind | null,
-      right: K.FlowTypeKind,
+      supertype: K.FlowTypeKind | null,
       typeParameters: K.TypeParameterDeclarationKind | null
     }
   ): namedTypes.DeclareOpaqueType;
@@ -2109,7 +2153,8 @@ export interface DeclareFunctionBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null
+      loc?: K.SourceLocationKind | null,
+      predicate?: K.FlowPredicateKind | null
     }
   ): namedTypes.DeclareFunction;
 }
@@ -2154,14 +2199,14 @@ export interface DeclareModuleExportsBuilder {
 export interface DeclareExportDeclarationBuilder {
   (
     defaultParam: boolean,
-    declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null,
+    declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | K.TypeAliasKind | K.DeclareOpaqueTypeKind | K.InterfaceDeclarationKind | null,
     specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind)[],
     source?: K.LiteralKind | null
   ): namedTypes.DeclareExportDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | null,
+      declaration: K.DeclareVariableKind | K.DeclareFunctionKind | K.DeclareClassKind | K.FlowTypeKind | K.TypeAliasKind | K.DeclareOpaqueTypeKind | K.InterfaceDeclarationKind | null,
       default: boolean,
       loc?: K.SourceLocationKind | null,
       source?: K.LiteralKind | null,
@@ -2210,6 +2255,102 @@ export interface DeclaredPredicateBuilder {
       value: K.ExpressionKind
     }
   ): namedTypes.DeclaredPredicate;
+}
+
+export interface EnumDeclarationBuilder {
+  (
+    id: K.IdentifierKind,
+    body: K.EnumBooleanBodyKind | K.EnumNumberBodyKind | K.EnumStringBodyKind | K.EnumSymbolBodyKind
+  ): namedTypes.EnumDeclaration;
+  from(
+    params: {
+      body: K.EnumBooleanBodyKind | K.EnumNumberBodyKind | K.EnumStringBodyKind | K.EnumSymbolBodyKind,
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.EnumDeclaration;
+}
+
+export interface EnumBooleanBodyBuilder {
+  (members: K.EnumBooleanMemberKind[], explicitType: boolean): namedTypes.EnumBooleanBody;
+  from(
+    params: {
+      explicitType: boolean,
+      members: K.EnumBooleanMemberKind[]
+    }
+  ): namedTypes.EnumBooleanBody;
+}
+
+export interface EnumNumberBodyBuilder {
+  (members: K.EnumNumberMemberKind[], explicitType: boolean): namedTypes.EnumNumberBody;
+  from(
+    params: {
+      explicitType: boolean,
+      members: K.EnumNumberMemberKind[]
+    }
+  ): namedTypes.EnumNumberBody;
+}
+
+export interface EnumStringBodyBuilder {
+  (
+    members: K.EnumStringMemberKind[] | K.EnumDefaultedMemberKind[],
+    explicitType: boolean
+  ): namedTypes.EnumStringBody;
+  from(
+    params: {
+      explicitType: boolean,
+      members: K.EnumStringMemberKind[] | K.EnumDefaultedMemberKind[]
+    }
+  ): namedTypes.EnumStringBody;
+}
+
+export interface EnumSymbolBodyBuilder {
+  (members: K.EnumDefaultedMemberKind[]): namedTypes.EnumSymbolBody;
+  from(
+    params: {
+      members: K.EnumDefaultedMemberKind[]
+    }
+  ): namedTypes.EnumSymbolBody;
+}
+
+export interface EnumBooleanMemberBuilder {
+  (id: K.IdentifierKind, init: K.LiteralKind | boolean): namedTypes.EnumBooleanMember;
+  from(
+    params: {
+      id: K.IdentifierKind,
+      init: K.LiteralKind | boolean
+    }
+  ): namedTypes.EnumBooleanMember;
+}
+
+export interface EnumNumberMemberBuilder {
+  (id: K.IdentifierKind, init: K.LiteralKind): namedTypes.EnumNumberMember;
+  from(
+    params: {
+      id: K.IdentifierKind,
+      init: K.LiteralKind
+    }
+  ): namedTypes.EnumNumberMember;
+}
+
+export interface EnumStringMemberBuilder {
+  (id: K.IdentifierKind, init: K.LiteralKind): namedTypes.EnumStringMember;
+  from(
+    params: {
+      id: K.IdentifierKind,
+      init: K.LiteralKind
+    }
+  ): namedTypes.EnumStringMember;
+}
+
+export interface EnumDefaultedMemberBuilder {
+  (id: K.IdentifierKind): namedTypes.EnumDefaultedMember;
+  from(
+    params: {
+      id: K.IdentifierKind
+    }
+  ): namedTypes.EnumDefaultedMember;
 }
 
 export interface ExportDeclarationBuilder {
@@ -2503,6 +2644,7 @@ export interface ObjectMethodBuilder {
       kind: "method" | "get" | "set",
       loc?: K.SourceLocationKind | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
@@ -2538,6 +2680,7 @@ export interface ClassMethodBuilder {
       loc?: K.SourceLocationKind | null,
       optional?: boolean | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       static?: boolean | null,
@@ -2574,6 +2717,7 @@ export interface ClassPrivateMethodBuilder {
       loc?: K.SourceLocationKind | null,
       optional?: boolean | null,
       params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
       rest?: K.IdentifierKind | null,
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
       static?: boolean | null,
@@ -3509,9 +3653,12 @@ export interface builders {
   emptyTypeAnnotation: EmptyTypeAnnotationBuilder;
   mixedTypeAnnotation: MixedTypeAnnotationBuilder;
   voidTypeAnnotation: VoidTypeAnnotationBuilder;
+  symbolTypeAnnotation: SymbolTypeAnnotationBuilder;
   numberTypeAnnotation: NumberTypeAnnotationBuilder;
+  bigIntTypeAnnotation: BigIntTypeAnnotationBuilder;
   numberLiteralTypeAnnotation: NumberLiteralTypeAnnotationBuilder;
   numericLiteralTypeAnnotation: NumericLiteralTypeAnnotationBuilder;
+  bigIntLiteralTypeAnnotation: BigIntLiteralTypeAnnotationBuilder;
   stringTypeAnnotation: StringTypeAnnotationBuilder;
   stringLiteralTypeAnnotation: StringLiteralTypeAnnotationBuilder;
   booleanTypeAnnotation: BooleanTypeAnnotationBuilder;
@@ -3544,8 +3691,8 @@ export interface builders {
   interfaceDeclaration: InterfaceDeclarationBuilder;
   declareInterface: DeclareInterfaceBuilder;
   typeAlias: TypeAliasBuilder;
-  opaqueType: OpaqueTypeBuilder;
   declareTypeAlias: DeclareTypeAliasBuilder;
+  opaqueType: OpaqueTypeBuilder;
   declareOpaqueType: DeclareOpaqueTypeBuilder;
   typeCastExpression: TypeCastExpressionBuilder;
   tupleTypeAnnotation: TupleTypeAnnotationBuilder;
@@ -3559,6 +3706,15 @@ export interface builders {
   declareExportAllDeclaration: DeclareExportAllDeclarationBuilder;
   inferredPredicate: InferredPredicateBuilder;
   declaredPredicate: DeclaredPredicateBuilder;
+  enumDeclaration: EnumDeclarationBuilder;
+  enumBooleanBody: EnumBooleanBodyBuilder;
+  enumNumberBody: EnumNumberBodyBuilder;
+  enumStringBody: EnumStringBodyBuilder;
+  enumSymbolBody: EnumSymbolBodyBuilder;
+  enumBooleanMember: EnumBooleanMemberBuilder;
+  enumNumberMember: EnumNumberMemberBuilder;
+  enumStringMember: EnumStringMemberBuilder;
+  enumDefaultedMember: EnumDefaultedMemberBuilder;
   exportDeclaration: ExportDeclarationBuilder;
   block: BlockBuilder;
   line: LineBuilder;
