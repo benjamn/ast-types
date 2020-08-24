@@ -26,5 +26,6 @@ fi
 
 cd .. # back to the ast-types/test/ directory
 
-exec mocha --require ts-node/register/transpile-only \
-     --reporter spec --full-trace $@ run.ts
+# Run Mocha on the generated .js code, rather than the .ts source code, so
+# that we're testing the same kind of output that we're shipping to npm.
+exec mocha --reporter spec --full-trace $@ run.js
