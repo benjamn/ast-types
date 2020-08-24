@@ -1203,14 +1203,14 @@ export interface OptionalCallExpressionBuilder {
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
-    value?: K.LiteralKind | K.JSXExpressionContainerKind | null
+    value?: K.LiteralKind | K.JSXExpressionContainerKind | K.JSXElementKind | K.JSXFragmentKind | null
   ): namedTypes.JSXAttribute;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
-      value?: K.LiteralKind | K.JSXExpressionContainerKind | null
+      value?: K.LiteralKind | K.JSXExpressionContainerKind | K.JSXElementKind | K.JSXFragmentKind | null
     }
   ): namedTypes.JSXAttribute;
 }
@@ -1241,14 +1241,51 @@ export interface JSXNamespacedNameBuilder {
 }
 
 export interface JSXExpressionContainerBuilder {
-  (expression: K.ExpressionKind): namedTypes.JSXExpressionContainer;
+  (expression: K.ExpressionKind | K.JSXEmptyExpressionKind): namedTypes.JSXExpressionContainer;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      expression: K.ExpressionKind,
+      expression: K.ExpressionKind | K.JSXEmptyExpressionKind,
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.JSXExpressionContainer;
+}
+
+export interface JSXElementBuilder {
+  (
+    openingElement: K.JSXOpeningElementKind,
+    closingElement?: K.JSXClosingElementKind | null,
+    children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[]
+  ): namedTypes.JSXElement;
+  from(
+    params: {
+      attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[],
+      children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[],
+      closingElement?: K.JSXClosingElementKind | null,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      name?: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind,
+      openingElement: K.JSXOpeningElementKind,
+      selfClosing?: boolean
+    }
+  ): namedTypes.JSXElement;
+}
+
+export interface JSXFragmentBuilder {
+  (
+    openingFragment: K.JSXOpeningFragmentKind,
+    closingFragment: K.JSXClosingFragmentKind,
+    children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[]
+  ): namedTypes.JSXFragment;
+  from(
+    params: {
+      children?: (K.JSXTextKind | K.JSXExpressionContainerKind | K.JSXSpreadChildKind | K.JSXElementKind | K.JSXFragmentKind | K.LiteralKind)[],
+      closingFragment: K.JSXClosingFragmentKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      openingFragment: K.JSXOpeningFragmentKind
+    }
+  ): namedTypes.JSXFragment;
 }
 
 export interface JSXMemberExpressionBuilder {
@@ -1278,24 +1315,41 @@ export interface JSXSpreadAttributeBuilder {
   ): namedTypes.JSXSpreadAttribute;
 }
 
-export interface JSXElementBuilder {
-  (
-    openingElement: K.JSXOpeningElementKind,
-    closingElement?: K.JSXClosingElementKind | null,
-    children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[]
-  ): namedTypes.JSXElement;
+export interface JSXEmptyExpressionBuilder {
+  (): namedTypes.JSXEmptyExpression;
   from(
     params: {
-      attributes?: (K.JSXAttributeKind | K.JSXSpreadAttributeKind)[],
-      children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[],
-      closingElement?: K.JSXClosingElementKind | null,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.JSXEmptyExpression;
+}
+
+export interface JSXTextBuilder {
+  (value: string, raw?: string): namedTypes.JSXText;
+  from(
+    params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      name?: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind,
-      openingElement: K.JSXOpeningElementKind,
-      selfClosing?: boolean
+      raw?: string,
+      regex?: {
+        pattern: string,
+        flags: string
+      } | null,
+      value: string
     }
-  ): namedTypes.JSXElement;
+  ): namedTypes.JSXText;
+}
+
+export interface JSXSpreadChildBuilder {
+  (expression: K.ExpressionKind): namedTypes.JSXSpreadChild;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.ExpressionKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.JSXSpreadChild;
 }
 
 export interface JSXOpeningElementBuilder {
@@ -1328,38 +1382,6 @@ export interface JSXClosingElementBuilder {
   ): namedTypes.JSXClosingElement;
 }
 
-export interface JSXFragmentBuilder {
-  (
-    openingElement: K.JSXOpeningFragmentKind,
-    closingElement: K.JSXClosingFragmentKind,
-    children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[]
-  ): namedTypes.JSXFragment;
-  from(
-    params: {
-      children?: (K.JSXElementKind | K.JSXExpressionContainerKind | K.JSXFragmentKind | K.JSXTextKind | K.LiteralKind)[],
-      closingElement: K.JSXClosingFragmentKind,
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      openingElement: K.JSXOpeningFragmentKind
-    }
-  ): namedTypes.JSXFragment;
-}
-
-export interface JSXTextBuilder {
-  (value: string): namedTypes.JSXText;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
-      value: string
-    }
-  ): namedTypes.JSXText;
-}
-
 export interface JSXOpeningFragmentBuilder {
   (): namedTypes.JSXOpeningFragment;
   from(
@@ -1378,27 +1400,6 @@ export interface JSXClosingFragmentBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.JSXClosingFragment;
-}
-
-export interface JSXEmptyExpressionBuilder {
-  (): namedTypes.JSXEmptyExpression;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.JSXEmptyExpression;
-}
-
-export interface JSXSpreadChildBuilder {
-  (expression: K.ExpressionKind): namedTypes.JSXSpreadChild;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.ExpressionKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.JSXSpreadChild;
 }
 
 export interface DecoratorBuilder {
@@ -3484,17 +3485,17 @@ export interface builders {
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
   jsxExpressionContainer: JSXExpressionContainerBuilder;
+  jsxElement: JSXElementBuilder;
+  jsxFragment: JSXFragmentBuilder;
   jsxMemberExpression: JSXMemberExpressionBuilder;
   jsxSpreadAttribute: JSXSpreadAttributeBuilder;
-  jsxElement: JSXElementBuilder;
+  jsxEmptyExpression: JSXEmptyExpressionBuilder;
+  jsxText: JSXTextBuilder;
+  jsxSpreadChild: JSXSpreadChildBuilder;
   jsxOpeningElement: JSXOpeningElementBuilder;
   jsxClosingElement: JSXClosingElementBuilder;
-  jsxFragment: JSXFragmentBuilder;
-  jsxText: JSXTextBuilder;
   jsxOpeningFragment: JSXOpeningFragmentBuilder;
   jsxClosingFragment: JSXClosingFragmentBuilder;
-  jsxEmptyExpression: JSXEmptyExpressionBuilder;
-  jsxSpreadChild: JSXSpreadChildBuilder;
   decorator: DecoratorBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
