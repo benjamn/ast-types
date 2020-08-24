@@ -1831,7 +1831,7 @@ export interface ObjectTypeIndexerBuilder {
       id: K.IdentifierKind,
       key: K.FlowTypeKind,
       loc?: K.SourceLocationKind | null,
-      static: boolean,
+      static?: boolean,
       value: K.FlowTypeKind,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }

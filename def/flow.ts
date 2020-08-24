@@ -153,10 +153,6 @@ export default function (fork: Fork) {
     .field("exact", Boolean, defaults["false"])
     .field("internalSlots", [def("ObjectTypeInternalSlot")], defaults.emptyArray);
 
-  def("ObjectTypeIndexer")
-    .field("id", or(def("Identifier"), null))
-    .field("static", Boolean);
-
   def("Variance")
     .bases("Node")
     .build("kind")
@@ -183,7 +179,8 @@ export default function (fork: Fork) {
     .field("id", def("Identifier"))
     .field("key", def("FlowType"))
     .field("value", def("FlowType"))
-    .field("variance", LegacyVariance, defaults["null"]);
+    .field("variance", LegacyVariance, defaults["null"])
+    .field("static", Boolean, defaults["false"]);
 
   def("ObjectTypeCallProperty")
     .bases("Node")

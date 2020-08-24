@@ -852,12 +852,12 @@ export namespace namedTypes {
   }
 
   export interface ObjectTypeIndexer extends Omit<Node, "type"> {
-    id: K.IdentifierKind;
-    static: boolean;
     type: "ObjectTypeIndexer";
+    id: K.IdentifierKind;
     key: K.FlowTypeKind;
     value: K.FlowTypeKind;
     variance?: K.VarianceKind | "plus" | "minus" | null;
+    static?: boolean;
   }
 
   export interface ObjectTypeCallProperty extends Omit<Node, "type"> {
