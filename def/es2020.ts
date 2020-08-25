@@ -25,7 +25,7 @@ export default function (fork: Fork) {
     .field("exported", or(def("Identifier"), null));
 
   // Optional chaining
-  def("OptionalMemberExpression")
+  def("ChainExpression")
     .bases("MemberExpression")
     .build("object", "property", "computed", "optional")
     .field("optional", Boolean, defaults["true"])
@@ -33,6 +33,12 @@ export default function (fork: Fork) {
   def("OptionalCallExpression")
     .bases("CallExpression")
     .build("callee", "arguments", "optional")
+    .field("optional", Boolean, defaults["true"])
+  
+  // Deprecated optional chaining type, doesn't work with babelParser@7.11.0 or newer
+  def("OptionalMemberExpression")
+    .bases("MemberExpression")
+    .build("object", "property", "computed", "optional")
     .field("optional", Boolean, defaults["true"])
 
   // Nullish coalescing
