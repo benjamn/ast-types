@@ -1166,13 +1166,13 @@ export interface ImportExpressionBuilder {
   ): namedTypes.ImportExpression;
 }
 
-export interface OptionalMemberExpressionBuilder {
+export interface ChainExpressionBuilder {
   (
     object: K.ExpressionKind,
     property: K.IdentifierKind | K.ExpressionKind,
     computed?: boolean,
     optional?: boolean
-  ): namedTypes.OptionalMemberExpression;
+  ): namedTypes.ChainExpression;
   from(
     params: {
       comments?: K.CommentKind[] | null,
@@ -1182,7 +1182,7 @@ export interface OptionalMemberExpressionBuilder {
       optional?: boolean,
       property: K.IdentifierKind | K.ExpressionKind
     }
-  ): namedTypes.OptionalMemberExpression;
+  ): namedTypes.ChainExpression;
 }
 
 export interface OptionalCallExpressionBuilder {
@@ -1201,6 +1201,25 @@ export interface OptionalCallExpressionBuilder {
       typeArguments?: null | K.TypeParameterInstantiationKind
     }
   ): namedTypes.OptionalCallExpression;
+}
+
+export interface OptionalMemberExpressionBuilder {
+  (
+    object: K.ExpressionKind,
+    property: K.IdentifierKind | K.ExpressionKind,
+    computed?: boolean,
+    optional?: boolean
+  ): namedTypes.OptionalMemberExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      loc?: K.SourceLocationKind | null,
+      object: K.ExpressionKind,
+      optional?: boolean,
+      property: K.IdentifierKind | K.ExpressionKind
+    }
+  ): namedTypes.OptionalMemberExpression;
 }
 
 export interface JSXAttributeBuilder {
@@ -3623,8 +3642,9 @@ export interface builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   importExpression: ImportExpressionBuilder;
-  optionalMemberExpression: OptionalMemberExpressionBuilder;
+  chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
+  optionalMemberExpression: OptionalMemberExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
