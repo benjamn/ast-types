@@ -2438,6 +2438,28 @@ describe("Optional Chaining", function() {
     });
   });
 
+  describe("ChainExpression", function () {
+    it("should set optional to true by default", function(){
+      var chainExpression = b.chainExpression(
+        b.identifier('foo'),
+        b.identifier('bar')
+      );
+
+      assert.strictEqual(chainExpression.optional, true);
+    });
+
+    it("should allow optional to be false", function(){
+      var chainExpression = b.chainExpression(
+        b.identifier('foo'),
+        b.identifier('bar'),
+        true,
+        false
+      );
+
+      assert.strictEqual(chainExpression.optional, false);
+    });
+  })
+
   describe('OptionalCallExpression', function() {
     it("should set optional to true by default", function(){
       var optionalCallExpression = b.optionalCallExpression(
