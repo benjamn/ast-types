@@ -25,10 +25,14 @@ export default function (fork: Fork) {
     .field("exported", or(def("Identifier"), null));
 
   // Optional chaining
+  def("ChainElement")
+    .bases("Node")
+    .build("optional")
+    .field("optional", Boolean, defaults["true"]);
+
   def("ChainExpression")
     .bases("Expression")
-    .build("object", "property", "computed", "optional")
-    .field("optional", Boolean, defaults["true"])
+    .build("expression")
     .field("expression", def("ChainElement"));
 
   def("OptionalCallExpression")

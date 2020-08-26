@@ -2438,25 +2438,25 @@ describe("Optional Chaining", function() {
     });
   });
 
-  describe("ChainExpression", function () {
+  describe("ChainElement", function () {
     it("should set optional to true by default", function(){
-      var chainExpression = b.chainExpression(
-        b.identifier('foo'),
-        b.identifier('bar')
-      );
+      var chainElement = b.chainElement();
 
-      assert.strictEqual(chainExpression.optional, true);
+      assert.strictEqual(chainElement.optional, true);
     });
 
     it("should allow optional to be false", function(){
-      var chainExpression = b.chainExpression(
-        b.identifier('foo'),
-        b.identifier('bar'),
-        true,
-        false
-      );
+      var chainElement = b.chainElement(false);
 
-      assert.strictEqual(chainExpression.optional, false);
+      assert.strictEqual(chainElement.optional, false);
+    });
+  })
+
+  describe("ChainExpression", function () {
+    it("should set optional in ChainElement to true by default", function(){
+      var chainExpression = b.chainExpression(b.chainElement());
+
+      assert.strictEqual(chainExpression.expression.optional, true);
     });
   })
 

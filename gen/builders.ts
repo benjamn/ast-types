@@ -1166,21 +1166,24 @@ export interface ImportExpressionBuilder {
   ): namedTypes.ImportExpression;
 }
 
-export interface ChainExpressionBuilder {
-  (
-    object: K.ExpressionKind,
-    property: K.IdentifierKind | K.ExpressionKind,
-    computed?: boolean,
-    optional?: boolean
-  ): namedTypes.ChainExpression;
+export interface ChainElementBuilder {
+  (optional?: boolean): namedTypes.ChainElement;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      computed?: boolean,
       loc?: K.SourceLocationKind | null,
-      object: K.ExpressionKind,
-      optional?: boolean,
-      property: K.IdentifierKind | K.ExpressionKind
+      optional?: boolean
+    }
+  ): namedTypes.ChainElement;
+}
+
+export interface ChainExpressionBuilder {
+  (expression: K.ChainElementKind): namedTypes.ChainExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.ChainElementKind,
+      loc?: K.SourceLocationKind | null
     }
   ): namedTypes.ChainExpression;
 }
@@ -3642,6 +3645,7 @@ export interface builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   importExpression: ImportExpressionBuilder;
+  chainElement: ChainElementBuilder;
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
