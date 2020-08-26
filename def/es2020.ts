@@ -28,18 +28,18 @@ export default function (fork: Fork) {
   def("ChainExpression")
     .bases("MemberExpression")
     .build("object", "property", "computed", "optional")
-    .field("optional", Boolean, defaults["true"])
+    .field("optional", Boolean, defaults["true"]);
 
   def("OptionalCallExpression")
     .bases("CallExpression")
     .build("callee", "arguments", "optional")
-    .field("optional", Boolean, defaults["true"])
+    .field("optional", Boolean, defaults["true"]);
   
   // Deprecated optional chaining type, doesn't work with babelParser@7.11.0 or newer
   def("OptionalMemberExpression")
     .bases("MemberExpression")
     .build("object", "property", "computed", "optional")
-    .field("optional", Boolean, defaults["true"])
+    .field("optional", Boolean, defaults["true"]);
 
   // Nullish coalescing
   const LogicalOperator = or(...LogicalOperators, "??");
