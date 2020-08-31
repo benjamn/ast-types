@@ -291,14 +291,14 @@ export default function (fork: Fork) {
         .field("arguments", [def("Expression")]);
 
     def("CallExpression")
-        .bases("Expression")
+        .bases("ChainElement")
         .build("callee", "arguments")
         .field("callee", def("Expression"))
         // See comment for NewExpression above.
         .field("arguments", [def("Expression")]);
 
     def("MemberExpression")
-        .bases("Expression")
+        .bases("ChainElement")
         .build("object", "property", "computed")
         .field("object", def("Expression"))
         .field("property", or(def("Identifier"), def("Expression")))

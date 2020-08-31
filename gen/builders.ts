@@ -508,6 +508,17 @@ export interface AssignmentExpressionBuilder {
   ): namedTypes.AssignmentExpression;
 }
 
+export interface ChainElementBuilder {
+  (optional?: boolean): namedTypes.ChainElement;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      optional?: boolean
+    }
+  ): namedTypes.ChainElement;
+}
+
 export interface MemberExpressionBuilder {
   (
     object: K.ExpressionKind,
@@ -520,6 +531,7 @@ export interface MemberExpressionBuilder {
       computed?: boolean,
       loc?: K.SourceLocationKind | null,
       object: K.ExpressionKind,
+      optional?: boolean,
       property: K.IdentifierKind | K.ExpressionKind
     }
   ): namedTypes.MemberExpression;
@@ -599,6 +611,7 @@ export interface CallExpressionBuilder {
       callee: K.ExpressionKind,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
+      optional?: boolean,
       typeArguments?: null | K.TypeParameterInstantiationKind
     }
   ): namedTypes.CallExpression;
@@ -1166,17 +1179,6 @@ export interface ImportExpressionBuilder {
   ): namedTypes.ImportExpression;
 }
 
-export interface ChainElementBuilder {
-  (optional?: boolean): namedTypes.ChainElement;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      optional?: boolean
-    }
-  ): namedTypes.ChainElement;
-}
-
 export interface ChainExpressionBuilder {
   (expression: K.ChainElementKind): namedTypes.ChainExpression;
   from(
@@ -1324,6 +1326,7 @@ export interface JSXMemberExpressionBuilder {
       computed?: boolean,
       loc?: K.SourceLocationKind | null,
       object: K.JSXIdentifierKind | K.JSXMemberExpressionKind,
+      optional?: boolean,
       property: K.JSXIdentifierKind
     }
   ): namedTypes.JSXMemberExpression;
@@ -3600,6 +3603,7 @@ export interface builders {
   unaryExpression: UnaryExpressionBuilder;
   binaryExpression: BinaryExpressionBuilder;
   assignmentExpression: AssignmentExpressionBuilder;
+  chainElement: ChainElementBuilder;
   memberExpression: MemberExpressionBuilder;
   updateExpression: UpdateExpressionBuilder;
   logicalExpression: LogicalExpressionBuilder;
@@ -3645,7 +3649,6 @@ export interface builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   importExpression: ImportExpressionBuilder;
-  chainElement: ChainElementBuilder;
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
