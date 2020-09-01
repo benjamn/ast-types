@@ -172,12 +172,12 @@ glob("**/*.ts", {
       "type Foo = {}",
       "interface Bar {}"
     ];
-  
+
     const ast = babelParse(scope.join("\n"), {
       plugins: ['typescript']
     });
-  
-    it("should register typescript types with the scope", function() {  
+
+    it("should register typescript types with the scope", function() {
       visit(ast, {
         visitProgram(path) {
           assert(path.scope.declaresType('Foo'));
@@ -187,6 +187,28 @@ glob("**/*.ts", {
           return false;
         }
       });
+    });
+  });
+
+  describe('identifier', () => {
+    it('in type argument', () => {
+      const source = `
+interface One{}
+const someFunction = () => {
+  new Array<One>()
+}`
+      const ast = babelParse(source, {
+        plugins: ['typescript']
+      });
+      const identifierNames: any[] = []
+      visit(ast, {
+        visitIdentifier(path: any) {
+          identifierNames.push(path.node.name);
+          this.traverse(path);
+          },
+      });
+
+      assert.deepEqual(identifierNames, ["One", "someFunction", "Array", "One"]);
     });
   });
 });
