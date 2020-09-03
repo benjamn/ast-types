@@ -49,6 +49,7 @@ export interface Visitor<M = {}> {
   visitUnaryExpression?(this: Context & M, path: NodePath<namedTypes.UnaryExpression>): any;
   visitBinaryExpression?(this: Context & M, path: NodePath<namedTypes.BinaryExpression>): any;
   visitAssignmentExpression?(this: Context & M, path: NodePath<namedTypes.AssignmentExpression>): any;
+  visitChainElement?(this: Context & M, path: NodePath<namedTypes.ChainElement>): any;
   visitMemberExpression?(this: Context & M, path: NodePath<namedTypes.MemberExpression>): any;
   visitUpdateExpression?(this: Context & M, path: NodePath<namedTypes.UpdateExpression>): any;
   visitLogicalExpression?(this: Context & M, path: NodePath<namedTypes.LogicalExpression>): any;
@@ -96,7 +97,6 @@ export interface Visitor<M = {}> {
   visitSpreadProperty?(this: Context & M, path: NodePath<namedTypes.SpreadProperty>): any;
   visitSpreadPropertyPattern?(this: Context & M, path: NodePath<namedTypes.SpreadPropertyPattern>): any;
   visitImportExpression?(this: Context & M, path: NodePath<namedTypes.ImportExpression>): any;
-  visitChainElement?(this: Context & M, path: NodePath<namedTypes.ChainElement>): any;
   visitChainExpression?(this: Context & M, path: NodePath<namedTypes.ChainExpression>): any;
   visitOptionalCallExpression?(this: Context & M, path: NodePath<namedTypes.OptionalCallExpression>): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath<namedTypes.OptionalMemberExpression>): any;
