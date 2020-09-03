@@ -271,7 +271,7 @@ export namespace namedTypes {
     optional?: boolean;
   }
 
-  export interface MemberExpression extends Omit<ChainElement, "type"> {
+  export interface MemberExpression extends Omit<Expression, "type">, Omit<ChainElement, "type"> {
     type: "MemberExpression";
     object: K.ExpressionKind;
     property: K.IdentifierKind | K.ExpressionKind;
@@ -306,7 +306,7 @@ export namespace namedTypes {
     typeArguments?: null | K.TypeParameterInstantiationKind;
   }
 
-  export interface CallExpression extends Omit<ChainElement, "type"> {
+  export interface CallExpression extends Omit<Expression, "type">, Omit<ChainElement, "type"> {
     type: "CallExpression";
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
