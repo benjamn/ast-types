@@ -30,6 +30,12 @@ export default function (fork: Fork) {
     .build("optional")
     .field("optional", Boolean, defaults["true"]);
 
+  def("CallExpression")
+    .bases("Expression", "ChainElement");
+
+  def("MemberExpression")
+    .bases("Expression", "ChainElement");
+
   def("ChainExpression")
     .bases("Expression")
     .build("expression")
