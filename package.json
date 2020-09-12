@@ -52,7 +52,7 @@
     "flow-parser": "0.132.0",
     "glob": "7.1.6",
     "mocha": "^8.1.1",
-    "recast": "0.20.1",
+    "recast": "0.20.3",
     "reify": "0.20.12",
     "ts-add-module-exports": "1.0.0",
     "ts-emit-clean": "1.0.0",
