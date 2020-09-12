@@ -508,17 +508,6 @@ export interface AssignmentExpressionBuilder {
   ): namedTypes.AssignmentExpression;
 }
 
-export interface ChainElementBuilder {
-  (optional?: boolean): namedTypes.ChainElement;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      loc?: K.SourceLocationKind | null,
-      optional?: boolean
-    }
-  ): namedTypes.ChainElement;
-}
-
 export interface MemberExpressionBuilder {
   (
     object: K.ExpressionKind,
@@ -3603,7 +3592,6 @@ export interface builders {
   unaryExpression: UnaryExpressionBuilder;
   binaryExpression: BinaryExpressionBuilder;
   assignmentExpression: AssignmentExpressionBuilder;
-  chainElement: ChainElementBuilder;
   memberExpression: MemberExpressionBuilder;
   updateExpression: UpdateExpressionBuilder;
   logicalExpression: LogicalExpressionBuilder;

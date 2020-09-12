@@ -27,7 +27,6 @@ export default function (fork: Fork) {
   // Optional chaining
   def("ChainElement")
     .bases("Node")
-    .build("optional")
     .field("optional", Boolean, defaults["true"]);
 
   def("CallExpression")
