@@ -25,15 +25,31 @@ export default function (fork: Fork) {
     .field("exported", or(def("Identifier"), null));
 
   // Optional chaining
-  def("OptionalMemberExpression")
-    .bases("MemberExpression")
-    .build("object", "property", "computed", "optional")
-    .field("optional", Boolean, defaults["true"])
+  def("ChainElement")
+    .bases("Node")
+    .field("optional", Boolean, defaults["false"]);
+
+  def("CallExpression")
+    .bases("Expression", "ChainElement");
+
+  def("MemberExpression")
+    .bases("Expression", "ChainElement");
+
+  def("ChainExpression")
+    .bases("Expression")
+    .build("expression")
+    .field("expression", def("ChainElement"));
 
   def("OptionalCallExpression")
     .bases("CallExpression")
     .build("callee", "arguments", "optional")
-    .field("optional", Boolean, defaults["true"])
+    .field("optional", Boolean, defaults["true"]);
+
+  // Deprecated optional chaining type, doesn't work with babelParser@7.11.0 or newer
+  def("OptionalMemberExpression")
+    .bases("MemberExpression")
+    .build("object", "property", "computed", "optional")
+    .field("optional", Boolean, defaults["true"]);
 
   // Nullish coalescing
   const LogicalOperator = or(...LogicalOperators, "??");

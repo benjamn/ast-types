@@ -520,6 +520,7 @@ export interface MemberExpressionBuilder {
       computed?: boolean,
       loc?: K.SourceLocationKind | null,
       object: K.ExpressionKind,
+      optional?: boolean,
       property: K.IdentifierKind | K.ExpressionKind
     }
   ): namedTypes.MemberExpression;
@@ -599,6 +600,7 @@ export interface CallExpressionBuilder {
       callee: K.ExpressionKind,
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
+      optional?: boolean,
       typeArguments?: null | K.TypeParameterInstantiationKind
     }
   ): namedTypes.CallExpression;
@@ -1166,23 +1168,15 @@ export interface ImportExpressionBuilder {
   ): namedTypes.ImportExpression;
 }
 
-export interface OptionalMemberExpressionBuilder {
-  (
-    object: K.ExpressionKind,
-    property: K.IdentifierKind | K.ExpressionKind,
-    computed?: boolean,
-    optional?: boolean
-  ): namedTypes.OptionalMemberExpression;
+export interface ChainExpressionBuilder {
+  (expression: K.ChainElementKind): namedTypes.ChainExpression;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      loc?: K.SourceLocationKind | null,
-      object: K.ExpressionKind,
-      optional?: boolean,
-      property: K.IdentifierKind | K.ExpressionKind
+      expression: K.ChainElementKind,
+      loc?: K.SourceLocationKind | null
     }
-  ): namedTypes.OptionalMemberExpression;
+  ): namedTypes.ChainExpression;
 }
 
 export interface OptionalCallExpressionBuilder {
@@ -1201,6 +1195,25 @@ export interface OptionalCallExpressionBuilder {
       typeArguments?: null | K.TypeParameterInstantiationKind
     }
   ): namedTypes.OptionalCallExpression;
+}
+
+export interface OptionalMemberExpressionBuilder {
+  (
+    object: K.ExpressionKind,
+    property: K.IdentifierKind | K.ExpressionKind,
+    computed?: boolean,
+    optional?: boolean
+  ): namedTypes.OptionalMemberExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      loc?: K.SourceLocationKind | null,
+      object: K.ExpressionKind,
+      optional?: boolean,
+      property: K.IdentifierKind | K.ExpressionKind
+    }
+  ): namedTypes.OptionalMemberExpression;
 }
 
 export interface JSXAttributeBuilder {
@@ -1302,6 +1315,7 @@ export interface JSXMemberExpressionBuilder {
       computed?: boolean,
       loc?: K.SourceLocationKind | null,
       object: K.JSXIdentifierKind | K.JSXMemberExpressionKind,
+      optional?: boolean,
       property: K.JSXIdentifierKind
     }
   ): namedTypes.JSXMemberExpression;
@@ -3623,8 +3637,9 @@ export interface builders {
   spreadProperty: SpreadPropertyBuilder;
   spreadPropertyPattern: SpreadPropertyPatternBuilder;
   importExpression: ImportExpressionBuilder;
-  optionalMemberExpression: OptionalMemberExpressionBuilder;
+  chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
+  optionalMemberExpression: OptionalMemberExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;

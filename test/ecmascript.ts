@@ -2415,47 +2415,125 @@ describe("MemberExpression", function() {
   });
 });
 
-describe("Optional Chaining", function() {
-  describe('OptionalMemberExpression', function() {
-    it("should set optional to true by default", function(){
-      var optionalMemberExpression = b.optionalMemberExpression(
+describe("Optional Chaining", function () {
+  describe("ChainExpression", function () {
+    it("should set expression.optional in CallExpression to false by default", function () {
+      const chainExpression = b.chainExpression(
+        b.callExpression(
+          b.identifier("call"),
+          [],
+        ),
+      );
+
+      n.CallExpression.assert(chainExpression.expression);
+      n.ChainElement.assert(chainExpression.expression);
+
+      assert.strictEqual(chainExpression.expression.optional, false);
+    });
+
+    it("can set expression.optional in CallExpression to true", function () {
+      const chainExpression = b.chainExpression(
+        b.callExpression.from({
+          callee: b.identifier("fn"),
+          arguments: [],
+          optional: true,
+        }),
+      );
+
+      n.CallExpression.assert(chainExpression.expression);
+      n.ChainElement.assert(chainExpression.expression);
+
+      assert.strictEqual(chainExpression.expression.optional, true);
+    });
+
+    it("should set expression.optional in MemberExpression to false by default", function () {
+      const chainExpression = b.chainExpression(
+        b.memberExpression(
+          b.identifier("a"),
+          b.identifier("b"),
+          false,
+        ),
+      );
+
+      n.MemberExpression.assert(chainExpression.expression);
+      n.ChainElement.assert(chainExpression.expression);
+
+      assert.strictEqual(chainExpression.expression.optional, false);
+    });
+
+    it("can set expression.optional in MemberExpression to true", function () {
+      const chainExpression = b.chainExpression(
+        b.memberExpression.from({
+          object: b.identifier("a"),
+          property: b.identifier("b"),
+          computed: false,
+          optional: true,
+        }),
+      );
+
+      n.MemberExpression.assert(chainExpression.expression);
+      n.ChainElement.assert(chainExpression.expression);
+
+      assert.strictEqual(chainExpression.expression.optional, true);
+    });
+  });
+
+  describe('OptionalCallExpression', function() {
+    it("should set optional to true by default", function () {
+      const optionalCallExpression = b.optionalCallExpression(
+        b.identifier('foo'),
+        []
+      );
+
+      n.OptionalCallExpression.assert(optionalCallExpression);
+      n.CallExpression.assert(optionalCallExpression);
+      n.ChainElement.assert(optionalCallExpression);
+
+      assert.strictEqual(optionalCallExpression.optional, true);
+    });
+
+    it("should allow optional to be false", function () {
+      const optionalCallExpression = b.optionalCallExpression(
+        b.identifier('foo'),
+        [],
+        false
+      );
+
+      n.OptionalCallExpression.assert(optionalCallExpression);
+      n.CallExpression.assert(optionalCallExpression);
+      n.ChainElement.assert(optionalCallExpression);
+
+      assert.strictEqual(optionalCallExpression.optional, false);
+    });
+  });
+
+  describe('OptionalMemberExpression', function () {
+    it("should set optional to true by default", function () {
+      const optionalMemberExpression = b.optionalMemberExpression(
         b.identifier('foo'),
         b.identifier('bar')
       );
 
+      n.OptionalMemberExpression.assert(optionalMemberExpression);
+      n.MemberExpression.assert(optionalMemberExpression);
+      n.ChainElement.assert(optionalMemberExpression);
+
       assert.strictEqual(optionalMemberExpression.optional, true);
     });
 
-    it("should allow optional to be false", function(){
-      var optionalMemberExpression = b.optionalMemberExpression(
+    it("should allow optional to be false", function () {
+      const optionalMemberExpression = b.optionalMemberExpression(
         b.identifier('foo'),
         b.identifier('bar'),
         true,
         false
       );
 
+      n.OptionalMemberExpression.assert(optionalMemberExpression);
+      n.MemberExpression.assert(optionalMemberExpression);
+      n.ChainElement.assert(optionalMemberExpression);
+
       assert.strictEqual(optionalMemberExpression.optional, false);
-    });
-  });
-
-  describe('OptionalCallExpression', function() {
-    it("should set optional to true by default", function(){
-      var optionalCallExpression = b.optionalCallExpression(
-        b.identifier('foo'),
-        []
-      );
-
-      assert.strictEqual(optionalCallExpression.optional, true);
-    });
-
-    it("should allow optional to be false", function(){
-      var optionalCallExpression = b.optionalCallExpression(
-        b.identifier('foo'),
-        [],
-        false
-      );
-
-      assert.strictEqual(optionalCallExpression.optional, false);
     });
   });
 });
