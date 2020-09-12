@@ -349,6 +349,8 @@ export default function scopePlugin(fork: Fork) {
 
     } else if ((namedTypes.SpreadElementPattern &&
       namedTypes.SpreadElementPattern.check(pattern)) ||
+      (namedTypes.RestElement &&
+      namedTypes.RestElement.check(pattern)) ||
       (namedTypes.SpreadPropertyPattern &&
       namedTypes.SpreadPropertyPattern.check(pattern))) {
       addPattern(patternPath.get('argument'), bindings);
