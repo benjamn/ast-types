@@ -1209,6 +1209,31 @@ describe("scope methods", function () {
     assert.deepEqual(names, ["x", "xyDefault", "xyNamespace", "z"]);
   });
 
+  describe("getBindings should work with destructuring operations", function() {
+    const code = `
+function aFunction(arg1, { arg2 }) {
+  const { arg3, nested: { something: arg4 } } = arg1;
+  const [arg5] = arg1;
+  return 0;
+}`;
+    for (const { parser, parserName } of [
+      { parser: parse, parserName: "esprima" },
+      { parser: babylonParse, parserName: "babel" }
+    ]) {
+      it(`produces the correct bindings with ${parserName} parser`, function() {
+        const ast = parser(code);
+        
+        visit(ast, {
+          visitReturnStatement: function(path) {
+            const names = Object.keys(path.scope.getBindings()).sort();
+            assert.deepEqual(names, ["arg1", "arg2", "arg3", "arg4", "arg5"]);
+            return false;
+          }
+        })  
+      });
+    }
+  });
+
   (nodeMajorVersion >= 6 ? it : xit)
   ("should work for ES6 syntax (espree)", function() {
     var names;
