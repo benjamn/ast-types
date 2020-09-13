@@ -507,6 +507,6 @@ The `def` syntax is used to define all the default AST node types found in
 [jsx.ts](def/jsx.ts),
 [type-annotations.ts](def/type-annotations.ts),
 and
-[typescripts.ts](def/typescripts.ts),
+[typescript.ts](def/typescript.ts),
 so you have
 no shortage of examples to learn from.
