@@ -36,9 +36,6 @@
     "prepack": "npm run clean && npm run gen && npm run build",
     "postpack": "npm run clean"
   },
-  "dependencies": {
-    "tslib": "^2.0.1"
-  },
   "devDependencies": {
     "@babel/parser": "7.11.4",
     "@babel/types": "7.4.4",
@@ -56,6 +53,7 @@
     "reify": "0.20.12",
     "ts-add-module-exports": "1.0.0",
     "ts-emit-clean": "1.0.0",
+    "tslib": "^2.0.1",
     "ts-node": "9.0.0",
     "typescript": "3.9.7"
   },
