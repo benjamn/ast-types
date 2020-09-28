@@ -87,6 +87,8 @@ export interface Visitor<M = {}> {
   visitImportDeclaration?(this: Context & M, path: NodePath<namedTypes.ImportDeclaration>): any;
   visitExportNamedDeclaration?(this: Context & M, path: NodePath<namedTypes.ExportNamedDeclaration>): any;
   visitExportSpecifier?(this: Context & M, path: NodePath<namedTypes.ExportSpecifier>): any;
+  visitExportNamespaceSpecifier?(this: Context & M, path: NodePath<namedTypes.ExportNamespaceSpecifier>): any;
+  visitExportDefaultSpecifier?(this: Context & M, path: NodePath<namedTypes.ExportDefaultSpecifier>): any;
   visitExportDefaultDeclaration?(this: Context & M, path: NodePath<namedTypes.ExportDefaultDeclaration>): any;
   visitExportAllDeclaration?(this: Context & M, path: NodePath<namedTypes.ExportAllDeclaration>): any;
   visitTaggedTemplateExpression?(this: Context & M, path: NodePath<namedTypes.TaggedTemplateExpression>): any;
@@ -208,8 +210,6 @@ export interface Visitor<M = {}> {
   visitDoExpression?(this: Context & M, path: NodePath<namedTypes.DoExpression>): any;
   visitBindExpression?(this: Context & M, path: NodePath<namedTypes.BindExpression>): any;
   visitParenthesizedExpression?(this: Context & M, path: NodePath<namedTypes.ParenthesizedExpression>): any;
-  visitExportNamespaceSpecifier?(this: Context & M, path: NodePath<namedTypes.ExportNamespaceSpecifier>): any;
-  visitExportDefaultSpecifier?(this: Context & M, path: NodePath<namedTypes.ExportDefaultSpecifier>): any;
   visitCommentBlock?(this: Context & M, path: NodePath<namedTypes.CommentBlock>): any;
   visitCommentLine?(this: Context & M, path: NodePath<namedTypes.CommentLine>): any;
   visitDirective?(this: Context & M, path: NodePath<namedTypes.Directive>): any;

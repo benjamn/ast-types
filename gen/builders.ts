@@ -956,41 +956,35 @@ export interface SuperBuilder {
 }
 
 export interface ImportSpecifierBuilder {
-  (imported: K.IdentifierKind, local?: K.IdentifierKind | null): namedTypes.ImportSpecifier;
+  (imported: K.IdentifierKind, local?: K.IdentifierKind): namedTypes.ImportSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      id?: K.IdentifierKind | null,
       imported: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
-      local?: K.IdentifierKind | null,
-      name?: K.IdentifierKind | null
+      local?: K.IdentifierKind
     }
   ): namedTypes.ImportSpecifier;
 }
 
 export interface ImportDefaultSpecifierBuilder {
-  (local?: K.IdentifierKind | null): namedTypes.ImportDefaultSpecifier;
+  (local: K.IdentifierKind): namedTypes.ImportDefaultSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      id?: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
-      local?: K.IdentifierKind | null,
-      name?: K.IdentifierKind | null
+      local: K.IdentifierKind
     }
   ): namedTypes.ImportDefaultSpecifier;
 }
 
 export interface ImportNamespaceSpecifierBuilder {
-  (local?: K.IdentifierKind | null): namedTypes.ImportNamespaceSpecifier;
+  (local: K.IdentifierKind): namedTypes.ImportNamespaceSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      id?: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
-      local?: K.IdentifierKind | null,
-      name?: K.IdentifierKind | null
+      local: K.IdentifierKind
     }
   ): namedTypes.ImportNamespaceSpecifier;
 }
@@ -1030,17 +1024,37 @@ export interface ExportNamedDeclarationBuilder {
 }
 
 export interface ExportSpecifierBuilder {
-  (id?: K.IdentifierKind | null, name?: K.IdentifierKind | null): namedTypes.ExportSpecifier;
+  (): namedTypes.ExportSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       exported: K.IdentifierKind,
-      id?: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
-      local?: K.IdentifierKind | null,
-      name?: K.IdentifierKind | null
+      local: K.IdentifierKind
     }
   ): namedTypes.ExportSpecifier;
+}
+
+export interface ExportNamespaceSpecifierBuilder {
+  (exported: K.IdentifierKind): namedTypes.ExportNamespaceSpecifier;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      exported: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.ExportNamespaceSpecifier;
+}
+
+export interface ExportDefaultSpecifierBuilder {
+  (exported: K.IdentifierKind): namedTypes.ExportDefaultSpecifier;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      exported: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.ExportDefaultSpecifier;
 }
 
 export interface ExportDefaultDeclarationBuilder {
@@ -2454,28 +2468,6 @@ export interface ParenthesizedExpressionBuilder {
   ): namedTypes.ParenthesizedExpression;
 }
 
-export interface ExportNamespaceSpecifierBuilder {
-  (exported: K.IdentifierKind): namedTypes.ExportNamespaceSpecifier;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      exported: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.ExportNamespaceSpecifier;
-}
-
-export interface ExportDefaultSpecifierBuilder {
-  (exported: K.IdentifierKind): namedTypes.ExportDefaultSpecifier;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      exported: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.ExportDefaultSpecifier;
-}
-
 export interface CommentBlockBuilder {
   (value: string, leading?: boolean, trailing?: boolean): namedTypes.CommentBlock;
   from(
@@ -3627,6 +3619,8 @@ export interface builders {
   importDeclaration: ImportDeclarationBuilder;
   exportNamedDeclaration: ExportNamedDeclarationBuilder;
   exportSpecifier: ExportSpecifierBuilder;
+  exportNamespaceSpecifier: ExportNamespaceSpecifierBuilder;
+  exportDefaultSpecifier: ExportDefaultSpecifierBuilder;
   exportDefaultDeclaration: ExportDefaultDeclarationBuilder;
   exportAllDeclaration: ExportAllDeclarationBuilder;
   taggedTemplateExpression: TaggedTemplateExpressionBuilder;
@@ -3737,8 +3731,6 @@ export interface builders {
   doExpression: DoExpressionBuilder;
   bindExpression: BindExpressionBuilder;
   parenthesizedExpression: ParenthesizedExpressionBuilder;
-  exportNamespaceSpecifier: ExportNamespaceSpecifierBuilder;
-  exportDefaultSpecifier: ExportDefaultSpecifierBuilder;
   commentBlock: CommentBlockBuilder;
   commentLine: CommentLineBuilder;
   directive: DirectiveBuilder;
