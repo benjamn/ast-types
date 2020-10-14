@@ -486,14 +486,8 @@ export default function (fork: Fork) {
     )]);
 
   def("CallExpression")
-    .field("typeParameters", or(
-      null,
-      def("TSTypeParameterInstantiation"),
-    ), defaults["null"]);
+    .bases("TSHasOptionalTypeParameterInstantiation");
 
   def("NewExpression")
-    .field("typeParameters", or(
-      null,
-      def("TSTypeParameterInstantiation"),
-    ), defaults["null"]);
+    .bases("TSHasOptionalTypeParameterInstantiation");
 };
