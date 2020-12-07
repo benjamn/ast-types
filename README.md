@@ -437,6 +437,18 @@ contains `path.node`. See [scope.ts](lib/scope.ts) for its public
 interface, which currently includes `.isGlobal`, `.getGlobalScope()`,
 `.depth`, `.declares(name)`, `.lookup(name)`, and `.getBindings()`.
 
+A note on block scoping: As of ES2015 (ES6), variable declartions using `const` or `let` are block scoped. It also is the first ECMAScript spec to mention hoisting. However hoisting does not form part of the syntax, it is a runtime behaviour. Therefore `var` declarations are also scoped by block. For example:
+
+```javascript
+function x() {
+  var one = 1; // in x's scope
+  if (true) {
+    const two = 2; // in the if statement's scope
+    var three = 3;  // also in the if statement scope, but it's binding is hoisted and preinitialized at runtime
+  }
+}
+```
+
 Custom AST Node Types
 ---
 
