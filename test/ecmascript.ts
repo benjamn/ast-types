@@ -20,6 +20,7 @@ import {
   visit,
   defineMethod,
   astNodesAreEquivalent,
+  Visitor,
 } from "../main";
 import {
   babylonParse,
@@ -1313,6 +1314,108 @@ describe("scope methods", function () {
     assert.strictEqual(romVarDecl.declarations[0].id.name, "$1$0");
     assert.strictEqual(romVarDecl.declarations[1].id.name, "$1$1");
   });
+
+  const cases: Array<[string, Array<string>, Visitor]> = [
+    [
+      "if statement",
+      [
+        "  if (true) {",
+        "    const two = 2;",
+        "    var three = 3;",
+        "  }",
+      ],
+      {
+        visitIfStatement: function (path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['three', 'two'])
+          this.traverse(path)
+        }
+      },
+    ],
+    [
+      'for statement',
+      [
+        "  for (const two = 0; two < 2; two++) {",
+        "    const three = 3;",
+        "    var four = 4;",
+        "  }",
+      ],
+      {
+        visitForStatement: function (path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['four', 'three', 'two'])
+          this.traverse(path)
+        }
+      }
+    ],
+    [
+      'for in statement',
+      [
+        "  for (const two in [1,2,3]) {",
+        "    const three = 3;",
+        "    var four = 4;",
+        "  }",
+      ],
+      {
+        visitForInStatement: function(path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['four', 'three', 'two'])
+          this.traverse(path)
+        }
+      },
+    ],
+    [
+      'for of statement',
+      [
+        "  for (const two of [1,2,3]) {",
+        "    const three = 3;",
+        "    var four = 4;",
+        "  }",
+      ],
+      {
+        visitForOfStatement: function (path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['four', 'three', 'two'])
+          this.traverse(path)
+        }
+      },
+    ],
+    [
+      'try statement',
+      [
+        "  try {",
+        "    const two = 2;",
+        "    var three = 3;",
+        "  } catch(e) {}",
+      ],
+      {
+        visitTryStatement: function (path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['three', 'two'])
+          this.traverse(path)
+        }
+      },
+    ],
+  ];
+  cases.forEach(([desc, nestedScope, visitFns]) => {
+    it("getBindings - block scope - " + desc, () => {
+      var scope = [
+        "function x() {",
+        "  const one = 1;",
+        ...nestedScope,
+        "}"
+      ];
+      var ast = parse(scope.join("\n"));
+      visit(ast, {
+        visitFunctionDeclaration: function(path) {
+          const bindingNames = Object.keys(path.scope.getBindings()).sort()
+          assert.deepEqual(bindingNames, ['one'])
+          this.traverse(path)
+        },
+        ...visitFns,
+      })
+    })
+  })
 });
 
 describe("catch block scope", function() {
