@@ -271,7 +271,8 @@ export default function scopePlugin(fork: Fork) {
       addPattern(path.get("id"), bindings);
 
     } else if (namedTypes.ClassDeclaration &&
-      namedTypes.ClassDeclaration.check(node)) {
+      namedTypes.ClassDeclaration.check(node) &&
+      node.id !== null) {
       addPattern(path.get("id"), bindings);
 
     } else if (ScopeType.check(node)) {
