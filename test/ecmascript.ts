@@ -1233,6 +1233,32 @@ describe("scope methods", function () {
     });
   });
 
+(nodeMajorVersion >= 6 ? it : xit)
+  ("should work with classes for ES6 syntax (espree)", function() {
+    var names;
+
+    var ast = espree.parse([
+      "var zap;",
+      "export default class {",
+      "    render () {",
+      "        var innerFn = function(zip) {};",
+      "        return innerFn(zom);",
+      "    }",
+      "};"
+    ].join("\n"), {
+      sourceType: "module",
+      ecmaVersion: 2020,
+    });
+
+    visit(ast, {
+      visitCallExpression: function(path) {
+        names = Object.keys(path.scope.lookup("zap").getBindings()).sort();
+        assert.deepEqual(names, ["zap"]);
+        this.traverse(path);
+      }
+    });
+  });
+
   it("should inject temporary into current scope", function() {
     var ast = parse(scope.join("\n"));
     var bindings;
