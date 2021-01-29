@@ -839,7 +839,7 @@ export interface AssignmentPatternBuilder {
 export interface MethodDefinitionBuilder {
   (
     kind: "constructor" | "method" | "get" | "set",
-    key: K.ExpressionKind,
+    key: K.ExpressionKind | K.PrivateIdentifierKind,
     value: K.FunctionKind,
     staticParam?: boolean
   ): namedTypes.MethodDefinition;
@@ -848,7 +848,7 @@ export interface MethodDefinitionBuilder {
       comments?: K.CommentKind[] | null,
       computed?: boolean,
       decorators?: K.DecoratorKind[] | null,
-      key: K.ExpressionKind,
+      key: K.ExpressionKind | K.PrivateIdentifierKind,
       kind: "constructor" | "method" | "get" | "set",
       loc?: K.SourceLocationKind | null,
       static?: boolean,
@@ -894,11 +894,11 @@ export interface ClassPropertyBuilder {
 
 export interface ClassBodyBuilder {
   (
-    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
+    body: (K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.MethodDefinitionKind | K.PropertyDefinitionKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
   ): namedTypes.ClassBody;
   from(
     params: {
-      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[],
+      body: (K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.MethodDefinitionKind | K.PropertyDefinitionKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[],
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null
     }
@@ -1216,6 +1216,47 @@ export interface OptionalMemberExpressionBuilder {
   ): namedTypes.OptionalMemberExpression;
 }
 
+export interface DecoratorBuilder {
+  (expression: K.ExpressionKind): namedTypes.Decorator;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.ExpressionKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.Decorator;
+}
+
+export interface PrivateIdentifierBuilder {
+  (name: string): namedTypes.PrivateIdentifier;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      name: string
+    }
+  ): namedTypes.PrivateIdentifier;
+}
+
+export interface PropertyDefinitionBuilder {
+  (
+    key: K.ExpressionKind | K.PrivateIdentifierKind,
+    value: K.ExpressionKind | null,
+    computed?: boolean,
+    staticParam?: boolean
+  ): namedTypes.PropertyDefinition;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.ExpressionKind | K.PrivateIdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      value: K.ExpressionKind | null
+    }
+  ): namedTypes.PropertyDefinition;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -1417,45 +1458,6 @@ export interface JSXClosingFragmentBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.JSXClosingFragment;
-}
-
-export interface DecoratorBuilder {
-  (expression: K.ExpressionKind): namedTypes.Decorator;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.ExpressionKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.Decorator;
-}
-
-export interface PrivateNameBuilder {
-  (id: K.IdentifierKind): namedTypes.PrivateName;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.PrivateName;
-}
-
-export interface ClassPrivatePropertyBuilder {
-  (key: K.PrivateNameKind, value?: K.ExpressionKind | null): namedTypes.ClassPrivateProperty;
-  from(
-    params: {
-      access?: "public" | "private" | "protected" | undefined,
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      key: K.PrivateNameKind,
-      loc?: K.SourceLocationKind | null,
-      static?: boolean,
-      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      value?: K.ExpressionKind | null,
-      variance?: K.VarianceKind | "plus" | "minus" | null
-    }
-  ): namedTypes.ClassPrivateProperty;
 }
 
 export interface TypeParameterDeclarationBuilder {
@@ -2666,6 +2668,23 @@ export interface ObjectMethodBuilder {
   ): namedTypes.ObjectMethod;
 }
 
+export interface ClassPrivatePropertyBuilder {
+  (key: K.PrivateNameKind, value?: K.ExpressionKind | null): namedTypes.ClassPrivateProperty;
+  from(
+    params: {
+      access?: "public" | "private" | "protected" | undefined,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.PrivateNameKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      value?: K.ExpressionKind | null,
+      variance?: K.VarianceKind | "plus" | "minus" | null
+    }
+  ): namedTypes.ClassPrivateProperty;
+}
+
 export interface ClassMethodBuilder {
   (
     kind: "get" | "set" | "method" | "constructor" | undefined,
@@ -2738,6 +2757,17 @@ export interface ClassPrivateMethodBuilder {
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
     }
   ): namedTypes.ClassPrivateMethod;
+}
+
+export interface PrivateNameBuilder {
+  (id: K.IdentifierKind): namedTypes.PrivateName;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.PrivateName;
 }
 
 export interface RestPropertyBuilder {
@@ -3640,6 +3670,9 @@ export interface builders {
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
+  decorator: DecoratorBuilder;
+  privateIdentifier: PrivateIdentifierBuilder;
+  propertyDefinition: PropertyDefinitionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
@@ -3655,9 +3688,6 @@ export interface builders {
   jsxClosingElement: JSXClosingElementBuilder;
   jsxOpeningFragment: JSXOpeningFragmentBuilder;
   jsxClosingFragment: JSXClosingFragmentBuilder;
-  decorator: DecoratorBuilder;
-  privateName: PrivateNameBuilder;
-  classPrivateProperty: ClassPrivatePropertyBuilder;
   typeParameterDeclaration: TypeParameterDeclarationBuilder;
   tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
   typeParameterInstantiation: TypeParameterInstantiationBuilder;
@@ -3751,8 +3781,10 @@ export interface builders {
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
   objectMethod: ObjectMethodBuilder;
+  classPrivateProperty: ClassPrivatePropertyBuilder;
   classMethod: ClassMethodBuilder;
   classPrivateMethod: ClassPrivateMethodBuilder;
+  privateName: PrivateNameBuilder;
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;
