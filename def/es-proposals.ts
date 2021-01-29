@@ -35,15 +35,32 @@ export default function (fork: Fork) {
            or([def("Decorator")], null),
            defaults["null"]);
 
-  // Private names
-  def("PrivateName")
-    .bases("Expression", "Pattern")
-    .build("id")
-    .field("id", def("Identifier"));
+  def("PrivateIdentifier")
+    .bases("Node")
+    .build("name")
+    .field("name", String);
 
-  def("ClassPrivateProperty")
-    .bases("ClassProperty")
-    .build("key", "value")
-    .field("key", def("PrivateName"))
-    .field("value", or(def("Expression"), null), defaults["null"]);
+  def("MethodDefinition")
+    .field("key", or(def("Expression"), def("PrivateIdentifier"))) // overrides es6.ts
+
+  def("PropertyDefinition")
+    .bases("Declaration")
+    .build("key", "value", "computed", "static")
+    .field("key", or(def("Expression"), def("PrivateIdentifier")))
+    .field("value", or(def("Expression"), null))
+    .field("computed", Boolean, defaults["false"])
+    .field("static", Boolean, defaults["false"]);
+
+  const ClassBodyElement = or(
+    // es6 spec
+    def("VariableDeclarator"),
+    def("ClassPropertyDefinition"),
+    def("ClassProperty"),
+    // ESTree spec
+    def("MethodDefinition"),
+    def("PropertyDefinition"),
+  );
+
+  def("ClassBody")
+    .field("body", [ClassBodyElement]); // overrides es6.ts
 };
