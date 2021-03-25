@@ -210,6 +210,12 @@ export default function (fork: Fork) {
            or(def("MemberTypeAnnotation"),
               def("GenericTypeAnnotation")));
 
+  def("IndexedAccessType")
+    .bases("FlowType")
+    .build("objectType", "indexType")
+    .field("objectType", def("FlowType"))
+    .field("indexType", def("FlowType"));
+
   def("UnionTypeAnnotation")
     .bases("FlowType")
     .build("types")
