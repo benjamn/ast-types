@@ -1941,6 +1941,18 @@ export interface MemberTypeAnnotationBuilder {
   ): namedTypes.MemberTypeAnnotation;
 }
 
+export interface IndexedAccessTypeBuilder {
+  (objectType: K.FlowTypeKind, indexType: K.FlowTypeKind): namedTypes.IndexedAccessType;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      indexType: K.FlowTypeKind,
+      loc?: K.SourceLocationKind | null,
+      objectType: K.FlowTypeKind
+    }
+  ): namedTypes.IndexedAccessType;
+}
+
 export interface UnionTypeAnnotationBuilder {
   (types: K.FlowTypeKind[]): namedTypes.UnionTypeAnnotation;
   from(
@@ -3697,6 +3709,7 @@ export interface builders {
   qualifiedTypeIdentifier: QualifiedTypeIdentifierBuilder;
   genericTypeAnnotation: GenericTypeAnnotationBuilder;
   memberTypeAnnotation: MemberTypeAnnotationBuilder;
+  indexedAccessType: IndexedAccessTypeBuilder;
   unionTypeAnnotation: UnionTypeAnnotationBuilder;
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
   typeofTypeAnnotation: TypeofTypeAnnotationBuilder;

@@ -167,6 +167,7 @@ export interface Visitor<M = {}> {
   visitQualifiedTypeIdentifier?(this: Context & M, path: NodePath<namedTypes.QualifiedTypeIdentifier>): any;
   visitGenericTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.GenericTypeAnnotation>): any;
   visitMemberTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.MemberTypeAnnotation>): any;
+  visitIndexedAccessType?(this: Context & M, path: NodePath<namedTypes.IndexedAccessType>): any;
   visitUnionTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.UnionTypeAnnotation>): any;
   visitIntersectionTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.IntersectionTypeAnnotation>): any;
   visitTypeofTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.TypeofTypeAnnotation>): any;
