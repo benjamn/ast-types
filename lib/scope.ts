@@ -42,8 +42,9 @@ export default function scopePlugin(fork: Fork) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
-
-    ScopeType.assert(path.value);
+    if (!TypeParameterScopeType.check(path.value)) {
+      ScopeType.assert(path.value);
+    }
 
     var depth: number;
 
@@ -83,8 +84,27 @@ export default function scopePlugin(fork: Fork) {
 
   var ScopeType = Type.or.apply(Type, scopeTypes);
 
+  // These types introduce scopes that are restricted to type parameters in
+  // Flow (this doesn't apply to ECMAScript).
+  var typeParameterScopeTypes = [
+    namedTypes.Function,
+    namedTypes.ClassDeclaration,
+    namedTypes.ClassExpression,
+    namedTypes.InterfaceDeclaration,
+    namedTypes.TSInterfaceDeclaration,
+    namedTypes.TypeAlias,
+    namedTypes.TSTypeAliasDeclaration,
+  ]
+
+  var TypeParameterScopeType = Type.or.apply(Type, typeParameterScopeTypes);
+
+  var FlowOrTSTypeParameterType = Type.or(
+    namedTypes.TypeParameter,
+    namedTypes.TSTypeParameter,
+  )
+
   Scope.isEstablishedBy = function(node) {
-    return ScopeType.check(node);
+      return ScopeType.check(node) || TypeParameterScopeType.check(node);
   };
 
   var Sp: Scope = Scope.prototype;
@@ -150,6 +170,10 @@ export default function scopePlugin(fork: Fork) {
         // Empty out this.bindings, just in cases.
         delete this.bindings[name];
       }
+      for (var name in this.types) {
+        // Empty out this.types, just in cases.
+        delete this.types[name];
+      }
       scanScope(this.path, this.bindings, this.types);
       this.didScan = true;
     }
@@ -167,19 +191,23 @@ export default function scopePlugin(fork: Fork) {
 
   function scanScope(path: any, bindings: any, scopeTypes: any) {
     var node = path.value;
-    ScopeType.assert(node);
-
-    if (namedTypes.CatchClause.check(node)) {
-      // A catch clause establishes a new scope but the only variable
-      // bound in that scope is the catch parameter. Any other
-      // declarations create bindings in the outer scope.
-      var param = path.get("param");
-      if (param.value) {
-        addPattern(param, bindings);
+    if (TypeParameterScopeType.check(node)) {
+      const params = path.get('typeParameters', 'params');
+      if (isArray.check(params.value)) {
+        for (var i = 0; i < params.value.length; i++) {
+            addTypeParameter(params.get(i), scopeTypes);
+        }
       }
-
-    } else {
-      recursiveScanScope(path, bindings, scopeTypes);
+    }
+    if (ScopeType.check(node)) {
+      if (namedTypes.CatchClause.check(node)) {
+        // A catch clause establishes a new scope but the only variable
+        // bound in that scope is the catch parameter. Any other
+        // declarations create bindings in the outer scope.
+        addPattern(path.get("param"), bindings);
+      } else {
+          recursiveScanScope(path, bindings, scopeTypes);
+      }
     }
   }
 
@@ -206,6 +234,7 @@ export default function scopePlugin(fork: Fork) {
       });
 
       recursiveScanChild(path.get("body"), bindings, scopeTypes);
+      recursiveScanScope(path.get("typeParameters"), bindings, scopeTypes);
 
     } else if (
       (namedTypes.TypeAlias && namedTypes.TypeAlias.check(node)) ||
@@ -273,7 +302,20 @@ export default function scopePlugin(fork: Fork) {
     } else if (namedTypes.ClassDeclaration &&
       namedTypes.ClassDeclaration.check(node)) {
       addPattern(path.get("id"), bindings);
+      recursiveScanScope(path.get("typeParameters"), bindings, scopeTypes);
 
+    } else if (
+      (
+        namedTypes.InterfaceDeclaration &&
+        namedTypes.InterfaceDeclaration.check(node)
+      )
+      ||
+      (
+        namedTypes.TSInterfaceDeclaration &&
+        namedTypes.TSInterfaceDeclaration.check(node)
+      )
+    ) {
+        addTypePattern(path.get("id"), scopeTypes);
     } else if (ScopeType.check(node)) {
       if (
         namedTypes.CatchClause.check(node) &&
@@ -368,6 +410,17 @@ export default function scopePlugin(fork: Fork) {
         types[pattern.name] = [patternPath];
       }
 
+    }
+  }
+
+  function addTypeParameter(parameterPath: any, types: any) {
+    var parameter = parameterPath.value;
+    FlowOrTSTypeParameterType.assert(parameter);
+
+    if (hasOwn.call(types, parameter.name)) {
+      types[parameter.name].push(parameterPath);
+    } else {
+      types[parameter.name] = [parameterPath];
     }
   }
 

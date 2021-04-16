@@ -2,6 +2,10 @@ import assert from "assert";
 import flowParser from "flow-parser";
 import forkFn from "../fork";
 import flowDef from "../def/flow";
+import { ASTNode } from "../lib/types";
+import { NodePath } from "../lib/node-path";
+import { Visitor } from "../gen/visitor";
+import { Context } from "../lib/path-visitor";
 
 var types = forkFn([
   flowDef,
@@ -103,6 +107,185 @@ describe("flow types", function () {
           return false;
         }
       });
+    });
+  });
+
+  function assertVisited(node: ASTNode, visitors: Visitor<any>): any {
+    const visitedSet: Set<string> = new Set();
+    const wrappedVisitors: Visitor<any> = {}
+    for (const _key of Object.keys(visitors)) {
+      const key = _key as keyof Visitor<any>
+      wrappedVisitors[key] = function (this: Context, path: NodePath<any>) {
+        visitedSet.add(key);
+        (visitors[key] as any)?.call(this, path)
+      }
+    }
+    types.visit(node, wrappedVisitors);
+
+    for (const key of Object.keys(visitors)) {
+      assert.equal(visitedSet.has(key), true);
+    }
+  }
+
+  it("issue #294 - function declarations", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "function foo<T>(): T { }",
+      "let bar: T",
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitFunctionDeclaration(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        assert.equal(path.scope.lookupType('T'), null);
+        this.traverse(path);
+      }
+    });
+  });
+
+  it("issue #294 - function expressions", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "const foo = function <T>(): T { }",
+      "let bar: T",
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitFunctionExpression(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        if (path.node.id.type === 'Identifier' && path.node.id.name === 'bar') {
+          assert.equal(path.scope.lookupType('T'), null);
+        }
+        this.traverse(path);
+      }
+    });
+  });
+
+  it("issue #294 - arrow function expressions", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "const foo = <T>(): T => { }",
+      "let bar: T"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitArrowFunctionExpression(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        assert.equal(path.scope.lookupType('T'), null);
+        this.traverse(path);
+      }
+    });
+  });
+
+  it("issue #294 - class declarations", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "class Foo<T> extends Bar<Array<T>> { }",
+      "let bar: T"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitTypeParameterInstantiation(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        assert.equal(path.scope.lookupType('T'), null);
+        this.traverse(path);
+      }
+    });
+  });
+
+  it("issue #294 - class expressions", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "const foo = class Foo<T> extends Bar<Array<T>> { }",
+      "let bar: T"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitTypeParameterInstantiation(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        if (path.node.id.type === 'Identifier' && path.node.id.name === 'bar') {
+          assert.equal(path.scope.lookupType('T'), null);
+          assert.equal(path.scope.lookupType('Foo'), null);
+        }
+        this.traverse(path);
+      }
+    });
+  });
+
+  it("issue #296 - interface declarations", function () {
+    const parser = {
+      parse(code: string) {
+        return require('flow-parser').parse(code, {
+          types: true
+        });
+      }
+    };
+
+    const program = parser.parse([
+      "interface Foo<T> extends Bar<Array<T>> { }",
+      "let bar: T"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitTypeParameterInstantiation(path) {
+        assert.ok(path.scope.lookupType('T'));
+        this.traverse(path);
+      },
+      visitVariableDeclarator(path) {
+        assert.equal(path.scope.lookupType('T'), null);
+        assert.ok(path.scope.lookupType('Foo'));
+        this.traverse(path);
+      }
     });
   });
 });
