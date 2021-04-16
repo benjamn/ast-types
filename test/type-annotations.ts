@@ -20,6 +20,32 @@ describe("type annotations", function () {
     });
   });
 
+  it("can build ArrayPattern with Flow typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.arrayPattern.from({
+        elements: [
+          types.builders.identifier("x")
+        ],
+        typeAnnotation: types.builders.typeAnnotation(
+          types.builders.genericTypeAnnotation(types.builders.identifier("SomeType"), null)
+        ),
+      });
+    });
+  });
+
+  it("can build ArrayPattern with TS typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.arrayPattern.from({
+        elements: [
+          types.builders.identifier("x")
+        ],
+        typeAnnotation: types.builders.tsTypeAnnotation(
+          types.builders.tsTypeReference(types.builders.identifier("SomeType"))
+        )
+      });
+    });
+  });
+
   it("can build ObjectPattern with Flow typeAnnotation", function () {
     assert.doesNotThrow(function () {
       types.builders.objectPattern.from({
