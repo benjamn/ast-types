@@ -216,6 +216,13 @@ export default function (fork: Fork) {
     .field("objectType", def("FlowType"))
     .field("indexType", def("FlowType"));
 
+  def("OptionalIndexedAccessType")
+    .bases("FlowType")
+    .build("objectType", "indexType", "optional")
+    .field("objectType", def("FlowType"))
+    .field("indexType", def("FlowType"))
+    .field('optional', Boolean);
+
   def("UnionTypeAnnotation")
     .bases("FlowType")
     .build("types")
