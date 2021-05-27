@@ -50,12 +50,12 @@ const {
   es2018Def,
   es2019Def,
   es2020Def,
+  esProposalsDef,
   jsxDef,
   flowDef,
   esprimaDef,
   babelDef,
   typescriptDef,
-  esProposalsDef,
 ]);
 
 // Populate the exported fields of the namedTypes namespace, while still

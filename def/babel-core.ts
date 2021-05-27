@@ -177,10 +177,14 @@ export default function (fork: Fork) {
     .field("computed", Boolean, defaults["false"]);
 
   var ClassBodyElement = or(
-    def("MethodDefinition"),
+    // es6 spec
     def("VariableDeclarator"),
     def("ClassPropertyDefinition"),
     def("ClassProperty"),
+    // ESTree spec
+    def("MethodDefinition"),
+    def("PropertyDefinition"),
+    // Babel spec
     def("ClassPrivateProperty"),
     def("ClassMethod"),
     def("ClassPrivateMethod"),
@@ -201,6 +205,17 @@ export default function (fork: Fork) {
     .bases("Declaration", "Function")
     .build("key", "params", "body", "kind", "computed", "static")
     .field("key", def("PrivateName"));
+
+  def("PrivateName") // used by typescript.ts
+    .bases("Expression", "Pattern")
+    .build("id")
+    .field("id", def("Identifier"));
+
+  def("ClassPrivateProperty") // used by typescript.ts
+    .bases("ClassProperty")
+    .build("key", "value")
+    .field("key", def("PrivateName"))
+    .field("value", or(def("Expression"), null), defaults["null"]);
 
   ["ClassMethod",
    "ClassPrivateMethod",

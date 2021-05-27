@@ -280,6 +280,8 @@ describe("whole-program validation", function() {
 
   validateECMAScript("test/data/backbone.js");
   validateECMAScript("test/data/jquery-1.9.1.js");
+  // Esprima does not support modern class syntax
+  validateECMAScript("test/data/class-syntax.js", { "esprima": true });
 });
 
 describe("esprima Syntax types", function() {

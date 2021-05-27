@@ -473,14 +473,18 @@ export default function (fork: Fork) {
   // Defined already in es6 and babel-core.
   def("ClassBody")
     .field("body", [or(
-      def("MethodDefinition"),
+      // es6 spec
       def("VariableDeclarator"),
       def("ClassPropertyDefinition"),
       def("ClassProperty"),
+      // ESTree spec
+      def("MethodDefinition"),
+      def("PropertyDefinition"),
+      // Babel spec
       def("ClassPrivateProperty"),
       def("ClassMethod"),
       def("ClassPrivateMethod"),
-      // Just need to add these types:
+      // TypeScript additions
       def("TSDeclareMethod"),
       TSTypeMember
     )]);
