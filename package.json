@@ -40,7 +40,7 @@
     "tslib": "^2.0.1"
   },
   "devDependencies": {
-    "@babel/parser": "7.11.4",
+    "@babel/parser": "7.15.3",
     "@babel/types": "7.4.4",
     "@types/esprima": "4.0.2",
     "@types/glob": "7.1.3",
