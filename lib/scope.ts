@@ -396,14 +396,11 @@ export default function scopePlugin(fork: Fork) {
   Sp.rename = function(oldName, newName) {
   	var scope = this;
   	var parentPath = scope.path.parentPath;
-  	renameScope(parentPath, scope, oldName, newName);
-  };
-  
-  function renameScope(ast, scope, oldName, newName) {
+	
   	var targetScopeNode = scope.lookup(oldName).getBindings()[oldName][0].node;
   
   	var PathVisitor = fork.use(pathVisitor);
-  	PathVisitor.visit(ast, {
+  	PathVisitor.visit(parentPath, {
   		visitIdentifier: function(path) {
   			if (path.node.name === oldName) {
   				var pathScope = path.scope.lookup(oldName);
