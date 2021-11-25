@@ -915,6 +915,7 @@ export interface ClassDeclarationBuilder {
     params: {
       body: K.ClassBodyKind,
       comments?: K.CommentKind[] | null,
+      decorators?: K.DecoratorKind[] | null,
       id: K.IdentifierKind | null,
       implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[],
       loc?: K.SourceLocationKind | null,
