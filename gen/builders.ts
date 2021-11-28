@@ -1079,11 +1079,14 @@ export interface TaggedTemplateExpressionBuilder {
 }
 
 export interface TemplateLiteralBuilder {
-  (quasis: K.TemplateElementKind[], expressions: K.ExpressionKind[]): namedTypes.TemplateLiteral;
+  (
+    quasis: K.TemplateElementKind[],
+    expressions: K.ExpressionKind[] | K.TSTypeKind[]
+  ): namedTypes.TemplateLiteral;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      expressions: K.ExpressionKind[],
+      expressions: K.ExpressionKind[] | K.TSTypeKind[],
       loc?: K.SourceLocationKind | null,
       quasis: K.TemplateElementKind[]
     }
