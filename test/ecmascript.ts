@@ -298,6 +298,15 @@ describe("esprima Syntax types", function() {
   Object.keys((babelTypes as any).VISITOR_KEYS).forEach(addTypeName);
 
   it("should all be buildable", function() {
+    // TODO StaticBlock
+    // TODO V8IntrinsicIdentifier
+    // TODO ImportAttribute
+    // TODO RecordExpression
+    // TODO TupleExpression
+    // TODO DecimalLiteral
+    // TODO ModuleExpression
+    // TODO TopicReference
+    // TODO TSIntrinsicKeyword
     Object.keys(typeNames).forEach(function(name) {
       assert.ok(hasOwn.call(n, name), name);
       assert.strictEqual(hasDef(name) && def(name).buildable, true, name);
