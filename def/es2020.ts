@@ -1,10 +1,14 @@
 import { Fork } from "../types";
-import { LogicalOperators } from "./core-operators";
+import es2020OpsDef from "./operators/es2020";
 import es2019Def from "./es2019";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 
 export default function (fork: Fork) {
+  // The es2020OpsDef plugin comes before es2019Def so LogicalOperators will be
+  // appropriately augmented before first used.
+  fork.use(es2020OpsDef);
+
   fork.use(es2019Def);
 
   const types = fork.use(typesPlugin);
@@ -50,10 +54,4 @@ export default function (fork: Fork) {
     .bases("MemberExpression")
     .build("object", "property", "computed", "optional")
     .field("optional", Boolean, defaults["true"]);
-
-  // Nullish coalescing
-  const LogicalOperator = or(...LogicalOperators, "??");
-
-  def("LogicalExpression")
-    .field("operator", LogicalOperator)
 };
