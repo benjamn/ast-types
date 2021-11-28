@@ -493,7 +493,7 @@ export interface BinaryExpressionBuilder {
 
 export interface AssignmentExpressionBuilder {
   (
-    operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=",
+    operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=" | "||=" | "&&=" | "??=",
     left: K.PatternKind | K.MemberExpressionKind,
     right: K.ExpressionKind
   ): namedTypes.AssignmentExpression;
@@ -502,7 +502,7 @@ export interface AssignmentExpressionBuilder {
       comments?: K.CommentKind[] | null,
       left: K.PatternKind | K.MemberExpressionKind,
       loc?: K.SourceLocationKind | null,
-      operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=",
+      operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=" | "||=" | "&&=" | "??=",
       right: K.ExpressionKind
     }
   ): namedTypes.AssignmentExpression;
