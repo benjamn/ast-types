@@ -437,7 +437,7 @@ describe("types.eachField", function() {
     try {
       check({ type: "asdf" }, ["type"]);
       throw new Error("should have thrown");
-    } catch (e) {
+    } catch (e: any) {
       assert.strictEqual(
         e.message,
         'did not recognize object of type "asdf"'
@@ -571,7 +571,7 @@ describe("types.visit", function() {
       visitMemberExpression: function(path) {
         try {
           this.traverse(path);
-        } catch (err) {
+        } catch (err: any) {
           assert.ok(err instanceof this.AbortRequest);
           err.cancel();
         }
@@ -1634,7 +1634,7 @@ describe("types.visit", function() {
 
       assert.ok(false, "should have thrown an exception");
 
-    } catch (err) {
+    } catch (err: any) {
       assert.strictEqual(
         err.message,
         "Must either call this.traverse or return false in visitIdentifier"

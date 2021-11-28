@@ -67,13 +67,13 @@ glob("**/input.js", {
     try {
       return babelParse(code, parseOptions).program;
 
-    } catch (error) {
+    } catch (error: any) {
       // If parsing fails, check options.json to see if the failure was
       // expected.
       try {
         var options = JSON.parse(fs.readFileSync(
           path.join(path.dirname(fullPath), "options.json")).toString());
-      } catch (optionsError) {
+      } catch (optionsError: any) {
         console.error(optionsError.message);
       }
 
