@@ -100,6 +100,9 @@ export interface Visitor<M = {}> {
   visitChainExpression?(this: Context & M, path: NodePath<namedTypes.ChainExpression>): any;
   visitOptionalCallExpression?(this: Context & M, path: NodePath<namedTypes.OptionalCallExpression>): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath<namedTypes.OptionalMemberExpression>): any;
+  visitDecorator?(this: Context & M, path: NodePath<namedTypes.Decorator>): any;
+  visitPrivateName?(this: Context & M, path: NodePath<namedTypes.PrivateName>): any;
+  visitClassPrivateProperty?(this: Context & M, path: NodePath<namedTypes.ClassPrivateProperty>): any;
   visitJSXAttribute?(this: Context & M, path: NodePath<namedTypes.JSXAttribute>): any;
   visitJSXIdentifier?(this: Context & M, path: NodePath<namedTypes.JSXIdentifier>): any;
   visitJSXNamespacedName?(this: Context & M, path: NodePath<namedTypes.JSXNamespacedName>): any;
@@ -115,9 +118,6 @@ export interface Visitor<M = {}> {
   visitJSXClosingElement?(this: Context & M, path: NodePath<namedTypes.JSXClosingElement>): any;
   visitJSXOpeningFragment?(this: Context & M, path: NodePath<namedTypes.JSXOpeningFragment>): any;
   visitJSXClosingFragment?(this: Context & M, path: NodePath<namedTypes.JSXClosingFragment>): any;
-  visitDecorator?(this: Context & M, path: NodePath<namedTypes.Decorator>): any;
-  visitPrivateName?(this: Context & M, path: NodePath<namedTypes.PrivateName>): any;
-  visitClassPrivateProperty?(this: Context & M, path: NodePath<namedTypes.ClassPrivateProperty>): any;
   visitTypeParameterDeclaration?(this: Context & M, path: NodePath<namedTypes.TypeParameterDeclaration>): any;
   visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath<namedTypes.TSTypeParameterDeclaration>): any;
   visitTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TypeParameterInstantiation>): any;
