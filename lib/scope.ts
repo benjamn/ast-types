@@ -78,7 +78,14 @@ export default function scopePlugin(fork: Fork) {
 
     // In case you didn't know, the caught parameter shadows any variable
     // of the same name in an outer scope.
-    namedTypes.CatchClause
+    namedTypes.CatchClause,
+
+    // The following are statements that create block scopes
+    namedTypes.IfStatement,
+    namedTypes.ForStatement,
+    namedTypes.ForInStatement,
+    namedTypes.ForOfStatement,
+    namedTypes.TryStatement,
   ];
 
   var ScopeType = Type.or.apply(Type, scopeTypes);
