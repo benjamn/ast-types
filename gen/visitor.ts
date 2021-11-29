@@ -100,6 +100,7 @@ export interface Visitor<M = {}> {
   visitChainExpression?(this: Context & M, path: NodePath<namedTypes.ChainExpression>): any;
   visitOptionalCallExpression?(this: Context & M, path: NodePath<namedTypes.OptionalCallExpression>): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath<namedTypes.OptionalMemberExpression>): any;
+  visitStaticBlock?(this: Context & M, path: NodePath<namedTypes.StaticBlock>): any;
   visitDecorator?(this: Context & M, path: NodePath<namedTypes.Decorator>): any;
   visitPrivateName?(this: Context & M, path: NodePath<namedTypes.PrivateName>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<namedTypes.ClassPrivateProperty>): any;

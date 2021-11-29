@@ -1219,6 +1219,17 @@ export interface OptionalMemberExpressionBuilder {
   ): namedTypes.OptionalMemberExpression;
 }
 
+export interface StaticBlockBuilder {
+  (body: K.StatementKind[]): namedTypes.StaticBlock;
+  from(
+    params: {
+      body: K.StatementKind[],
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.StaticBlock;
+}
+
 export interface DecoratorBuilder {
   (expression: K.ExpressionKind): namedTypes.Decorator;
   from(
@@ -3668,6 +3679,7 @@ export interface builders {
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
+  staticBlock: StaticBlockBuilder;
   decorator: DecoratorBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
