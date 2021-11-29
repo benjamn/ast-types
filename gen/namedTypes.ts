@@ -583,7 +583,7 @@ export namespace namedTypes {
     optional?: boolean;
   }
 
-  export interface StaticBlock extends Omit<Node, "type"> {
+  export interface StaticBlock extends Omit<Declaration, "type"> {
     type: "StaticBlock";
     body: K.StatementKind[];
   }

@@ -9,7 +9,7 @@ export default function (fork: Fork) {
   const def = types.Type.def;
 
   def("StaticBlock")
-    .bases("Node")
+    .bases("Declaration")
     .build("body")
     .field("body", [def("Statement")]);
 }
