@@ -15,4 +15,10 @@ export default function (fork: Fork) {
     .bases("Expression")
     .build("name")
     .field("name", String);
+
+  // https://github.com/babel/babel/pull/13191
+  // https://github.com/babel/website/pull/2541
+  def("TopicReference")
+    .bases("Expression")
+    .build();
 }

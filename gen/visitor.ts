@@ -236,6 +236,7 @@ export interface Visitor<M = {}> {
   visitForAwaitStatement?(this: Context & M, path: NodePath<namedTypes.ForAwaitStatement>): any;
   visitImport?(this: Context & M, path: NodePath<namedTypes.Import>): any;
   visitV8IntrinsicIdentifier?(this: Context & M, path: NodePath<namedTypes.V8IntrinsicIdentifier>): any;
+  visitTopicReference?(this: Context & M, path: NodePath<namedTypes.TopicReference>): any;
   visitTSQualifiedName?(this: Context & M, path: NodePath<namedTypes.TSQualifiedName>): any;
   visitTSTypeReference?(this: Context & M, path: NodePath<namedTypes.TSTypeReference>): any;
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeParameters>): any;

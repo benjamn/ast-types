@@ -2894,6 +2894,16 @@ export interface V8IntrinsicIdentifierBuilder {
   ): namedTypes.V8IntrinsicIdentifier;
 }
 
+export interface TopicReferenceBuilder {
+  (): namedTypes.TopicReference;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TopicReference;
+}
+
 export interface TSQualifiedNameBuilder {
   (
     left: K.IdentifierKind | K.TSQualifiedNameKind,
@@ -3891,6 +3901,7 @@ export interface builders {
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;
   v8IntrinsicIdentifier: V8IntrinsicIdentifierBuilder;
+  topicReference: TopicReferenceBuilder;
   tsQualifiedName: TSQualifiedNameBuilder;
   tsTypeReference: TSTypeReferenceBuilder;
   tsAsExpression: TSAsExpressionBuilder;
