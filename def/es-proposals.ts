@@ -72,4 +72,11 @@ export default function (fork: Fork) {
       def("SpreadElement"),
       null,
     )]);
+
+  // https://github.com/tc39/proposal-js-module-blocks
+  // https://github.com/babel/babel/pull/12469
+  def("ModuleExpression")
+    .bases("Node")
+    .build("program")
+    .field("body", def("Program"));
 };

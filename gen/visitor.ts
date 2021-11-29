@@ -108,6 +108,7 @@ export interface Visitor<M = {}> {
   visitRecordExpression?(this: Context & M, path: NodePath<namedTypes.RecordExpression>): any;
   visitObjectMethod?(this: Context & M, path: NodePath<namedTypes.ObjectMethod>): any;
   visitTupleExpression?(this: Context & M, path: NodePath<namedTypes.TupleExpression>): any;
+  visitModuleExpression?(this: Context & M, path: NodePath<namedTypes.ModuleExpression>): any;
   visitJSXAttribute?(this: Context & M, path: NodePath<namedTypes.JSXAttribute>): any;
   visitJSXIdentifier?(this: Context & M, path: NodePath<namedTypes.JSXIdentifier>): any;
   visitJSXNamespacedName?(this: Context & M, path: NodePath<namedTypes.JSXNamespacedName>): any;

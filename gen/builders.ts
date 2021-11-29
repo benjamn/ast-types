@@ -1337,6 +1337,17 @@ export interface TupleExpressionBuilder {
   ): namedTypes.TupleExpression;
 }
 
+export interface ModuleExpressionBuilder {
+  (): namedTypes.ModuleExpression;
+  from(
+    params: {
+      body: K.ProgramKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.ModuleExpression;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -3763,6 +3774,7 @@ export interface builders {
   recordExpression: RecordExpressionBuilder;
   objectMethod: ObjectMethodBuilder;
   tupleExpression: TupleExpressionBuilder;
+  moduleExpression: ModuleExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
