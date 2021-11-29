@@ -3016,6 +3016,16 @@ export interface TSVoidKeywordBuilder {
   ): namedTypes.TSVoidKeyword;
 }
 
+export interface TSIntrinsicKeywordBuilder {
+  (): namedTypes.TSIntrinsicKeyword;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TSIntrinsicKeyword;
+}
+
 export interface TSThisTypeBuilder {
   (): namedTypes.TSThisType;
   from(
@@ -3839,6 +3849,7 @@ export interface builders {
   tsUndefinedKeyword: TSUndefinedKeywordBuilder;
   tsUnknownKeyword: TSUnknownKeywordBuilder;
   tsVoidKeyword: TSVoidKeywordBuilder;
+  tsIntrinsicKeyword: TSIntrinsicKeywordBuilder;
   tsThisType: TSThisTypeBuilder;
   tsArrayType: TSArrayTypeBuilder;
   tsLiteralType: TSLiteralTypeBuilder;

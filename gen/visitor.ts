@@ -250,6 +250,7 @@ export interface Visitor<M = {}> {
   visitTSUndefinedKeyword?(this: Context & M, path: NodePath<namedTypes.TSUndefinedKeyword>): any;
   visitTSUnknownKeyword?(this: Context & M, path: NodePath<namedTypes.TSUnknownKeyword>): any;
   visitTSVoidKeyword?(this: Context & M, path: NodePath<namedTypes.TSVoidKeyword>): any;
+  visitTSIntrinsicKeyword?(this: Context & M, path: NodePath<namedTypes.TSIntrinsicKeyword>): any;
   visitTSThisType?(this: Context & M, path: NodePath<namedTypes.TSThisType>): any;
   visitTSArrayType?(this: Context & M, path: NodePath<namedTypes.TSArrayType>): any;
   visitTSLiteralType?(this: Context & M, path: NodePath<namedTypes.TSLiteralType>): any;

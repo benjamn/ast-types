@@ -303,7 +303,6 @@ describe("esprima Syntax types", function() {
     // TODO DecimalLiteral
     // TODO ModuleExpression
     // TODO TopicReference
-    // TODO TSIntrinsicKeyword
     Object.keys(typeNames).forEach(function(name) {
       assert.ok(hasOwn.call(n, name), name);
       assert.strictEqual(hasDef(name) && def(name).buildable, true, name);
