@@ -57,7 +57,7 @@
     "ts-add-module-exports": "1.0.0",
     "ts-emit-clean": "1.0.0",
     "ts-node": "9.0.0",
-    "typescript": "3.9.7"
+    "typescript": "3.9.10"
   },
   "engines": {
     "node": ">=4"
