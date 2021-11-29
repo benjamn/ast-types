@@ -229,7 +229,7 @@ describe("shallow and deep checks", function() {
 
   it("should fail when expected", function() {
     // Not an Expression.
-    assert.ok(!n.Expression.check(decl));
+    assert.strictEqual(n.Expression.check(decl), false);
 
     // This makes decl cease to conform to n.VariableDeclaration.
     decl.declarations.push(b.literal("bar") as $InvalidType);
