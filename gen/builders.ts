@@ -2817,6 +2817,17 @@ export interface ImportBuilder {
   ): namedTypes.Import;
 }
 
+export interface V8IntrinsicIdentifierBuilder {
+  (name: string): namedTypes.V8IntrinsicIdentifier;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      name: string
+    }
+  ): namedTypes.V8IntrinsicIdentifier;
+}
+
 export interface TSQualifiedNameBuilder {
   (
     left: K.IdentifierKind | K.TSQualifiedNameKind,
@@ -3798,6 +3809,7 @@ export interface builders {
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;
+  v8IntrinsicIdentifier: V8IntrinsicIdentifierBuilder;
   tsQualifiedName: TSQualifiedNameBuilder;
   tsTypeReference: TSTypeReferenceBuilder;
   tsAsExpression: TSAsExpressionBuilder;
