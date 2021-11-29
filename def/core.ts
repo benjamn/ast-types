@@ -1,5 +1,5 @@
 import { Fork } from "../types";
-import { BinaryOperators, AssignmentOperators, LogicalOperators } from "./core-operators";
+import coreOpsDef from "./operators/core";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import { namedTypes as N } from "../gen/namedTypes";
@@ -12,6 +12,12 @@ export default function (fork: Fork) {
   var shared = fork.use(sharedPlugin);
   var defaults = shared.defaults;
   var geq = shared.geq;
+
+  const {
+    BinaryOperators,
+    AssignmentOperators,
+    LogicalOperators,
+  } = fork.use(coreOpsDef);
 
   // Abstract supertype of all syntactic entities that are allowed to have a
   // .loc field.

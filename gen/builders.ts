@@ -1216,6 +1216,45 @@ export interface OptionalMemberExpressionBuilder {
   ): namedTypes.OptionalMemberExpression;
 }
 
+export interface DecoratorBuilder {
+  (expression: K.ExpressionKind): namedTypes.Decorator;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      expression: K.ExpressionKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.Decorator;
+}
+
+export interface PrivateNameBuilder {
+  (id: K.IdentifierKind): namedTypes.PrivateName;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      id: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.PrivateName;
+}
+
+export interface ClassPrivatePropertyBuilder {
+  (key: K.PrivateNameKind, value?: K.ExpressionKind | null): namedTypes.ClassPrivateProperty;
+  from(
+    params: {
+      access?: "public" | "private" | "protected" | undefined,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.PrivateNameKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      value?: K.ExpressionKind | null,
+      variance?: K.VarianceKind | "plus" | "minus" | null
+    }
+  ): namedTypes.ClassPrivateProperty;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -1417,45 +1456,6 @@ export interface JSXClosingFragmentBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.JSXClosingFragment;
-}
-
-export interface DecoratorBuilder {
-  (expression: K.ExpressionKind): namedTypes.Decorator;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      expression: K.ExpressionKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.Decorator;
-}
-
-export interface PrivateNameBuilder {
-  (id: K.IdentifierKind): namedTypes.PrivateName;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null,
-      id: K.IdentifierKind,
-      loc?: K.SourceLocationKind | null
-    }
-  ): namedTypes.PrivateName;
-}
-
-export interface ClassPrivatePropertyBuilder {
-  (key: K.PrivateNameKind, value?: K.ExpressionKind | null): namedTypes.ClassPrivateProperty;
-  from(
-    params: {
-      access?: "public" | "private" | "protected" | undefined,
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      key: K.PrivateNameKind,
-      loc?: K.SourceLocationKind | null,
-      static?: boolean,
-      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      value?: K.ExpressionKind | null,
-      variance?: K.VarianceKind | "plus" | "minus" | null
-    }
-  ): namedTypes.ClassPrivateProperty;
 }
 
 export interface TypeParameterDeclarationBuilder {
@@ -3665,6 +3665,9 @@ export interface builders {
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
+  decorator: DecoratorBuilder;
+  privateName: PrivateNameBuilder;
+  classPrivateProperty: ClassPrivatePropertyBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
@@ -3680,9 +3683,6 @@ export interface builders {
   jsxClosingElement: JSXClosingElementBuilder;
   jsxOpeningFragment: JSXOpeningFragmentBuilder;
   jsxClosingFragment: JSXClosingFragmentBuilder;
-  decorator: DecoratorBuilder;
-  privateName: PrivateNameBuilder;
-  classPrivateProperty: ClassPrivatePropertyBuilder;
   typeParameterDeclaration: TypeParameterDeclarationBuilder;
   tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
   typeParameterInstantiation: TypeParameterInstantiationBuilder;

@@ -1,11 +1,11 @@
 import { Fork } from "../types";
-import es2020Def from "./es2020";
+import esProposalsDef from "./es-proposals";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
-  fork.use(es2020Def);
+  fork.use(esProposalsDef);
 
   const types = fork.use(typesPlugin);
   const def = types.Type.def;

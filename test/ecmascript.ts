@@ -30,7 +30,7 @@ import typesPlugin from "../lib/types";
 import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
 import es6Def from "../def/es6";
-import es2020Def from "../def/es2020";
+import esProposalsDef from "../def/es-proposals";
 import babelDef from "../def/babel";
 
 const {
@@ -1495,7 +1495,7 @@ describe("array and object pattern scope", function() {
     var types = fork([
       coreDef,
       es6Def,
-      es2020Def,
+      esProposalsDef,
     ]);
     var b = types.builders;
 
@@ -2616,7 +2616,7 @@ describe('Dynamic import', () => {
     visit,
     namedTypes: n,
     builders: b,
-  } = fork([ es2020Def ]);
+  } = fork([ esProposalsDef ]);
 
   it('should work with expression values', () => {
     const importExpression =  b.importExpression(
