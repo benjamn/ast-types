@@ -11,9 +11,9 @@ export interface Path<V = any> {
   __childCache: object | null;
   getValueProperty(name: any): any;
   get(...names: any[]): any;
-  each(callback: any, context: any): any;
-  map(callback: any, context: any): any;
-  filter(callback: any, context: any): any;
+  each(callback: any, context?: any): any;
+  map(callback: any, context?: any): any;
+  filter(callback: any, context?: any): any;
   shift(): any;
   unshift(...args: any[]): any;
   push(...args: any[]): any;

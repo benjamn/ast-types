@@ -1,10 +1,11 @@
 import { Fork } from "../types";
+import { NodePath } from "./node-path";
 import typesPlugin from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
 export interface Scope {
-  path: any;
+  path: NodePath;
   node: any;
   isGlobal: boolean;
   depth: number;
@@ -25,7 +26,7 @@ export interface Scope {
 }
 
 export interface ScopeConstructor {
-  new(path: any, parentScope: any): Scope;
+  new(path: NodePath, parentScope: any): Scope;
   isEstablishedBy(node: any): any;
 }
 
@@ -38,12 +39,13 @@ export default function scopePlugin(fork: Fork) {
   var isArray = types.builtInTypes.array;
   var b = types.builders;
 
-  const Scope = function Scope(this: Scope, path: any, parentScope: unknown) {
+  const Scope = function Scope(this: Scope, path: NodePath, parentScope: unknown) {
     if (!(this instanceof Scope)) {
       throw new Error("Scope constructor cannot be invoked without 'new'");
     }
-
-    ScopeType.assert(path.value);
+    if (!TypeParameterScopeType.check(path.value)) {
+      ScopeType.assert(path.value);
+    }
 
     var depth: number;
 
@@ -68,7 +70,7 @@ export default function scopePlugin(fork: Fork) {
     });
   } as any as ScopeConstructor;
 
-  var scopeTypes = [
+  var ScopeType = Type.or(
     // Program nodes introduce global scopes.
     namedTypes.Program,
 
@@ -79,12 +81,27 @@ export default function scopePlugin(fork: Fork) {
     // In case you didn't know, the caught parameter shadows any variable
     // of the same name in an outer scope.
     namedTypes.CatchClause
-  ];
+  );
 
-  var ScopeType = Type.or.apply(Type, scopeTypes);
+  // These types introduce scopes that are restricted to type parameters in
+  // Flow (this doesn't apply to ECMAScript).
+  var TypeParameterScopeType = Type.or(
+    namedTypes.Function,
+    namedTypes.ClassDeclaration,
+    namedTypes.ClassExpression,
+    namedTypes.InterfaceDeclaration,
+    namedTypes.TSInterfaceDeclaration,
+    namedTypes.TypeAlias,
+    namedTypes.TSTypeAliasDeclaration,
+  );
+
+  var FlowOrTSTypeParameterType = Type.or(
+    namedTypes.TypeParameter,
+    namedTypes.TSTypeParameter,
+  );
 
   Scope.isEstablishedBy = function(node) {
-    return ScopeType.check(node);
+    return ScopeType.check(node) || TypeParameterScopeType.check(node);
   };
 
   var Sp: Scope = Scope.prototype;
@@ -150,6 +167,10 @@ export default function scopePlugin(fork: Fork) {
         // Empty out this.bindings, just in cases.
         delete this.bindings[name];
       }
+      for (var name in this.types) {
+        // Empty out this.types, just in cases.
+        delete this.types[name];
+      }
       scanScope(this.path, this.bindings, this.types);
       this.didScan = true;
     }
@@ -165,25 +186,29 @@ export default function scopePlugin(fork: Fork) {
     return this.types;
   };
 
-  function scanScope(path: any, bindings: any, scopeTypes: any) {
+  function scanScope(path: NodePath, bindings: any, scopeTypes: any) {
     var node = path.value;
-    ScopeType.assert(node);
-
-    if (namedTypes.CatchClause.check(node)) {
-      // A catch clause establishes a new scope but the only variable
-      // bound in that scope is the catch parameter. Any other
-      // declarations create bindings in the outer scope.
-      var param = path.get("param");
-      if (param.value) {
-        addPattern(param, bindings);
+    if (TypeParameterScopeType.check(node)) {
+      const params = path.get('typeParameters', 'params');
+      if (isArray.check(params.value)) {
+        params.each((childPath: NodePath) => {
+          addTypeParameter(childPath, scopeTypes);
+        });
       }
-
-    } else {
-      recursiveScanScope(path, bindings, scopeTypes);
+    }
+    if (ScopeType.check(node)) {
+      if (namedTypes.CatchClause.check(node)) {
+        // A catch clause establishes a new scope but the only variable
+        // bound in that scope is the catch parameter. Any other
+        // declarations create bindings in the outer scope.
+        addPattern(path.get("param"), bindings);
+      } else {
+        recursiveScanScope(path, bindings, scopeTypes);
+      }
     }
   }
 
-  function recursiveScanScope(path: any, bindings: any, scopeTypes: any) {
+  function recursiveScanScope(path: NodePath, bindings: any, scopeTypes: any) {
     var node = path.value;
 
     if (path.parent &&
@@ -196,16 +221,17 @@ export default function scopePlugin(fork: Fork) {
       // None of the remaining cases matter if node is falsy.
 
     } else if (isArray.check(node)) {
-      path.each(function(childPath: any) {
+      path.each((childPath: NodePath) => {
         recursiveScanChild(childPath, bindings, scopeTypes);
       });
 
     } else if (namedTypes.Function.check(node)) {
-      path.get("params").each(function(paramPath: any) {
+      path.get("params").each((paramPath: NodePath) => {
         addPattern(paramPath, bindings);
       });
 
       recursiveScanChild(path.get("body"), bindings, scopeTypes);
+      recursiveScanScope(path.get("typeParameters"), bindings, scopeTypes);
 
     } else if (
       (namedTypes.TypeAlias && namedTypes.TypeAlias.check(node)) ||
@@ -243,7 +269,7 @@ export default function scopePlugin(fork: Fork) {
     }
   }
 
-  function pathHasValue(path: any, value: any) {
+  function pathHasValue(path: NodePath, value: any) {
     if (path.value === value) {
       return true;
     }
@@ -260,7 +286,7 @@ export default function scopePlugin(fork: Fork) {
     return false;
   }
 
-  function recursiveScanChild(path: any, bindings: any, scopeTypes: any) {
+  function recursiveScanChild(path: NodePath, bindings: any, scopeTypes: any) {
     var node = path.value;
 
     if (!node || Expression.check(node)) {
@@ -274,6 +300,15 @@ export default function scopePlugin(fork: Fork) {
       namedTypes.ClassDeclaration.check(node) &&
       node.id !== null) {
       addPattern(path.get("id"), bindings);
+      recursiveScanScope(path.get("typeParameters"), bindings, scopeTypes);
+
+    } else if (
+      (namedTypes.InterfaceDeclaration &&
+       namedTypes.InterfaceDeclaration.check(node)) ||
+      (namedTypes.TSInterfaceDeclaration &&
+       namedTypes.TSInterfaceDeclaration.check(node))
+    ) {
+      addTypePattern(path.get("id"), scopeTypes);
 
     } else if (ScopeType.check(node)) {
       if (
@@ -303,7 +338,7 @@ export default function scopePlugin(fork: Fork) {
     }
   }
 
-  function addPattern(patternPath: any, bindings: any) {
+  function addPattern(patternPath: NodePath, bindings: any) {
     var pattern = patternPath.value;
     namedTypes.Pattern.assert(pattern);
 
@@ -374,7 +409,7 @@ export default function scopePlugin(fork: Fork) {
     }
   }
 
-  function addTypePattern(patternPath: any, types: any) {
+  function addTypePattern(patternPath: NodePath, types: any) {
     var pattern = patternPath.value;
     namedTypes.Pattern.assert(pattern);
 
@@ -384,6 +419,17 @@ export default function scopePlugin(fork: Fork) {
       } else {
         types[pattern.name] = [patternPath];
       }
+    }
+  }
+
+  function addTypeParameter(parameterPath: NodePath, types: any) {
+    var parameter = parameterPath.value;
+    FlowOrTSTypeParameterType.assert(parameter);
+
+    if (hasOwn.call(types, parameter.name)) {
+      types[parameter.name].push(parameterPath);
+    } else {
+      types[parameter.name] = [parameterPath];
     }
   }
 
