@@ -1269,6 +1269,18 @@ export interface ClassPrivatePropertyBuilder {
   ): namedTypes.ClassPrivateProperty;
 }
 
+export interface ImportAttributeBuilder {
+  (key: K.IdentifierKind, value: string): namedTypes.ImportAttribute;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      key: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      value: string
+    }
+  ): namedTypes.ImportAttribute;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -3694,6 +3706,7 @@ export interface builders {
   decorator: DecoratorBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
+  importAttribute: ImportAttributeBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;

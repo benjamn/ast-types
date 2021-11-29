@@ -46,4 +46,11 @@ export default function (fork: Fork) {
     .build("key", "value")
     .field("key", def("PrivateName"))
     .field("value", or(def("Expression"), null), defaults["null"]);
+
+  // https://github.com/tc39/proposal-import-assertions
+  def("ImportAttribute")
+    .bases("Node")
+    .build("key", "value")
+    .field("key", def("Identifier"))
+    .field("value", String);
 };
