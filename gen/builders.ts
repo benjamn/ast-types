@@ -1281,6 +1281,62 @@ export interface ImportAttributeBuilder {
   ): namedTypes.ImportAttribute;
 }
 
+export interface RecordExpressionBuilder {
+  (
+    properties: (K.ObjectPropertyKind | K.ObjectMethodKind | K.SpreadElementKind)[]
+  ): namedTypes.RecordExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      properties: (K.ObjectPropertyKind | K.ObjectMethodKind | K.SpreadElementKind)[]
+    }
+  ): namedTypes.RecordExpression;
+}
+
+export interface ObjectMethodBuilder {
+  (
+    kind: "method" | "get" | "set",
+    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+    params: K.PatternKind[],
+    body: K.BlockStatementKind,
+    computed?: boolean
+  ): namedTypes.ObjectMethod;
+  from(
+    params: {
+      accessibility?: K.LiteralKind | null,
+      async?: boolean,
+      body: K.BlockStatementKind,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      decorators?: K.DecoratorKind[] | null,
+      defaults?: (K.ExpressionKind | null)[],
+      expression?: boolean,
+      generator?: boolean,
+      id?: K.IdentifierKind | null,
+      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+      kind: "method" | "get" | "set",
+      loc?: K.SourceLocationKind | null,
+      params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
+      rest?: K.IdentifierKind | null,
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
+    }
+  ): namedTypes.ObjectMethod;
+}
+
+export interface TupleExpressionBuilder {
+  (elements: (K.ExpressionKind | K.SpreadElementKind | null)[]): namedTypes.TupleExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      elements: (K.ExpressionKind | K.SpreadElementKind | null)[],
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TupleExpression;
+}
+
 export interface JSXAttributeBuilder {
   (
     name: K.JSXIdentifierKind | K.JSXNamespacedNameKind,
@@ -2685,38 +2741,6 @@ export interface RegExpLiteralBuilder {
   ): namedTypes.RegExpLiteral;
 }
 
-export interface ObjectMethodBuilder {
-  (
-    kind: "method" | "get" | "set",
-    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-    params: K.PatternKind[],
-    body: K.BlockStatementKind,
-    computed?: boolean
-  ): namedTypes.ObjectMethod;
-  from(
-    params: {
-      accessibility?: K.LiteralKind | null,
-      async?: boolean,
-      body: K.BlockStatementKind,
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      decorators?: K.DecoratorKind[] | null,
-      defaults?: (K.ExpressionKind | null)[],
-      expression?: boolean,
-      generator?: boolean,
-      id?: K.IdentifierKind | null,
-      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-      kind: "method" | "get" | "set",
-      loc?: K.SourceLocationKind | null,
-      params: K.PatternKind[],
-      predicate?: K.FlowPredicateKind | null,
-      rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
-    }
-  ): namedTypes.ObjectMethod;
-}
-
 export interface ClassMethodBuilder {
   (
     kind: "get" | "set" | "method" | "constructor" | undefined,
@@ -3717,6 +3741,9 @@ export interface builders {
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
   importAttribute: ImportAttributeBuilder;
+  recordExpression: RecordExpressionBuilder;
+  objectMethod: ObjectMethodBuilder;
+  tupleExpression: TupleExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
@@ -3826,7 +3853,6 @@ export interface builders {
   nullLiteral: NullLiteralBuilder;
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
-  objectMethod: ObjectMethodBuilder;
   classMethod: ClassMethodBuilder;
   classPrivateMethod: ClassPrivateMethodBuilder;
   restProperty: RestPropertyBuilder;

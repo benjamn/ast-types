@@ -53,4 +53,23 @@ export default function (fork: Fork) {
     .build("key", "value")
     .field("key", def("Identifier"))
     .field("value", String);
+
+  // https://github.com/tc39/proposal-record-tuple
+  // https://github.com/babel/babel/pull/10865
+  def("RecordExpression")
+    .bases("Expression")
+    .build("properties")
+    .field("properties", [or(
+      def("ObjectProperty"),
+      def("ObjectMethod"),
+      def("SpreadElement"),
+    )]);
+  def("TupleExpression")
+    .bases("Expression")
+    .build("elements")
+    .field("elements", [or(
+      def("Expression"),
+      def("SpreadElement"),
+      null,
+    )]);
 };

@@ -105,6 +105,9 @@ export interface Visitor<M = {}> {
   visitPrivateName?(this: Context & M, path: NodePath<namedTypes.PrivateName>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<namedTypes.ClassPrivateProperty>): any;
   visitImportAttribute?(this: Context & M, path: NodePath<namedTypes.ImportAttribute>): any;
+  visitRecordExpression?(this: Context & M, path: NodePath<namedTypes.RecordExpression>): any;
+  visitObjectMethod?(this: Context & M, path: NodePath<namedTypes.ObjectMethod>): any;
+  visitTupleExpression?(this: Context & M, path: NodePath<namedTypes.TupleExpression>): any;
   visitJSXAttribute?(this: Context & M, path: NodePath<namedTypes.JSXAttribute>): any;
   visitJSXIdentifier?(this: Context & M, path: NodePath<namedTypes.JSXIdentifier>): any;
   visitJSXNamespacedName?(this: Context & M, path: NodePath<namedTypes.JSXNamespacedName>): any;
@@ -225,7 +228,6 @@ export interface Visitor<M = {}> {
   visitNullLiteral?(this: Context & M, path: NodePath<namedTypes.NullLiteral>): any;
   visitBooleanLiteral?(this: Context & M, path: NodePath<namedTypes.BooleanLiteral>): any;
   visitRegExpLiteral?(this: Context & M, path: NodePath<namedTypes.RegExpLiteral>): any;
-  visitObjectMethod?(this: Context & M, path: NodePath<namedTypes.ObjectMethod>): any;
   visitClassMethod?(this: Context & M, path: NodePath<namedTypes.ClassMethod>): any;
   visitClassPrivateMethod?(this: Context & M, path: NodePath<namedTypes.ClassPrivateMethod>): any;
   visitRestProperty?(this: Context & M, path: NodePath<namedTypes.RestProperty>): any;
