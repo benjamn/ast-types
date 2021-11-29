@@ -261,7 +261,7 @@ export namespace namedTypes {
 
   export interface AssignmentExpression extends Omit<Expression, "type"> {
     type: "AssignmentExpression";
-    operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=";
+    operator: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | ">>>=" | "|=" | "^=" | "&=" | "**=" | "||=" | "&&=" | "??=";
     left: K.PatternKind | K.MemberExpressionKind;
     right: K.ExpressionKind;
   }
