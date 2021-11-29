@@ -324,8 +324,11 @@ export default function scopePlugin(fork: Fork) {
         var property = propertyPath.value;
         if (namedTypes.Pattern.check(property)) {
           addPattern(propertyPath, bindings);
-        } else  if (namedTypes.Property.check(property) ||
-          namedTypes.ObjectProperty.check(property)) {
+        } else if (
+          namedTypes.Property.check(property) ||
+          (namedTypes.ObjectProperty &&
+           namedTypes.ObjectProperty.check(property))
+        ) {
           addPattern(propertyPath.get('value'), bindings);
         } else if (namedTypes.SpreadProperty &&
           namedTypes.SpreadProperty.check(property)) {
