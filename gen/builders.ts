@@ -1219,6 +1219,17 @@ export interface OptionalMemberExpressionBuilder {
   ): namedTypes.OptionalMemberExpression;
 }
 
+export interface StaticBlockBuilder {
+  (body: K.StatementKind[]): namedTypes.StaticBlock;
+  from(
+    params: {
+      body: K.StatementKind[],
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.StaticBlock;
+}
+
 export interface DecoratorBuilder {
   (expression: K.ExpressionKind): namedTypes.Decorator;
   from(
@@ -1256,6 +1267,85 @@ export interface ClassPrivatePropertyBuilder {
       variance?: K.VarianceKind | "plus" | "minus" | null
     }
   ): namedTypes.ClassPrivateProperty;
+}
+
+export interface ImportAttributeBuilder {
+  (key: K.IdentifierKind, value: string): namedTypes.ImportAttribute;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      key: K.IdentifierKind,
+      loc?: K.SourceLocationKind | null,
+      value: string
+    }
+  ): namedTypes.ImportAttribute;
+}
+
+export interface RecordExpressionBuilder {
+  (
+    properties: (K.ObjectPropertyKind | K.ObjectMethodKind | K.SpreadElementKind)[]
+  ): namedTypes.RecordExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      properties: (K.ObjectPropertyKind | K.ObjectMethodKind | K.SpreadElementKind)[]
+    }
+  ): namedTypes.RecordExpression;
+}
+
+export interface ObjectMethodBuilder {
+  (
+    kind: "method" | "get" | "set",
+    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+    params: K.PatternKind[],
+    body: K.BlockStatementKind,
+    computed?: boolean
+  ): namedTypes.ObjectMethod;
+  from(
+    params: {
+      accessibility?: K.LiteralKind | null,
+      async?: boolean,
+      body: K.BlockStatementKind,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      decorators?: K.DecoratorKind[] | null,
+      defaults?: (K.ExpressionKind | null)[],
+      expression?: boolean,
+      generator?: boolean,
+      id?: K.IdentifierKind | null,
+      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+      kind: "method" | "get" | "set",
+      loc?: K.SourceLocationKind | null,
+      params: K.PatternKind[],
+      predicate?: K.FlowPredicateKind | null,
+      rest?: K.IdentifierKind | null,
+      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
+    }
+  ): namedTypes.ObjectMethod;
+}
+
+export interface TupleExpressionBuilder {
+  (elements: (K.ExpressionKind | K.SpreadElementKind | null)[]): namedTypes.TupleExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      elements: (K.ExpressionKind | K.SpreadElementKind | null)[],
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TupleExpression;
+}
+
+export interface ModuleExpressionBuilder {
+  (): namedTypes.ModuleExpression;
+  from(
+    params: {
+      body: K.ProgramKind,
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.ModuleExpression;
 }
 
 export interface JSXAttributeBuilder {
@@ -2615,6 +2705,25 @@ export interface BigIntLiteralBuilder {
   ): namedTypes.BigIntLiteral;
 }
 
+export interface DecimalLiteralBuilder {
+  (value: string): namedTypes.DecimalLiteral;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      extra?: {
+        rawValue: string,
+        raw: string
+      },
+      loc?: K.SourceLocationKind | null,
+      regex?: {
+        pattern: string,
+        flags: string
+      } | null,
+      value: string
+    }
+  ): namedTypes.DecimalLiteral;
+}
+
 export interface NullLiteralBuilder {
   (): namedTypes.NullLiteral;
   from(
@@ -2660,38 +2769,6 @@ export interface RegExpLiteralBuilder {
       value?: RegExp
     }
   ): namedTypes.RegExpLiteral;
-}
-
-export interface ObjectMethodBuilder {
-  (
-    kind: "method" | "get" | "set",
-    key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-    params: K.PatternKind[],
-    body: K.BlockStatementKind,
-    computed?: boolean
-  ): namedTypes.ObjectMethod;
-  from(
-    params: {
-      accessibility?: K.LiteralKind | null,
-      async?: boolean,
-      body: K.BlockStatementKind,
-      comments?: K.CommentKind[] | null,
-      computed?: boolean,
-      decorators?: K.DecoratorKind[] | null,
-      defaults?: (K.ExpressionKind | null)[],
-      expression?: boolean,
-      generator?: boolean,
-      id?: K.IdentifierKind | null,
-      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
-      kind: "method" | "get" | "set",
-      loc?: K.SourceLocationKind | null,
-      params: K.PatternKind[],
-      predicate?: K.FlowPredicateKind | null,
-      rest?: K.IdentifierKind | null,
-      returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
-      typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null
-    }
-  ): namedTypes.ObjectMethod;
 }
 
 export interface ClassMethodBuilder {
@@ -2804,6 +2881,27 @@ export interface ImportBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.Import;
+}
+
+export interface V8IntrinsicIdentifierBuilder {
+  (name: string): namedTypes.V8IntrinsicIdentifier;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null,
+      name: string
+    }
+  ): namedTypes.V8IntrinsicIdentifier;
+}
+
+export interface TopicReferenceBuilder {
+  (): namedTypes.TopicReference;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TopicReference;
 }
 
 export interface TSQualifiedNameBuilder {
@@ -2980,6 +3078,16 @@ export interface TSVoidKeywordBuilder {
       loc?: K.SourceLocationKind | null
     }
   ): namedTypes.TSVoidKeyword;
+}
+
+export interface TSIntrinsicKeywordBuilder {
+  (): namedTypes.TSIntrinsicKeyword;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      loc?: K.SourceLocationKind | null
+    }
+  ): namedTypes.TSIntrinsicKeyword;
 }
 
 export interface TSThisTypeBuilder {
@@ -3668,9 +3776,15 @@ export interface builders {
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
+  staticBlock: StaticBlockBuilder;
   decorator: DecoratorBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
+  importAttribute: ImportAttributeBuilder;
+  recordExpression: RecordExpressionBuilder;
+  objectMethod: ObjectMethodBuilder;
+  tupleExpression: TupleExpressionBuilder;
+  moduleExpression: ModuleExpressionBuilder;
   jsxAttribute: JSXAttributeBuilder;
   jsxIdentifier: JSXIdentifierBuilder;
   jsxNamespacedName: JSXNamespacedNameBuilder;
@@ -3777,15 +3891,17 @@ export interface builders {
   stringLiteral: StringLiteralBuilder;
   numericLiteral: NumericLiteralBuilder;
   bigIntLiteral: BigIntLiteralBuilder;
+  decimalLiteral: DecimalLiteralBuilder;
   nullLiteral: NullLiteralBuilder;
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
-  objectMethod: ObjectMethodBuilder;
   classMethod: ClassMethodBuilder;
   classPrivateMethod: ClassPrivateMethodBuilder;
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;
+  v8IntrinsicIdentifier: V8IntrinsicIdentifierBuilder;
+  topicReference: TopicReferenceBuilder;
   tsQualifiedName: TSQualifiedNameBuilder;
   tsTypeReference: TSTypeReferenceBuilder;
   tsAsExpression: TSAsExpressionBuilder;
@@ -3802,6 +3918,7 @@ export interface builders {
   tsUndefinedKeyword: TSUndefinedKeywordBuilder;
   tsUnknownKeyword: TSUnknownKeywordBuilder;
   tsVoidKeyword: TSVoidKeywordBuilder;
+  tsIntrinsicKeyword: TSIntrinsicKeywordBuilder;
   tsThisType: TSThisTypeBuilder;
   tsArrayType: TSArrayTypeBuilder;
   tsLiteralType: TSLiteralTypeBuilder;

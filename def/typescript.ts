@@ -95,6 +95,7 @@ export default function (fork: Fork) {
     "TSUndefinedKeyword",
     "TSUnknownKeyword",
     "TSVoidKeyword",
+    "TSIntrinsicKeyword",
     "TSThisType",
   ].forEach(keywordType => {
     def(keywordType)

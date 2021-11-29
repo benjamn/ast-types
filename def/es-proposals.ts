@@ -1,10 +1,10 @@
 import { Fork } from "../types";
 import typesPlugin from "../lib/types";
 import sharedPlugin from "../lib/shared";
-import es2021Def from "./es2021";
+import es2022Def from "./es2022";
 
 export default function (fork: Fork) {
-  fork.use(es2021Def);
+  fork.use(es2022Def);
 
   const types = fork.use(typesPlugin);
   const Type = types.Type;
@@ -46,4 +46,37 @@ export default function (fork: Fork) {
     .build("key", "value")
     .field("key", def("PrivateName"))
     .field("value", or(def("Expression"), null), defaults["null"]);
+
+  // https://github.com/tc39/proposal-import-assertions
+  def("ImportAttribute")
+    .bases("Node")
+    .build("key", "value")
+    .field("key", def("Identifier"))
+    .field("value", String);
+
+  // https://github.com/tc39/proposal-record-tuple
+  // https://github.com/babel/babel/pull/10865
+  def("RecordExpression")
+    .bases("Expression")
+    .build("properties")
+    .field("properties", [or(
+      def("ObjectProperty"),
+      def("ObjectMethod"),
+      def("SpreadElement"),
+    )]);
+  def("TupleExpression")
+    .bases("Expression")
+    .build("elements")
+    .field("elements", [or(
+      def("Expression"),
+      def("SpreadElement"),
+      null,
+    )]);
+
+  // https://github.com/tc39/proposal-js-module-blocks
+  // https://github.com/babel/babel/pull/12469
+  def("ModuleExpression")
+    .bases("Node")
+    .build("program")
+    .field("body", def("Program"));
 };

@@ -111,7 +111,23 @@ export default function (fork: Fork) {
     }, function getDefault(this: N.BigIntLiteral) {
       return {
         rawValue: String(this.value),
-        raw: this.value + "n"
+        raw: this.value + "n",
+      };
+    });
+
+  // https://github.com/tc39/proposal-decimal
+  // https://github.com/babel/babel/pull/11640
+  def("DecimalLiteral")
+    .bases("Literal")
+    .build("value")
+    .field("value", String)
+    .field("extra", {
+      rawValue: String,
+      raw: String
+    }, function getDefault(this: N.DecimalLiteral) {
+      return {
+        rawValue: String(this.value),
+        raw: this.value + "m",
       };
     });
 
