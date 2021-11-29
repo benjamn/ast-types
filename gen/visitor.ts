@@ -225,6 +225,7 @@ export interface Visitor<M = {}> {
   visitStringLiteral?(this: Context & M, path: NodePath<namedTypes.StringLiteral>): any;
   visitNumericLiteral?(this: Context & M, path: NodePath<namedTypes.NumericLiteral>): any;
   visitBigIntLiteral?(this: Context & M, path: NodePath<namedTypes.BigIntLiteral>): any;
+  visitDecimalLiteral?(this: Context & M, path: NodePath<namedTypes.DecimalLiteral>): any;
   visitNullLiteral?(this: Context & M, path: NodePath<namedTypes.NullLiteral>): any;
   visitBooleanLiteral?(this: Context & M, path: NodePath<namedTypes.BooleanLiteral>): any;
   visitRegExpLiteral?(this: Context & M, path: NodePath<namedTypes.RegExpLiteral>): any;

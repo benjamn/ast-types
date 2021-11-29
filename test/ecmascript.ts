@@ -298,7 +298,6 @@ describe("esprima Syntax types", function() {
   Object.keys((babelTypes as any).VISITOR_KEYS).forEach(addTypeName);
 
   it("should all be buildable", function() {
-    // TODO DecimalLiteral
     // TODO ModuleExpression
     // TODO TopicReference
     Object.keys(typeNames).forEach(function(name) {

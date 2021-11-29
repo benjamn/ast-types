@@ -2694,6 +2694,25 @@ export interface BigIntLiteralBuilder {
   ): namedTypes.BigIntLiteral;
 }
 
+export interface DecimalLiteralBuilder {
+  (value: string): namedTypes.DecimalLiteral;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null,
+      extra?: {
+        rawValue: string,
+        raw: string
+      },
+      loc?: K.SourceLocationKind | null,
+      regex?: {
+        pattern: string,
+        flags: string
+      } | null,
+      value: string
+    }
+  ): namedTypes.DecimalLiteral;
+}
+
 export interface NullLiteralBuilder {
   (): namedTypes.NullLiteral;
   from(
@@ -3850,6 +3869,7 @@ export interface builders {
   stringLiteral: StringLiteralBuilder;
   numericLiteral: NumericLiteralBuilder;
   bigIntLiteral: BigIntLiteralBuilder;
+  decimalLiteral: DecimalLiteralBuilder;
   nullLiteral: NullLiteralBuilder;
   booleanLiteral: BooleanLiteralBuilder;
   regExpLiteral: RegExpLiteralBuilder;
