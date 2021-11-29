@@ -117,6 +117,16 @@ export default function (fork: Fork) {
               def("TemplateLiteral"),
               def("UnaryExpression")));
 
+  def("TemplateLiteral")
+    // The TemplateLiteral type appears to be reused for TypeScript template
+    // literal types (instead of introducing a new TSTemplateLiteralType type),
+    // so we allow the templateLiteral.expressions array to be either all
+    // expressions or all TypeScript types.
+    .field("expressions", or(
+      [def("Expression")],
+      [def("TSType")],
+    ));
+
   ["TSUnionType",
    "TSIntersectionType",
   ].forEach(typeName => {

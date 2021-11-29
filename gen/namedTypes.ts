@@ -529,7 +529,7 @@ export namespace namedTypes {
   export interface TemplateLiteral extends Omit<Expression, "type"> {
     type: "TemplateLiteral";
     quasis: K.TemplateElementKind[];
-    expressions: K.ExpressionKind[];
+    expressions: K.ExpressionKind[] | K.TSTypeKind[];
   }
 
   export interface TemplateElement extends Omit<Node, "type"> {
