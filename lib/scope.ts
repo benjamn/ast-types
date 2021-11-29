@@ -318,8 +318,10 @@ export default function scopePlugin(fork: Fork) {
       namedTypes.AssignmentPattern.check(pattern)) {
       addPattern(patternPath.get('left'), bindings);
 
-    } else if (namedTypes.ObjectPattern &&
-      namedTypes.ObjectPattern.check(pattern)) {
+    } else if (
+      namedTypes.ObjectPattern &&
+      namedTypes.ObjectPattern.check(pattern)
+    ) {
       patternPath.get('properties').each(function(propertyPath: any) {
         var property = propertyPath.value;
         if (namedTypes.Pattern.check(property)) {
@@ -330,34 +332,44 @@ export default function scopePlugin(fork: Fork) {
            namedTypes.ObjectProperty.check(property))
         ) {
           addPattern(propertyPath.get('value'), bindings);
-        } else if (namedTypes.SpreadProperty &&
-          namedTypes.SpreadProperty.check(property)) {
+        } else if (
+          namedTypes.SpreadProperty &&
+          namedTypes.SpreadProperty.check(property)
+        ) {
           addPattern(propertyPath.get('argument'), bindings);
         }
       });
 
-    } else if (namedTypes.ArrayPattern &&
-      namedTypes.ArrayPattern.check(pattern)) {
+    } else if (
+      namedTypes.ArrayPattern &&
+      namedTypes.ArrayPattern.check(pattern)
+    ) {
       patternPath.get('elements').each(function(elementPath: any) {
         var element = elementPath.value;
         if (namedTypes.Pattern.check(element)) {
           addPattern(elementPath, bindings);
-        } else if (namedTypes.SpreadElement &&
-          namedTypes.SpreadElement.check(element)) {
+        } else if (
+          namedTypes.SpreadElement &&
+          namedTypes.SpreadElement.check(element)
+        ) {
           addPattern(elementPath.get("argument"), bindings);
         }
       });
 
-    } else if (namedTypes.PropertyPattern &&
-      namedTypes.PropertyPattern.check(pattern)) {
+    } else if (
+      namedTypes.PropertyPattern &&
+      namedTypes.PropertyPattern.check(pattern)
+    ) {
       addPattern(patternPath.get('pattern'), bindings);
 
-    } else if ((namedTypes.SpreadElementPattern &&
-      namedTypes.SpreadElementPattern.check(pattern)) ||
+    } else if (
+      (namedTypes.SpreadElementPattern &&
+       namedTypes.SpreadElementPattern.check(pattern)) ||
       (namedTypes.RestElement &&
-      namedTypes.RestElement.check(pattern)) ||
+       namedTypes.RestElement.check(pattern)) ||
       (namedTypes.SpreadPropertyPattern &&
-      namedTypes.SpreadPropertyPattern.check(pattern))) {
+       namedTypes.SpreadPropertyPattern.check(pattern))
+    ) {
       addPattern(patternPath.get('argument'), bindings);
     }
   }
@@ -372,7 +384,6 @@ export default function scopePlugin(fork: Fork) {
       } else {
         types[pattern.name] = [patternPath];
       }
-
     }
   }
 
