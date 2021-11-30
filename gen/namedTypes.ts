@@ -495,6 +495,7 @@ export namespace namedTypes {
     specifiers?: (K.ImportSpecifierKind | K.ImportNamespaceSpecifierKind | K.ImportDefaultSpecifierKind)[];
     source: K.LiteralKind;
     importKind?: "value" | "type" | "typeof";
+    assertions?: K.ImportAttributeKind[];
   }
 
   export interface ExportNamedDeclaration extends Omit<Declaration, "type"> {
@@ -502,6 +503,7 @@ export namespace namedTypes {
     declaration: K.DeclarationKind | null;
     specifiers?: K.ExportSpecifierKind[];
     source?: K.LiteralKind | null;
+    assertions?: K.ImportAttributeKind[];
   }
 
   export interface ExportSpecifier extends Omit<ModuleSpecifier, "type"> {
@@ -518,6 +520,7 @@ export namespace namedTypes {
     type: "ExportAllDeclaration";
     source: K.LiteralKind;
     exported: K.IdentifierKind | null;
+    assertions?: K.ImportAttributeKind[];
   }
 
   export interface TaggedTemplateExpression extends Omit<Expression, "type"> {
@@ -606,8 +609,8 @@ export namespace namedTypes {
 
   export interface ImportAttribute extends Omit<Node, "type"> {
     type: "ImportAttribute";
-    key: K.IdentifierKind;
-    value: string;
+    key: K.IdentifierKind | K.LiteralKind;
+    value: K.ExpressionKind;
   }
 
   export interface RecordExpression extends Omit<Expression, "type"> {

@@ -1003,6 +1003,7 @@ export interface ImportDeclarationBuilder {
   ): namedTypes.ImportDeclaration;
   from(
     params: {
+      assertions?: K.ImportAttributeKind[],
       comments?: K.CommentKind[] | null,
       importKind?: "value" | "type" | "typeof",
       loc?: K.SourceLocationKind | null,
@@ -1020,6 +1021,7 @@ export interface ExportNamedDeclarationBuilder {
   ): namedTypes.ExportNamedDeclaration;
   from(
     params: {
+      assertions?: K.ImportAttributeKind[],
       comments?: K.CommentKind[] | null,
       declaration: K.DeclarationKind | null,
       loc?: K.SourceLocationKind | null,
@@ -1058,6 +1060,7 @@ export interface ExportAllDeclarationBuilder {
   (source: K.LiteralKind, exported: K.IdentifierKind | null): namedTypes.ExportAllDeclaration;
   from(
     params: {
+      assertions?: K.ImportAttributeKind[],
       comments?: K.CommentKind[] | null,
       exported: K.IdentifierKind | null,
       loc?: K.SourceLocationKind | null,
@@ -1270,13 +1273,13 @@ export interface ClassPrivatePropertyBuilder {
 }
 
 export interface ImportAttributeBuilder {
-  (key: K.IdentifierKind, value: string): namedTypes.ImportAttribute;
+  (key: K.IdentifierKind | K.LiteralKind, value: K.ExpressionKind): namedTypes.ImportAttribute;
   from(
     params: {
       comments?: K.CommentKind[] | null,
-      key: K.IdentifierKind,
+      key: K.IdentifierKind | K.LiteralKind,
       loc?: K.SourceLocationKind | null,
-      value: string
+      value: K.ExpressionKind
     }
   ): namedTypes.ImportAttribute;
 }

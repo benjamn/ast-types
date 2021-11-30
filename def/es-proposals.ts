@@ -51,8 +51,19 @@ export default function (fork: Fork) {
   def("ImportAttribute")
     .bases("Node")
     .build("key", "value")
-    .field("key", def("Identifier"))
-    .field("value", String);
+    .field("key", or(def("Identifier"), def("Literal")))
+    .field("value", def("Expression"));
+
+  [ "ImportDeclaration",
+    "ExportAllDeclaration",
+    "ExportNamedDeclaration",
+  ].forEach(decl => {
+    def(decl).field(
+      "assertions",
+      [def("ImportAttribute")],
+      defaults.emptyArray,
+    );
+  });
 
   // https://github.com/tc39/proposal-record-tuple
   // https://github.com/babel/babel/pull/10865
