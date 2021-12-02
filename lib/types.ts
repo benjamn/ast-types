@@ -400,6 +400,7 @@ export default function typesPlugin(_fork: Fork) {
     boolean: boolean;
     null: null;
     undefined: undefined;
+    BigInt: BigInt;
   };
 
   function defBuiltInType<K extends keyof BuiltInTypes>(
@@ -434,6 +435,9 @@ export default function typesPlugin(_fork: Fork) {
   const isBoolean = defBuiltInType("boolean", true);
   const isNull = defBuiltInType("null", null);
   const isUndefined = defBuiltInType("undefined", undefined);
+  const isBigInt = typeof BigInt === "function"
+    ? defBuiltInType("BigInt", BigInt(1234))
+    : new PredicateType<BigInt>("BigInt", () => false);
 
   const builtInTypes = {
     string: isString,
@@ -446,6 +450,7 @@ export default function typesPlugin(_fork: Fork) {
     boolean: isBoolean,
     null: isNull,
     undefined: isUndefined,
+    BigInt: isBigInt,
   };
 
   // In order to return the same Def instance every time Type.def is called
