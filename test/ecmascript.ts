@@ -2331,15 +2331,16 @@ describe("RegExpLiteral nodes", function() {
 
   it("should typecheck with explicit .regex field", function() {
     var stringLiteral = b.literal("asdf");
-    assert.strictEqual(stringLiteral.regex, null);
+    assert.strictEqual(hasOwn.call(stringLiteral, "regex"), false);
     n.Literal.assert(stringLiteral, true);
 
-    var regExpLiteral: any = b.literal(/a.b/gi);
-    assert.strictEqual(regExpLiteral.regex.pattern, "a.b");
-    assert.strictEqual(regExpLiteral.regex.flags, "ig");
+    const regExpLiteral = b.regExpLiteral("a.b", "gi");
+    const regex = rawTypes.getFieldValue(regExpLiteral, "regex");
+    assert.strictEqual(regex.pattern, "a.b");
+    assert.strictEqual(regex.flags, "gi");
     n.Literal.assert(regExpLiteral, true);
 
-    regExpLiteral.regex.pattern = 1234;
+    regex.pattern = 1234;
     assert.strictEqual(n.Literal.check(regExpLiteral, true), false);
   });
 });

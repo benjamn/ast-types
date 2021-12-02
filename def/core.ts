@@ -335,26 +335,7 @@ export default function (fork: Fork) {
   def("Literal")
     .bases("Expression")
     .build("value")
-    .field("value", or(String, Boolean, null, Number, RegExp))
-    .field("regex", or({
-      pattern: String,
-      flags: String
-    }, null), function (this: N.Literal) {
-      if (this.value instanceof RegExp) {
-        var flags = "";
-
-        if (this.value.ignoreCase) flags += "i";
-        if (this.value.multiline) flags += "m";
-        if (this.value.global) flags += "g";
-
-        return {
-          pattern: this.value.source,
-          flags: flags
-        };
-      }
-
-      return null;
-    });
+    .field("value", or(String, Boolean, null, Number, RegExp, BigInt));
 
   // Abstract (non-buildable) comment supertype. Not a Node.
   def("Comment")
