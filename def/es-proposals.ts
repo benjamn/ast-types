@@ -88,6 +88,6 @@ export default function (fork: Fork) {
   // https://github.com/babel/babel/pull/12469
   def("ModuleExpression")
     .bases("Node")
-    .build("program")
+    .build("body")
     .field("body", def("Program"));
 };

@@ -1341,7 +1341,7 @@ export interface TupleExpressionBuilder {
 }
 
 export interface ModuleExpressionBuilder {
-  (): namedTypes.ModuleExpression;
+  (body: K.ProgramKind): namedTypes.ModuleExpression;
   from(
     params: {
       body: K.ProgramKind,
