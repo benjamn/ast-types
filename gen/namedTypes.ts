@@ -233,11 +233,7 @@ export namespace namedTypes {
 
   export interface Literal extends Omit<Expression, "type"> {
     type: "Literal";
-    value: string | boolean | null | number | RegExp;
-    regex?: {
-      pattern: string,
-      flags: string
-    } | null;
+    value: string | boolean | null | number | RegExp | BigInt;
   }
 
   export interface SequenceExpression extends Omit<Expression, "type"> {
@@ -1222,6 +1218,10 @@ export namespace namedTypes {
   export interface StringLiteral extends Omit<Literal, "type" | "value"> {
     type: "StringLiteral";
     value: string;
+    extra?: {
+      rawValue: string,
+      raw: string
+    };
   }
 
   export interface NumericLiteral extends Omit<Literal, "type" | "value"> {
@@ -1267,6 +1267,14 @@ export namespace namedTypes {
     pattern: string;
     flags: string;
     value?: RegExp;
+    extra?: {
+      rawValue: RegExp | undefined,
+      raw: string
+    };
+    regex?: {
+      pattern: string,
+      flags: string
+    };
   }
 
   export interface ClassMethod extends Omit<Declaration, "type">, Omit<Function, "type" | "body"> {

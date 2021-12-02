@@ -432,16 +432,12 @@ export interface PropertyBuilder {
 }
 
 export interface LiteralBuilder {
-  (value: string | boolean | null | number | RegExp): namedTypes.Literal;
+  (value: string | boolean | null | number | RegExp | BigInt): namedTypes.Literal;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
-      value: string | boolean | null | number | RegExp
+      value: string | boolean | null | number | RegExp | BigInt
     }
   ): namedTypes.Literal;
 }
@@ -1484,10 +1480,6 @@ export interface JSXTextBuilder {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
       raw?: string,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: string
     }
   ): namedTypes.JSXText;
@@ -2659,11 +2651,11 @@ export interface StringLiteralBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
+      extra?: {
+        rawValue: string,
+        raw: string
+      },
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: string
     }
   ): namedTypes.StringLiteral;
@@ -2680,10 +2672,6 @@ export interface NumericLiteralBuilder {
       },
       loc?: K.SourceLocationKind | null,
       raw?: string | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: number
     }
   ): namedTypes.NumericLiteral;
@@ -2699,10 +2687,6 @@ export interface BigIntLiteralBuilder {
         raw: string
       },
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: string | number
     }
   ): namedTypes.BigIntLiteral;
@@ -2718,10 +2702,6 @@ export interface DecimalLiteralBuilder {
         raw: string
       },
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: string
     }
   ): namedTypes.DecimalLiteral;
@@ -2733,10 +2713,6 @@ export interface NullLiteralBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value?: null
     }
   ): namedTypes.NullLiteral;
@@ -2748,10 +2724,6 @@ export interface BooleanLiteralBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       loc?: K.SourceLocationKind | null,
-      regex?: {
-        pattern: string,
-        flags: string
-      } | null,
       value: boolean
     }
   ): namedTypes.BooleanLiteral;
@@ -2762,13 +2734,17 @@ export interface RegExpLiteralBuilder {
   from(
     params: {
       comments?: K.CommentKind[] | null,
+      extra?: {
+        rawValue: RegExp | undefined,
+        raw: string
+      },
       flags: string,
       loc?: K.SourceLocationKind | null,
       pattern: string,
       regex?: {
         pattern: string,
         flags: string
-      } | null,
+      },
       value?: RegExp
     }
   ): namedTypes.RegExpLiteral;

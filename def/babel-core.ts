@@ -7,10 +7,13 @@ import { namedTypes as N } from "../gen/namedTypes";
 export default function (fork: Fork) {
   fork.use(esProposalsDef);
 
-  var types = fork.use(typesPlugin);
-  var defaults = fork.use(sharedPlugin).defaults;
-  var def = types.Type.def;
-  var or = types.Type.or;
+  const types = fork.use(typesPlugin);
+  const defaults = fork.use(sharedPlugin).defaults;
+  const def = types.Type.def;
+  const or = types.Type.or;
+  const {
+    undefined: isUndefined,
+  } = types.builtInTypes;
 
   def("Noop")
     .bases("Statement")
@@ -78,26 +81,44 @@ export default function (fork: Fork) {
     .field("directives", [def("Directive")], defaults.emptyArray)
     .field("interpreter", or(def("InterpreterDirective"), null), defaults["null"]);
 
+  function makeLiteralExtra<
+    // Allowing N.RegExpLiteral explicitly here is important because the
+    // node.value field of RegExpLiteral nodes can be undefined, which is not
+    // allowed for other Literal subtypes.
+    TNode extends Omit<N.Literal, "type"> | N.RegExpLiteral
+  >(
+    rawValueType: any = String,
+    toRaw?: (value: any) => string,
+  ): Parameters<import("../lib/types").Def["field"]> {
+    return [
+      "extra",
+      {
+        rawValue: rawValueType,
+        raw: String,
+      },
+      function getDefault(this: TNode) {
+        const value = types.getFieldValue(this, "value");
+        return {
+          rawValue: value,
+          raw: toRaw ? toRaw(value) : String(value),
+        };
+      },
+    ];
+  }
+
   // Split Literal
   def("StringLiteral")
     .bases("Literal")
     .build("value")
-    .field("value", String);
+    .field("value", String)
+    .field(...makeLiteralExtra<N.StringLiteral>(String, val => JSON.stringify(val)));
 
   def("NumericLiteral")
     .bases("Literal")
     .build("value")
     .field("value", Number)
     .field("raw", or(String, null), defaults["null"])
-    .field("extra", {
-      rawValue: Number,
-      raw: String
-    }, function getDefault(this: N.NumericLiteral) {
-      return {
-        rawValue: this.value,
-        raw: this.value + ""
-      }
-    });
+    .field(...makeLiteralExtra<N.NumericLiteral>(Number));
 
   def("BigIntLiteral")
     .bases("Literal")
@@ -105,15 +126,7 @@ export default function (fork: Fork) {
     // Only String really seems appropriate here, since BigInt values
     // often exceed the limits of JS numbers.
     .field("value", or(String, Number))
-    .field("extra", {
-      rawValue: String,
-      raw: String
-    }, function getDefault(this: N.BigIntLiteral) {
-      return {
-        rawValue: String(this.value),
-        raw: this.value + "n",
-      };
-    });
+    .field(...makeLiteralExtra<N.BigIntLiteral>(String, val => val + "n"));
 
   // https://github.com/tc39/proposal-decimal
   // https://github.com/babel/babel/pull/11640
@@ -121,15 +134,7 @@ export default function (fork: Fork) {
     .bases("Literal")
     .build("value")
     .field("value", String)
-    .field("extra", {
-      rawValue: String,
-      raw: String
-    }, function getDefault(this: N.DecimalLiteral) {
-      return {
-        rawValue: String(this.value),
-        raw: this.value + "m",
-      };
-    });
+    .field(...makeLiteralExtra<N.DecimalLiteral>(String, val => val + "m"));
 
   def("NullLiteral")
     .bases("Literal")
@@ -148,6 +153,21 @@ export default function (fork: Fork) {
     .field("flags", String)
     .field("value", RegExp, function (this: N.RegExpLiteral) {
       return new RegExp(this.pattern, this.flags);
+    })
+    .field(...makeLiteralExtra<N.RegExpLiteral>(
+      or(RegExp, isUndefined),
+      exp => `/${exp.pattern}/${exp.flags || ""}`,
+    ))
+    // I'm not sure why this field exists, but it's "specified" by estree:
+    // https://github.com/estree/estree/blob/master/es5.md#regexpliteral
+    .field("regex", {
+      pattern: String,
+      flags: String
+    }, function (this: N.RegExpLiteral) {
+      return {
+        pattern: this.pattern,
+        flags: this.flags,
+      };
     });
 
   var ObjectExpressionProperty = or(
