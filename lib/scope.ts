@@ -248,15 +248,16 @@ export default function scopePlugin(fork: Fork) {
     } else if (node.type === "ImportSpecifier" ||
       node.type === "ImportNamespaceSpecifier" ||
       node.type === "ImportDefaultSpecifier") {
-      addPattern(
-        // Esprima used to use the .name field to refer to the local
-        // binding identifier for ImportSpecifier nodes, but .id for
-        // ImportNamespaceSpecifier and ImportDefaultSpecifier nodes.
-        // ESTree/Acorn/ESpree use .local for all three node types.
-        path.get(node.local ? "local" :
-        node.name ? "name" : "id"),
-        bindings
-      );
+      // Esprima used to use the .name field to refer to the local
+      // binding identifier for ImportSpecifier nodes, but .id for
+      // ImportNamespaceSpecifier and ImportDefaultSpecifier nodes.
+      // ESTree/Acorn/ESpree use .local for all three node types.
+      const idPath = path.get(node.local ? "local" : node.name ? "name" : "id");
+      if (node.importKind === 'type' || path.parent.node.importKind === 'type') {
+        addTypePattern(idPath, scopeTypes);
+      } else {
+        addPattern(idPath, bindings);
+      }
 
     } else if (Node.check(node) && !Expression.check(node)) {
       types.eachField(node, function(name: any, child: any) {
