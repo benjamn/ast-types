@@ -3,14 +3,14 @@ import pathVisitorPlugin from "./lib/path-visitor";
 import equivPlugin from "./lib/equiv";
 import pathPlugin from "./lib/path";
 import nodePathPlugin from "./lib/node-path";
-import { Def, Fork, Plugin } from "./types";
+import { Fork, Plugin } from "./types";
 
-export default function (defs: Def[]) {
+export default function (plugins: Plugin<any>[]) {
   const fork = createFork();
 
   const types = fork.use(typesPlugin);
 
-  defs.forEach(fork.use);
+  plugins.forEach(fork.use);
 
   types.finalize();
 
