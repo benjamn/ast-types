@@ -1,6 +1,7 @@
 import { Fork } from "../types";
 import { NodePath } from "./node-path";
 import typesPlugin from "./types";
+import pathVisitor from './path-visitor';
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -453,6 +454,27 @@ export default function scopePlugin(fork: Fork) {
       scope = scope.parent;
     return scope;
   };
-
+  
+  Sp.rename = function(oldName, newName) {
+  	var scope = this;
+  	var parentPath = scope.path.parentPath;
+	
+  	var targetScopeNode = scope.lookup(oldName).getBindings()[oldName][0].node;
+  
+  	var PathVisitor = fork.use(pathVisitor);
+  	PathVisitor.visit(parentPath, {
+  		visitIdentifier: function(path) {
+  			if (path.node.name === oldName) {
+  				var pathScope = path.scope.lookup(oldName);
+  				var scopeNode = pathScope.getBindings()[oldName][0].node;
+  				if (scopeNode === targetScopeNode && path.name !== 'property') {
+  					path.node.name = newName;
+  				}
+  			}
+  			return false;
+  		}
+  	});
+  }
+  
   return Scope;
 };
