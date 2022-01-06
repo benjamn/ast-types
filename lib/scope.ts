@@ -242,7 +242,14 @@ export default function scopePlugin(fork: Fork) {
       addTypePattern(path.get("id"), scopeTypes);
 
     } else if (namedTypes.VariableDeclarator.check(node)) {
-      addPattern(path.get("id"), bindings);
+      const idPath = path.get("id");
+      if (namedTypes.ObjectPattern.check(idPath.node)) {
+        idPath.node.properties.forEach((prop: any, index: number) => {
+          addPattern(path.get('id', 'properties', index, 'key'), bindings)
+        })
+      } else {
+        addPattern(path.get("id"), bindings);
+      }
       recursiveScanChild(path.get("init"), bindings, scopeTypes);
 
     } else if (node.type === "ImportSpecifier" ||
