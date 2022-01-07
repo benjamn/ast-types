@@ -446,6 +446,7 @@ export namespace namedTypes {
     id: K.IdentifierKind | null;
     body: K.ClassBodyKind;
     superClass?: K.ExpressionKind | null;
+    decorators?: K.DecoratorKind[] | null;
     typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
     superTypeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
     implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];

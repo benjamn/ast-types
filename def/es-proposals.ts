@@ -35,6 +35,11 @@ export default function (fork: Fork) {
            or([def("Decorator")], null),
            defaults["null"]);
 
+  def("ClassDeclaration")
+  .field("decorators",
+        or([def("Decorator")], null),
+        defaults["null"]);
+       
   // Private names
   def("PrivateName")
     .bases("Expression", "Pattern")
