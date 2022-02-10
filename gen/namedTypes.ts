@@ -299,6 +299,7 @@ export namespace namedTypes {
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
     typeArguments?: null | K.TypeParameterInstantiationKind;
+    typeParameters?: null | K.TSTypeParameterInstantiationKind;
   }
 
   export interface CallExpression extends Omit<Expression, "type">, Omit<ChainElement, "type"> {
@@ -306,6 +307,7 @@ export namespace namedTypes {
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
     typeArguments?: null | K.TypeParameterInstantiationKind;
+    typeParameters?: null | K.TSTypeParameterInstantiationKind;
   }
 
   export interface RestElement extends Omit<Pattern, "type"> {

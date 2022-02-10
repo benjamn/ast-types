@@ -170,6 +170,30 @@ glob("**/*.ts", {
       });
     });
   });
+});
+
+describe('typescript types', () => {
+  it('Explicit type arguments', function () {
+    const program = babelParse([
+      'test<A>();',
+      'test<B, C>();',
+      'new test<D>();',
+      'new test<E, F>();',
+    ].join("\n"), {
+      plugins: ['typescript']
+    });
+
+    const typeParamNames: any[] = []
+
+    visit(program, {
+      visitTSTypeReference(path: any) {
+        typeParamNames.push(path.node.typeName.name);
+        this.traverse(path);
+      }
+    });
+
+    assert.deepEqual(typeParamNames, ["A", "B", "C", "D", "E", "F"]);
+  });
 
   describe('scope', () => {
     const scope = [
