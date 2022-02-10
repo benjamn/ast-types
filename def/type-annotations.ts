@@ -29,6 +29,9 @@ export default function (fork: Fork) {
   def("Identifier")
     .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
+  def("ArrayPattern")
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
+
   def("ObjectPattern")
     .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 

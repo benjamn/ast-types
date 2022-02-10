@@ -397,6 +397,7 @@ export namespace namedTypes {
   export interface ArrayPattern extends Omit<Pattern, "type"> {
     type: "ArrayPattern";
     elements: (K.PatternKind | K.SpreadElementKind | null)[];
+    typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
   }
 
   export interface SpreadElement extends Omit<Node, "type"> {

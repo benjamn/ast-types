@@ -804,7 +804,8 @@ export interface ArrayPatternBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       elements: (K.PatternKind | K.SpreadElementKind | null)[],
-      loc?: K.SourceLocationKind | null
+      loc?: K.SourceLocationKind | null,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null
     }
   ): namedTypes.ArrayPattern;
 }
