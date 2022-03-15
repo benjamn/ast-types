@@ -952,11 +952,16 @@ export interface SuperBuilder {
 }
 
 export interface ImportSpecifierBuilder {
-  (imported: K.IdentifierKind, local?: K.IdentifierKind | null): namedTypes.ImportSpecifier;
+  (
+    imported: K.IdentifierKind,
+    local?: K.IdentifierKind | null,
+    importKind?: "type" | null
+  ): namedTypes.ImportSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
+      importKind?: "type" | null,
       imported: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       local?: K.IdentifierKind | null,

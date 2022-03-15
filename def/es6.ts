@@ -216,11 +216,12 @@ export default function (fork: Fork) {
     .field("id", or(def("Identifier"), null), defaults["null"])
     .field("name", or(def("Identifier"), null), defaults["null"]);
 
-  // import {<id [as name]>} from ...;
+  // import {[type] <id [as name]>} from ...;
   def("ImportSpecifier")
     .bases("ModuleSpecifier")
-    .build("imported", "local")
-    .field("imported", def("Identifier"));
+    .build("imported", "local", "importKind")
+    .field("imported", def("Identifier"))
+    .field("importKind", or("type", null), defaults["null"]);
 
   // import <id> from ...;
   def("ImportDefaultSpecifier")
