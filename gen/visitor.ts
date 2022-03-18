@@ -179,6 +179,7 @@ export interface Visitor<M = {}> {
   visitIntersectionTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.IntersectionTypeAnnotation>): any;
   visitTypeofTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.TypeofTypeAnnotation>): any;
   visitTypeParameter?(this: Context & M, path: NodePath<namedTypes.TypeParameter>): any;
+  visitPropertyDefinition?(this: Context & M, path: NodePath<namedTypes.PropertyDefinition>): any;
   visitInterfaceTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.InterfaceTypeAnnotation>): any;
   visitInterfaceExtends?(this: Context & M, path: NodePath<namedTypes.InterfaceExtends>): any;
   visitInterfaceDeclaration?(this: Context & M, path: NodePath<namedTypes.InterfaceDeclaration>): any;

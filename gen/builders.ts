@@ -2106,6 +2106,23 @@ export interface TypeParameterBuilder {
   ): namedTypes.TypeParameter;
 }
 
+export interface PropertyDefinitionBuilder {
+  (): namedTypes.PropertyDefinition;
+  from(
+    params: {
+      access?: "public" | "private" | "protected" | undefined,
+      comments?: K.CommentKind[] | null,
+      computed?: boolean,
+      key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind,
+      loc?: K.SourceLocationKind | null,
+      static?: boolean,
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null,
+      value: K.ExpressionKind | null,
+      variance?: K.VarianceKind | "plus" | "minus" | null
+    }
+  ): namedTypes.PropertyDefinition;
+}
+
 export interface InterfaceTypeAnnotationBuilder {
   (
     body: K.ObjectTypeAnnotationKind,
@@ -3824,6 +3841,7 @@ export interface builders {
   intersectionTypeAnnotation: IntersectionTypeAnnotationBuilder;
   typeofTypeAnnotation: TypeofTypeAnnotationBuilder;
   typeParameter: TypeParameterBuilder;
+  propertyDefinition: PropertyDefinitionBuilder;
   interfaceTypeAnnotation: InterfaceTypeAnnotationBuilder;
   interfaceExtends: InterfaceExtendsBuilder;
   interfaceDeclaration: InterfaceDeclarationBuilder;
