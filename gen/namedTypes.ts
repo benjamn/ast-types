@@ -476,6 +476,7 @@ export namespace namedTypes {
   export interface ImportSpecifier extends Omit<ModuleSpecifier, "type"> {
     type: "ImportSpecifier";
     imported: K.IdentifierKind;
+    importKind?: "value" | "type" | "typeof";
   }
 
   export interface ImportDefaultSpecifier extends Omit<ModuleSpecifier, "type"> {

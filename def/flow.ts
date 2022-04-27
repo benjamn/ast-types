@@ -405,6 +405,9 @@ export default function (fork: Fork) {
   def("ImportDeclaration")
     .field("importKind", or("value", "type", "typeof"), () => "value");
 
+  def("ImportSpecifier")
+    .field("importKind", or("value", "type", "typeof"), () => "value");
+
   def("FlowPredicate").bases("Flow");
 
   def("InferredPredicate")

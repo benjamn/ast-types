@@ -957,6 +957,7 @@ export interface ImportSpecifierBuilder {
     params: {
       comments?: K.CommentKind[] | null,
       id?: K.IdentifierKind | null,
+      importKind?: "value" | "type" | "typeof",
       imported: K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
       local?: K.IdentifierKind | null,
