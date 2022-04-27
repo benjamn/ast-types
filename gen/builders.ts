@@ -2294,6 +2294,7 @@ export interface DeclareClassBuilder {
       comments?: K.CommentKind[] | null,
       extends: K.InterfaceExtendsKind[],
       id: K.IdentifierKind,
+      implements?: K.ClassImplementsKind[],
       loc?: K.SourceLocationKind | null,
       typeParameters?: K.TypeParameterDeclarationKind | null
     }

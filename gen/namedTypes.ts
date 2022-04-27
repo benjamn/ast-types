@@ -1055,6 +1055,7 @@ export namespace namedTypes {
 
   export interface DeclareClass extends Omit<InterfaceDeclaration, "type"> {
     type: "DeclareClass";
+    implements?: K.ClassImplementsKind[];
   }
 
   export interface DeclareModule extends Omit<Statement, "type"> {

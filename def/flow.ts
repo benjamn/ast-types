@@ -358,7 +358,8 @@ export default function (fork: Fork) {
 
   def("DeclareClass")
     .bases("InterfaceDeclaration")
-    .build("id");
+    .build("id")
+    .field("implements", [def("ClassImplements")], defaults.emptyArray);
 
   def("DeclareModule")
     .bases("Statement")
