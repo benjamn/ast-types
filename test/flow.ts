@@ -224,4 +224,22 @@ describe("flow types", function () {
       }
     });
   });
+
+  it("interface extends qualified name", function () {
+    const program = parser.parse([
+      "interface I<T> extends Module.J<T[]> { }",
+      "declare interface I<T> extends Module.J<T[]> { }",
+      // Plain `class C extends A.B` gets a ClassDeclaration with superClass
+      // a MemberExpression.  But with `declare`, it's a DeclareClass with
+      // `extends` containing an InterfaceExtends, much like on `interface`.
+      "declare class C extends React.Component<{||}> { }"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitInterfaceExtends(path) {
+        types.builders.interfaceExtends.from(path.node);
+        this.traverse(path);
+      },
+    });
+  });
 });

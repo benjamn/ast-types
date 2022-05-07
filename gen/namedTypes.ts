@@ -989,7 +989,7 @@ export namespace namedTypes {
 
   export interface InterfaceExtends extends Omit<Node, "type"> {
     type: "InterfaceExtends";
-    id: K.IdentifierKind;
+    id: K.IdentifierKind | K.QualifiedTypeIdentifierKind;
     typeParameters?: K.TypeParameterInstantiationKind | null;
   }
 
