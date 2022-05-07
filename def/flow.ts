@@ -305,7 +305,7 @@ export default function (fork: Fork) {
   def("InterfaceExtends")
     .bases("Node")
     .build("id")
-    .field("id", def("Identifier"))
+    .field("id", or(def("Identifier"), def("QualifiedTypeIdentifier")))
     .field("typeParameters",
            or(def("TypeParameterInstantiation"), null),
            defaults["null"]);

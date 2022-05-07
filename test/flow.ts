@@ -11,16 +11,16 @@ var types = forkFn([
   flowDef,
 ]);
 
+const parser = {
+  parse(code: string) {
+    return flowParser.parse(code, {
+      types: true,
+    });
+  },
+};
+
 describe("flow types", function () {
   it("issue #242", function () {
-    const parser = {
-      parse(code: string) {
-        return flowParser.parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "class A<B> extends C<D> {}",
       "function f<E>() {}",
@@ -46,14 +46,6 @@ describe("flow types", function () {
   });
 
   it("issue #261", function () {
-    const parser = {
-      parse(code: string) {
-        return flowParser.parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse('declare module.exports: {};');
 
     assert.strictEqual(program.body[0].type, 'DeclareModuleExports');
@@ -62,14 +54,6 @@ describe("flow types", function () {
   });
 
   it("Explicit type arguments", function () {
-    const parser = {
-      parse(code: string) {
-        return flowParser.parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       'test<A>();',
       'test<B, C>();',
@@ -128,14 +112,6 @@ describe("flow types", function () {
   }
 
   it("issue #294 - function declarations", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "function foo<T>(): T { }",
       "let bar: T",
@@ -154,14 +130,6 @@ describe("flow types", function () {
   });
 
   it("issue #294 - function expressions", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "const foo = function <T>(): T { }",
       "let bar: T",
@@ -182,14 +150,6 @@ describe("flow types", function () {
   });
 
   it("issue #294 - arrow function expressions", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "const foo = <T>(): T => { }",
       "let bar: T"
@@ -208,14 +168,6 @@ describe("flow types", function () {
   });
 
   it("issue #294 - class declarations", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "class Foo<T> extends Bar<Array<T>> { }",
       "let bar: T"
@@ -234,14 +186,6 @@ describe("flow types", function () {
   });
 
   it("issue #294 - class expressions", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "const foo = class Foo<T> extends Bar<Array<T>> { }",
       "let bar: T"
@@ -263,14 +207,6 @@ describe("flow types", function () {
   });
 
   it("issue #296 - interface declarations", function () {
-    const parser = {
-      parse(code: string) {
-        return require('flow-parser').parse(code, {
-          types: true
-        });
-      }
-    };
-
     const program = parser.parse([
       "interface Foo<T> extends Bar<Array<T>> { }",
       "let bar: T"
@@ -286,6 +222,24 @@ describe("flow types", function () {
         assert.ok(path.scope.lookupType('Foo'));
         this.traverse(path);
       }
+    });
+  });
+
+  it("interface extends qualified name", function () {
+    const program = parser.parse([
+      "interface I<T> extends Module.J<T[]> { }",
+      "declare interface I<T> extends Module.J<T[]> { }",
+      // Plain `class C extends A.B` gets a ClassDeclaration with superClass
+      // a MemberExpression.  But with `declare`, it's a DeclareClass with
+      // `extends` containing an InterfaceExtends, much like on `interface`.
+      "declare class C extends React.Component<{||}> { }"
+    ].join("\n"));
+
+    assertVisited(program, {
+      visitInterfaceExtends(path) {
+        types.builders.interfaceExtends.from(path.node);
+        this.traverse(path);
+      },
     });
   });
 });
