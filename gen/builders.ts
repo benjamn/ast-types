@@ -1907,7 +1907,9 @@ export interface ObjectTypePropertyBuilder {
       comments?: K.CommentKind[] | null,
       key: K.LiteralKind | K.IdentifierKind,
       loc?: K.SourceLocationKind | null,
+      method?: boolean,
       optional: boolean,
+      static?: boolean,
       value: K.FlowTypeKind,
       variance?: K.VarianceKind | "plus" | "minus" | null
     }

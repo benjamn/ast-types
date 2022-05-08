@@ -890,6 +890,8 @@ export namespace namedTypes {
     key: K.LiteralKind | K.IdentifierKind;
     value: K.FlowTypeKind;
     optional: boolean;
+    static?: boolean;
+    method?: boolean;
     variance?: K.VarianceKind | "plus" | "minus" | null;
   }
 
