@@ -31,7 +31,7 @@
     "gen": "ts-node --transpile-only script/gen-types.ts",
     "mocha": "test/run.sh",
     "test": "npm run gen && npm run build && npm run mocha",
-    "clean": "ts-emit-clean",
+    "clean": "tsc --build --clean",
     "build": "tsc && ts-add-module-exports",
     "prepare": "npm run clean && npm run gen && npm run build",
     "postpack": "npm run clean"
@@ -55,7 +55,6 @@
     "recast": "0.20.5",
     "reify": "0.20.12",
     "ts-add-module-exports": "1.0.0",
-    "ts-emit-clean": "1.0.0",
     "ts-node": "10.4.0",
     "typescript": "4.5.2"
   },
