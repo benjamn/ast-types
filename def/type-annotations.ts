@@ -25,6 +25,11 @@ export default function (fork: Fork) {
     def("TSTypeParameterDeclaration"),
     null
   );
+   var TypeParamInst = or(
+    def('TypeParameterInstantiation'),
+    def('TSTypeParameterInstantiation'),
+    null
+  )
 
   def("Identifier")
     .field("typeAnnotation", TypeAnnotation, defaults["null"]);
@@ -35,6 +40,13 @@ export default function (fork: Fork) {
   def("Function")
     .field("returnType", TypeAnnotation, defaults["null"])
     .field("typeParameters", TypeParamDecl, defaults["null"]);
+  
+  def("CallExpression")
+    .field("typeParameters", TypeParamInst, defaults["null"])
+    .field("typeArguments", TypeParamInst, defaults["null"]);
+  def("NewExpression")
+    .field("typeParameters", TypeParamInst, defaults["null"])
+    .field("typeArguments", TypeParamInst, defaults["null"]);
 
   def("ClassProperty")
     .build("key", "value", "typeAnnotation", "static")
