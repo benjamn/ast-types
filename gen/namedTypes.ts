@@ -298,6 +298,7 @@ export namespace namedTypes {
     type: "NewExpression";
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
+    typeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
     typeArguments?: null | K.TypeParameterInstantiationKind;
   }
 
@@ -305,6 +306,7 @@ export namespace namedTypes {
     type: "CallExpression";
     callee: K.ExpressionKind;
     arguments: (K.ExpressionKind | K.SpreadElementKind)[];
+    typeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
     typeArguments?: null | K.TypeParameterInstantiationKind;
   }
 

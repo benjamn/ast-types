@@ -35,6 +35,13 @@ export default function (fork: Fork) {
     def("Identifier"),
     def("TSQualifiedName")
   );
+  
+  
+  def("ImportDeclaration")
+    .field("importKind", or("value", "type", "typeof"), () => "value");
+
+  def("ImportSpecifier")
+    .field("importKind", or("value", "type", "typeof"), defaults["null"]);
 
   def("TSTypeReference")
     .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
