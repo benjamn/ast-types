@@ -27,7 +27,7 @@ abstract class BaseType<T> {
 
   abstract check(value: any, deep?: Deep): value is T;
 
-  assert(value: any, deep?: Deep): value is T {
+  assert(value: any, deep?: Deep): asserts value is T {
     if (!this.check(value, deep)) {
       var str = shallowStringify(value);
       throw new Error(str + " does not match type " + this);
