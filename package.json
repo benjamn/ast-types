@@ -49,7 +49,7 @@
     "espree": "9.1.0",
     "esprima": "4.0.1",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",
-    "flow-parser": "0.166.0",
+    "flow-parser": "0.193.0",
     "glob": "7.2.0",
     "mocha": "^9.1.3",
     "recast": "0.20.5",
