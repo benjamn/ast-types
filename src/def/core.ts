@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import coreOpsDef from "./operators/core";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
@@ -349,3 +349,5 @@ export default function (fork: Fork) {
     .field("leading", Boolean, defaults["true"])
     .field("trailing", Boolean, defaults["false"]);
 };
+
+maybeSetModuleExports(() => module);

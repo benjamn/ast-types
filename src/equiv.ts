@@ -1,3 +1,4 @@
+import { maybeSetModuleExports } from "./shared";
 import typesPlugin, { Fork } from "./types";
 
 export default function (fork: Fork) {
@@ -186,3 +187,5 @@ export default function (fork: Fork) {
     
     return astNodesAreEquivalent;
 };
+
+maybeSetModuleExports(() => module);

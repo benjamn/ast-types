@@ -1,3 +1,4 @@
+import { maybeSetModuleExports } from "../../shared";
 import es2020OpsDef from "./es2020";
 
 export default function (fork: import("../../types").Fork) {
@@ -14,3 +15,5 @@ export default function (fork: import("../../types").Fork) {
 
   return result;
 }
+
+maybeSetModuleExports(() => module);

@@ -1,6 +1,6 @@
 import { Fork } from "../types";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 import es2022Def from "./es2022";
 
 export default function (fork: Fork) {
@@ -91,3 +91,5 @@ export default function (fork: Fork) {
     .build("body")
     .field("body", def("Program"));
 };
+
+maybeSetModuleExports(() => module);

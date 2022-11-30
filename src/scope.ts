@@ -1,4 +1,5 @@
 import { NodePath } from "./node-path";
+import { maybeSetModuleExports } from "./shared";
 import typesPlugin, { Fork } from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -455,3 +456,5 @@ export default function scopePlugin(fork: Fork) {
 
   return Scope;
 };
+
+maybeSetModuleExports(() => module);

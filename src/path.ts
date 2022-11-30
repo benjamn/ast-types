@@ -1,3 +1,4 @@
+import { maybeSetModuleExports } from "./shared";
 import typesPlugin, { ASTNode, Fork } from "./types";
 
 var Op = Object.prototype;
@@ -389,3 +390,5 @@ export default function pathPlugin(fork: Fork): PathConstructor {
 
   return Path;
 };
+
+maybeSetModuleExports(() => module);

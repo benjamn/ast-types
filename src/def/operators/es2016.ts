@@ -1,3 +1,4 @@
+import { maybeSetModuleExports } from "../../shared";
 import coreOpsDef from "./core";
 
 export default function (fork: import("../../types").Fork) {
@@ -15,3 +16,5 @@ export default function (fork: import("../../types").Fork) {
 
   return result;
 }
+
+maybeSetModuleExports(() => module);

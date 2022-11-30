@@ -38,7 +38,7 @@
     "gen": "ts-node --transpile-only script/gen-types.ts",
     "test": "npm run gen && npm run build && script/run-tests.sh",
     "clean": "rimraf lib/",
-    "build": "tsc && ts-add-module-exports",
+    "build": "tsc",
     "prepare": "npm run clean && npm run build"
   },
   "dependencies": {
@@ -60,7 +60,6 @@
     "recast": "0.20.5",
     "reify": "0.20.12",
     "rimraf": "3.0.2",
-    "ts-add-module-exports": "1.0.0",
     "ts-node": "10.4.0",
     "typescript": "4.5.2"
   },

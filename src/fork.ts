@@ -4,6 +4,7 @@ import equivPlugin from "./equiv";
 import pathPlugin from "./path";
 import nodePathPlugin from "./node-path";
 import { Fork, Plugin } from "./types";
+import { maybeSetModuleExports } from "./shared";
 
 export default function (plugins: Plugin<any>[]) {
   const fork = createFork();
@@ -56,3 +57,5 @@ function createFork(): Fork {
 
   return fork;
 }
+
+maybeSetModuleExports(() => module);

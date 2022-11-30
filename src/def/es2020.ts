@@ -2,7 +2,7 @@ import { Fork } from "../types";
 import es2020OpsDef from "./operators/es2020";
 import es2019Def from "./es2019";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   // The es2020OpsDef plugin comes before es2019Def so LogicalOperators will be
@@ -55,3 +55,5 @@ export default function (fork: Fork) {
     .build("object", "property", "computed", "optional")
     .field("optional", Boolean, defaults["true"]);
 };
+
+maybeSetModuleExports(() => module);

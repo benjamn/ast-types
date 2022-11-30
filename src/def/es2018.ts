@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import es2017Def from "./es2017";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   fork.use(es2017Def);
@@ -39,3 +39,5 @@ export default function (fork: Fork) {
   def("ObjectPattern")
     .field("properties", [or(def("PropertyPattern"), def("Property"), def("RestElement"), def("SpreadPropertyPattern"))]);
 };
+
+maybeSetModuleExports(() => module);
