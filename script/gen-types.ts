@@ -393,7 +393,7 @@ function getBuildableSubtypes(supertype: string): string[] {
   ));
 }
 
-function getTSTypeAnnotation(type: import("../lib/types").Type<any>): any {
+function getTSTypeAnnotation(type: import("../src/types").Type<any>): any {
   switch (type.kind) {
     case "ArrayType": {
       const elemTypeAnnotation = getTSTypeAnnotation(type.elemType);

@@ -5,3 +5,10 @@
 
 # Ignore "npm pack" output
 /*.tgz
+
+# Ignore TypeScript-emitted files
+lib/
+*.js
+*.d.ts
+# Except...
+!/types/**/*.d.ts

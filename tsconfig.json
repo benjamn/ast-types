@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "sourceMap": true,
-    "declarationMap": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -13,8 +14,6 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "stripInternal": true,
-    "outDir": "lib",
-
     "lib": [
       "es2015"
     ],

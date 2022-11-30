@@ -29,12 +29,10 @@
   "types": "lib/main.d.ts",
   "scripts": {
     "gen": "ts-node --transpile-only script/gen-types.ts",
-    "mocha": "script/run-tests.sh",
-    "test": "npm run gen && npm run build && npm run mocha",
+    "test": "npm run gen && npm run build && script/run-tests.sh",
     "clean": "rimraf lib/",
     "build": "tsc && ts-add-module-exports",
-    "prepare": "npm run clean && npm run gen && npm run build",
-    "postpack": "npm run clean"
+    "prepare": "npm run clean && npm run build"
   },
   "dependencies": {
     "tslib": "^2.0.1"
