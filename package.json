@@ -27,6 +27,13 @@
   "license": "MIT",
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
+  "exports": {
+    ".": "./lib/main.js",
+    "./lib/*": "./lib/*.js",
+    "./lib/*.js": "./lib/*.js",
+    "./*": "./lib/*.js",
+    "./*.js": "./lib/*.js"
+  },
   "scripts": {
     "gen": "node lib/gen/generate.js && tsc",
     "test": "npm run gen && src/test/run.sh",
