@@ -1,6 +1,7 @@
 /node_modules
 /src/test
 /lib/test
+/.github
 
 *.ts
 !*.d.ts
