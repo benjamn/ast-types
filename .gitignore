@@ -1,6 +1,6 @@
 node_modules
-test/data/babel-parser
-test/data/typescript-compiler
+src/test/data/babel-parser
+src/test/data/typescript-compiler
 
 # Ignore TypeScript-emitted files
 lib/

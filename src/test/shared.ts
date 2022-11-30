@@ -5,7 +5,7 @@ import { parse as reifyBabylonParse } from "reify/lib/parsers/babylon";
 import { namedTypes as n } from "../main";
 
 export function validateECMAScript(file: any) {
-  var fullPath = path.join(__dirname, "..", file);
+  var fullPath = path.join(__dirname, "..", "..", "src", file);
 
   it("should validate " + file + " with Esprima", function (done) {
     fs.readFile(fullPath, "utf8", function(err, code) {

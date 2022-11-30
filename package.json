@@ -28,9 +28,8 @@
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
   "scripts": {
-    "gen": "node lib/gen-types.js",
-    "mocha": "test/run.sh",
-    "test": "npm run gen && npm run build && npm run mocha",
+    "gen": "node lib/gen/generate.js && tsc",
+    "test": "npm run gen && src/test/run.sh",
     "clean": "rimraf lib",
     "build": "tsc",
     "prepare": "npm run clean && tsc"
