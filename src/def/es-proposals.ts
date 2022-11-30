@@ -1,6 +1,6 @@
 import { Fork } from "../types";
-import typesPlugin from "../lib/types";
-import sharedPlugin from "../lib/shared";
+import typesPlugin from "../types";
+import sharedPlugin from "../shared";
 import es2022Def from "./es2022";
 
 export default function (fork: Fork) {

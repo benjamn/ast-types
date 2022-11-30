@@ -1,8 +1,7 @@
-import { Fork } from "../types";
-import typesPlugin, { ASTNode } from "./types";
+import typesPlugin, { ASTNode, Fork } from "./types";
 import pathPlugin, { Path } from "./path";
 import scopePlugin, { Scope } from "./scope";
-import { namedTypes } from "../gen/namedTypes";
+import { namedTypes } from "./gen/namedTypes";
 
 export interface NodePath<N = any, V = any> extends Path<V> {
   node: N;

@@ -66,7 +66,7 @@ const out = [
     file: "namedTypes.ts",
     ast: moduleWithBody([
       b.importDeclaration([b.importSpecifier(b.identifier("Omit"))], b.stringLiteral("../types")),
-      b.importDeclaration([b.importSpecifier(b.identifier("Type"))], b.stringLiteral("../lib/types")),
+      b.importDeclaration([b.importSpecifier(b.identifier("Type"))], b.stringLiteral("../types")),
       KINDS_IMPORT,
       b.exportNamedDeclaration(
         b.tsModuleDeclaration(
@@ -297,11 +297,11 @@ const out = [
     ast: moduleWithBody([
       b.importDeclaration(
         [b.importSpecifier(b.identifier("NodePath"))],
-        b.stringLiteral("../lib/node-path")
+        b.stringLiteral("../node-path")
       ),
       b.importDeclaration(
         [b.importSpecifier(b.identifier("Context"))],
-        b.stringLiteral("../lib/path-visitor")
+        b.stringLiteral("../path-visitor")
       ),
       NAMED_TYPES_IMPORT,
       b.exportNamedDeclaration(
@@ -349,8 +349,9 @@ const out = [
 
 out.forEach(({ file, ast }) => {
   fs.writeFileSync(
-    path.resolve(__dirname, `../gen/${file}`),
-    prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
+    // Always write to the src/gen directory, even if running from lib/gen.
+    path.resolve(__dirname, `../../src/gen/${file}`),
+    prettyPrint(ast, { tabWidth: 2, includeComments: true } as any).code
   );
 });
 
@@ -391,7 +392,7 @@ function getBuildableSubtypes(supertype: string): string[] {
   ));
 }
 
-function getTSTypeAnnotation(type: import("../lib/types").Type<any>): any {
+function getTSTypeAnnotation(type: import("../types").Type<any>): any {
   switch (type.kind) {
     case "ArrayType": {
       const elemTypeAnnotation = getTSTypeAnnotation(type.elemType);

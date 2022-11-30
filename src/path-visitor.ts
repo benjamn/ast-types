@@ -1,5 +1,4 @@
-import { Fork, Omit } from "../types";
-import typesPlugin, { ASTNode } from "./types";
+import typesPlugin, { ASTNode, Fork, Omit } from "./types";
 import nodePathPlugin, { NodePath } from "./node-path";
 
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -26,7 +25,7 @@ export interface PathVisitor {
 
 export interface PathVisitorStatics {
   fromMethodsObject(methods?: any): Visitor;
-  visit<M = {}>(node: ASTNode, methods?: import("../gen/visitor").Visitor<M>): any;
+  visit<M = {}>(node: ASTNode, methods?: import("./gen/visitor").Visitor<M>): any;
 }
 
 export interface PathVisitorConstructor extends PathVisitorStatics {

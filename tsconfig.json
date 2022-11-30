@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "rootDir": ".",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -14,6 +15,9 @@
     "stripInternal": true,
     "lib": ["es2015"]
   },
+  "include": [
+    "src/"
+  ],
   "exclude": [
     "node_modules",
     "test/data"

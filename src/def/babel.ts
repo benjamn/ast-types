@@ -1,5 +1,5 @@
 import { Fork } from "../types";
-import typesPlugin from "../lib/types";
+import typesPlugin from "../types";
 import babelCoreDef from "./babel-core";
 import flowDef from "./flow";
 

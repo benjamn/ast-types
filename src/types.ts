@@ -1,4 +1,10 @@
-import { Fork } from "../types";
+export type Fork = {
+  use<T>(plugin: Plugin<T>): T;
+};
+
+export type Plugin<T> = (fork: Fork) => T;
+
+export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 const Op = Object.prototype;
 const objToStr = Op.toString;
@@ -780,7 +786,7 @@ export default function typesPlugin(_fork: Fork) {
     return table;
   }
 
-  var builders: import("../gen/builders").builders = Object.create(null);
+  var builders: import("./gen/builders").builders = Object.create(null);
 
   // This object is used as prototype for any node created by a builder.
   var nodePrototype: { [definedMethod: string]: Function } = {};
@@ -830,7 +836,7 @@ export default function typesPlugin(_fork: Fork) {
     return typeName.replace(/(Expression)?$/, "Statement");
   }
 
-  var namedTypes = {} as import("../gen/namedTypes").NamedTypes;
+  var namedTypes = {} as import("./gen/namedTypes").NamedTypes;
 
   // Like Object.keys, but aware of what fields each AST type should have.
   function getFieldNames(object: any) {
