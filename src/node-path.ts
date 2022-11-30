@@ -2,6 +2,7 @@ import typesPlugin, { ASTNode, Fork } from "./types";
 import pathPlugin, { Path } from "./path";
 import scopePlugin, { Scope } from "./scope";
 import { namedTypes } from "./gen/namedTypes";
+import { maybeSetModuleExports } from "./shared";
 
 export interface NodePath<N = any, V = any> extends Path<V> {
   node: N;
@@ -502,3 +503,5 @@ export default function nodePathPlugin(fork: Fork): NodePathConstructor {
 
   return NodePath;
 };
+
+maybeSetModuleExports(() => module);

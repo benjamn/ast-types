@@ -2,6 +2,7 @@ import { Fork } from "../types";
 import typesPlugin from "../types";
 import babelCoreDef from "./babel-core";
 import flowDef from "./flow";
+import { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   const types = fork.use(typesPlugin);
@@ -22,3 +23,5 @@ export default function (fork: Fork) {
     .bases("Expression")
     .build();
 }
+
+maybeSetModuleExports(() => module);

@@ -2,7 +2,7 @@ import { Fork } from "../types";
 import babelCoreDef from "./babel-core";
 import typeAnnotationsDef from "./type-annotations";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   // Since TypeScript is parsed by Babylon, include the core Babylon types
@@ -496,3 +496,5 @@ export default function (fork: Fork) {
       TSTypeMember
     )]);
 };
+
+maybeSetModuleExports(() => module);

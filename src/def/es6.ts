@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import coreDef from "./core";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   fork.use(coreDef);
@@ -294,3 +294,5 @@ export default function (fork: Fork) {
     .field("meta", def("Identifier"))
     .field("property", def("Identifier"));
 };
+
+maybeSetModuleExports(() => module);

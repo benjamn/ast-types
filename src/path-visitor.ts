@@ -1,5 +1,6 @@
 import typesPlugin, { ASTNode, Fork, Omit } from "./types";
 import nodePathPlugin, { NodePath } from "./node-path";
+import { maybeSetModuleExports } from "./shared";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -477,3 +478,5 @@ export default function pathVisitorPlugin(fork: Fork) {
 
   return PathVisitor;
 };
+
+maybeSetModuleExports(() => module);

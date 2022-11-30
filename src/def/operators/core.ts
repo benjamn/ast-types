@@ -1,3 +1,5 @@
+import { maybeSetModuleExports } from "../../shared";
+
 export default function () {
   return {
     BinaryOperators: [
@@ -21,3 +23,5 @@ export default function () {
     ],
   };
 }
+
+maybeSetModuleExports(() => module);

@@ -1,3 +1,4 @@
+import { maybeSetModuleExports } from "../../shared";
 import es2016OpsDef from "./es2016";
 
 export default function (fork: import("../../types").Fork) {
@@ -11,3 +12,5 @@ export default function (fork: import("../../types").Fork) {
 
   return result;
 }
+
+maybeSetModuleExports(() => module);

@@ -6,7 +6,7 @@
 
 import { Fork } from "../types";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   var types = fork.use(typesPlugin);
@@ -58,3 +58,5 @@ export default function (fork: Fork) {
              defaults.emptyArray);
   });
 };
+
+maybeSetModuleExports(() => module);

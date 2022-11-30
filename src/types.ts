@@ -1,3 +1,5 @@
+import { maybeSetModuleExports } from "./shared";
+
 export type Fork = {
   use<T>(plugin: Plugin<T>): T;
 };
@@ -988,3 +990,5 @@ export default function typesPlugin(_fork: Fork) {
     finalize,
   };
 };
+
+maybeSetModuleExports(() => module);

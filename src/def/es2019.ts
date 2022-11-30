@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import es2018Def from "./es2018";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   fork.use(es2018Def);
@@ -14,3 +14,5 @@ export default function (fork: Fork) {
   def("CatchClause")
     .field("param", or(def("Pattern"), null), defaults["null"]);
 };
+
+maybeSetModuleExports(() => module);

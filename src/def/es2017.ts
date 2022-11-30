@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import es2016Def from "./es2016";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   fork.use(es2016Def);
@@ -18,3 +18,5 @@ export default function (fork: Fork) {
     .build("argument")
     .field("argument", def("Expression"));
 };
+
+maybeSetModuleExports(() => module);

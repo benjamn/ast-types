@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import esProposalsDef from "./es-proposals";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
@@ -295,3 +295,5 @@ export default function (fork: Fork) {
     .bases("Expression")
     .build();
 };
+
+maybeSetModuleExports(() => module);

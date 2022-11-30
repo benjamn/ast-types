@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import esProposalsDef from "./es-proposals";
 import typesPlugin from "../types";
-import sharedPlugin from "../shared";
+import sharedPlugin, { maybeSetModuleExports } from "../shared";
 
 export default function (fork: Fork) {
   fork.use(esProposalsDef);
@@ -75,3 +75,5 @@ export default function (fork: Fork) {
     .bases("Comment")
     .build("value", /*optional:*/ "leading", "trailing");
 };
+
+maybeSetModuleExports(() => module);
