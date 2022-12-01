@@ -1,5 +1,4 @@
-import { Fork } from "../types";
-import typesPlugin from "./types";
+import typesPlugin, { Fork } from "./types";
 
 export default function (fork: Fork) {
     var types = fork.use(typesPlugin);

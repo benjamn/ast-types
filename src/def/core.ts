@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import coreOpsDef from "./operators/core";
-import typesPlugin from "../lib/types";
-import sharedPlugin from "../lib/shared";
+import typesPlugin from "../types";
+import sharedPlugin from "../shared";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {

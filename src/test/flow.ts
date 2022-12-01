@@ -2,10 +2,10 @@ import assert from "assert";
 import flowParser from "flow-parser";
 import forkFn from "../fork";
 import flowDef from "../def/flow";
-import { ASTNode } from "../lib/types";
-import { NodePath } from "../lib/node-path";
+import { ASTNode } from "../types";
+import { NodePath } from "../node-path";
 import { Visitor } from "../gen/visitor";
-import { Context } from "../lib/path-visitor";
+import { Context } from "../path-visitor";
 
 var types = forkFn([
   flowDef,

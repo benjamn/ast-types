@@ -1,6 +1,6 @@
 import { Fork } from "../types";
 import es2021Def from "./es2021";
-import typesPlugin from "../lib/types";
+import typesPlugin from "../types";
 
 export default function (fork: Fork) {
   fork.use(es2021Def);

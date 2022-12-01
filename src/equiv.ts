@@ -1,4 +1,4 @@
-import { Fork } from "../types";
+import { Fork } from "./types";
 import typesPlugin from "./types";
 
 export default function (fork: Fork) {

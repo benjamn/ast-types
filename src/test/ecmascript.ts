@@ -26,7 +26,7 @@ import {
   validateECMAScript,
   isEarlyStageProposalType,
 } from "./shared";
-import typesPlugin from "../lib/types";
+import typesPlugin from "../types";
 import esprimaDef from "../def/esprima";
 import coreDef from "../def/core";
 import es6Def from "../def/es6";

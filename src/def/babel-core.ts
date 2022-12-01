@@ -1,7 +1,7 @@
 import { Fork } from "../types";
 import esProposalsDef from "./es-proposals";
-import typesPlugin from "../lib/types";
-import sharedPlugin from "../lib/shared";
+import typesPlugin from "../types";
+import sharedPlugin from "../shared";
 import { namedTypes as N } from "../gen/namedTypes";
 
 export default function (fork: Fork) {
@@ -89,7 +89,7 @@ export default function (fork: Fork) {
   >(
     rawValueType: any = String,
     toRaw?: (value: any) => string,
-  ): Parameters<import("../lib/types").Def["field"]> {
+  ): Parameters<import("../types").Def["field"]> {
     return [
       "extra",
       {

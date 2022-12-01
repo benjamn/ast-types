@@ -65,8 +65,10 @@ const out = [
   {
     file: "namedTypes.ts",
     ast: moduleWithBody([
-      b.importDeclaration([b.importSpecifier(b.identifier("Omit"))], b.stringLiteral("../types")),
-      b.importDeclaration([b.importSpecifier(b.identifier("Type"))], b.stringLiteral("../lib/types")),
+      b.importDeclaration([
+        b.importSpecifier(b.identifier("Type")),
+        b.importSpecifier(b.identifier("Omit")),
+      ], b.stringLiteral("../types")),
       KINDS_IMPORT,
       b.exportNamedDeclaration(
         b.tsModuleDeclaration(
@@ -297,11 +299,11 @@ const out = [
     ast: moduleWithBody([
       b.importDeclaration(
         [b.importSpecifier(b.identifier("NodePath"))],
-        b.stringLiteral("../lib/node-path")
+        b.stringLiteral("../node-path")
       ),
       b.importDeclaration(
         [b.importSpecifier(b.identifier("Context"))],
-        b.stringLiteral("../lib/path-visitor")
+        b.stringLiteral("../path-visitor")
       ),
       NAMED_TYPES_IMPORT,
       b.exportNamedDeclaration(

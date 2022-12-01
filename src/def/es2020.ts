@@ -1,8 +1,8 @@
 import { Fork } from "../types";
 import es2020OpsDef from "./operators/es2020";
 import es2019Def from "./es2019";
-import typesPlugin from "../lib/types";
-import sharedPlugin from "../lib/shared";
+import typesPlugin from "../types";
+import sharedPlugin from "../shared";
 
 export default function (fork: Fork) {
   // The es2020OpsDef plugin comes before es2019Def so LogicalOperators will be

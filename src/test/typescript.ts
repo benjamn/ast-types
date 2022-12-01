@@ -8,10 +8,10 @@ import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
 import { visit } from "../main";
-import { ASTNode } from "../lib/types";
-import { NodePath } from "../lib/node-path";
+import { ASTNode } from "../types";
+import { NodePath } from "../node-path";
 import { Visitor } from "../gen/visitor";
-import { Context } from "../lib/path-visitor";
+import { Context } from "../path-visitor";
 
 var pkgRootDir = path.resolve(__dirname, "..");
 var tsTypes = fork([

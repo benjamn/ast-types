@@ -1,5 +1,4 @@
-import { Fork } from "../types";
-import typesPlugin, { ASTNode } from "./types";
+import typesPlugin, { ASTNode, Fork } from "./types";
 
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;

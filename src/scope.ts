@@ -1,6 +1,5 @@
-import { Fork } from "../types";
 import { NodePath } from "./node-path";
-import typesPlugin from "./types";
+import typesPlugin, { Fork } from "./types";
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
