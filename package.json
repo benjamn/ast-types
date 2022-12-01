@@ -50,7 +50,7 @@
     "@types/esprima": "4.0.3",
     "@types/glob": "7.2.0",
     "@types/mocha": "9.0.0",
-    "espree": "9.1.0",
+    "espree": "9.4.1",
     "esprima": "4.0.1",
     "esprima-fb": "15001.1001.0-dev-harmony-fb",
     "flow-parser": "0.166.0",
