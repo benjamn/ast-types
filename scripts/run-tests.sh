@@ -2,7 +2,7 @@
 
 set -ex
 
-cd $(dirname $0)/data
+cd $(dirname $0)/../src/test/data
 
 BAB_TAG=v$(node -p 'require("@babel/parser/package.json").version')
 

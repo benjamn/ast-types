@@ -36,7 +36,7 @@
   },
   "scripts": {
     "gen": "node lib/gen/generate.js && tsc",
-    "test": "npm run gen && src/test/run.sh",
+    "test": "npm run gen && scripts/run-tests.sh",
     "clean": "rimraf lib",
     "build": "tsc",
     "prepare": "npm run clean && tsc"
