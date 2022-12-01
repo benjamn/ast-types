@@ -6,7 +6,7 @@ import {
   builders as b,
   namedTypes as n,
   getBuilderName,
-} from "../main";
+} from "../src/main";
 
 const Op = Object.prototype;
 const hasOwn = Op.hasOwnProperty;
@@ -65,8 +65,10 @@ const out = [
   {
     file: "namedTypes.ts",
     ast: moduleWithBody([
-      b.importDeclaration([b.importSpecifier(b.identifier("Omit"))], b.stringLiteral("../types")),
-      b.importDeclaration([b.importSpecifier(b.identifier("Type"))], b.stringLiteral("../lib/types")),
+      b.importDeclaration([
+        b.importSpecifier(b.identifier("Type")),
+        b.importSpecifier(b.identifier("Omit")),
+      ], b.stringLiteral("../types")),
       KINDS_IMPORT,
       b.exportNamedDeclaration(
         b.tsModuleDeclaration(
@@ -297,11 +299,11 @@ const out = [
     ast: moduleWithBody([
       b.importDeclaration(
         [b.importSpecifier(b.identifier("NodePath"))],
-        b.stringLiteral("../lib/node-path")
+        b.stringLiteral("../node-path")
       ),
       b.importDeclaration(
         [b.importSpecifier(b.identifier("Context"))],
-        b.stringLiteral("../lib/path-visitor")
+        b.stringLiteral("../path-visitor")
       ),
       NAMED_TYPES_IMPORT,
       b.exportNamedDeclaration(
@@ -349,7 +351,7 @@ const out = [
 
 out.forEach(({ file, ast }) => {
   fs.writeFileSync(
-    path.resolve(__dirname, `../gen/${file}`),
+    path.resolve(__dirname, `../src/gen/${file}`),
     prettyPrint(ast, { tabWidth: 2, includeComments: true }).code
   );
 });
@@ -391,7 +393,7 @@ function getBuildableSubtypes(supertype: string): string[] {
   ));
 }
 
-function getTSTypeAnnotation(type: import("../lib/types").Type<any>): any {
+function getTSTypeAnnotation(type: import("../src/types").Type<any>): any {
   switch (type.kind) {
     case "ArrayType": {
       const elemTypeAnnotation = getTSTypeAnnotation(type.elemType);
