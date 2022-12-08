@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
 jobs:
   test:
     name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
