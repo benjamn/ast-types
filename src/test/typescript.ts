@@ -49,12 +49,6 @@ glob("**/input.ts", {
     files.forEach((tsPath: any) => {
       var fullPath = path.join(babelTSFixturesDir, tsPath);
 
-      if (tsPath === "class/method-readonly/input.js") {
-        // This file intentionally triggers a parse error for a babel test, so
-        // it doesn't make sense to test here.
-        return;
-      }
-
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
