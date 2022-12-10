@@ -123,12 +123,14 @@ export default function (fork: Fork) {
   def("TSLiteralType")
     .bases("TSType")
     .build("literal")
-    .field("literal",
-           or(def("NumericLiteral"),
-              def("StringLiteral"),
-              def("BooleanLiteral"),
-              def("TemplateLiteral"),
-              def("UnaryExpression")));
+    .field("literal", or(
+      def("NumericLiteral"),
+      def("StringLiteral"),
+      def("BooleanLiteral"),
+      def("TemplateLiteral"),
+      def("UnaryExpression"),
+      def("BigIntLiteral"),
+    ));
 
   def("TemplateLiteral")
     // The TemplateLiteral type appears to be reused for TypeScript template
