@@ -84,7 +84,7 @@ export default function (fork: Fork) {
     .field("typeAnnotation", def("TSType"));
 
   def("TSSatisfiesExpression")
-    .bases("Expression")
+    .bases("Expression", "Pattern")
     .build("expression", "typeAnnotation")
     .field("expression", def("Expression"))
     .field("typeAnnotation", def("TSType"));
