@@ -77,6 +77,18 @@ export default function (fork: Fork) {
            or({ parenthesized: Boolean }, null),
            defaults["null"]);
 
+  def("TSTypeCastExpression")
+    .bases("Expression")
+    .build("expression", "typeAnnotation")
+    .field("expression", def("Expression"))
+    .field("typeAnnotation", def("TSType"));
+
+  def("TSSatisfiesExpression")
+    .bases("Expression")
+    .build("expression", "typeAnnotation")
+    .field("expression", def("Expression"))
+    .field("typeAnnotation", def("TSType"));
+
   def("TSNonNullExpression")
     .bases("Expression", "Pattern")
     .build("expression")
