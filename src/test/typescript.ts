@@ -70,7 +70,7 @@ glob("**/input.ts", {
               !(ast.errors && ast.errors.length) &&
               ast.program !== null
             ) {
-              // tsTypes.namedTypes.Program.assert(ast.program, true);
+              tsTypes.namedTypes.Program.assert(ast.program, true);
             }
 
             done();
