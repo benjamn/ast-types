@@ -533,8 +533,8 @@ export namespace namedTypes {
   export interface TemplateElement extends Omit<Node, "type"> {
     type: "TemplateElement";
     value: {
-      cooked: string | null,
-      raw: string
+      cooked: string | null;
+      raw: string;
     };
     tail: boolean;
   }
@@ -1218,8 +1218,8 @@ export namespace namedTypes {
     type: "StringLiteral";
     value: string;
     extra?: {
-      rawValue: string,
-      raw: string
+      rawValue: string;
+      raw: string;
     };
   }
 
@@ -1228,8 +1228,8 @@ export namespace namedTypes {
     value: number;
     raw?: string | null;
     extra?: {
-      rawValue: number,
-      raw: string
+      rawValue: number;
+      raw: string;
     };
   }
 
@@ -1237,8 +1237,8 @@ export namespace namedTypes {
     type: "BigIntLiteral";
     value: string | number;
     extra?: {
-      rawValue: string,
-      raw: string
+      rawValue: string;
+      raw: string;
     };
   }
 
@@ -1246,8 +1246,8 @@ export namespace namedTypes {
     type: "DecimalLiteral";
     value: string;
     extra?: {
-      rawValue: string,
-      raw: string
+      rawValue: string;
+      raw: string;
     };
   }
 
@@ -1267,12 +1267,12 @@ export namespace namedTypes {
     flags: string;
     value?: RegExp;
     extra?: {
-      rawValue: RegExp | undefined,
-      raw: string
+      rawValue: RegExp | undefined;
+      raw: string;
     };
     regex?: {
-      pattern: string,
-      flags: string
+      pattern: string;
+      flags: string;
     };
   }
 
@@ -1353,7 +1353,7 @@ export namespace namedTypes {
     expression: K.ExpressionKind;
     typeAnnotation: K.TSTypeKind;
     extra?: {
-      parenthesized: boolean
+      parenthesized: boolean;
     } | null;
   }
 
@@ -1609,7 +1609,7 @@ export namespace namedTypes {
     typeAnnotation: K.TSTypeKind;
     expression: K.ExpressionKind;
     extra?: {
-      parenthesized: boolean
+      parenthesized: boolean;
     } | null;
   }
 
