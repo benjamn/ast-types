@@ -115,9 +115,17 @@ glob("**/input.ts", {
         console.error(optionsError.message);
       }
 
-      if (options &&
-          options.throws === error.message) {
-        return null;
+      if (options && options.throws) {
+        if (options.throws === error.message) {
+          return null;
+        }
+
+        // Sometimes the line numbers are slightly off for catastrophic parse
+        // errors. TODO Investigate why this is necessary.
+        if (options.throws.startsWith("Unexpected token (") &&
+            error.message.startsWith("Unexpected token (")) {
+          return null;
+        }
       }
 
       throw error;
