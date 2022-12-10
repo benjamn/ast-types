@@ -785,14 +785,14 @@ export interface PropertyPatternBuilder {
 
 export interface ObjectPatternBuilder {
   (
-    properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind)[]
+    properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind | K.RestElementKind)[]
   ): namedTypes.ObjectPattern;
   from(
     params: {
       comments?: K.CommentKind[] | null;
       decorators?: K.DecoratorKind[] | null;
       loc?: K.SourceLocationKind | null;
-      properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind)[];
+      properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind | K.RestElementKind)[];
       typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     }
   ): namedTypes.ObjectPattern;
@@ -855,12 +855,12 @@ export interface MethodDefinitionBuilder {
 
 export interface ClassPropertyDefinitionBuilder {
   (
-    definition: K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind
+    definition: K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.StaticBlockKind
   ): namedTypes.ClassPropertyDefinition;
   from(
     params: {
       comments?: K.CommentKind[] | null;
-      definition: K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind;
+      definition: K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.StaticBlockKind;
       loc?: K.SourceLocationKind | null;
     }
   ): namedTypes.ClassPropertyDefinition;
@@ -888,13 +888,24 @@ export interface ClassPropertyBuilder {
   ): namedTypes.ClassProperty;
 }
 
+export interface StaticBlockBuilder {
+  (body: K.StatementKind[]): namedTypes.StaticBlock;
+  from(
+    params: {
+      body: K.StatementKind[];
+      comments?: K.CommentKind[] | null;
+      loc?: K.SourceLocationKind | null;
+    }
+  ): namedTypes.StaticBlock;
+}
+
 export interface ClassBodyBuilder {
   (
-    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
+    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
   ): namedTypes.ClassBody;
   from(
     params: {
-      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
+      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
       comments?: K.CommentKind[] | null;
       loc?: K.SourceLocationKind | null;
     }
@@ -1053,12 +1064,12 @@ export interface ExportDefaultDeclarationBuilder {
 }
 
 export interface ExportAllDeclarationBuilder {
-  (source: K.LiteralKind, exported: K.IdentifierKind | null): namedTypes.ExportAllDeclaration;
+  (source: K.LiteralKind, exported?: K.IdentifierKind | null | undefined): namedTypes.ExportAllDeclaration;
   from(
     params: {
       assertions?: K.ImportAttributeKind[];
       comments?: K.CommentKind[] | null;
-      exported: K.IdentifierKind | null;
+      exported?: K.IdentifierKind | null | undefined;
       loc?: K.SourceLocationKind | null;
       source: K.LiteralKind;
     }
@@ -1216,17 +1227,6 @@ export interface OptionalMemberExpressionBuilder {
       property: K.IdentifierKind | K.ExpressionKind;
     }
   ): namedTypes.OptionalMemberExpression;
-}
-
-export interface StaticBlockBuilder {
-  (body: K.StatementKind[]): namedTypes.StaticBlock;
-  from(
-    params: {
-      body: K.StatementKind[];
-      comments?: K.CommentKind[] | null;
-      loc?: K.SourceLocationKind | null;
-    }
-  ): namedTypes.StaticBlock;
 }
 
 export interface DecoratorBuilder {
@@ -2928,6 +2928,30 @@ export interface TSAsExpressionBuilder {
   ): namedTypes.TSAsExpression;
 }
 
+export interface TSTypeCastExpressionBuilder {
+  (expression: K.ExpressionKind, typeAnnotation: K.TSTypeKind): namedTypes.TSTypeCastExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null;
+      expression: K.ExpressionKind;
+      loc?: K.SourceLocationKind | null;
+      typeAnnotation: K.TSTypeKind;
+    }
+  ): namedTypes.TSTypeCastExpression;
+}
+
+export interface TSSatisfiesExpressionBuilder {
+  (expression: K.ExpressionKind, typeAnnotation: K.TSTypeKind): namedTypes.TSSatisfiesExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null;
+      expression: K.ExpressionKind;
+      loc?: K.SourceLocationKind | null;
+      typeAnnotation: K.TSTypeKind;
+    }
+  ): namedTypes.TSSatisfiesExpression;
+}
+
 export interface TSNonNullExpressionBuilder {
   (expression: K.ExpressionKind): namedTypes.TSNonNullExpression;
   from(
@@ -3092,12 +3116,12 @@ export interface TSArrayTypeBuilder {
 
 export interface TSLiteralTypeBuilder {
   (
-    literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind
+    literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind | K.BigIntLiteralKind
   ): namedTypes.TSLiteralType;
   from(
     params: {
       comments?: K.CommentKind[] | null;
-      literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind;
+      literal: K.NumericLiteralKind | K.StringLiteralKind | K.BooleanLiteralKind | K.TemplateLiteralKind | K.UnaryExpressionKind | K.BigIntLiteralKind;
       loc?: K.SourceLocationKind | null;
     }
   ): namedTypes.TSLiteralType;
@@ -3157,7 +3181,7 @@ export interface TSInferTypeBuilder {
 
 export interface TSTypeParameterBuilder {
   (
-    name: string,
+    name: K.IdentifierKind | string,
     constraint?: K.TSTypeKind | undefined,
     defaultParam?: K.TSTypeKind | undefined
   ): namedTypes.TSTypeParameter;
@@ -3167,7 +3191,7 @@ export interface TSTypeParameterBuilder {
       constraint?: K.TSTypeKind | undefined;
       default?: K.TSTypeKind | undefined;
       loc?: K.SourceLocationKind | null;
-      name: string;
+      name: K.IdentifierKind | string;
       optional?: boolean;
       typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     }
@@ -3524,6 +3548,21 @@ export interface TSTypeAssertionBuilder {
   ): namedTypes.TSTypeAssertion;
 }
 
+export interface TSInstantiationExpressionBuilder {
+  (
+    expression: K.ExpressionKind,
+    typeParameters?: K.TSTypeParameterInstantiationKind | null
+  ): namedTypes.TSInstantiationExpression;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null;
+      expression: K.ExpressionKind;
+      loc?: K.SourceLocationKind | null;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
+    }
+  ): namedTypes.TSInstantiationExpression;
+}
+
 export interface TSEnumDeclarationBuilder {
   (id: K.IdentifierKind, members: K.TSEnumMemberKind[]): namedTypes.TSEnumDeclaration;
   from(
@@ -3732,6 +3771,7 @@ export interface builders {
   methodDefinition: MethodDefinitionBuilder;
   classPropertyDefinition: ClassPropertyDefinitionBuilder;
   classProperty: ClassPropertyBuilder;
+  staticBlock: StaticBlockBuilder;
   classBody: ClassBodyBuilder;
   classDeclaration: ClassDeclarationBuilder;
   classExpression: ClassExpressionBuilder;
@@ -3755,7 +3795,6 @@ export interface builders {
   chainExpression: ChainExpressionBuilder;
   optionalCallExpression: OptionalCallExpressionBuilder;
   optionalMemberExpression: OptionalMemberExpressionBuilder;
-  staticBlock: StaticBlockBuilder;
   decorator: DecoratorBuilder;
   privateName: PrivateNameBuilder;
   classPrivateProperty: ClassPrivatePropertyBuilder;
@@ -3884,6 +3923,8 @@ export interface builders {
   tsQualifiedName: TSQualifiedNameBuilder;
   tsTypeReference: TSTypeReferenceBuilder;
   tsAsExpression: TSAsExpressionBuilder;
+  tsTypeCastExpression: TSTypeCastExpressionBuilder;
+  tsSatisfiesExpression: TSSatisfiesExpressionBuilder;
   tsNonNullExpression: TSNonNullExpressionBuilder;
   tsAnyKeyword: TSAnyKeywordBuilder;
   tsBigIntKeyword: TSBigIntKeywordBuilder;
@@ -3929,6 +3970,7 @@ export interface builders {
   tsImportType: TSImportTypeBuilder;
   tsTypeLiteral: TSTypeLiteralBuilder;
   tsTypeAssertion: TSTypeAssertionBuilder;
+  tsInstantiationExpression: TSInstantiationExpressionBuilder;
   tsEnumDeclaration: TSEnumDeclarationBuilder;
   tsTypeAliasDeclaration: TSTypeAliasDeclarationBuilder;
   tsModuleBlock: TSModuleBlockBuilder;

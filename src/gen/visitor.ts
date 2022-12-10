@@ -75,6 +75,7 @@ export interface Visitor<M = {}> {
   visitMethodDefinition?(this: Context & M, path: NodePath<namedTypes.MethodDefinition>): any;
   visitClassPropertyDefinition?(this: Context & M, path: NodePath<namedTypes.ClassPropertyDefinition>): any;
   visitClassProperty?(this: Context & M, path: NodePath<namedTypes.ClassProperty>): any;
+  visitStaticBlock?(this: Context & M, path: NodePath<namedTypes.StaticBlock>): any;
   visitClassBody?(this: Context & M, path: NodePath<namedTypes.ClassBody>): any;
   visitClassDeclaration?(this: Context & M, path: NodePath<namedTypes.ClassDeclaration>): any;
   visitClassExpression?(this: Context & M, path: NodePath<namedTypes.ClassExpression>): any;
@@ -100,7 +101,6 @@ export interface Visitor<M = {}> {
   visitChainExpression?(this: Context & M, path: NodePath<namedTypes.ChainExpression>): any;
   visitOptionalCallExpression?(this: Context & M, path: NodePath<namedTypes.OptionalCallExpression>): any;
   visitOptionalMemberExpression?(this: Context & M, path: NodePath<namedTypes.OptionalMemberExpression>): any;
-  visitStaticBlock?(this: Context & M, path: NodePath<namedTypes.StaticBlock>): any;
   visitDecorator?(this: Context & M, path: NodePath<namedTypes.Decorator>): any;
   visitPrivateName?(this: Context & M, path: NodePath<namedTypes.PrivateName>): any;
   visitClassPrivateProperty?(this: Context & M, path: NodePath<namedTypes.ClassPrivateProperty>): any;
@@ -242,6 +242,8 @@ export interface Visitor<M = {}> {
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeParameters>): any;
   visitTSHasOptionalTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeAnnotation>): any;
   visitTSAsExpression?(this: Context & M, path: NodePath<namedTypes.TSAsExpression>): any;
+  visitTSTypeCastExpression?(this: Context & M, path: NodePath<namedTypes.TSTypeCastExpression>): any;
+  visitTSSatisfiesExpression?(this: Context & M, path: NodePath<namedTypes.TSSatisfiesExpression>): any;
   visitTSNonNullExpression?(this: Context & M, path: NodePath<namedTypes.TSNonNullExpression>): any;
   visitTSAnyKeyword?(this: Context & M, path: NodePath<namedTypes.TSAnyKeyword>): any;
   visitTSBigIntKeyword?(this: Context & M, path: NodePath<namedTypes.TSBigIntKeyword>): any;
@@ -290,6 +292,7 @@ export interface Visitor<M = {}> {
   visitTSImportType?(this: Context & M, path: NodePath<namedTypes.TSImportType>): any;
   visitTSTypeLiteral?(this: Context & M, path: NodePath<namedTypes.TSTypeLiteral>): any;
   visitTSTypeAssertion?(this: Context & M, path: NodePath<namedTypes.TSTypeAssertion>): any;
+  visitTSInstantiationExpression?(this: Context & M, path: NodePath<namedTypes.TSInstantiationExpression>): any;
   visitTSEnumDeclaration?(this: Context & M, path: NodePath<namedTypes.TSEnumDeclaration>): any;
   visitTSTypeAliasDeclaration?(this: Context & M, path: NodePath<namedTypes.TSTypeAliasDeclaration>): any;
   visitTSModuleBlock?(this: Context & M, path: NodePath<namedTypes.TSModuleBlock>): any;
