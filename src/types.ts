@@ -126,9 +126,13 @@ class OrType<T> extends BaseType<T> {
   }
 
   check(value: any, deep?: Deep): value is T {
-    return this.types.some(type => {
-      return type.check(value, deep);
-    });
+    if (this.types.some(type => type.check(value, !!deep))) {
+      return true;
+    }
+    if (typeof deep === "function") {
+      deep(this, value);
+    }
+    return false;
   }
 }
 
