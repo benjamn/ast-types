@@ -260,7 +260,8 @@ export default function (fork: Fork) {
     def("SpreadPropertyPattern"),
     def("SpreadProperty"), // Used by Esprima
     def("ObjectProperty"), // Babel 6
-    def("RestProperty") // Babel 6
+    def("RestProperty"), // Babel 6
+    def("RestElement"), // Babel 6
   );
 
   // Split into RestProperty and SpreadProperty
