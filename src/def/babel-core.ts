@@ -220,6 +220,7 @@ export default function (fork: Fork) {
     def("ClassPrivateProperty"),
     def("ClassMethod"),
     def("ClassPrivateMethod"),
+    def("StaticBlock"),
   );
 
   // MethodDefinition -> ClassMethod
