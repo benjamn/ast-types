@@ -376,6 +376,11 @@ export default function (fork: Fork) {
     .build("params")
     .field("params", [def("TSTypeParameter")]);
 
+  def("TSInstantiationExpression")
+    .bases("Expression", "TSHasOptionalTypeParameterInstantiation")
+    .build("expression", "typeParameters")
+    .field("expression", def("Expression"));
+
   def("TSTypeParameterInstantiation")
     .bases("Node")
     .build("params")
