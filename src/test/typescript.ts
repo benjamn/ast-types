@@ -124,10 +124,13 @@ glob("**/input.ts", {
         console.error(optionsError.message);
       }
 
-      if (options && options.throws) {
-        if (normalizeErrorString(options.throws) === normalizeErrorString(error.message)) {
-          return null;
-        }
+      if (
+        options &&
+        options.throws &&
+        normalizeErrorString(options.throws) ===
+          normalizeErrorString(error.message)
+      ) {
+        return null;
       }
 
       throw error;
@@ -135,10 +138,9 @@ glob("**/input.ts", {
   }
 
   function normalizeErrorString(error: ParseError | Error | string) {
-    error = String(error);
     // Sometimes the line or column numbers are slightly off for catastrophic
     // parse errors. TODO Investigate why this is necessary.
-    return error.replace(/\(\d+:\d+\)/g, "(line:column)");
+    return String(error).replace(/\(\d+:\d+\)/g, "(line:column)");
   }
 
   function getOptions(fullPath: string): ParserOptions {
@@ -241,12 +243,12 @@ glob("**/*.ts", {
       "type Foo = {}",
       "interface Bar {}"
     ];
-  
+
     const ast = babelParse(scope.join("\n"), {
       plugins: ['typescript']
     });
-  
-    it("should register typescript types with the scope", function() {  
+
+    it("should register typescript types with the scope", function() {
       visit(ast, {
         visitProgram(path) {
           assert(path.scope.declaresType('Foo'));
