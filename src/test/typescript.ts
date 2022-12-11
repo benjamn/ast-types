@@ -2,12 +2,12 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser";
+import { parse as babelParse, ParseError, ParserOptions, ParserPlugin } from "@babel/parser";
 import fork from "../fork";
 import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
 import jsxDef from "../def/jsx";
-import { astNodesAreEquivalent, visit } from "../main";
+import { visit } from "../main";
 import { ASTNode } from "../types";
 import { NodePath } from "../node-path";
 import { Visitor } from "../gen/visitor";
@@ -55,22 +55,28 @@ glob("**/input.ts", {
             done(error);
           } else try {
             const ast = tryParse(code, fullPath);
-            const expected = readJSONOrNull(
-              path.join(path.dirname(fullPath), "output.json"));
+            if (ast) {
+              const expected = readJSONOrNull(
+                path.join(path.dirname(fullPath), "output.json"));
 
-            if (ast && expected) {
-              if (!astNodesAreEquivalent(ast, expected)) {
-                debugger;
+              if (expected && Array.isArray(expected.errors) && expected.errors.length) {
+                // Most parsing errors are checked this way, thanks to
+                // errorRecovery: true.
+                assert.deepEqual(
+                  ast.errors.map(normalizeErrorString),
+                  expected.errors.map(normalizeErrorString),
+                );
               }
-              // astNodesAreEquivalent.assert(ast, expected);
-            }
 
-            if (
-              ast &&
-              !(ast.errors && ast.errors.length) &&
-              ast.program !== null
-            ) {
-              tsTypes.namedTypes.Program.assert(ast.program, true);
+              if (Array.isArray(ast.errors) && ast.errors.length) {
+                // Check again in the other direction.
+                assert.deepEqual(
+                  ast.errors.map(normalizeErrorString),
+                  expected.errors.map(normalizeErrorString),
+                );
+              } else if (ast.program !== null) {
+                tsTypes.namedTypes.Program.assert(ast.program, true);
+              }
             }
 
             done();
@@ -110,20 +116,20 @@ glob("**/input.ts", {
       }
 
       if (options && options.throws) {
-        if (options.throws === error.message) {
-          return null;
-        }
-
-        // Sometimes the line numbers are slightly off for catastrophic parse
-        // errors. TODO Investigate why this is necessary.
-        if (options.throws.startsWith("Unexpected token (") &&
-            error.message.startsWith("Unexpected token (")) {
+        if (normalizeErrorString(options.throws) === normalizeErrorString(error.message)) {
           return null;
         }
       }
 
       throw error;
     }
+  }
+
+  function normalizeErrorString(error: ParseError | Error | string) {
+    error = String(error);
+    // Sometimes the line or column numbers are slightly off for catastrophic
+    // parse errors. TODO Investigate why this is necessary.
+    return error.replace(/\(\d+:\d+\)/g, "(line:column)");
   }
 
   function getOptions(fullPath: string): ParserOptions {
