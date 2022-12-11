@@ -62,3 +62,14 @@ export function isEarlyStageProposalType(typeName: string) {
       return false;
   }
 }
+
+export function hasNonEmptyErrorsArray(
+  value: any
+): value is { errors: [any, ...any[]] } {
+  return !!(
+    value &&
+    typeof value === "object" &&
+    Array.isArray(value.errors) &&
+    value.errors.length > 0
+  );
+}

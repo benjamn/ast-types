@@ -12,6 +12,7 @@ import { ASTNode } from "../types";
 import { NodePath } from "../node-path";
 import { Visitor } from "../gen/visitor";
 import { Context } from "../path-visitor";
+import { hasNonEmptyErrorsArray } from "./shared";
 
 var pkgRootDir = path.resolve(__dirname, "..", "..");
 var tsTypes = fork([
@@ -68,22 +69,24 @@ glob("**/input.ts", {
               const expected = readJSONOrNull(
                 path.join(path.dirname(fullPath), "output.json"));
 
-              if (expected && Array.isArray(expected.errors) && expected.errors.length) {
+              if (
+                hasNonEmptyErrorsArray(ast) ||
+                hasNonEmptyErrorsArray(expected)
+              ) {
                 // Most parsing errors are checked this way, thanks to
                 // errorRecovery: true.
                 assert.deepEqual(
                   ast.errors.map(normalizeErrorString),
                   expected.errors.map(normalizeErrorString),
                 );
-              }
-
-              if (Array.isArray(ast.errors) && ast.errors.length) {
-                // Check again in the other direction.
-                assert.deepEqual(
-                  ast.errors.map(normalizeErrorString),
-                  expected.errors.map(normalizeErrorString),
-                );
-              } else if (ast.program !== null) {
+              } else if (
+                ast.program &&
+                // If there were parsing errors, there's a good chance the rest
+                // of the parsed AST is not fully conformant with the Program
+                // type. If this clause is commented out, only 8 tests fail (not
+                // great, not terrible, TODO maybe worth looking into).
+                !hasNonEmptyErrorsArray(ast)
+              ) {
                 tsTypes.namedTypes.Program.assert(ast.program, true);
               }
             }
