@@ -220,6 +220,8 @@ export default function (fork: Fork) {
     def("ClassPrivateProperty"),
     def("ClassMethod"),
     def("ClassPrivateMethod"),
+    def("ClassAccessorProperty"),
+    def("StaticBlock"),
   );
 
   // MethodDefinition -> ClassMethod
@@ -238,19 +240,40 @@ export default function (fork: Fork) {
     .build("key", "params", "body", "kind", "computed", "static")
     .field("key", def("PrivateName"));
 
+  def("ClassAccessorProperty")
+    .bases("Declaration")
+    .build("key", "value", "decorators", "computed", "static")
+    .field("key", or(
+      def("Literal"),
+      def("Identifier"),
+      def("PrivateName"),
+      // Only when .computed is true (TODO enforce this)
+      def("Expression"),
+    ))
+    .field("value", def("Expression"));
+
   ["ClassMethod",
    "ClassPrivateMethod",
   ].forEach(typeName => {
     def(typeName)
       .field("kind", or("get", "set", "method", "constructor"), () => "method")
       .field("body", def("BlockStatement"))
-      .field("computed", Boolean, defaults["false"])
-      .field("static", or(Boolean, null), defaults["null"])
-      .field("abstract", or(Boolean, null), defaults["null"])
+      // For backwards compatibility only. Expect accessibility instead (see below).
       .field("access", or("public", "private", "protected", null), defaults["null"])
+  });
+
+  ["ClassMethod",
+   "ClassPrivateMethod",
+   "ClassAccessorProperty",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("computed", Boolean, defaults["false"])
+      .field("static", Boolean, defaults["false"])
+      .field("abstract", Boolean, defaults["false"])
       .field("accessibility", or("public", "private", "protected", null), defaults["null"])
       .field("decorators", or([def("Decorator")], null), defaults["null"])
-      .field("optional", or(Boolean, null), defaults["null"]);
+      .field("optional", Boolean, defaults["false"])
+      .field("readonly", Boolean, defaults["false"]);
   });
 
   var ObjectPatternProperty = or(
@@ -259,7 +282,8 @@ export default function (fork: Fork) {
     def("SpreadPropertyPattern"),
     def("SpreadProperty"), // Used by Esprima
     def("ObjectProperty"), // Babel 6
-    def("RestProperty") // Babel 6
+    def("RestProperty"), // Babel 6
+    def("RestElement"), // Babel 6
   );
 
   // Split into RestProperty and SpreadProperty

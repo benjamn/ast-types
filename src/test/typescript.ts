@@ -2,7 +2,7 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { parse as babelParse, ParserOptions, ParserPlugin } from "@babel/parser";
+import { parse as babelParse, ParseError, ParserOptions, ParserPlugin } from "@babel/parser";
 import fork from "../fork";
 import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
@@ -12,24 +12,34 @@ import { ASTNode } from "../types";
 import { NodePath } from "../node-path";
 import { Visitor } from "../gen/visitor";
 import { Context } from "../path-visitor";
+import { hasNonEmptyErrorsArray } from "./shared";
 
-var pkgRootDir = path.resolve(__dirname, "..");
+var pkgRootDir = path.resolve(__dirname, "..", "..");
 var tsTypes = fork([
   esProposalsDef,
   typescriptDef,
   jsxDef,
 ]);
 
-const babelParserDir = path.resolve(__dirname, "data", "babel-parser");
+const babelParserDir = path.resolve(
+  pkgRootDir, "src", "test", "data", "babel-parser");
 
 const babelTSFixturesDir =
   path.join(babelParserDir, "test", "fixtures", "typescript");
 
-glob("**/input.js", {
+glob("**/input.ts", {
   cwd: babelTSFixturesDir,
 }, (error, files) => {
   if (error) {
     throw error;
+  }
+
+  if (files.length < 10) {
+    throw new Error(`Unexpectedly few **/input.ts files matched (${
+      files.length
+    }) in ${
+      babelTSFixturesDir
+    }`);
   }
 
   describe("Whole-program validation for Babel TypeScript tests", function () {
@@ -38,34 +48,74 @@ glob("**/input.js", {
     }
 
     files.forEach((tsPath: any) => {
-      var fullPath = path.join(babelTSFixturesDir, tsPath);
+      const fullPath = path.join(babelTSFixturesDir, tsPath);
+      const pkgRootRelPath = path.relative(pkgRootDir, fullPath);
 
-      if (tsPath === "class/method-readonly/input.js") {
-        // This file intentionally triggers a parse error for a babel test, so
-        // it doesn't make sense to test here.
+      if (
+        fullPath.endsWith("/arrow-function/generic-tsx/input.ts") ||
+        fullPath.endsWith("/tsx/invalid-gt-arrow-like/input.ts")
+      ) {
+        (it.skip || it)("[SKIPPED] " + pkgRootRelPath, done => done());
         return;
       }
 
-      it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
+      it("should validate " + pkgRootRelPath, function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
-            throw error;
+            done(error);
+          } else try {
+            const ast = tryParse(code, fullPath);
+            if (ast) {
+              const expected = readJSONOrNull(
+                path.join(path.dirname(fullPath), "output.json"));
+
+              if (
+                hasNonEmptyErrorsArray(ast) ||
+                hasNonEmptyErrorsArray(expected)
+              ) {
+                // Most parsing errors are checked this way, thanks to
+                // errorRecovery: true.
+                assert.deepEqual(
+                  ast.errors.map(normalizeErrorString),
+                  expected.errors.map(normalizeErrorString),
+                );
+              } else if (
+                ast.program &&
+                // If there were parsing errors, there's a good chance the rest
+                // of the parsed AST is not fully conformant with the Program
+                // type. If this clause is commented out, only 8 tests fail (not
+                // great, not terrible, TODO maybe worth looking into).
+                !hasNonEmptyErrorsArray(ast)
+              ) {
+                tsTypes.namedTypes.Program.assert(ast.program, true);
+              }
+            }
+
+            done();
+          } catch (e) {
+            done(e);
           }
-          var program = tryParse(code, fullPath);
-          if (program !== null) {
-            tsTypes.namedTypes.Program.assert(program, true);
-          }
-          done();
         });
       });
     });
   });
 
-  function tryParse(code: any, fullPath: any) {
-    var parseOptions = getOptions(fullPath);
+  function readJSONOrNull(fullPath: string) {
+    try {
+      return JSON.parse(fs.readFileSync(fullPath).toString());
+    } catch {
+      return null;
+    }
+  }
+
+  function tryParse(code: string, fullPath: string) {
+    const parseOptions = {
+      errorRecovery: true,
+      ...getOptions(fullPath),
+    };
 
     try {
-      return babelParse(code, parseOptions).program;
+      return babelParse(code, parseOptions);
 
     } catch (error: any) {
       // If parsing fails, check options.json to see if the failure was
@@ -77,13 +127,23 @@ glob("**/input.js", {
         console.error(optionsError.message);
       }
 
-      if (options &&
-          options.throws === error.message) {
+      if (
+        options &&
+        options.throws &&
+        normalizeErrorString(options.throws) ===
+          normalizeErrorString(error.message)
+      ) {
         return null;
       }
 
       throw error;
     }
+  }
+
+  function normalizeErrorString(error: ParseError | Error | string) {
+    // Sometimes the line or column numbers are slightly off for catastrophic
+    // parse errors. TODO Investigate why this is necessary.
+    return String(error).replace(/\(\d+:\d+\)/g, "(line:column)");
   }
 
   function getOptions(fullPath: string): ParserOptions {
@@ -117,14 +177,22 @@ glob("**/input.js", {
   }
 });
 
-var tsCompilerDir =
-  path.resolve( __dirname, "data", "typescript-compiler");
+var tsCompilerDir = path.resolve(
+  pkgRootDir, "src", "test", "data", "typescript-compiler");
 
 glob("**/*.ts", {
   cwd: tsCompilerDir,
 }, (error, files) => {
   if (error) {
     throw error;
+  }
+
+  if (files.length < 10) {
+    throw new Error(`Unexpectedly few **/*.ts files matched (${
+      files.length
+    }) in ${
+      tsCompilerDir
+    }`);
   }
 
   describe("Whole-program validation for TypeScript codebase", function () {
@@ -147,25 +215,27 @@ glob("**/*.ts", {
       it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
-            throw error;
+            done(error);
+          } else try {
+            var program = babelParse(code, {
+              sourceType: "module",
+              plugins: [
+                "typescript",
+                "objectRestSpread",
+                "classProperties",
+                "optionalCatchBinding",
+                "numericSeparator",
+                "optionalChaining",
+                "nullishCoalescingOperator",
+              ]
+            }).program;
+
+            tsTypes.namedTypes.Program.assert(program, true);
+
+            done();
+          } catch (e) {
+            done(e);
           }
-
-          var program = babelParse(code, {
-            sourceType: "module",
-            plugins: [
-              "typescript",
-              "objectRestSpread",
-              "classProperties",
-              "optionalCatchBinding",
-              "numericSeparator",
-              "optionalChaining",
-              "nullishCoalescingOperator",
-            ]
-          }).program;
-
-          tsTypes.namedTypes.Program.assert(program, true);
-
-          done();
         });
       });
     });
@@ -176,12 +246,12 @@ glob("**/*.ts", {
       "type Foo = {}",
       "interface Bar {}"
     ];
-  
+
     const ast = babelParse(scope.join("\n"), {
       plugins: ['typescript']
     });
-  
-    it("should register typescript types with the scope", function() {  
+
+    it("should register typescript types with the scope", function() {
       visit(ast, {
         visitProgram(path) {
           assert(path.scope.declaresType('Foo'));

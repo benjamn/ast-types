@@ -158,7 +158,8 @@ export default function (fork: Fork) {
     def("MethodDefinition"),
     def("VariableDeclarator"),
     def("ClassPropertyDefinition"),
-    def("ClassProperty")
+    def("ClassProperty"),
+    def("StaticBlock"),
   );
 
   def("ClassProperty")

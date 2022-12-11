@@ -24,9 +24,14 @@ export default function (fork: Fork) {
     .field("source", def("Expression"));
 
   def("ExportAllDeclaration")
+    .bases("Declaration")
     .build("source", "exported")
     .field("source", def("Literal"))
-    .field("exported", or(def("Identifier"), null));
+    .field("exported", or(
+      def("Identifier"),
+      null,
+      void 0,
+    ), defaults["null"]);
 
   // Optional chaining
   def("ChainElement")

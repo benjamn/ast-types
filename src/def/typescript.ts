@@ -77,6 +77,18 @@ export default function (fork: Fork) {
            or({ parenthesized: Boolean }, null),
            defaults["null"]);
 
+  def("TSTypeCastExpression")
+    .bases("Expression")
+    .build("expression", "typeAnnotation")
+    .field("expression", def("Expression"))
+    .field("typeAnnotation", def("TSType"));
+
+  def("TSSatisfiesExpression")
+    .bases("Expression", "Pattern")
+    .build("expression", "typeAnnotation")
+    .field("expression", def("Expression"))
+    .field("typeAnnotation", def("TSType"));
+
   def("TSNonNullExpression")
     .bases("Expression", "Pattern")
     .build("expression")
@@ -111,12 +123,14 @@ export default function (fork: Fork) {
   def("TSLiteralType")
     .bases("TSType")
     .build("literal")
-    .field("literal",
-           or(def("NumericLiteral"),
-              def("StringLiteral"),
-              def("BooleanLiteral"),
-              def("TemplateLiteral"),
-              def("UnaryExpression")));
+    .field("literal", or(
+      def("NumericLiteral"),
+      def("StringLiteral"),
+      def("BooleanLiteral"),
+      def("TemplateLiteral"),
+      def("UnaryExpression"),
+      def("BigIntLiteral"),
+    ));
 
   def("TemplateLiteral")
     // The TemplateLiteral type appears to be reused for TypeScript template
@@ -358,7 +372,7 @@ export default function (fork: Fork) {
   def("TSTypeParameter")
     .bases("Identifier")
     .build("name", "constraint", "default")
-    .field("name", String)
+    .field("name", or(def("Identifier"), String))
     .field("constraint", or(def("TSType"), void 0), defaults["undefined"])
     .field("default", or(def("TSType"), void 0), defaults["undefined"]);
 
@@ -375,6 +389,11 @@ export default function (fork: Fork) {
     .bases("Declaration")
     .build("params")
     .field("params", [def("TSTypeParameter")]);
+
+  def("TSInstantiationExpression")
+    .bases("Expression", "TSHasOptionalTypeParameterInstantiation")
+    .build("expression", "typeParameters")
+    .field("expression", def("Expression"));
 
   def("TSTypeParameterInstantiation")
     .bases("Node")
@@ -479,7 +498,10 @@ export default function (fork: Fork) {
   def("ClassProperty")
     .field("access", // Not "accessibility"?
            or("public", "private", "protected", void 0),
-           defaults["undefined"])
+           defaults["undefined"]);
+
+  def("ClassAccessorProperty")
+    .bases("Declaration", "TSHasOptionalTypeAnnotation");
 
   // Defined already in es6 and babel-core.
   def("ClassBody")
@@ -489,8 +511,10 @@ export default function (fork: Fork) {
       def("ClassPropertyDefinition"),
       def("ClassProperty"),
       def("ClassPrivateProperty"),
+      def("ClassAccessorProperty"),
       def("ClassMethod"),
       def("ClassPrivateMethod"),
+      def("StaticBlock"),
       // Just need to add these types:
       def("TSDeclareMethod"),
       TSTypeMember
