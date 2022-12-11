@@ -47,9 +47,18 @@ glob("**/input.ts", {
     }
 
     files.forEach((tsPath: any) => {
-      var fullPath = path.join(babelTSFixturesDir, tsPath);
+      const fullPath = path.join(babelTSFixturesDir, tsPath);
+      const pkgRootRelPath = path.relative(pkgRootDir, fullPath);
 
-      it("should validate " + path.relative(pkgRootDir, fullPath), function (done) {
+      if (
+        fullPath.endsWith("/arrow-function/generic-tsx/input.ts") ||
+        fullPath.endsWith("/tsx/invalid-gt-arrow-like/input.ts")
+      ) {
+        (it.skip || it)("[SKIPPED] " + pkgRootRelPath, done => done());
+        return;
+      }
+
+      it("should validate " + pkgRootRelPath, function (done) {
         fs.readFile(fullPath, "utf8", function (error, code) {
           if (error) {
             done(error);
