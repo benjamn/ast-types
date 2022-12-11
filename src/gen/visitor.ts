@@ -232,6 +232,8 @@ export interface Visitor<M = {}> {
   visitRegExpLiteral?(this: Context & M, path: NodePath<namedTypes.RegExpLiteral>): any;
   visitClassMethod?(this: Context & M, path: NodePath<namedTypes.ClassMethod>): any;
   visitClassPrivateMethod?(this: Context & M, path: NodePath<namedTypes.ClassPrivateMethod>): any;
+  visitTSHasOptionalTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeAnnotation>): any;
+  visitClassAccessorProperty?(this: Context & M, path: NodePath<namedTypes.ClassAccessorProperty>): any;
   visitRestProperty?(this: Context & M, path: NodePath<namedTypes.RestProperty>): any;
   visitForAwaitStatement?(this: Context & M, path: NodePath<namedTypes.ForAwaitStatement>): any;
   visitImport?(this: Context & M, path: NodePath<namedTypes.Import>): any;
@@ -240,7 +242,6 @@ export interface Visitor<M = {}> {
   visitTSQualifiedName?(this: Context & M, path: NodePath<namedTypes.TSQualifiedName>): any;
   visitTSTypeReference?(this: Context & M, path: NodePath<namedTypes.TSTypeReference>): any;
   visitTSHasOptionalTypeParameters?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeParameters>): any;
-  visitTSHasOptionalTypeAnnotation?(this: Context & M, path: NodePath<namedTypes.TSHasOptionalTypeAnnotation>): any;
   visitTSAsExpression?(this: Context & M, path: NodePath<namedTypes.TSAsExpression>): any;
   visitTSTypeCastExpression?(this: Context & M, path: NodePath<namedTypes.TSTypeCastExpression>): any;
   visitTSSatisfiesExpression?(this: Context & M, path: NodePath<namedTypes.TSSatisfiesExpression>): any;

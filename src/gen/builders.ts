@@ -901,11 +901,11 @@ export interface StaticBlockBuilder {
 
 export interface ClassBodyBuilder {
   (
-    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
+    body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassAccessorPropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[]
   ): namedTypes.ClassBody;
   from(
     params: {
-      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
+      body: (K.MethodDefinitionKind | K.VariableDeclaratorKind | K.ClassPropertyDefinitionKind | K.ClassPropertyKind | K.ClassPrivatePropertyKind | K.ClassAccessorPropertyKind | K.ClassMethodKind | K.ClassPrivateMethodKind | K.StaticBlockKind | K.TSDeclareMethodKind | K.TSCallSignatureDeclarationKind | K.TSConstructSignatureDeclarationKind | K.TSIndexSignatureKind | K.TSMethodSignatureKind | K.TSPropertySignatureKind)[];
       comments?: K.CommentKind[] | null;
       loc?: K.SourceLocationKind | null;
     }
@@ -2757,11 +2757,11 @@ export interface ClassMethodBuilder {
     params: K.PatternKind[],
     body: K.BlockStatementKind,
     computed?: boolean,
-    staticParam?: boolean | null
+    staticParam?: boolean
   ): namedTypes.ClassMethod;
   from(
     params: {
-      abstract?: boolean | null;
+      abstract?: boolean;
       access?: "public" | "private" | "protected" | null;
       accessibility?: "public" | "private" | "protected" | null;
       async?: boolean;
@@ -2776,12 +2776,13 @@ export interface ClassMethodBuilder {
       key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
       kind?: "get" | "set" | "method" | "constructor";
       loc?: K.SourceLocationKind | null;
-      optional?: boolean | null;
+      optional?: boolean;
       params: K.PatternKind[];
       predicate?: K.FlowPredicateKind | null;
+      readonly?: boolean;
       rest?: K.IdentifierKind | null;
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
-      static?: boolean | null;
+      static?: boolean;
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
     }
   ): namedTypes.ClassMethod;
@@ -2794,11 +2795,11 @@ export interface ClassPrivateMethodBuilder {
     body: K.BlockStatementKind,
     kind?: "get" | "set" | "method" | "constructor",
     computed?: boolean,
-    staticParam?: boolean | null
+    staticParam?: boolean
   ): namedTypes.ClassPrivateMethod;
   from(
     params: {
-      abstract?: boolean | null;
+      abstract?: boolean;
       access?: "public" | "private" | "protected" | null;
       accessibility?: "public" | "private" | "protected" | null;
       async?: boolean;
@@ -2813,15 +2814,42 @@ export interface ClassPrivateMethodBuilder {
       key: K.PrivateNameKind;
       kind?: "get" | "set" | "method" | "constructor";
       loc?: K.SourceLocationKind | null;
-      optional?: boolean | null;
+      optional?: boolean;
       params: K.PatternKind[];
       predicate?: K.FlowPredicateKind | null;
+      readonly?: boolean;
       rest?: K.IdentifierKind | null;
       returnType?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
-      static?: boolean | null;
+      static?: boolean;
       typeParameters?: K.TypeParameterDeclarationKind | K.TSTypeParameterDeclarationKind | null;
     }
   ): namedTypes.ClassPrivateMethod;
+}
+
+export interface ClassAccessorPropertyBuilder {
+  (
+    key: K.LiteralKind | K.IdentifierKind | K.PrivateNameKind | K.ExpressionKind,
+    value: K.ExpressionKind,
+    decorators?: K.DecoratorKind[] | null,
+    computed?: boolean,
+    staticParam?: boolean
+  ): namedTypes.ClassAccessorProperty;
+  from(
+    params: {
+      abstract?: boolean;
+      accessibility?: "public" | "private" | "protected" | null;
+      comments?: K.CommentKind[] | null;
+      computed?: boolean;
+      decorators?: K.DecoratorKind[] | null;
+      key: K.LiteralKind | K.IdentifierKind | K.PrivateNameKind | K.ExpressionKind;
+      loc?: K.SourceLocationKind | null;
+      optional?: boolean;
+      readonly?: boolean;
+      static?: boolean;
+      typeAnnotation?: K.TSTypeAnnotationKind | null;
+      value: K.ExpressionKind;
+    }
+  ): namedTypes.ClassAccessorProperty;
 }
 
 export interface RestPropertyBuilder {
@@ -3915,6 +3943,7 @@ export interface builders {
   regExpLiteral: RegExpLiteralBuilder;
   classMethod: ClassMethodBuilder;
   classPrivateMethod: ClassPrivateMethodBuilder;
+  classAccessorProperty: ClassAccessorPropertyBuilder;
   restProperty: RestPropertyBuilder;
   forAwaitStatement: ForAwaitStatementBuilder;
   import: ImportBuilder;

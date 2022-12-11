@@ -498,7 +498,10 @@ export default function (fork: Fork) {
   def("ClassProperty")
     .field("access", // Not "accessibility"?
            or("public", "private", "protected", void 0),
-           defaults["undefined"])
+           defaults["undefined"]);
+
+  def("ClassAccessorProperty")
+    .bases("Declaration", "TSHasOptionalTypeAnnotation");
 
   // Defined already in es6 and babel-core.
   def("ClassBody")
@@ -508,6 +511,7 @@ export default function (fork: Fork) {
       def("ClassPropertyDefinition"),
       def("ClassProperty"),
       def("ClassPrivateProperty"),
+      def("ClassAccessorProperty"),
       def("ClassMethod"),
       def("ClassPrivateMethod"),
       def("StaticBlock"),
