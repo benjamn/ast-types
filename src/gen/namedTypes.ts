@@ -1287,7 +1287,9 @@ export namespace namedTypes {
     abstract?: boolean;
     accessibility?: "public" | "private" | "protected" | null;
     decorators?: K.DecoratorKind[] | null;
+    definite?: boolean;
     optional?: boolean;
+    override?: boolean;
     readonly?: boolean;
   }
 
@@ -1302,7 +1304,9 @@ export namespace namedTypes {
     abstract?: boolean;
     accessibility?: "public" | "private" | "protected" | null;
     decorators?: K.DecoratorKind[] | null;
+    definite?: boolean;
     optional?: boolean;
+    override?: boolean;
     readonly?: boolean;
   }
 
@@ -1313,13 +1317,15 @@ export namespace namedTypes {
   export interface ClassAccessorProperty extends Omit<Declaration, "type">, TSHasOptionalTypeAnnotation {
     type: "ClassAccessorProperty";
     key: K.LiteralKind | K.IdentifierKind | K.PrivateNameKind | K.ExpressionKind;
-    value: K.ExpressionKind;
+    value?: K.ExpressionKind | null;
     computed?: boolean;
     static?: boolean;
     abstract?: boolean;
     accessibility?: "public" | "private" | "protected" | null;
     decorators?: K.DecoratorKind[] | null;
+    definite?: boolean;
     optional?: boolean;
+    override?: boolean;
     readonly?: boolean;
   }
 
