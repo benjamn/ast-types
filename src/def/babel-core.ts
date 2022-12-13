@@ -250,7 +250,7 @@ export default function (fork: Fork) {
       // Only when .computed is true (TODO enforce this)
       def("Expression"),
     ))
-    .field("value", def("Expression"));
+    .field("value", or(def("Expression"), null), defaults["null"]);
 
   ["ClassMethod",
    "ClassPrivateMethod",
@@ -272,7 +272,9 @@ export default function (fork: Fork) {
       .field("abstract", Boolean, defaults["false"])
       .field("accessibility", or("public", "private", "protected", null), defaults["null"])
       .field("decorators", or([def("Decorator")], null), defaults["null"])
+      .field("definite", Boolean, defaults["false"])
       .field("optional", Boolean, defaults["false"])
+      .field("override", Boolean, defaults["false"])
       .field("readonly", Boolean, defaults["false"]);
   });
 

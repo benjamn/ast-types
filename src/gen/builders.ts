@@ -2770,6 +2770,7 @@ export interface ClassMethodBuilder {
       computed?: boolean;
       decorators?: K.DecoratorKind[] | null;
       defaults?: (K.ExpressionKind | null)[];
+      definite?: boolean;
       expression?: boolean;
       generator?: boolean;
       id?: K.IdentifierKind | null;
@@ -2777,6 +2778,7 @@ export interface ClassMethodBuilder {
       kind?: "get" | "set" | "method" | "constructor";
       loc?: K.SourceLocationKind | null;
       optional?: boolean;
+      override?: boolean;
       params: K.PatternKind[];
       predicate?: K.FlowPredicateKind | null;
       readonly?: boolean;
@@ -2808,6 +2810,7 @@ export interface ClassPrivateMethodBuilder {
       computed?: boolean;
       decorators?: K.DecoratorKind[] | null;
       defaults?: (K.ExpressionKind | null)[];
+      definite?: boolean;
       expression?: boolean;
       generator?: boolean;
       id?: K.IdentifierKind | null;
@@ -2815,6 +2818,7 @@ export interface ClassPrivateMethodBuilder {
       kind?: "get" | "set" | "method" | "constructor";
       loc?: K.SourceLocationKind | null;
       optional?: boolean;
+      override?: boolean;
       params: K.PatternKind[];
       predicate?: K.FlowPredicateKind | null;
       readonly?: boolean;
@@ -2829,7 +2833,7 @@ export interface ClassPrivateMethodBuilder {
 export interface ClassAccessorPropertyBuilder {
   (
     key: K.LiteralKind | K.IdentifierKind | K.PrivateNameKind | K.ExpressionKind,
-    value: K.ExpressionKind,
+    value?: K.ExpressionKind | null,
     decorators?: K.DecoratorKind[] | null,
     computed?: boolean,
     staticParam?: boolean
@@ -2841,13 +2845,15 @@ export interface ClassAccessorPropertyBuilder {
       comments?: K.CommentKind[] | null;
       computed?: boolean;
       decorators?: K.DecoratorKind[] | null;
+      definite?: boolean;
       key: K.LiteralKind | K.IdentifierKind | K.PrivateNameKind | K.ExpressionKind;
       loc?: K.SourceLocationKind | null;
       optional?: boolean;
+      override?: boolean;
       readonly?: boolean;
       static?: boolean;
       typeAnnotation?: K.TSTypeAnnotationKind | null;
-      value: K.ExpressionKind;
+      value?: K.ExpressionKind | null;
     }
   ): namedTypes.ClassAccessorProperty;
 }
