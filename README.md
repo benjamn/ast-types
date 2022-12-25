@@ -433,7 +433,7 @@ Scope
 
 The object exposed as `path.scope` during AST traversals provides
 information about variable and function declarations in the scope that
-contains `path.node`. See [scope.ts](lib/scope.ts) for its public
+contains `path.node`. See [scope.ts](src/scope.ts) for its public
 interface, which currently includes `.isGlobal`, `.getGlobalScope()`,
 `.depth`, `.declares(name)`, `.lookup(name)`, and `.getBindings()`.
 
