@@ -1,11 +1,10 @@
 # AST Types ![CI](https://github.com/benjamn/ast-types/workflows/CI/badge.svg)
 
 This module provides an efficient, modular,
-[Esprima](https://github.com/ariya/esprima)-compatible implementation of
-the [abstract syntax
-tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree) type hierarchy
-pioneered by the [Mozilla Parser
-API](https://developer.mozilla.org/en-US/docs/SpiderMonkey/Parser_API).
+[Esprima](https://github.com/ariya/esprima)-compatible implementation of the
+[abstract syntax tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree) type
+hierarchy pioneered by the [Mozilla Parser
+API](https://web.archive.org/web/20140802223108/https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API).
 
 Installation
 ---
