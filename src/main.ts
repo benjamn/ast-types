@@ -7,7 +7,7 @@ import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
 import { ASTNode, Type, AnyType, Field } from "./types";
 import { NodePath } from "./node-path";
-import { namedTypes as baseNamedTypes } from "./gen/namedTypes";
+import { namedTypes } from "./gen/namedTypes";
 import { builders } from "./gen/builders";
 import { Visitor } from "./gen/visitor";
 
@@ -41,8 +41,6 @@ let {
   typescriptDef,
 ]);
 
-let namedTypes = baseNamedTypes;
-
 // Populate the exported fields of the namedTypes namespace, while still
 // retaining its member types.
 Object.assign(namedTypes, n);
@@ -58,7 +56,7 @@ export function overrideDefs(defs: ReturnType<typeof fork>) {
   getFieldNames = defs.getFieldNames;
   getFieldValue = defs.getFieldValue;
   getSupertypeNames = defs.getSupertypeNames;
-  namedTypes = defs.namedTypes;
+  Object.assign(namedTypes, defs.namedTypes);
   NodePath = defs.NodePath;
   Path = defs.Path;
   PathVisitor = defs.PathVisitor;
