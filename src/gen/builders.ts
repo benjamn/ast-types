@@ -878,6 +878,7 @@ export interface ClassPropertyBuilder {
       access?: "public" | "private" | "protected" | undefined;
       comments?: K.CommentKind[] | null;
       computed?: boolean;
+      decorators?: K.DecoratorKind[] | null;
       key: K.LiteralKind | K.IdentifierKind | K.ExpressionKind;
       loc?: K.SourceLocationKind | null;
       static?: boolean;
