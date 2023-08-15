@@ -433,6 +433,7 @@ export namespace namedTypes {
     typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     variance?: K.VarianceKind | "plus" | "minus" | null;
     access?: "public" | "private" | "protected" | undefined;
+    decorators?: K.DecoratorKind[] | null;
   }
 
   export interface StaticBlock extends Omit<Declaration, "type"> {
