@@ -495,18 +495,18 @@ b.file("lib/types.js", b.thisExpression());
 ```
 
 The `def` syntax is used to define all the default AST node types found in
-[babel-core.ts](def/babel-core.ts),
-[babel.ts](def/babel.ts),
-[core.ts](def/core.ts),
-[es-proposals.ts](def/es-proposals.ts),
-[es6.ts](def/es6.ts),
-[es7.ts](def/es7.ts),
-[es2020.ts](def/es2020.ts),
-[esprima.ts](def/esprima.ts),
-[flow.ts](def/flow.ts),
-[jsx.ts](def/jsx.ts),
-[type-annotations.ts](def/type-annotations.ts),
+[babel-core.ts](src/def/babel-core.ts),
+[babel.ts](src/def/babel.ts),
+[core.ts](src/def/core.ts),
+[es-proposals.ts](src/def/es-proposals.ts),
+[es6.ts](src/def/es6.ts),
+[es7.ts](src/def/es7.ts),
+[es2020.ts](src/def/es2020.ts),
+[esprima.ts](src/def/esprima.ts),
+[flow.ts](src/def/flow.ts),
+[jsx.ts](src/def/jsx.ts),
+[type-annotations.ts](src/def/type-annotations.ts),
 and
-[typescript.ts](def/typescript.ts),
+[typescript.ts](src/def/typescript.ts),
 so you have
 no shortage of examples to learn from.
