@@ -156,7 +156,7 @@ export default function (fork: Fork) {
     })
     .field(...makeLiteralExtra<N.RegExpLiteral>(
       or(RegExp, isUndefined),
-      exp => `/${exp.pattern}/${exp.flags || ""}`,
+      exp => `/${exp.source}/${exp.flags || ""}`,
     ))
     // I'm not sure why this field exists, but it's "specified" by estree:
     // https://github.com/estree/estree/blob/master/es5.md#regexpliteral
