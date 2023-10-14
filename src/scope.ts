@@ -197,7 +197,7 @@ export default function scopePlugin(fork: Fork) {
       }
     }
     if (ScopeType.check(node)) {
-      if (namedTypes.CatchClause.check(node)) {
+      if (namedTypes.CatchClause.check(node) && node.param !== null) {
         // A catch clause establishes a new scope but the only variable
         // bound in that scope is the catch parameter. Any other
         // declarations create bindings in the outer scope.
