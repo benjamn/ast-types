@@ -504,14 +504,10 @@ export default function (fork: Fork) {
     .bases("Declaration", "TSHasOptionalTypeAnnotation");
 
   def("CallExpression")
-    .field("typeParameters",
-           or(def("TSTypeParameterInstantiation"), null),
-           defaults["null"]);
+    .bases("TSHasOptionalTypeParameterInstantiation");
 
   def("NewExpression")
-    .field("typeParameters",
-           or(def("TSTypeParameterInstantiation"), null),
-           defaults["null"]);
+    .bases("TSHasOptionalTypeParameterInstantiation");
 
   // Defined already in es6 and babel-core.
   def("ClassBody")

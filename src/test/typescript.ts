@@ -422,7 +422,7 @@ glob("**/*.ts", {
         }
       });
 
-      assert.deepEqual(identifiers, ["fn", "FetchResult"]);
+      assert.deepEqual(identifiers, ["FetchResult", "fn"]);
     });
 
     it("NewExpression with type parameters", function () {
@@ -439,7 +439,7 @@ glob("**/*.ts", {
         }
       });
 
-      assert.deepEqual(identifiers, ["Container", "Item"]);
+      assert.deepEqual(identifiers, ["Item", "Container"]);
     });
 
     it("OptionalCallExpression with type parameters", function () {
@@ -456,7 +456,7 @@ glob("**/*.ts", {
         }
       });
 
-      assert.deepEqual(identifiers, ["obj", "method", "Result"]);
+      assert.deepEqual(identifiers, ["Result", "obj", "method"]);
     });
 
     it("Complex nested type parameters in CallExpression", function () {
@@ -472,7 +472,7 @@ glob("**/*.ts", {
         }
       });
 
-      assert.deepEqual(identifiers, ["func", "data", "User", "Map", "Array"]);
+      assert.deepEqual(identifiers, [ "User", "Map", "Array", "func", "data"]);
     });
   });
 });
