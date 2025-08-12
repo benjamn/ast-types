@@ -503,6 +503,16 @@ export default function (fork: Fork) {
   def("ClassAccessorProperty")
     .bases("Declaration", "TSHasOptionalTypeAnnotation");
 
+  def("CallExpression")
+    .field("typeParameters",
+           or(def("TSTypeParameterInstantiation"), null),
+           defaults["null"]);
+
+  def("NewExpression")
+    .field("typeParameters",
+           or(def("TSTypeParameterInstantiation"), null),
+           defaults["null"]);
+
   // Defined already in es6 and babel-core.
   def("ClassBody")
     .field("body", [or(
