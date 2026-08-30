@@ -23,6 +23,19 @@ describe what is on `master` but not yet published to npm.
 - `ExportNamedDeclaration.declaration` now defaults to `null`, so Babel
   ASTs that omit the property for specifier-only exports validate.
 
+### Fixes
+
+- `lib/main.d.ts` no longer imports `Type`, `NodePath` and `builders`
+  under the same names as the values it declares, which TypeScript 5.4 and
+  later reject under `isolatedModules` (TS2865). The fix uses only plain
+  aliased imports, so no currently supported TypeScript version loses
+  support. As a side effect, `Type` and `NodePath` imported from the
+  package are now usable as generic types (`Type<T>`, `NodePath<N>`).
+  Fixes #948; builds on #950 by @snowystinger.
+- The test suite now type-checks a small consumer of the published
+  declarations with both the pinned TypeScript and TypeScript 5.x under
+  `isolatedModules`, so declaration-file regressions fail in CI.
+
 ### Type changes to be aware of
 
 Runtime behavior and builder signatures are unchanged; the changes above

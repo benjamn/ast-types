@@ -26,6 +26,12 @@ fi
 
 cd ../../.. # back to the ast-types/ root directory
 
+# Type-check a small consumer of lib/main with the pinned TypeScript and
+# with a current TypeScript 5.x, so declaration-file regressions that only
+# affect downstream projects fail here first.
+node_modules/.bin/tsc -p script/consumer-typecheck
+node_modules/typescript5/bin/tsc -p script/consumer-typecheck
+
 # Run Mocha on the generated .js code, rather than the .ts source code, so
 # that we're testing the same kind of output that we're shipping to npm.
 exec mocha --reporter spec --full-trace $@ lib/test/run.js

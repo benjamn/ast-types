@@ -5,10 +5,10 @@ import flowDef from "./def/flow";
 import esprimaDef from "./def/esprima";
 import babelDef from "./def/babel";
 import typescriptDef from "./def/typescript";
-import { ASTNode, Type, AnyType, Field } from "./types";
-import { NodePath } from "./node-path";
+import { ASTNode, Type as TypeClass, AnyType, Field } from "./types";
+import { NodePath as NodePathClass } from "./node-path";
 import { namedTypes } from "./gen/namedTypes";
-import { builders } from "./gen/builders";
+import { builders as Builders } from "./gen/builders";
 import { Visitor } from "./gen/visitor";
 
 const {
@@ -40,6 +40,16 @@ const {
   babelDef,
   typescriptDef,
 ]);
+
+// Type, NodePath, and builders are both values (produced by the fork above)
+// and types (declared in their own modules). Importing the type meanings
+// under different names and re-declaring them here, next to the consts,
+// lets the single `export { ... }` below carry both meanings, without an
+// import that conflicts with a local value (which TypeScript >= 5.4 rejects
+// under isolatedModules; see #948).
+type Type<T> = TypeClass<T>;
+type NodePath<N = any, V = any> = NodePathClass<N, V>;
+type builders = Builders;
 
 // Populate the exported fields of the namedTypes namespace, while still
 // retaining its member types.
