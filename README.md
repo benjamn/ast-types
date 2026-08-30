@@ -1,4 +1,4 @@
-# AST Types ![CI](https://github.com/benjamn/ast-types/workflows/CI/badge.svg)
+# AST Types [![CI](https://github.com/benjamn/ast-types/actions/workflows/main.yml/badge.svg)](https://github.com/benjamn/ast-types/actions/workflows/main.yml) [![npm](https://img.shields.io/npm/v/ast-types.svg)](https://www.npmjs.com/package/ast-types)
 
 This module provides an efficient, modular,
 [Esprima](https://github.com/ariya/esprima)-compatible implementation of
@@ -10,16 +10,18 @@ API](https://developer.mozilla.org/en-US/docs/SpiderMonkey/Parser_API).
 Installation
 ---
 
-From NPM:
-
     npm install ast-types
 
-From GitHub:
+The package ships its own TypeScript declarations; there is no
+`@types/ast-types` to install. TypeScript 4.4 and later are supported, and
+the declarations are type-checked against 4.4, 4.9 and 5.x on every commit.
 
-    cd path/to/node_modules
-    git clone git://github.com/benjamn/ast-types.git
+To work on `ast-types` itself:
+
+    git clone https://github.com/benjamn/ast-types.git
     cd ast-types
-    npm install .
+    npm install
+    npm test
 
 Basic Usage
 ---
@@ -50,6 +52,41 @@ assert.ok(n.Expression.check(ifFoo.test));
 assert.ok(n.Identifier.check(ifFoo.test));
 assert.ok(!n.Statement.check(ifFoo.test));
 ```
+
+TypeScript
+---
+
+The published declarations are generated from the same definitions as the
+runtime types, so every node type is available as a TypeScript type of the
+same name under `namedTypes`, and `NodePath` and `Type` are generic:
+```ts
+import {
+  builders as b,
+  namedTypes as n,
+  visit,
+  NodePath,
+} from "ast-types";
+
+const fooId: n.Identifier = b.identifier("foo");
+const call: n.CallExpression = b.callExpression(fooId, []);
+
+// Visitor methods receive a NodePath parameterized by the node type, so
+// path.node is narrowed for you.
+visit(call, {
+  visitCallExpression(path) {
+    const callee: n.CallExpression["callee"] = path.node.callee;
+    this.traverse(path);
+  },
+});
+
+declare const somePath: NodePath<n.CallExpression>;
+somePath.node.arguments;
+```
+
+Note that a node type's TypeScript type describes what the definitions
+accept, which is often a union. Widening a field to admit a node shape a
+parser really produces is a change consumers may need to narrow around; see
+[CHANGELOG.md](CHANGELOG.md) for the ones that have happened.
 
 AST Traversal
 ---
@@ -158,7 +195,12 @@ Here's a slightly more involved example of transforming `...rest`
 parameters into browser-runnable ES5 JavaScript:
 
 ```js
-import { builders as b, visit } from "ast-types";
+import assert from "assert";
+import {
+  builders as b,
+  namedTypes as n,
+  visit,
+} from "ast-types";
 
 // Reuse the same AST structure for Array.prototype.slice.call.
 var sliceExpr = b.memberExpression(
@@ -433,7 +475,7 @@ Scope
 
 The object exposed as `path.scope` during AST traversals provides
 information about variable and function declarations in the scope that
-contains `path.node`. See [scope.ts](lib/scope.ts) for its public
+contains `path.node`. See [scope.ts](src/scope.ts) for its public
 interface, which currently includes `.isGlobal`, `.getGlobalScope()`,
 `.depth`, `.declares(name)`, `.lookup(name)`, and `.getBindings()`.
 
@@ -500,8 +542,13 @@ The `def` syntax is used to define all the default AST node types found in
 [core.ts](src/def/core.ts),
 [es-proposals.ts](src/def/es-proposals.ts),
 [es6.ts](src/def/es6.ts),
-[es7.ts](src/def/es7.ts),
+[es2016.ts](src/def/es2016.ts),
+[es2017.ts](src/def/es2017.ts),
+[es2018.ts](src/def/es2018.ts),
+[es2019.ts](src/def/es2019.ts),
 [es2020.ts](src/def/es2020.ts),
+[es2021.ts](src/def/es2021.ts),
+[es2022.ts](src/def/es2022.ts),
 [esprima.ts](src/def/esprima.ts),
 [flow.ts](src/def/flow.ts),
 [jsx.ts](src/def/jsx.ts),
