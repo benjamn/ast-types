@@ -12,3 +12,4 @@ lib/
 *.d.ts
 # Except...
 !/types/**/*.d.ts
+/script/consumer-typecheck/node_modules
