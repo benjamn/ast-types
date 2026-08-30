@@ -33,8 +33,9 @@ describe what is on `master` but not yet published to npm.
   package are now usable as generic types (`Type<T>`, `NodePath<N>`).
   Fixes #948; builds on #950 by @snowystinger.
 - The test suite now type-checks a small consumer of the published
-  declarations with both the pinned TypeScript and TypeScript 5.x under
-  `isolatedModules`, so declaration-file regressions fail in CI.
+  declarations with TypeScript 4.4 (the oldest supported version), the
+  pinned TypeScript, and TypeScript 5.x, all under `isolatedModules`, so
+  declaration-file regressions fail in CI.
 
 ### Type changes to be aware of
 

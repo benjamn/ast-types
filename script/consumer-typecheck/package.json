@@ -1,0 +1,9 @@
+{
+  "name": "ast-types-consumer-typecheck",
+  "private": true,
+  "description": "Extra TypeScript versions used only to type-check index.ts against lib/main. Kept out of the root package so their tsc binaries never shadow the pinned compiler.",
+  "devDependencies": {
+    "typescript4min": "npm:typescript@4.4.4",
+    "typescript5": "npm:typescript@5.9.3"
+  }
+}

@@ -1,6 +1,7 @@
 // A minimal consumer of the published package surface (lib/main), compiled
-// by script/run-tests.sh with both the pinned TypeScript and a current
-// TypeScript 5.x under --isolatedModules. This catches declaration-file
+// by script/run-tests.sh with the oldest supported TypeScript (4.4), the
+// pinned TypeScript, and a current TypeScript 5.x, all under
+// --isolatedModules. This catches declaration-file
 // problems that only show up in downstream projects, such as an import
 // that conflicts with a local value (TS2865, TypeScript >= 5.4; see #948).
 
