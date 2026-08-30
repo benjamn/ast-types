@@ -1024,18 +1024,19 @@ export interface ImportDeclarationBuilder {
 
 export interface ExportNamedDeclarationBuilder {
   (
-    declaration: K.DeclarationKind | null,
-    specifiers?: K.ExportSpecifierKind[],
+    declaration?: K.DeclarationKind | null,
+    specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind | K.ExportNamespaceSpecifierKind | K.ExportDefaultSpecifierKind)[],
     source?: K.LiteralKind | null
   ): namedTypes.ExportNamedDeclaration;
   from(
     params: {
       assertions?: K.ImportAttributeKind[];
       comments?: K.CommentKind[] | null;
-      declaration: K.DeclarationKind | null;
+      declaration?: K.DeclarationKind | null;
+      exportKind?: "value" | "type";
       loc?: K.SourceLocationKind | null;
       source?: K.LiteralKind | null;
-      specifiers?: K.ExportSpecifierKind[];
+      specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind | K.ExportNamespaceSpecifierKind | K.ExportDefaultSpecifierKind)[];
     }
   ): namedTypes.ExportNamedDeclaration;
 }
@@ -1071,6 +1072,7 @@ export interface ExportAllDeclarationBuilder {
     params: {
       assertions?: K.ImportAttributeKind[];
       comments?: K.CommentKind[] | null;
+      exportKind?: "value" | "type";
       exported?: K.IdentifierKind | null | undefined;
       loc?: K.SourceLocationKind | null;
       source: K.LiteralKind;
@@ -2571,11 +2573,11 @@ export interface ParenthesizedExpressionBuilder {
 }
 
 export interface ExportNamespaceSpecifierBuilder {
-  (exported: K.IdentifierKind): namedTypes.ExportNamespaceSpecifier;
+  (exported: K.IdentifierKind | K.LiteralKind): namedTypes.ExportNamespaceSpecifier;
   from(
     params: {
       comments?: K.CommentKind[] | null;
-      exported: K.IdentifierKind;
+      exported: K.IdentifierKind | K.LiteralKind;
       loc?: K.SourceLocationKind | null;
     }
   ): namedTypes.ExportNamespaceSpecifier;

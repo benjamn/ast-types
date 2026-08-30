@@ -38,12 +38,26 @@ export default function (fork: Fork) {
   def("ExportNamespaceSpecifier")
     .bases("Specifier")
     .build("exported")
-    .field("exported", def("Identifier"));
+    // ES2022 arbitrary module namespace names allow a string here:
+    //   export * as "ns" from "mod";
+    .field("exported", or(def("Identifier"), def("Literal")));
 
   def("ExportDefaultSpecifier")
     .bases("Specifier")
     .build("exported")
     .field("exported", def("Identifier"));
+
+  // Babel represents `export * as ns from "mod"` and the
+  // export-default-from proposal (`export v from "mod"`) as an
+  // ExportNamedDeclaration whose specifiers include the two node types
+  // above, so widen the ES6 definition of the specifiers list.
+  def("ExportNamedDeclaration")
+    .field("specifiers", [or(
+      def("ExportSpecifier"),
+      def("ExportBatchSpecifier"), // preserved from the flow/esprima defs
+      def("ExportNamespaceSpecifier"),
+      def("ExportDefaultSpecifier")
+    )], defaults.emptyArray);
 
   def("CommentBlock")
     .bases("Comment")

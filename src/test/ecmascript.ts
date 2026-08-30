@@ -2669,3 +2669,58 @@ describe('Dynamic import', () => {
     })
   });
 });
+
+describe("exportKind", function () {
+  it("defaults to \"value\" on export declarations", function () {
+    assert.strictEqual(
+      b.exportNamedDeclaration(null, [
+        b.exportSpecifier.from({
+          local: b.identifier("foo"),
+          exported: b.identifier("foo"),
+        }),
+      ], b.literal("bar")).exportKind,
+      "value",
+    );
+    assert.strictEqual(
+      b.exportAllDeclaration(b.literal("bar")).exportKind,
+      "value",
+    );
+  });
+
+  it("accepts \"type\" and rejects other values", function () {
+    assert.ok(n.ExportAllDeclaration.check(
+      b.exportAllDeclaration.from({
+        source: b.literal("bar"),
+        exportKind: "type",
+      }),
+    ));
+    assert.throws(function () {
+      b.exportAllDeclaration.from({
+        source: b.literal("bar"),
+        exportKind: "baz" as $InvalidType,
+      });
+    });
+  });
+
+  it("validates Babel's output for `export type * from`", function () {
+    const babelParser = require("@babel/parser");
+    const ast = babelParser.parse([
+      "export type * from './mod';",
+      "export type * as ns from './mod';",
+      "export * as 'ns2' from './mod';",
+    ].join("\n"), {
+      sourceType: "module",
+      plugins: ["typescript"],
+    });
+    n.Program.assert(ast.program, true);
+    const [all, named, stringNamed] = ast.program.body;
+    n.ExportAllDeclaration.assert(all);
+    assert.strictEqual(all.exportKind, "type");
+    n.ExportNamedDeclaration.assert(named);
+    assert.strictEqual(named.exportKind, "type");
+    n.ExportNamespaceSpecifier.assert(named.specifiers[0]);
+    n.ExportNamedDeclaration.assert(stringNamed);
+    n.ExportNamespaceSpecifier.assert(stringNamed.specifiers[0]);
+    n.Literal.assert(stringNamed.specifiers[0].exported);
+  });
+});

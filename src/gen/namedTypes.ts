@@ -504,9 +504,10 @@ export namespace namedTypes {
 
   export interface ExportNamedDeclaration extends Omit<Declaration, "type"> {
     type: "ExportNamedDeclaration";
-    declaration: K.DeclarationKind | null;
-    specifiers?: K.ExportSpecifierKind[];
+    declaration?: K.DeclarationKind | null;
+    specifiers?: (K.ExportSpecifierKind | K.ExportBatchSpecifierKind | K.ExportNamespaceSpecifierKind | K.ExportDefaultSpecifierKind)[];
     source?: K.LiteralKind | null;
+    exportKind?: "value" | "type";
     assertions?: K.ImportAttributeKind[];
   }
 
@@ -523,6 +524,7 @@ export namespace namedTypes {
   export interface ExportAllDeclaration extends Omit<Declaration, "type"> {
     type: "ExportAllDeclaration";
     source: K.LiteralKind;
+    exportKind?: "value" | "type";
     exported?: K.IdentifierKind | null | undefined;
     assertions?: K.ImportAttributeKind[];
   }
@@ -1183,7 +1185,7 @@ export namespace namedTypes {
 
   export interface ExportNamespaceSpecifier extends Omit<Specifier, "type"> {
     type: "ExportNamespaceSpecifier";
-    exported: K.IdentifierKind;
+    exported: K.IdentifierKind | K.LiteralKind;
   }
 
   export interface ExportDefaultSpecifier extends Omit<Specifier, "type"> {
