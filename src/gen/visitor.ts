@@ -126,12 +126,12 @@ export interface Visitor<M = {}> {
   visitJSXSpreadChild?(this: Context & M, path: NodePath<namedTypes.JSXSpreadChild>): any;
   visitJSXOpeningElement?(this: Context & M, path: NodePath<namedTypes.JSXOpeningElement>): any;
   visitJSXClosingElement?(this: Context & M, path: NodePath<namedTypes.JSXClosingElement>): any;
+  visitTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TypeParameterInstantiation>): any;
+  visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TSTypeParameterInstantiation>): any;
   visitJSXOpeningFragment?(this: Context & M, path: NodePath<namedTypes.JSXOpeningFragment>): any;
   visitJSXClosingFragment?(this: Context & M, path: NodePath<namedTypes.JSXClosingFragment>): any;
   visitTypeParameterDeclaration?(this: Context & M, path: NodePath<namedTypes.TypeParameterDeclaration>): any;
   visitTSTypeParameterDeclaration?(this: Context & M, path: NodePath<namedTypes.TSTypeParameterDeclaration>): any;
-  visitTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TypeParameterInstantiation>): any;
-  visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TSTypeParameterInstantiation>): any;
   visitClassImplements?(this: Context & M, path: NodePath<namedTypes.ClassImplements>): any;
   visitTSType?(this: Context & M, path: NodePath<namedTypes.TSType>): any;
   visitTSExpressionWithTypeArguments?(

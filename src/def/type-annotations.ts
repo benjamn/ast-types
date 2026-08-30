@@ -32,6 +32,12 @@ export default function (fork: Fork) {
   def("ObjectPattern")
     .field("typeAnnotation", TypeAnnotation, defaults["null"]);
 
+  def("ArrayPattern")
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
+
+  def("AssignmentPattern")
+    .field("typeAnnotation", TypeAnnotation, defaults["null"]);
+
   def("Function")
     .field("returnType", TypeAnnotation, defaults["null"])
     .field("typeParameters", TypeParamDecl, defaults["null"]);

@@ -268,14 +268,14 @@ export interface ForStatementBuilder {
 
 export interface VariableDeclarationBuilder {
   (
-    kind: "var" | "let" | "const",
+    kind: "var" | "let" | "const" | "using" | "await using",
     declarations: (K.VariableDeclaratorKind | K.IdentifierKind)[]
   ): namedTypes.VariableDeclaration;
   from(
     params: {
       comments?: K.CommentKind[] | null;
       declarations: (K.VariableDeclaratorKind | K.IdentifierKind)[];
-      kind: "var" | "let" | "const";
+      kind: "var" | "let" | "const" | "using" | "await using";
       loc?: K.SourceLocationKind | null;
     }
   ): namedTypes.VariableDeclaration;
@@ -794,6 +794,7 @@ export interface ObjectPatternBuilder {
       comments?: K.CommentKind[] | null;
       decorators?: K.DecoratorKind[] | null;
       loc?: K.SourceLocationKind | null;
+      optional?: boolean;
       properties: (K.PropertyKind | K.PropertyPatternKind | K.SpreadPropertyPatternKind | K.SpreadPropertyKind | K.ObjectPropertyKind | K.RestPropertyKind | K.RestElementKind)[];
       typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     }
@@ -807,6 +808,8 @@ export interface ArrayPatternBuilder {
       comments?: K.CommentKind[] | null;
       elements: (K.PatternKind | K.SpreadElementKind | null)[];
       loc?: K.SourceLocationKind | null;
+      optional?: boolean;
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     }
   ): namedTypes.ArrayPattern;
 }
@@ -829,7 +832,9 @@ export interface AssignmentPatternBuilder {
       comments?: K.CommentKind[] | null;
       left: K.PatternKind;
       loc?: K.SourceLocationKind | null;
+      optional?: boolean;
       right: K.ExpressionKind;
+      typeAnnotation?: K.TypeAnnotationKind | K.TSTypeAnnotationKind | null;
     }
   ): namedTypes.AssignmentPattern;
 }
@@ -924,6 +929,7 @@ export interface ClassDeclarationBuilder {
     params: {
       body: K.ClassBodyKind;
       comments?: K.CommentKind[] | null;
+      decorators?: K.DecoratorKind[] | null;
       id: K.IdentifierKind | null;
       implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];
       loc?: K.SourceLocationKind | null;
@@ -944,6 +950,7 @@ export interface ClassExpressionBuilder {
     params: {
       body: K.ClassBodyKind;
       comments?: K.CommentKind[] | null;
+      decorators?: K.DecoratorKind[] | null;
       id?: K.IdentifierKind | null;
       implements?: K.ClassImplementsKind[] | K.TSExpressionWithTypeArgumentsKind[];
       loc?: K.SourceLocationKind | null;
@@ -1088,6 +1095,7 @@ export interface TaggedTemplateExpressionBuilder {
       loc?: K.SourceLocationKind | null;
       quasi: K.TemplateLiteralKind;
       tag: K.ExpressionKind;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.TaggedTemplateExpression;
 }
@@ -1514,6 +1522,7 @@ export interface JSXOpeningElementBuilder {
       loc?: K.SourceLocationKind | null;
       name: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
       selfClosing?: boolean;
+      typeParameters?: K.TypeParameterInstantiationKind | K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.JSXOpeningElement;
 }
@@ -1529,6 +1538,28 @@ export interface JSXClosingElementBuilder {
       name: K.JSXIdentifierKind | K.JSXNamespacedNameKind | K.JSXMemberExpressionKind;
     }
   ): namedTypes.JSXClosingElement;
+}
+
+export interface TypeParameterInstantiationBuilder {
+  (params: K.FlowTypeKind[]): namedTypes.TypeParameterInstantiation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null;
+      loc?: K.SourceLocationKind | null;
+      params: K.FlowTypeKind[];
+    }
+  ): namedTypes.TypeParameterInstantiation;
+}
+
+export interface TSTypeParameterInstantiationBuilder {
+  (params: K.TSTypeKind[]): namedTypes.TSTypeParameterInstantiation;
+  from(
+    params: {
+      comments?: K.CommentKind[] | null;
+      loc?: K.SourceLocationKind | null;
+      params: K.TSTypeKind[];
+    }
+  ): namedTypes.TSTypeParameterInstantiation;
 }
 
 export interface JSXOpeningFragmentBuilder {
@@ -1571,28 +1602,6 @@ export interface TSTypeParameterDeclarationBuilder {
       params: K.TSTypeParameterKind[];
     }
   ): namedTypes.TSTypeParameterDeclaration;
-}
-
-export interface TypeParameterInstantiationBuilder {
-  (params: K.FlowTypeKind[]): namedTypes.TypeParameterInstantiation;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null;
-      loc?: K.SourceLocationKind | null;
-      params: K.FlowTypeKind[];
-    }
-  ): namedTypes.TypeParameterInstantiation;
-}
-
-export interface TSTypeParameterInstantiationBuilder {
-  (params: K.TSTypeKind[]): namedTypes.TSTypeParameterInstantiation;
-  from(
-    params: {
-      comments?: K.CommentKind[] | null;
-      loc?: K.SourceLocationKind | null;
-      params: K.TSTypeKind[];
-    }
-  ): namedTypes.TSTypeParameterInstantiation;
 }
 
 export interface ClassImplementsBuilder {
@@ -3538,6 +3547,7 @@ export interface TSTypeQueryBuilder {
       comments?: K.CommentKind[] | null;
       exprName: K.IdentifierKind | K.TSQualifiedNameKind | K.TSImportTypeKind;
       loc?: K.SourceLocationKind | null;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.TSTypeQuery;
 }
@@ -3553,6 +3563,7 @@ export interface TSImportTypeBuilder {
       argument: K.StringLiteralKind;
       comments?: K.CommentKind[] | null;
       loc?: K.SourceLocationKind | null;
+      options?: K.ExpressionKind | null;
       qualifier?: K.IdentifierKind | K.TSQualifiedNameKind | undefined;
       typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
@@ -3855,12 +3866,12 @@ export interface builders {
   jsxSpreadChild: JSXSpreadChildBuilder;
   jsxOpeningElement: JSXOpeningElementBuilder;
   jsxClosingElement: JSXClosingElementBuilder;
+  typeParameterInstantiation: TypeParameterInstantiationBuilder;
+  tsTypeParameterInstantiation: TSTypeParameterInstantiationBuilder;
   jsxOpeningFragment: JSXOpeningFragmentBuilder;
   jsxClosingFragment: JSXClosingFragmentBuilder;
   typeParameterDeclaration: TypeParameterDeclarationBuilder;
   tsTypeParameterDeclaration: TSTypeParameterDeclarationBuilder;
-  typeParameterInstantiation: TypeParameterInstantiationBuilder;
-  tsTypeParameterInstantiation: TSTypeParameterInstantiationBuilder;
   classImplements: ClassImplementsBuilder;
   tsExpressionWithTypeArguments: TSExpressionWithTypeArgumentsBuilder;
   anyTypeAnnotation: AnyTypeAnnotationBuilder;
