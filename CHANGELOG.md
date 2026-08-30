@@ -7,6 +7,10 @@ describe what is on `master` but not yet published to npm.
 
 ### Syntax support
 
+- `CallExpression`, `NewExpression` and `OptionalCallExpression` now carry
+  `typeParameters` (TypeScript type arguments such as `f<T>()`), and the
+  visitor traverses them. Contributed by Lenz Weber-Tronic in #954; fixes
+  #343 and facebook/jscodeshift#389.
 - Support `export type * from "mod"` and `export type * as ns from "mod"`
   (TypeScript 5.0). `ExportAllDeclaration` and `ExportNamedDeclaration`
   gain an `exportKind` field (`"value" | "type"`, default `"value"`),
