@@ -581,6 +581,7 @@ export interface NewExpressionBuilder {
       comments?: K.CommentKind[] | null;
       loc?: K.SourceLocationKind | null;
       typeArguments?: null | K.TypeParameterInstantiationKind;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.NewExpression;
 }
@@ -598,6 +599,7 @@ export interface CallExpressionBuilder {
       loc?: K.SourceLocationKind | null;
       optional?: boolean;
       typeArguments?: null | K.TypeParameterInstantiationKind;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.CallExpression;
 }
@@ -1206,6 +1208,7 @@ export interface OptionalCallExpressionBuilder {
       loc?: K.SourceLocationKind | null;
       optional?: boolean;
       typeArguments?: null | K.TypeParameterInstantiationKind;
+      typeParameters?: K.TSTypeParameterInstantiationKind | null;
     }
   ): namedTypes.OptionalCallExpression;
 }

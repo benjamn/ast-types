@@ -407,5 +407,72 @@ glob("**/*.ts", {
         }
       });
     });
+
+    it("issue #343: CallExpression with type parameters", function () {
+      const program = babelParse("fn<FetchResult>();", {
+        plugins: ["typescript"]
+      });
+
+      const identifiers: string[] = [];
+      
+      assertVisited(program, {
+        visitIdentifier(path) {
+          identifiers.push(path.node.name);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(identifiers, ["FetchResult", "fn"]);
+    });
+
+    it("NewExpression with type parameters", function () {
+      const program = babelParse("new Container<Item>();", {
+        plugins: ["typescript"]
+      });
+
+      const identifiers: string[] = [];
+      
+      assertVisited(program, {
+        visitIdentifier(path) {
+          identifiers.push(path.node.name);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(identifiers, ["Item", "Container"]);
+    });
+
+    it("OptionalCallExpression with type parameters", function () {
+      const program = babelParse("obj?.method<Result>();", {
+        plugins: ["typescript"]
+      });
+
+      const identifiers: string[] = [];
+      
+      assertVisited(program, {
+        visitIdentifier(path) {
+          identifiers.push(path.node.name);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(identifiers, ["Result", "obj", "method"]);
+    });
+
+    it("Complex nested type parameters in CallExpression", function () {
+      const program = babelParse("func<Array<Map<string, User>>>(data);", {
+        plugins: ["typescript"]
+      });
+
+      const identifiers: string[] = [];      
+      assertVisited(program, {
+        visitIdentifier(path) {
+          identifiers.push(path.node.name);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(identifiers, [ "User", "Map", "Array", "func", "data"]);
+    });
   });
 });

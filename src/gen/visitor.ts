@@ -54,6 +54,10 @@ export interface Visitor<M = {}> {
   visitUpdateExpression?(this: Context & M, path: NodePath<namedTypes.UpdateExpression>): any;
   visitLogicalExpression?(this: Context & M, path: NodePath<namedTypes.LogicalExpression>): any;
   visitConditionalExpression?(this: Context & M, path: NodePath<namedTypes.ConditionalExpression>): any;
+  visitTSHasOptionalTypeParameterInstantiation?(
+    this: Context & M,
+    path: NodePath<namedTypes.TSHasOptionalTypeParameterInstantiation>
+  ): any;
   visitNewExpression?(this: Context & M, path: NodePath<namedTypes.NewExpression>): any;
   visitCallExpression?(this: Context & M, path: NodePath<namedTypes.CallExpression>): any;
   visitRestElement?(this: Context & M, path: NodePath<namedTypes.RestElement>): any;
@@ -130,10 +134,6 @@ export interface Visitor<M = {}> {
   visitTSTypeParameterInstantiation?(this: Context & M, path: NodePath<namedTypes.TSTypeParameterInstantiation>): any;
   visitClassImplements?(this: Context & M, path: NodePath<namedTypes.ClassImplements>): any;
   visitTSType?(this: Context & M, path: NodePath<namedTypes.TSType>): any;
-  visitTSHasOptionalTypeParameterInstantiation?(
-    this: Context & M,
-    path: NodePath<namedTypes.TSHasOptionalTypeParameterInstantiation>
-  ): any;
   visitTSExpressionWithTypeArguments?(
     this: Context & M,
     path: NodePath<namedTypes.TSExpressionWithTypeArguments>
