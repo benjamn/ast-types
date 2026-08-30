@@ -75,9 +75,12 @@ glob("**/input.ts", {
               ) {
                 // Most parsing errors are checked this way, thanks to
                 // errorRecovery: true.
+                // Note: only one of ast/expected is guaranteed to have a
+                // non-empty errors array here, so neither .errors access can
+                // assume the other side has one.
                 assert.deepEqual(
-                  ast.errors.map(normalizeErrorString),
-                  expected.errors.map(normalizeErrorString),
+                  (ast.errors || []).map(normalizeErrorString),
+                  (expected && expected.errors || []).map(normalizeErrorString),
                 );
               } else if (
                 ast.program &&
