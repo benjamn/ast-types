@@ -3,7 +3,7 @@
 Notable changes to `ast-types`, newest first. Entries under **Unreleased**
 describe what is on `master` but not yet published to npm.
 
-## Unreleased
+## v0.16.2 (2026-08-30)
 
 ### Syntax support
 
