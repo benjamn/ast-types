@@ -618,6 +618,20 @@ var tsCompilerDir = path.resolve(
       tsTypes.namedTypes.Program.assert(program.program, true);
     });
 
+    it("optional AssignmentPattern", function () {
+      // TypeScript rejects a parameter that has both a question mark and an
+      // initializer, so @babel/parser can never produce this shape, but
+      // normalizing parsers (e.g. Oxc) define AssignmentPattern.optional.
+      const assignmentPattern = tsTypes.builders.assignmentPattern.from({
+        left: tsTypes.builders.identifier("x"),
+        right: tsTypes.builders.numericLiteral(1),
+        optional: true,
+      });
+
+      tsTypes.namedTypes.AssignmentPattern.assert(assignmentPattern, true);
+      assert.strictEqual(assignmentPattern.optional, true);
+    });
+
     it("class expressions with decorators", function () {
       const classExpression = tsTypes.builders.classExpression.from({
         id: null,
