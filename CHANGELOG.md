@@ -41,6 +41,9 @@ before, which can affect downstream code that narrowed on the old type:
   updates the Babel fixture corpus the tests validate against.
 - Honor `sourceType` from Babel fixture `options.json` files, and fix a
   null dereference when comparing expected parse errors.
+- Update test-only dependencies: `glob` 10, `rimraf` 5, `mocha` 11,
+  `ts-node`, `@types/mocha`, `@types/esprima`. Enable `skipLibCheck` so
+  `tsc` no longer type-checks `node_modules` declarations.
 - Modernize the GitHub Actions workflow: Node.js 18, 20, 22 and 24,
   `npm ci`, and a check that `src/gen/` is up to date with `src/def/`.
 

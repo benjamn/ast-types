@@ -1,7 +1,7 @@
 import assert from "assert";
 import fs from "fs";
 import path from "path";
-import glob from "glob";
+import { globSync } from "glob";
 import { parse as babelParse, ParseError, ParserOptions } from "@babel/parser";
 import fork from "../fork";
 import esProposalsDef from '../def/es-proposals';
@@ -27,12 +27,8 @@ const babelParserDir = path.resolve(
 const babelTSFixturesDir =
   path.join(babelParserDir, "test", "fixtures", "typescript");
 
-glob("**/input.ts", {
-  cwd: babelTSFixturesDir,
-}, (error, files) => {
-  if (error) {
-    throw error;
-  }
+(() => {
+  const files = globSync("**/input.ts", { cwd: babelTSFixturesDir });
 
   if (files.length < 10) {
     throw new Error(`Unexpectedly few **/input.ts files matched (${
@@ -43,10 +39,6 @@ glob("**/input.ts", {
   }
 
   describe("Whole-program validation for Babel TypeScript tests", function () {
-    if (error) {
-      throw error;
-    }
-
     files.forEach((tsPath: any) => {
       const fullPath = path.join(babelTSFixturesDir, tsPath);
       const pkgRootRelPath = path.relative(pkgRootDir, fullPath);
@@ -180,17 +172,13 @@ glob("**/input.ts", {
       return findFixtureOption(path.dirname(dir), name);
     }
   }
-});
+})();
 
 var tsCompilerDir = path.resolve(
   pkgRootDir, "src", "test", "data", "typescript-compiler");
 
-glob("**/*.ts", {
-  cwd: tsCompilerDir,
-}, (error, files) => {
-  if (error) {
-    throw error;
-  }
+(() => {
+  const files = globSync("**/*.ts", { cwd: tsCompilerDir });
 
   if (files.length < 10) {
     throw new Error(`Unexpectedly few **/*.ts files matched (${
@@ -201,10 +189,6 @@ glob("**/*.ts", {
   }
 
   describe("Whole-program validation for TypeScript codebase", function () {
-    if (error) {
-      throw error;
-    }
-
     this.timeout(20000);
 
     files.forEach((tsPath: string) => {
@@ -480,4 +464,4 @@ glob("**/*.ts", {
       assert.deepEqual(identifiers, [ "User", "Map", "Array", "func", "data"]);
     });
   });
-});
+})();
