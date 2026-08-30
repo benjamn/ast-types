@@ -463,5 +463,186 @@ var tsCompilerDir = path.resolve(
 
       assert.deepEqual(identifiers, [ "User", "Map", "Array", "func", "data"]);
     });
+
+    it("TaggedTemplateExpression with type parameters", function () {
+      const program = babelParse("gql<Result>`query { id }`;", {
+        plugins: ["typescript"]
+      });
+
+      const identifiers: string[] = [];
+      assertVisited(program, {
+        visitTaggedTemplateExpression(path) {
+          assert.strictEqual(
+            path.node.typeParameters?.type,
+            "TSTypeParameterInstantiation"
+          );
+          this.traverse(path);
+        },
+        visitIdentifier(path) {
+          identifiers.push(path.node.name);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(identifiers, ["Result", "gql"]);
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("TSTypeQuery with type parameters (instantiation expression)", function () {
+      const program = babelParse("type BoxedString = typeof makeBox<string>;", {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitTSTypeQuery(path) {
+          assert.strictEqual(
+            path.node.typeParameters?.type,
+            "TSTypeParameterInstantiation"
+          );
+          this.traverse(path);
+        },
+        visitTSStringKeyword(path) {
+          this.traverse(path);
+        }
+      });
+
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("JSXOpeningElement with type parameters", function () {
+      const program = babelParse('<Foo<Bar> baz="grault" />;', {
+        plugins: ["typescript", "jsx"]
+      });
+
+      assertVisited(program, {
+        visitJSXOpeningElement(path) {
+          assert.strictEqual(
+            path.node.typeParameters?.type,
+            "TSTypeParameterInstantiation"
+          );
+          this.traverse(path);
+        },
+        visitTSTypeReference(path) {
+          this.traverse(path);
+        }
+      });
+
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("TSImportType with import attributes options", function () {
+      const program = babelParse(
+        'type Config = typeof import("./config.json", { with: { type: "json" } });',
+        { plugins: ["typescript"] }
+      );
+
+      assertVisited(program, {
+        visitTSImportType(path) {
+          assert.strictEqual(path.node.options?.type, "ObjectExpression");
+          this.traverse(path);
+        }
+      });
+
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("optional and annotated binding patterns", function () {
+      const program = babelParse([
+        "declare function f(",
+        "  [a, b]?: [number, number],",
+        "  { c }?: { c: string },",
+        "): void;",
+      ].join("\n"), {
+        plugins: ["typescript"]
+      });
+
+      assertVisited(program, {
+        visitArrayPattern(path) {
+          assert.strictEqual(path.node.optional, true);
+          assert.strictEqual(path.node.typeAnnotation?.type, "TSTypeAnnotation");
+          this.traverse(path);
+        },
+        visitObjectPattern(path) {
+          assert.strictEqual(path.node.optional, true);
+          assert.strictEqual(path.node.typeAnnotation?.type, "TSTypeAnnotation");
+          this.traverse(path);
+        }
+      });
+
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("using and await using declarations", function () {
+      const program = babelParse([
+        "using handle = open();",
+        "await using conn = connect();",
+      ].join("\n"), {
+        sourceType: "module",
+        plugins: ["typescript", "explicitResourceManagement", "topLevelAwait"]
+      });
+
+      const kinds: string[] = [];
+      assertVisited(program, {
+        visitVariableDeclaration(path) {
+          kinds.push(path.node.kind);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(kinds, ["using", "await using"]);
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("class declarations with decorators", function () {
+      const program = babelParse([
+        "@sealed",
+        "@log('registry')",
+        "class Service {}",
+      ].join("\n"), {
+        plugins: ["typescript", ["decorators", { decoratorsBeforeExport: false }]]
+      });
+
+      const decoratorExpressions: string[] = [];
+      assertVisited(program, {
+        visitClassDeclaration(path) {
+          assert.strictEqual(path.node.decorators?.length, 2);
+          this.traverse(path);
+        },
+        visitDecorator(path) {
+          decoratorExpressions.push(path.node.expression.type);
+          this.traverse(path);
+        }
+      });
+
+      assert.deepEqual(decoratorExpressions, ["Identifier", "CallExpression"]);
+      tsTypes.namedTypes.Program.assert(program.program, true);
+    });
+
+    it("optional AssignmentPattern", function () {
+      // TypeScript rejects a parameter that has both a question mark and an
+      // initializer, so @babel/parser can never produce this shape, but
+      // normalizing parsers (e.g. Oxc) define AssignmentPattern.optional.
+      const assignmentPattern = tsTypes.builders.assignmentPattern.from({
+        left: tsTypes.builders.identifier("x"),
+        right: tsTypes.builders.numericLiteral(1),
+        optional: true,
+      });
+
+      tsTypes.namedTypes.AssignmentPattern.assert(assignmentPattern, true);
+      assert.strictEqual(assignmentPattern.optional, true);
+    });
+
+    it("class expressions with decorators", function () {
+      const classExpression = tsTypes.builders.classExpression.from({
+        id: null,
+        body: tsTypes.builders.classBody([]),
+        decorators: [
+          tsTypes.builders.decorator(tsTypes.builders.identifier("sealed")),
+        ],
+      });
+
+      tsTypes.namedTypes.ClassExpression.assert(classExpression, true);
+      assert.strictEqual(classExpression.decorators?.length, 1);
+    });
   });
 })();

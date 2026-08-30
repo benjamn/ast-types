@@ -98,7 +98,13 @@ export default function (fork: Fork) {
     .build("name", "attributes", "selfClosing")
     .field("name", JSXElementName)
     .field("attributes", JSXAttributes, defaults.emptyArray)
-    .field("selfClosing", Boolean, defaults["false"]);
+    .field("selfClosing", Boolean, defaults["false"])
+    // Explicit type arguments, e.g. <Foo<Bar> baz="grault" />
+    .field("typeParameters",
+           or(def("TypeParameterInstantiation"),
+              def("TSTypeParameterInstantiation"),
+              null),
+           defaults["null"]);
 
   def("JSXClosingElement")
     .bases("Node")

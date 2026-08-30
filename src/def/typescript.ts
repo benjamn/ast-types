@@ -350,8 +350,10 @@ export default function (fork: Fork) {
            or(def("Expression"), null),
            defaults["null"]);
 
+  // The .typeParameters field holds the type arguments of an instantiation
+  // expression, e.g. typeof fn<string>.
   def("TSTypeQuery")
-    .bases("TSType")
+    .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("exprName")
     .field("exprName", or(TSEntityName, def("TSImportType")));
 
@@ -439,7 +441,9 @@ export default function (fork: Fork) {
     .bases("TSType", "TSHasOptionalTypeParameterInstantiation")
     .build("argument", "qualifier", "typeParameters")
     .field("argument", StringLiteral)
-    .field("qualifier", or(TSEntityName, void 0), defaults["undefined"]);
+    .field("qualifier", or(TSEntityName, void 0), defaults["undefined"])
+    // Import attributes, e.g. import("./m", { with: { type: "json" } }).
+    .field("options", or(def("Expression"), null), defaults["null"]);
 
   def("TSImportEqualsDeclaration")
     .bases("Declaration")
@@ -508,6 +512,19 @@ export default function (fork: Fork) {
 
   def("NewExpression")
     .bases("TSHasOptionalTypeParameterInstantiation");
+
+  def("TaggedTemplateExpression")
+    .bases("TSHasOptionalTypeParameterInstantiation");
+
+  // TypeScript allows optional binding patterns in parameter positions,
+  // e.g. function f([a, b]?: [number, number]) {}
+  ["ArrayPattern",
+   "ObjectPattern",
+   "AssignmentPattern",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("optional", Boolean, defaults["false"]);
+  });
 
   // Defined already in es6 and babel-core.
   def("ClassBody")

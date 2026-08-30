@@ -186,6 +186,58 @@ describe("type annotations", function () {
     });
   });
 
+  it("can build ArrayPattern with Flow typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.arrayPattern.from({
+        elements: [
+          types.builders.identifier("x"),
+        ],
+        typeAnnotation: types.builders.typeAnnotation(
+          types.builders.tupleTypeAnnotation([
+            types.builders.numberTypeAnnotation()
+          ])
+        ),
+      });
+    });
+  });
+
+  it("can build ArrayPattern with TS typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.arrayPattern.from({
+        elements: [
+          types.builders.identifier("x"),
+        ],
+        typeAnnotation: types.builders.tsTypeAnnotation(
+          types.builders.tsArrayType(types.builders.tsNumberKeyword())
+        ),
+      });
+    });
+  });
+
+  it("can build AssignmentPattern with Flow typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.assignmentPattern.from({
+        left: types.builders.identifier("x"),
+        right: types.builders.numericLiteral(1),
+        typeAnnotation: types.builders.typeAnnotation(
+          types.builders.numberTypeAnnotation()
+        ),
+      });
+    });
+  });
+
+  it("can build AssignmentPattern with TS typeAnnotation", function () {
+    assert.doesNotThrow(function () {
+      types.builders.assignmentPattern.from({
+        left: types.builders.identifier("x"),
+        right: types.builders.numericLiteral(1),
+        typeAnnotation: types.builders.tsTypeAnnotation(
+          types.builders.tsNumberKeyword()
+        ),
+      });
+    });
+  });
+
   it("can build ClassDeclaration with TS implements", function () {
     assert.doesNotThrow(function () {
       types.builders.classDeclaration.from({

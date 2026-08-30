@@ -35,6 +35,19 @@ export default function (fork: Fork) {
            or([def("Decorator")], null),
            defaults["null"]);
 
+  ["ClassDeclaration",
+   "ClassExpression",
+  ].forEach(typeName => {
+    def(typeName)
+      .field("decorators",
+             or([def("Decorator")], null),
+             defaults["null"]);
+  });
+
+  // Explicit resource management: using x = ..., await using y = ...
+  def("VariableDeclaration")
+    .field("kind", or("var", "let", "const", "using", "await using"));
+
   // Private names
   def("PrivateName")
     .bases("Expression", "Pattern")
