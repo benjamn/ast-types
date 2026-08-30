@@ -3,6 +3,31 @@
 Notable changes to `ast-types`, newest first. Entries under **Unreleased**
 describe what is on `master` but not yet published to npm.
 
+## v0.16.3 (2026-08-30)
+
+### Syntax support
+
+Register fields that current parsers (Babel, and Oxc as normalized by
+recast's proposed Oxc integration) emit but ast-types did not define, so
+visitors traverse the subtrees and deep checks accept the nodes:
+
+- `TaggedTemplateExpression.typeParameters` and `TSTypeQuery.typeParameters`,
+  for TypeScript instantiation expressions (`f<T>` as a value, `typeof f<T>`).
+- `JSXOpeningElement.typeParameters`, for explicit JSX type arguments
+  (`<Component<T> />`).
+- `ArrayPattern.typeAnnotation` and `AssignmentPattern.typeAnnotation`
+  (shared Flow/TS definitions).
+- `ArrayPattern.optional`, `ObjectPattern.optional` and
+  `AssignmentPattern.optional`.
+- `ClassDeclaration.decorators` and `ClassExpression.decorators`.
+- `TSImportType.options`, for import attributes in `import(...)` types.
+- `VariableDeclaration.kind` now allows `"using"` and `"await using"`
+  (explicit resource management).
+
+Each addition is covered by tests that parse the actual syntax with
+`@babel/parser` and deep-assert the resulting `Program`, plus builder
+tests for node shapes `@babel/parser` cannot produce directly.
+
 ## v0.16.2 (2026-08-30)
 
 ### Syntax support
