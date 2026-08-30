@@ -252,9 +252,15 @@ export default function (fork: Fork) {
   def("ExportNamedDeclaration")
     .bases("Declaration")
     .build("declaration", "specifiers", "source")
-    .field("declaration", or(def("Declaration"), null))
+    .field("declaration", or(def("Declaration"), null), defaults["null"])
     .field("specifiers", [def("ExportSpecifier")], defaults.emptyArray)
-    .field("source", or(def("Literal"), null), defaults["null"]);
+    .field("source", or(def("Literal"), null), defaults["null"])
+    .field("exportKind", or(
+      "value",
+      "type"
+    ), function() {
+      return "value";
+    });
 
   def("ExportSpecifier")
     .bases("ModuleSpecifier")
@@ -269,7 +275,13 @@ export default function (fork: Fork) {
   def("ExportAllDeclaration")
     .bases("Declaration")
     .build("source")
-    .field("source", def("Literal"));
+    .field("source", def("Literal"))
+    .field("exportKind", or(
+      "value",
+      "type"
+    ), function() {
+      return "value";
+    });
 
   def("TaggedTemplateExpression")
     .bases("Expression")
