@@ -60,6 +60,11 @@ before, which can affect downstream code that narrowed on the old type:
   `tsc` no longer type-checks `node_modules` declarations.
 - Modernize the GitHub Actions workflow: Node.js 18, 20, 22 and 24,
   `npm ci`, and a check that `src/gen/` is up to date with `src/def/`.
+- Publish from GitHub Actions using npm trusted publishing, triggered by
+  publishing a GitHub release whose tag is the package version prefixed
+  with `v`. Releases carry npm provenance attestations, and no npm token
+  is stored in the repository. A release marked as a pre-release publishes
+  under the `next` dist-tag, and an ordinary release under `latest`.
 
 ## v0.16.1 and earlier
 

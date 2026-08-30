@@ -1,0 +1,79 @@
+name: Release
+
+# Publishing happens when a GitHub release is published, so the release notes
+# and the published version are created in the same step. A bare tag push does
+# not publish anything.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm trusted publishing: lets the job mint the short-lived
+      # OIDC token that npm exchanges for publish rights. No npm token is
+      # stored in this repository.
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.release.tag_name }}
+
+    # Trusted publishing needs Node >= 22.14, and npm >= 11.5.1, which is newer
+    # than the npm bundled with any version of Node the runners provide.
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        cache: npm
+
+    - name: Update npm
+      run: |
+        npm install -g npm@latest
+        npm --version
+
+    - name: Check the release tag against package.json
+      run: |
+        tag='${{ github.event.release.tag_name }}'
+        version=$(node -p 'require("./package.json").version')
+        if [ "$tag" != "v$version" ]; then
+          echo "Release tag $tag does not match package.json version $version." >&2
+          echo "Tags must be the package version prefixed with v." >&2
+          exit 1
+        fi
+        if [ -n "$(npm view "ast-types@$version" version 2>/dev/null)" ]; then
+          echo "ast-types@$version is already published to npm." >&2
+          exit 1
+        fi
+
+    # npm ci runs the prepare script, which builds lib/. npm test regenerates
+    # src/gen/ and runs the full suite against the Babel and TypeScript fixture
+    # corpora, which main.yml does not do for a release event.
+    - name: Install
+      run: npm ci
+
+    - name: Build and test
+      run: npm test
+
+    - name: Generated types are up to date
+      run: git diff --exit-code -- src/gen/
+
+    # A release marked as a pre-release publishes under the next dist-tag; an
+    # ordinary release publishes under latest. Which dist-tag moves is
+    # therefore a visible choice made in the GitHub release form.
+    - name: Publish
+      run: |
+        if [ '${{ github.event.release.prerelease }}' = 'true' ]; then
+          tag=next
+        else
+          tag=latest
+        fi
+        echo "Publishing under the $tag dist-tag."
+        npm publish --provenance --tag "$tag"
