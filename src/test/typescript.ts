@@ -2,7 +2,7 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { parse as babelParse, ParseError, ParserOptions, ParserPlugin } from "@babel/parser";
+import { parse as babelParse, ParseError, ParserOptions } from "@babel/parser";
 import fork from "../fork";
 import esProposalsDef from '../def/es-proposals';
 import typescriptDef from "../def/typescript";
@@ -150,14 +150,20 @@ glob("**/input.ts", {
   }
 
   function getOptions(fullPath: string): ParserOptions {
-    var plugins = getPlugins(path.dirname(fullPath));
+    const dir = path.dirname(fullPath);
     return {
-      sourceType: "module",
-      plugins,
+      // Babel's fixtures default to sourceType: "module", but a few opt
+      // into "script" (e.g. to check that import/export is rejected).
+      sourceType: findFixtureOption(dir, "sourceType") || "module",
+      plugins: findFixtureOption(dir, "plugins") || ["typescript"],
     };
   }
 
-  function getPlugins(dir: string): ParserPlugin[] {
+  // Babel fixture directories may carry an options.json whose settings
+  // apply to every fixture beneath them, so walk upward from the fixture's
+  // own directory to the root of the TypeScript fixtures, returning the
+  // first value found for the given option.
+  function findFixtureOption(dir: string, name: string): any {
     try {
       var options = JSON.parse(fs.readFileSync(
         path.join(dir, "options.json")
@@ -166,17 +172,13 @@ glob("**/input.ts", {
       options = {};
     }
 
-    if (options.plugins) {
-      return options.plugins;
+    if (Object.prototype.hasOwnProperty.call(options, name)) {
+      return options[name];
     }
 
     if (dir !== babelTSFixturesDir) {
-      return getPlugins(path.dirname(dir));
+      return findFixtureOption(path.dirname(dir), name);
     }
-
-    return [
-      "typescript",
-    ];
   }
 });
 
